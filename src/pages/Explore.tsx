@@ -8,7 +8,7 @@ import { UserContext } from '@/contexts';
 import { useQuery } from 'graphql-hooks';
 import { UNISWAP_MARKET_DATA_QUERY } from '@/utils';
 import { SynthMap } from '@/utils';
-import box from '/Box-01.png';
+import box from '@/assets/Box-01.png';
 
 const Explore = () => {
   //const { getMarketData } = useContext(UserContext);

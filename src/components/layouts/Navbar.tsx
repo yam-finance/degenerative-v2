@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import { SearchForm, NavbarButton, Icon } from '@/components';
 
 import { EthereumContext } from '@/contexts';
-import zombieHead from '/zombie_head_large.png';
-import discord from '/discord.svg';
-import accountImage from '/ellipse.png';
+import zombieHead from '@/assets/zombie_head_large.png';
+import discord from '@/assets/discord.svg';
+import accountImage from '@/assets/ellipse.png';
 
 const Navbar = () => {
   const { account } = useContext(EthereumContext);
