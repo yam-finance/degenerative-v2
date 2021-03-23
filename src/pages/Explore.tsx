@@ -15,10 +15,6 @@ const Explore = () => {
   const [availableSynths, setAvailableSynths] = useState([]);
   const [sidebarSynth, setSidebarSynth] = useState();
 
-  useEffect(() => {
-    //setAvailableSynths(getMarketData)
-  }, []);
-
   const SynthBlock: React.FC<{ synth: ISynthInfo }> = ({ synth }) => {
     const { type, cycle, year, name, expired } = synth.metadata;
     const { loading, error, data: marketData } = useQuery(UNISWAP_MARKET_DATA_QUERY, {
