@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useCallback } from 'react';
+import { useContext, useCallback } from 'react';
 
 import { Signer, utils, constants } from 'ethers';
 import { EthereumContext } from '@/contexts';

@@ -1,5 +1,5 @@
-import { useContext, useState, useCallback, useEffect } from 'react';
-import { Signer, utils, constants } from 'ethers';
+import { useContext, useState, useEffect } from 'react';
+import { Signer, utils } from 'ethers';
 
 import { EthereumContext } from '@/contexts';
 import { Weth__factory, Weth } from '@/types/contracts';

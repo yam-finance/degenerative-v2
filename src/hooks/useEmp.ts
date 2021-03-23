@@ -1,10 +1,8 @@
-import { useState, useContext, useCallback, useEffect } from 'react';
+import { useContext, useCallback } from 'react';
 import { Signer, BigNumber } from 'ethers';
 
 import { EthereumContext } from '@/contexts/EthereumContext';
-import { Emp__factory } from '@/types/contracts';
-import { IEmpState, IUserPositions } from '@/types/EmpState';
-import Unsigned from '@/types/Unsigned';
+import { Emp__factory, Unsigned, IEmpState, IUserPositions } from '@/types';
 
 // Stateless hook for EMP contract helper functions
 export const useEmp = () => {

@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search } from 'react-feather';
 import { SearchForm } from '@/components';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
 import { ISynthInfo } from '@/types';
