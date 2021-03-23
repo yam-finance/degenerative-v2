@@ -1,8 +1,8 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import useAsyncEffect from 'use-async-effect';
 
-import { ISynthInfo, IMintedPosition, ISynthInWallet, IPoolPosition, ISynthMarketData } from '@/types';
-import { SynthMap, getCollateral } from '@/utils/TokenList';
+import { ISynthInfo, IToken, IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
+import { SynthMap, CollateralMap } from '@/utils/TokenList';
 
 import { useEmp, useToken, useUniswap } from '@/hooks';
 import { useQuery } from 'graphql-hooks';
@@ -15,7 +15,8 @@ const initialState = {
   //poolPositions: [] as IPoolPosition[],
   setSynth: (name: string) => {},
   //getMarketData: () => {},
-  currentSynth: {} as ISynthInfo,
+  currentSynth: {} as ISynthInfo | undefined,
+  currentCollateral: {} as IToken | undefined,
 };
 
 export const UserContext = createContext(initialState);
@@ -24,18 +25,28 @@ export const UserProvider: React.FC = ({ children }) => {
   const { account, signer } = useContext(EthereumContext);
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);
   const [synthsInWallet, setSynthsInWallet] = useState<ISynthInWallet[]>([]);
-  const [currentSynth, setCurrentSynth] = useState<ISynthInfo>({} as ISynthInfo); // TODO
+  const [currentSynth, setCurrentSynth] = useState<ISynthInfo>();
+  const [currentCollateral, setCurrentCollateral] = useState<IToken>();
 
   const emp = useEmp();
   const erc20 = useToken();
   const { getPrice } = useUniswap();
 
-  const setSynth = (name: string) => setCurrentSynth(SynthMap[name]);
-
+  /*
   // TODO DEBUG
   useEffect(() => {
+    console.log(SynthMap);
     setCurrentSynth(SynthMap['UGASMAR21']);
   }, []);
+  */
+
+  useEffect(() => {
+    if (currentSynth) {
+      console.log('CURRENT SYNTH');
+      console.log(currentSynth);
+      setCurrentCollateral(CollateralMap[currentSynth.metadata.collateral]);
+    }
+  }, [currentSynth]);
 
   useEffect(() => {
     if (signer && account) {
@@ -44,6 +55,12 @@ export const UserProvider: React.FC = ({ children }) => {
       //getMarketData();
     }
   }, [signer, account]);
+
+  const setSynth = (name: string) => {
+    console.log('SET SYNTH CALLED');
+    console.log(name);
+    setCurrentSynth(SynthMap[name]);
+  };
 
   const updateMintedPositions = () => {
     const minted: IMintedPosition[] = [];
@@ -117,6 +134,7 @@ export const UserProvider: React.FC = ({ children }) => {
         mintedPositions,
         synthsInWallet,
         currentSynth,
+        currentCollateral,
         setSynth,
         //getMarketData,
       }}

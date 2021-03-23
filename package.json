@@ -6,7 +6,7 @@
     "build": "tsc && vite build",
     "serve": "vite preview",
     "fork": "hardhat node",
-    "generate-types": "typechain --target=ethers-v5 'abi/*.json' --outDir src/types/contracts",
+    "prebuild": "typechain --target=ethers-v5 'abi/*.json' --outDir src/types/contracts",
     "typecheck": "tsc --noEmit",
     "prettier": "yarn prettier --write src/"
   },
@@ -28,6 +28,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.7",
+    "@types/ws": "^7.4.0",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
     "@vitejs/plugin-react-refresh": "^1.1.0",
@@ -36,8 +37,12 @@
     "hardhat": "^2.0.10",
     "prettier": "^2.2.1",
     "react-use-form-state": "^0.13.2",
+    "subscriptions-transport-ws": "^0.9.18",
     "typechain": "^4.0.2",
     "typescript": "^4.1.2",
     "vite": "^2.0.1"
+  },
+  "peerDependencies": {
+    "graphql": "^15.5.0"
   }
 }

@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import { SearchForm, NavbarButton, Icon } from '@/components';
 
 import { EthereumContext } from '@/contexts';
+import zombieHead from '/zombie_head_large.png';
+import discord from '/discord.svg';
+import accountImage from '/ellipse.png';
 
 const Navbar = () => {
   const { account } = useContext(EthereumContext);
@@ -32,7 +35,7 @@ const Navbar = () => {
               <Icon name="Twitter" className="icon in-button" />
             </Link>
             <Link to="https://discord.com/invite/fbHX7NRa52" className="margin-right-0 w-inline-block">
-              <img src="src/assets/discord.svg" loading="lazy" alt="Discord logo" className="icon discord in-button" />
+              <img src={discord} loading="lazy" alt="Discord logo" className="icon discord in-button" />
             </Link>
             <Link to="#" className="margin-right-0 w-inline-block">
               <Icon name="Mail" className="icon in-button" />
@@ -48,7 +51,7 @@ const Navbar = () => {
         to="/"
         className="margin-left-6 flex-row-middle padding-left-3 padding-right-3 tablet-absolute-top tablet-min-width-viewport-full tablet-margin-0 tablet-padding-4 w-inline-block"
       >
-        <img src="src/assets/zombie_head_large.png" loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
+        <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
         <h5 className="margin-0 margin-right-2 expand">Degenerative</h5>
         <div className="pill">v 2.0</div>
       </Link>
@@ -56,7 +59,7 @@ const Navbar = () => {
         <Navigation />
       </div>
       <div className="wallet">
-        <img src="src/assets/ellipse.png" loading="lazy" alt="" className="avatar margin-right-2" />
+        <img src={accountImage} loading="lazy" alt="" className="avatar margin-right-2" />
         <div className="expand relative">
           <div className="text-xs">Metamask</div>
           <div className="text-color-4">{account ? accountDisplay(account) : `Not Connected`}</div>

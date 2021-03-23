@@ -8,6 +8,7 @@ import { UserContext } from '@/contexts';
 import { useQuery } from 'graphql-hooks';
 import { UNISWAP_MARKET_DATA_QUERY } from '@/utils';
 import { SynthMap } from '@/utils';
+import box from '/Box-01.png';
 
 const Explore = () => {
   //const { getMarketData } = useContext(UserContext);
@@ -19,7 +20,7 @@ const Explore = () => {
   }, []);
 
   const SynthBlock: React.FC<{ synth: ISynthInfo }> = ({ synth }) => {
-    const { name, expired } = synth.metadata;
+    const { type, cycle, year, name, expired } = synth.metadata;
     const { loading, error, data: marketData } = useQuery(UNISWAP_MARKET_DATA_QUERY, {
       variables: {
         poolAddress: synth.pool.address,
@@ -32,8 +33,11 @@ const Explore = () => {
     // TODO add description, APY, and set sidebar
     return (
       <>
-        <Link to={`/synths/${name}`} className="padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block">
-          <img src="src/assets/Box-01.png" loading="lazy" alt="" className="width-16" />
+        <Link
+          to={`/synths/${type}/${cycle}${year}`}
+          className="padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block"
+        >
+          <img src={box} loading="lazy" alt="" className="width-16" />
           <h5 className="margin-top-4">{name}</h5>
           <p className="text-small opacity-60">Lorem ipsum dolor sit amet, adipiscing</p>
           <div className="button button-small">XX% APY</div> {/* TODO */}
@@ -59,7 +63,7 @@ const Explore = () => {
       <Link to="#" className="table-row margin-y-2 w-inline-block">
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src="src/assets/Box-01.png" loading="lazy" alt="" className="width-6" />
+            <img src={box} loading="lazy" alt="" className="width-6" />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">uSYNTH</div>

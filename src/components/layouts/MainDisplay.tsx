@@ -3,7 +3,7 @@ import React from 'react';
 import { Breadcrumb } from '@/components';
 
 export const MainHeading: React.FC = ({ children }) => {
-  return <h1 className="margin-top-8 margin-left-8 text-large margin-bottom-0">{children}</h1>;
+  return <h1 className="margin-top-8 margin-left-8 text-large">{children}</h1>;
 };
 
 export const MainDisplay: React.FC = ({ children }) => {

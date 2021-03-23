@@ -1,13 +1,13 @@
 import { useContext, useState, useCallback, useEffect } from 'react';
 import { Signer, utils, constants } from 'ethers';
 
-import { EthereumContext } from '@/contexts/EthereumContext';
+import { EthereumContext } from '@/contexts';
 import { Weth__factory, Weth } from '@/types/contracts';
 
-import { CollateralList } from '@/utils/TokenList';
+import { CollateralMap } from '@/utils/TokenList';
 
 export const useWrapEth = () => {
-  const wethAddress = CollateralList.find((token) => token.name === 'WETH')?.address as string;
+  const wethAddress = CollateralMap['WETH'].address;
   const { signer } = useContext(EthereumContext);
 
   const [wethContract, setWethContract] = useState<Weth>(Weth__factory.connect(wethAddress, signer as Signer));

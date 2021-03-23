@@ -115,7 +115,6 @@ const Portfolio = () => {
     <>
       <MainDisplay>
         <MainHeading>Your Positions</MainHeading>
-        <div className="padding-x-8 flex-align-baseline"></div>
         <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
           {mintedPositions.length > 0
             ? mintedPositions.map((minted, index) => {
