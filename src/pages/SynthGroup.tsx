@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useParams } from 'react-router';
 
-import { useSynthState } from '@/hooks/useSynthState';
+import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext } from '@/contexts';
 
 interface SynthParams {

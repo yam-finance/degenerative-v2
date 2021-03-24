@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
-import { useSynthState } from '@/hooks/useSynthState';
+import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { ISynthMetadata } from '@/types';
@@ -14,7 +14,7 @@ interface SynthParams {
 const Synth: React.FC = () => {
   const { group, synthName } = useParams<SynthParams>();
   const { currentSynth, setSynth } = useContext(UserContext);
-  const state = useSynthState();
+  const state = useSynthActions();
   const [{ type, cycle, year }, setMetadata] = useState({} as ISynthMetadata);
 
   useEffect(() => {

@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import ContextProviders from '@/contexts';
 import './degenerative.css';
+//import './degenerative.original.css';
+//import './webflow.css';
+import './normalize.css';
 
 import { Landing, Synth, Explore, Portfolio, SynthGroup } from '@/pages';
 import { Navbar } from '@/components';

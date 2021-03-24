@@ -3,7 +3,7 @@ import { useState, useContext, useEffect } from 'react';
 import { UserContext } from '@/contexts';
 import { useEmp, useToken, useWrapEth } from '@/hooks';
 
-export const useSynthState = () => {
+export const useSynthActions = () => {
   const { currentSynth, currentCollateral } = useContext(UserContext);
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
@@ -86,6 +86,6 @@ export const useSynthState = () => {
   };
 };
 
-export type ISynthState = typeof useSynthState;
+export type ISynthState = typeof useSynthActions;
 
-export default useSynthState;
+export default useSynthActions;
