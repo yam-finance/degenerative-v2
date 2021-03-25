@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { SearchForm, NavbarButton, Icon } from '@/components';
@@ -10,8 +10,15 @@ import accountImage from '@/assets/ellipse.png';
 
 const Navbar = () => {
   const { account } = useContext(EthereumContext);
+  const [accountDisplay, setAccountDisplay] = useState('Not Connected');
 
-  const accountDisplay = (account: string) => `${account.slice(0, 6)}...${account.substr(-4)}`;
+  useEffect(() => {
+    if (account) {
+      setAccountDisplay(`${account.slice(0, 6)}...${account.substr(-4)}`);
+    } else {
+      setAccountDisplay('Not Connected');
+    }
+  }, [account]);
 
   const Navigation: React.FC = () => {
     return (
@@ -60,7 +67,7 @@ const Navbar = () => {
         <img src={accountImage} loading="lazy" alt="" className="avatar margin-right-2" />
         <div className="expand relative">
           <div className="text-xs">Metamask</div>
-          <div className="text-color-4">{account ? accountDisplay(account) : `Not Connected`}</div>
+          <div className="text-color-4">{accountDisplay}</div>
         </div>
         <div className="margin-left-6 tablet-hide relative w-dropdown">
           <div className="icon-button w-dropdown-toggle">

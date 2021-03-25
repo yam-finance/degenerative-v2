@@ -3,13 +3,13 @@ import { providers, Signer } from 'ethers';
 
 declare global {
   interface Window {
-    ethereum: providers.ExternalProvider;
+    ethereum: providers.BaseProvider;
   }
 }
 
 const initialState = {
-  ethereum: undefined as providers.ExternalProvider | undefined,
-  setEthereum: (ethereum_: providers.ExternalProvider | undefined) => {},
+  ethereum: undefined as providers.BaseProvider | undefined,
+  setEthereum: (ethereum_: providers.BaseProvider | undefined) => {},
   provider: undefined as providers.Web3Provider | undefined,
   signer: undefined as Signer | undefined,
   chainId: 0 as number,
@@ -19,7 +19,7 @@ const initialState = {
 export const EthereumContext = createContext(initialState);
 
 export const EthereumProvider: React.FC = ({ children }) => {
-  const [ethereum, setEthereum] = useState<providers.ExternalProvider | undefined>(window.ethereum);
+  const [ethereum, setEthereum] = useState<providers.BaseProvider | undefined>(window.ethereum);
   const [provider, setProvider] = useState<providers.Web3Provider>();
   const [signer, setSigner] = useState<Signer>();
   const [account, setAccount] = useState<string | undefined>(undefined);
@@ -28,16 +28,18 @@ export const EthereumProvider: React.FC = ({ children }) => {
   useEffect(() => {
     // Mainnet
     if (ethereum) {
-      const web3 = new providers.Web3Provider(ethereum);
+      const web3 = new providers.Web3Provider(window.ethereum as providers.ExternalProvider);
       const web3Signer = web3.getSigner();
       setSigner(web3Signer);
       setProvider(web3);
     }
   }, [ethereum, chainId]);
 
+  // TODO This is not working. Will work if event handlers are on ethereum object,
+  //    and ethereum object is typed as BaseProvider
   // Must react to changes in wallet state
   useEffect(() => {
-    if (provider) {
+    if (provider && ethereum) {
       const onAccountsChanged = async () => {
         const accounts = await provider.listAccounts();
         setAccount(accounts[0] ? accounts[0] : undefined);
@@ -56,17 +58,19 @@ export const EthereumProvider: React.FC = ({ children }) => {
       onAccountsChanged();
       onChainChanged();
 
-      provider.on('accountsChanged', onAccountsChanged);
-      provider.on('chainChanged', onChainChanged);
-      provider.on('disconnect', onDisconnect);
+      // Must listen on `ethereum` object due to Metamask specific events
+      ethereum.addListener('accountsChanged', onAccountsChanged);
+      ethereum.addListener('chainChanged', onChainChanged);
+      ethereum.addListener('disconnect', onDisconnect);
 
       return () => {
-        provider.off('accountsChanged', onAccountsChanged);
-        provider.off('chainChanged', onAccountsChanged);
-        provider.off('disconnect', onDisconnect);
+        ethereum.removeAllListeners();
+        //provider.off('accountsChanged', onAccountsChanged);
+        //provider.off('chainChanged', onAccountsChanged);
+        //provider.off('disconnect', onDisconnect);
       };
     }
-  }, [provider]);
+  }, [ethereum, provider]);
 
   return (
     <EthereumContext.Provider

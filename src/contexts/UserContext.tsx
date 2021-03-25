@@ -32,18 +32,14 @@ export const UserProvider: React.FC = ({ children }) => {
   const erc20 = useToken();
   const { getPrice } = useUniswap();
 
-  /*
   // TODO DEBUG
   useEffect(() => {
-    console.log(SynthMap);
-    setCurrentSynth(SynthMap['UGASMAR21']);
+    console.log('WTF');
+    console.log(currentSynth);
   }, []);
-  */
 
   useEffect(() => {
     if (currentSynth) {
-      console.log('CURRENT SYNTH');
-      console.log(currentSynth);
       setCurrentCollateral(CollateralMap[currentSynth.metadata.collateral]);
     }
   }, [currentSynth]);

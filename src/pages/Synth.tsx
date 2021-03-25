@@ -5,6 +5,7 @@ import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { ISynthMetadata } from '@/types';
+import { isEmpty } from '@/utils';
 
 interface SynthParams {
   group: string;
@@ -14,7 +15,7 @@ interface SynthParams {
 const Synth: React.FC = () => {
   const { group, synthName } = useParams<SynthParams>();
   const { currentSynth, setSynth } = useContext(UserContext);
-  const state = useSynthActions();
+  const actions = useSynthActions();
   const [{ type, cycle, year }, setMetadata] = useState({} as ISynthMetadata);
 
   useEffect(() => {
@@ -22,8 +23,7 @@ const Synth: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log('CURRENT SYNTH CHANGED');
-    if (!currentSynth) return;
+    if (!currentSynth || isEmpty(currentSynth)) return;
     setMetadata(currentSynth.metadata);
   }, [currentSynth]);
 

@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 
 import { UserContext } from '@/contexts';
 import { useEmp, useToken, useWrapEth } from '@/hooks';
+import { isEmpty } from '@/utils';
 
 export const useSynthActions = () => {
   const { currentSynth, currentCollateral } = useContext(UserContext);
@@ -9,7 +10,7 @@ export const useSynthActions = () => {
   const [collateralAddress, setCollateralAddress] = useState('');
 
   useEffect(() => {
-    if (currentSynth && currentCollateral) {
+    if (currentSynth && !isEmpty(currentSynth) && currentCollateral && !isEmpty(currentCollateral)) {
       setEmpAddress(currentSynth.emp.address);
       setCollateralAddress(currentCollateral.address);
     }

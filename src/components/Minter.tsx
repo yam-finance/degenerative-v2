@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import useAsyncEffect from 'use-async-effect';
 import { useFormState } from 'react-use-form-state';
 import { BigNumber, utils } from 'ethers';
 
 import { useSynthActions, useToken } from '@/hooks';
-import { UserContext } from '@/contexts';
-import { Icon, ActionCard, ActionCardHeader } from '@/components';
+import { UserContext, EthereumContext } from '@/contexts';
+import { Icon, ActionCard, UtilizationGauge } from '@/components';
+import { isEmpty } from '@/utils';
 
 interface MinterFormFields {
   tokenAmount: number;
@@ -13,18 +14,21 @@ interface MinterFormFields {
 }
 
 export const Minter: React.FC = () => {
+  const { account } = useContext(EthereumContext);
   const { currentSynth, currentCollateral } = useContext(UserContext);
   // TODO get max # of collateral available, user's balances
-  const actions = useSynthActions();
+  const actions = useSynthActions(); // TODO pass this in
   const erc20 = useToken();
 
   const [maxCollateral, setMaxCollateral] = useState<BigNumber>(BigNumber.from(0));
+  const [invalidTokens, setInvalidTokens] = useState(false);
+  const [invalidCollateral, setInvalidCollateral] = useState(false);
 
   useAsyncEffect(async () => {
-    if (currentCollateral) {
+    if (currentCollateral && !isEmpty(currentCollateral)) {
       setMaxCollateral(await erc20.getBalance(currentCollateral.address));
     }
-  }, [currentSynth, currentCollateral]);
+  }, [currentSynth, currentCollateral, account]);
 
   const [formState, { number }] = useFormState<MinterFormFields>(
     {
@@ -34,9 +38,18 @@ export const Minter: React.FC = () => {
     {
       onChange: (e, stateValues, nextStateValues) => {
         const { collateralAmount, tokenAmount } = nextStateValues;
-        // TODO
-        actions.setCollateralAmount(Number(collateralAmount));
-        actions.setTokenAmount(Number(tokenAmount));
+        const tokens = Number(tokenAmount);
+        const collateral = Number(collateralAmount);
+        console.log(nextStateValues.collateralAmount);
+        console.log(nextStateValues.tokenAmount);
+
+        // TODO add red line around inputs
+        setInvalidTokens(tokens == 0);
+        setInvalidCollateral(collateral == 0);
+        //if (invalidTokens || invalidCollateral) return;
+
+        actions.setCollateralAmount(collateral);
+        actions.setTokenAmount(tokens);
       },
     }
   );
@@ -81,11 +94,14 @@ export const Minter: React.FC = () => {
     );
   };
 
-  const setMaximum = () => {}; // TODO
+  const setMaximum = (e: React.MouseEvent) => {
+    e.preventDefault();
+    formState.setField('collateralAmount', Number(utils.formatEther(maxCollateral)));
+  };
 
   if (!currentSynth || !currentCollateral) return null;
   return (
-    <div>
+    <>
       {/*
       <ApproveButton />
       /*<input type="number" name="tokens" value={tokenAmount} onChange={(e) => handleCollateralAmount(e)} />
@@ -101,14 +117,14 @@ export const Minter: React.FC = () => {
           Mint
         </button>
       </div>
-      <WrapEthButton />
+          <WrapEthButton />
       */}
 
       <div className="padding-8 portrait-padding-4 w-form">
         <ActionCard>
           <h5 className="margin-0">How much {currentSynth.metadata.name} would you like to mint?</h5>
           <div className="margin-y-4">
-            <button onClick={() => setMaximum()} className="button-secondary button-tiny w-button">
+            <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
               Mint Maximum
             </button>
           </div>
@@ -116,10 +132,11 @@ export const Minter: React.FC = () => {
             <div className="width-full margin-bottom-4">
               <div className="relative">
                 <input
+                  {...number('collateralAmount')}
                   type="number"
                   className="form-input height-24 text-large bottom-sharp margin-bottom-0 border-bottom-none w-input"
                   maxLength={256}
-                  placeholder="00.00"
+                  placeholder="0"
                   required
                 />
                 <div className="border-bottom-1px"></div>
@@ -140,9 +157,9 @@ export const Minter: React.FC = () => {
                 </div>
                 <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
                   <label className="opacity-60 weight-medium">Deposit Collateral</label>
-                  <a href="#" className="button-secondary button-tiny white w-button">
+                  <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny white w-button">
                     Max {utils.formatEther(maxCollateral.toString())}
-                  </a>
+                  </button>
                 </div>
               </div>
               <div className="width-8 height-8 margin-auto flex-align-center flex-justify-center radius-full background-color-white inverse-margin">
@@ -150,13 +167,10 @@ export const Minter: React.FC = () => {
               </div>
               <div className="relative">
                 <input
-                  type="text"
+                  {...number('tokenAmount')}
+                  type="number"
                   className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
                   maxLength={256}
-                  name="field-2"
-                  data-name="Field 2"
-                  placeholder="00.00"
-                  id="field-2"
                   required
                 />
                 <div data-hover="" data-delay="0" className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
@@ -172,78 +186,22 @@ export const Minter: React.FC = () => {
               <div className="text-xs opacity-50 margin-top-1">Mint a minimum of 5 {currentSynth.metadata.name}</div>
             </div>
           </div>
-          <div className="margin-bottom-4">
-            <div className="flex-space-between portrait-flex-column">
-              <div className="margin-bottom-1">
-                <strong className="text-color-4">30%</strong> Utilisation after minting
-              </div>
-              <div className="margin-bottom-1 text-small opacity-60">
-                <strong className="text-color-4">(3.5 CR)</strong>
-              </div>
-            </div>
-            <div className="gauge horizontal large overflow-hidden margin-bottom-2">
-              <div className="collateral large"></div>
-              <div className="debt horizontal">
-                <div className="gradient horizontal large"></div>
-              </div>
-              <div className="gcr horizontal"></div>
-            </div>
-            <div>
-              <div className="flex-align-center flex-space-between portrait-flex-column portrait-flex-align-start">
-                <div>
-                  <div className="flex-align-center">
-                    <div className="width-4 height-4 radius-full background-collateral margin-right-1"></div>
-                    <div className="margin-right-1">Collateral</div>
-                    <div data-hover="1" data-delay="0" className="margin-0 w-dropdown">
-                      <div className="padding-0 width-4 height-4 flex-align-center flex-justify-center w-dropdown-toggle">
-                        <Icon name="Info" className="icon medium" />
-                      </div>
-                      <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
-                        <div className="width-32 text-xs">This is some text inside of a div block.</div>
-                      </nav>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex-align-center">
-                    <div className="width-4 height-4 radius-full background-debt margin-right-1"></div>
-                    <div className="margin-right-1">Debt</div>
-                    <div data-hover="1" data-delay="0" className="margin-0 w-dropdown">
-                      <div className="padding-0 width-4 height-4 flex-align-center flex-justify-center w-dropdown-toggle">
-                        <Icon name="Info" className="icon medium" />
-                      </div>
-                      <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
-                        <div className="width-32 text-xs">This is some text inside of a div block.</div>
-                      </nav>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <div className="gcr-legend">
-                    <div className="gcr horizontal in-legend"></div>
-                    <div className="margin-right-1">GCR</div>
-                    <div data-hover="1" data-delay="0" className="margin-0 w-dropdown">
-                      <div className="padding-0 width-4 height-4 flex-align-center flex-justify-center w-dropdown-toggle">
-                        <Icon name="Info" className="icon medium" />
-                      </div>
-                      <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
-                        <div className="width-32 text-xs">This is some text inside of a div block.</div>
-                      </nav>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <a href="#" className="button w-button">
-            Mint 80 uGAS for 10 WETH
-          </a>
+          <UtilizationGauge />
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              actions.onMint();
+            }}
+            className="button w-button"
+          >
+            {`Mint ${formState.values.tokenAmount} ${currentSynth.metadata.name} for ${formState.values.collateralAmount} ${currentSynth.metadata.collateral}`}
+          </button>
           <div className="text-xs opacity-50 margin-top-2">
             There will be 2 transactions. <br />
             First to approve your WETH, second to mint.
           </div>
         </ActionCard>
       </div>
-    </div>
+    </>
   );
 };
