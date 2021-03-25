@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import useAsyncEffect from 'use-async-effect';
 
 import { ISynthInfo, IToken, IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
 import { SynthMap, CollateralMap } from '@/utils/TokenList';

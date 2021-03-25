@@ -25,7 +25,7 @@ export const Minter: React.FC = () => {
   const [invalidCollateral, setInvalidCollateral] = useState(false);
 
   useAsyncEffect(async () => {
-    if (currentCollateral && !isEmpty(currentCollateral)) {
+    if (currentCollateral && !isEmpty(currentCollateral) && account) {
       setMaxCollateral(await erc20.getBalance(currentCollateral.address));
     }
   }, [currentSynth, currentCollateral, account]);
@@ -46,7 +46,7 @@ export const Minter: React.FC = () => {
         // TODO add red line around inputs
         setInvalidTokens(tokens == 0);
         setInvalidCollateral(collateral == 0);
-        //if (invalidTokens || invalidCollateral) return;
+        if (invalidTokens || invalidCollateral) return;
 
         actions.setCollateralAmount(collateral);
         actions.setTokenAmount(tokens);
@@ -99,6 +99,7 @@ export const Minter: React.FC = () => {
     formState.setField('collateralAmount', Number(utils.formatEther(maxCollateral)));
   };
 
+  // TODO Need to check if currentSynth is empty object
   if (!currentSynth || !currentCollateral) return null;
   return (
     <>

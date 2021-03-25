@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
 import ContextProviders from '@/contexts';
 import './degenerative.css';
@@ -7,7 +7,7 @@ import './degenerative.css';
 //import './webflow.css';
 import './normalize.css';
 
-import { Landing, Synth, Explore, Portfolio, SynthGroup } from '@/pages';
+import { Landing, Synth, Explore, Portfolio, SynthGroup, NotFound } from '@/pages';
 import { Navbar } from '@/components';
 
 const App: React.FC = () => {
@@ -25,7 +25,12 @@ const App: React.FC = () => {
             <Route exact strict path="/portfolio" component={Portfolio} />
             <Route exact strict path="/synths" component={Explore} />
             <Route exact strict path="/synths/:group" component={SynthGroup} /> {/* TODO */}
-            <Route exact strict path="/synths/:group/:synthName" component={Synth} />
+            <Redirect exact strict from="/synths/:group/:synthName" to="/synths/:group/:synthName/mint" />
+            <Route exact strict path="/synths/:group/:synthName/mint" component={Synth} />
+            <Route exact strict path="/synths/:group/:synthName/manage" component={Synth} />
+            <Route exact strict path="/synths/:group/:synthName/trade" component={Synth} />
+            <Route exact strict path="/synths/:group/:synthName/lp" component={Synth} />
+            <Route component={NotFound} />
           </Switch>
         </FlexRow>
       </ContextProviders>

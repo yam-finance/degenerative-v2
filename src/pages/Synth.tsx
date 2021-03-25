@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, Link } from 'react-router-dom';
 
 import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext } from '@/contexts';
@@ -10,16 +10,17 @@ import { isEmpty } from '@/utils';
 interface SynthParams {
   group: string;
   synthName: string;
+  action?: string;
 }
 
 const Synth: React.FC = () => {
-  const { group, synthName } = useParams<SynthParams>();
+  const { group, synthName, action } = useParams<SynthParams>();
   const { currentSynth, setSynth } = useContext(UserContext);
   const actions = useSynthActions();
   const [{ type, cycle, year }, setMetadata] = useState({} as ISynthMetadata);
 
   useEffect(() => {
-    if (!currentSynth) setSynth(`${group}${synthName}`.toUpperCase());
+    if (isEmpty(currentSynth)) setSynth(`${group}${synthName}`.toUpperCase());
   }, []);
 
   useEffect(() => {
@@ -31,9 +32,9 @@ const Synth: React.FC = () => {
     return (
       <div className="padding-x-8 flex-row">
         <div className="tabs margin-right-2">
-          <a href="#" className="tab large active">
+          <Link to={`/synths/${type}/${cycle}${year}/mint`} className="tab large active">
             Mint
-          </a>
+          </Link>
           <a href="#" className="tab large">
             Manage
           </a>
