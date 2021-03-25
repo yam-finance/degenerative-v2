@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, NavLink } from 'react-router-dom';
 
 import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext } from '@/contexts';
@@ -10,7 +10,7 @@ import { isEmpty } from '@/utils';
 interface SynthParams {
   group: string;
   synthName: string;
-  action?: string;
+  action: string;
 }
 
 const Synth: React.FC = () => {
@@ -20,7 +20,7 @@ const Synth: React.FC = () => {
   const [{ type, cycle, year }, setMetadata] = useState({} as ISynthMetadata);
 
   useEffect(() => {
-    if (isEmpty(currentSynth)) setSynth(`${group}${synthName}`.toUpperCase());
+    setSynth(`${group}${synthName}`.toUpperCase());
   }, []);
 
   useEffect(() => {
@@ -32,21 +32,34 @@ const Synth: React.FC = () => {
     return (
       <div className="padding-x-8 flex-row">
         <div className="tabs margin-right-2">
-          <Link to={`/synths/${type}/${cycle}${year}/mint`} className="tab large active">
+          <NavLink to={`/synths/${type}/${cycle}${year}/mint`} className="tab large" activeClassName="active">
             Mint
-          </Link>
-          <a href="#" className="tab large">
+          </NavLink>
+          <NavLink to={`/synths/${type}/${cycle}${year}/manage`} className="tab large" activeClassName="active">
             Manage
-          </a>
-          <a href="#" className="tab large">
+          </NavLink>
+          <NavLink to={`/synths/${type}/${cycle}${year}/trade`} className="tab large" activeClassName="active">
             Trade
-          </a>
-          <a href="#" className="tab large">
+          </NavLink>
+          <NavLink to={`/synths/${type}/${cycle}${year}/lp`} className="tab large" activeClassName="active">
             LP
-          </a>
+          </NavLink>
         </div>
       </div>
     );
+  };
+
+  const Action: React.FC = () => {
+    console.log(action);
+    switch (action) {
+      case 'mint':
+        return <Minter />;
+      case 'manage':
+      case 'trade':
+      case 'lp':
+      default:
+        return null;
+    }
   };
 
   if (!currentSynth) return null;
@@ -56,7 +69,7 @@ const Synth: React.FC = () => {
         <MainHeading>{`${type} ${cycle}${year}`}</MainHeading>
         <ActionSelector />
         <div className="border-bottom-1px margin-x-8 margin-y-4"></div>
-        <Minter />
+        <Action />
       </MainDisplay>
       <SideDisplay></SideDisplay>
     </>

@@ -26,10 +26,7 @@ const App: React.FC = () => {
             <Route exact strict path="/synths" component={Explore} />
             <Route exact strict path="/synths/:group" component={SynthGroup} /> {/* TODO */}
             <Redirect exact strict from="/synths/:group/:synthName" to="/synths/:group/:synthName/mint" />
-            <Route exact strict path="/synths/:group/:synthName/mint" component={Synth} />
-            <Route exact strict path="/synths/:group/:synthName/manage" component={Synth} />
-            <Route exact strict path="/synths/:group/:synthName/trade" component={Synth} />
-            <Route exact strict path="/synths/:group/:synthName/lp" component={Synth} />
+            <Route exact strict path="/synths/:group/:synthName/:action" component={Synth} />
             <Route component={NotFound} />
           </Switch>
         </FlexRow>
