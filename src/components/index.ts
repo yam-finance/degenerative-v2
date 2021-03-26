@@ -1,5 +1,5 @@
 export * from './ActionCard';
-export * from './Breadcrumb';
+export * from './Breadcrumbs';
 export * from './ConnectWallet';
 export * from './Icon';
 export * from './Minter';

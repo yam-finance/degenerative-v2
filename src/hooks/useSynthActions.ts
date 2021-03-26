@@ -72,7 +72,7 @@ export const useSynthActions = () => {
 
   const onRedeem = () => {};
 
-  const onGetAllowance = async () => console.log(await collateral.getAllowance(collateralAddress, empAddress));
+  const getEmpAllowance = async () => !!(await collateral.getAllowance(collateralAddress, empAddress));
 
   return {
     tokenAmount,
@@ -82,7 +82,7 @@ export const useSynthActions = () => {
     onMint,
     onRedeem,
     onApprove,
-    onGetAllowance,
+    getEmpAllowance,
     onWrapEth,
   };
 };

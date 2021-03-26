@@ -21,12 +21,14 @@ export const Minter: React.FC = () => {
   const erc20 = useToken();
 
   const [maxCollateral, setMaxCollateral] = useState<BigNumber>(BigNumber.from(0));
+  const [isApproved, setIsApproved] = useState(false);
   const [invalidTokens, setInvalidTokens] = useState(false);
   const [invalidCollateral, setInvalidCollateral] = useState(false);
 
   useAsyncEffect(async () => {
     if (currentCollateral && !isEmpty(currentCollateral) && account) {
       setMaxCollateral(await erc20.getBalance(currentCollateral.address));
+      setIsApproved(await actions.getEmpAllowance());
     }
   }, [currentSynth, currentCollateral, account]);
 
@@ -40,8 +42,6 @@ export const Minter: React.FC = () => {
         const { collateralAmount, tokenAmount } = nextStateValues;
         const tokens = Number(tokenAmount);
         const collateral = Number(collateralAmount);
-        console.log(nextStateValues.collateralAmount);
-        console.log(nextStateValues.tokenAmount);
 
         // TODO add red line around inputs
         setInvalidTokens(tokens == 0);
@@ -56,16 +56,29 @@ export const Minter: React.FC = () => {
 
   const ApproveButton: React.FC = () => {
     return (
-      <div>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            actions.onApprove().then(() => actions.onGetAllowance());
-          }}
-        >
-          Approve
-        </button>
-      </div>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          actions.onApprove();
+        }}
+        className="button w-button"
+      >
+        Approve
+      </button>
+    );
+  };
+
+  const MintButton: React.FC = () => {
+    return (
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          actions.onMint();
+        }}
+        className="button w-button"
+      >
+        {`Mint ${formState.values.tokenAmount} ${currentSynth?.metadata.name} for ${formState.values.collateralAmount} ${currentSynth?.metadata.collateral}`}
+      </button>
     );
   };
 
@@ -188,15 +201,7 @@ export const Minter: React.FC = () => {
             </div>
           </div>
           <UtilizationGauge />
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              actions.onMint();
-            }}
-            className="button w-button"
-          >
-            {`Mint ${formState.values.tokenAmount} ${currentSynth.metadata.name} for ${formState.values.collateralAmount} ${currentSynth.metadata.collateral}`}
-          </button>
+          {isApproved ? <MintButton /> : <ApproveButton />}
           <div className="text-xs opacity-50 margin-top-2">
             There will be 2 transactions. <br />
             First to approve your WETH, second to mint.

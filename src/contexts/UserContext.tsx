@@ -4,16 +4,16 @@ import { ISynthInfo, IToken, IMintedPosition, ISynthInWallet, IPoolPosition } fr
 import { SynthMap, CollateralMap } from '@/utils/TokenList';
 
 import { useEmp, useToken, useUniswap } from '@/hooks';
-import { useQuery } from 'graphql-hooks';
 import { EthereumContext } from './EthereumContext';
 import { BigNumber, utils } from 'ethers';
+import { parseBytes32String } from '@ethersproject/strings';
 
 const initialState = {
   mintedPositions: [] as IMintedPosition[],
   synthsInWallet: [] as ISynthInWallet[],
   //poolPositions: [] as IPoolPosition[],
   setSynth: (name: string) => {},
-  //getMarketData: () => {},
+  getSponsorPosition: (synthName: string) => {},
   currentSynth: {} as ISynthInfo | undefined,
   currentCollateral: {} as IToken | undefined,
 };
@@ -59,26 +59,31 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const updateMintedPositions = () => {
     const minted: IMintedPosition[] = [];
-
     Object.keys(SynthMap).forEach(async (name) => {
-      const synth = SynthMap[name];
-      const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(synth.emp.address);
+      const mintedPosition = await getSponsorPosition(name);
+      if (mintedPosition) minted.push(mintedPosition);
+    });
+    setMintedPositions(minted);
+  };
 
+  const getSponsorPosition = async (synthName: string) => {
+    const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(SynthMap[synthName].emp.address);
+
+    try {
       if (rawCollateral.gt(0) && tokensOutstanding.gt(0)) {
-        const position: IMintedPosition = {
+        const mintedPosition: IMintedPosition = {
           tokenAmount: utils.formatEther(tokensOutstanding),
           // tokenPrice: await (await getPrice(synth.token, collateral)).price,
           collateralAmount: utils.formatEther(rawCollateral),
           // collateralPrice:
           collateralRatio: rawCollateral.div(tokensOutstanding).toString(),
-          metadata: synth.metadata,
+          metadata: SynthMap[synthName].metadata,
         };
-
-        minted.push(position);
+        return Promise.resolve(mintedPosition);
       }
-    });
-
-    setMintedPositions(minted);
+    } catch (err) {
+      return Promise.reject('Account does not have a sponsor position.');
+    }
   };
 
   // TODO
@@ -131,7 +136,7 @@ export const UserProvider: React.FC = ({ children }) => {
         currentSynth,
         currentCollateral,
         setSynth,
-        //getMarketData,
+        getSponsorPosition,
       }}
     >
       {children}

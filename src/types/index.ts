@@ -1,4 +1,5 @@
 export * from './EmpState';
+export * from './MetamaskProvider';
 export * from './TokenTypes';
 export { default as Unsigned } from './Unsigned';
 export * from './UserTypes';

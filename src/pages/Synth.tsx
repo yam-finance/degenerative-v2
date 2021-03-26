@@ -54,9 +54,12 @@ const Synth: React.FC = () => {
     switch (action) {
       case 'mint':
         return <Minter />;
-      case 'manage':
-      case 'trade':
-      case 'lp':
+      //case 'manage':
+      //  return <Manage />
+      //case 'trade':
+      //  return <Trade />
+      //case 'lp':
+      //  return <Lp />
       default:
         return null;
     }

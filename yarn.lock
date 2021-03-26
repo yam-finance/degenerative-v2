@@ -4157,6 +4157,11 @@ use-async-effect@^2.2.2:
   resolved "https://registry.yarnpkg.com/use-async-effect/-/use-async-effect-2.2.2.tgz"
   integrity sha512-zFas5h1jm4FNCk+txUzfMUAQhIFJGdrhAmg2lSA+Q6BZKYFen/yZlHEx5RGWSUV1USjLFZ+yg989fFyzJHW3Zw==
 
+use-react-router-breadcrumbs@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/use-react-router-breadcrumbs/-/use-react-router-breadcrumbs-2.0.0.tgz#91e5ac056d85e6f31e440f50a5fc7d12c2a66707"
+  integrity sha512-Jep3cGbPDv/tMSZ3QYzPdEJcxVlfh/aqRpEPV5CpHSlfFk+LGcu29e3QdbavLgXa+PjIKEkFSu3j8JPrBDUTJA==
+
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz"

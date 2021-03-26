@@ -1,15 +1,11 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { providers, Signer } from 'ethers';
 
-declare global {
-  interface Window {
-    ethereum: providers.BaseProvider;
-  }
-}
+import { MetamaskProvider } from '@/types';
 
 const initialState = {
-  ethereum: undefined as providers.BaseProvider | undefined,
-  setEthereum: (ethereum_: providers.BaseProvider | undefined) => {},
+  ethereum: undefined as MetamaskProvider | undefined,
+  setEthereum: (ethereum: MetamaskProvider | undefined) => {},
   provider: undefined as providers.Web3Provider | undefined,
   signer: undefined as Signer | undefined,
   chainId: 0 as number,
@@ -19,7 +15,7 @@ const initialState = {
 export const EthereumContext = createContext(initialState);
 
 export const EthereumProvider: React.FC = ({ children }) => {
-  const [ethereum, setEthereum] = useState<providers.BaseProvider | undefined>(window.ethereum);
+  const [ethereum, setEthereum] = useState<MetamaskProvider | undefined>(window.ethereum);
   const [provider, setProvider] = useState<providers.Web3Provider>();
   const [signer, setSigner] = useState<Signer>();
   const [account, setAccount] = useState<string | undefined>(undefined);
@@ -36,7 +32,7 @@ export const EthereumProvider: React.FC = ({ children }) => {
   }, [ethereum, chainId]);
 
   // TODO This is not working. Will work if event handlers are on ethereum object,
-  //    and ethereum object is typed as BaseProvider
+  //    and ethereum object is MetamaskProvider
   // Must react to changes in wallet state
   useEffect(() => {
     if (provider && ethereum) {
@@ -64,10 +60,9 @@ export const EthereumProvider: React.FC = ({ children }) => {
       ethereum.addListener('disconnect', onDisconnect);
 
       return () => {
-        ethereum.removeAllListeners();
-        //provider.off('accountsChanged', onAccountsChanged);
-        //provider.off('chainChanged', onAccountsChanged);
-        //provider.off('disconnect', onDisconnect);
+        ethereum.removeListener('accountsChanged', onAccountsChanged);
+        ethereum.removeListener('chainChanged', onAccountsChanged);
+        ethereum.removeListener('disconnect', onDisconnect);
       };
     }
   }, [ethereum, provider]);
