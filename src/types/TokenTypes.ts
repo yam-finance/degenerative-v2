@@ -30,8 +30,9 @@ export interface ISynthInfo {
 }
 
 export interface ISynthMarketData {
+  price: string;
   tvl: string;
-  //apy: number;
+  apy: number;
   volume24h: string;
   marketCap: string;
   totalSupply: string;

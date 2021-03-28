@@ -52,7 +52,7 @@ const Explore = () => {
       useCache: true,
     });
 
-    if (!loading && !error) console.log(marketData);
+    if (!loading && !error) console.error(marketData);
 
     return (
       <Link to="#" className="table-row margin-y-2 w-inline-block">
@@ -77,7 +77,7 @@ const Explore = () => {
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">
-            $124M <span className="hide portrait-inline text-xs opacity-60">Marketcap</span>
+            $124M <span className="hide portrait-inline text-xs opacity-60">Market Cap</span>
           </div>
         </div>
       </Link>

@@ -2,7 +2,7 @@
   "UGASJAN21": {
     "metadata": {
       "name": "UGASJAN21",
-      "type": "UGAS",
+      "type": "uGas",
       "cycle": "JAN",
       "year": "21",
       "expired": true,
@@ -22,7 +22,7 @@
   "UGASFEB21": {
     "metadata": {
       "name": "UGASFEB21",
-      "type": "UGAS",
+      "type": "uGas",
       "cycle": "FEB",
       "year": "21",
       "collateral": "WETH",
@@ -42,7 +42,7 @@
   "UGASMAR21": {
     "metadata": {
       "name": "UGASMAR21",
-      "type": "UGAS",
+      "type": "uGas",
       "cycle": "MAR",
       "year": "21",
       "collateral": "WETH",
@@ -82,7 +82,7 @@
   "USTONKSAPR21": {
     "metadata": {
       "name": "USTONKSAPR21",
-      "type": "ustonks",
+      "type": "uStonks",
       "cycle": "APR",
       "year": "21",
       "collateral": "USDC",

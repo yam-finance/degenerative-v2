@@ -50,7 +50,6 @@ const Synth: React.FC = () => {
   };
 
   const Action: React.FC = () => {
-    console.log(action);
     switch (action) {
       case 'mint':
         return <Minter />;

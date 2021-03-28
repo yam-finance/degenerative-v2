@@ -13,6 +13,7 @@
   "dependencies": {
     "@rollup/plugin-eslint": "^8.0.1",
     "@uniswap/sdk": "^3.0.3",
+    "axios": "^0.21.1",
     "ethers": "^5.0.31",
     "graphql-hooks": "^5.1.1",
     "react": "^17.0.0",
