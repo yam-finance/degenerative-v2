@@ -3,39 +3,29 @@ import { Link } from 'react-router-dom';
 import { SearchForm } from '@/components';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
 import { ISynthInfo } from '@/types';
-import { UserContext } from '@/contexts';
-import { useQuery } from 'graphql-hooks';
-import { UNISWAP_MARKET_DATA_QUERY } from '@/utils';
+import { MarketContext } from '@/contexts';
 import { SynthMap } from '@/utils';
 import box from '@/assets/Box-01.png';
 
 const Explore = () => {
-  //const { getMarketData } = useContext(UserContext);
+  const { marketData } = useContext(MarketContext);
   const [availableSynths, setAvailableSynths] = useState([]);
   const [sidebarSynth, setSidebarSynth] = useState();
 
   const SynthBlock: React.FC<{ synth: ISynthInfo }> = ({ synth }) => {
     const { type, cycle, year, name, expired } = synth.metadata;
-    const { loading, error, data: marketData } = useQuery(UNISWAP_MARKET_DATA_QUERY, {
-      variables: {
-        poolAddress: synth.pool.address,
-      },
-      useCache: true,
-    });
 
-    if (!loading && !error) console.log(marketData);
+    const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block';
 
     // TODO add description, APY, and set sidebar
+    if (!marketData[name]) return <div className={style}>Loading...</div>;
     return (
       <>
-        <Link
-          to={`/synths/${type}/${cycle}${year}`}
-          className="padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block"
-        >
+        <Link to={`/synths/${type}/${cycle}${year}`} className={style}>
           <img src={box} loading="lazy" alt="" className="width-16" />
           <h5 className="margin-top-4">{name}</h5>
           <p className="text-small opacity-60">Lorem ipsum dolor sit amet, adipiscing</p>
-          <div className="button button-small">XX% APY</div> {/* TODO */}
+          <div className="button button-small">{`${marketData[name].apr}`}% APR</div> {/* TODO */}
           <div className="pill absolute-top-right margin-4">New</div>
         </Link>
       </>
@@ -45,40 +35,30 @@ const Explore = () => {
   // TODO factor out table row components
   const SynthTableRow: React.FC<{ synth: ISynthInfo }> = ({ synth }) => {
     const { name, expired } = synth.metadata;
-    const { loading, error, data: marketData } = useQuery(UNISWAP_MARKET_DATA_QUERY, {
-      variables: {
-        poolAddress: synth.pool.address,
-      },
-      useCache: true,
-    });
+    //const test = useMarketData(synth);
+    //console.log(test);
+    const style = 'table-row margin-y-2 w-inline-block';
 
-    if (!loading && !error) console.error(marketData);
-
+    if (!marketData[name]) return <div className={style}>Loading...</div>;
     return (
-      <Link to="#" className="table-row margin-y-2 w-inline-block">
+      <Link to="#" className={style}>
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={box} loading="lazy" alt="" className="width-6" />
           </div>
           <div>
-            <div className="margin-right-1 text-color-4">uSYNTH</div>
+            <div className="margin-right-1 text-color-4">{name}</div>
             <div className="text-xs opacity-50">Lorem ipsum dolor sit amet, elit. </div>
           </div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">
-            XX% <span className="hide portrait-inline text-xs opacity-60">APY</span>
-          </div>
+          <div className="text-color-4">{marketData[name].apr}%</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">
-            $12.4M <span className="hide portrait-inline text-xs opacity-60">Liquidity</span>
-          </div>
+          <div className="text-color-4">{marketData[name].liquidity}</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">
-            $124M <span className="hide portrait-inline text-xs opacity-60">Market Cap</span>
-          </div>
+          <div className="text-color-4">{marketData[name].marketCap}</div>
         </div>
       </Link>
     );

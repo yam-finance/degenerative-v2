@@ -5,9 +5,6 @@ import { UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
 import { SynthMap, SynthTypes } from '@/utils';
 import { ISynthMetadata } from '@/types';
-import { useQuery } from 'graphql-hooks';
-import { UNISWAP_MARKET_DATA_QUERY } from '@/utils';
-import { getEthPrice } from '@/utils/MarketData';
 
 interface SynthParams {
   group: string;

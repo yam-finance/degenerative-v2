@@ -146,12 +146,39 @@ export const useEmp = () => {
     [signer]
   );
 
+  const getEmpContract = useCallback(
+    async (synthAddress: string) => {
+      return Emp__factory.connect(synthAddress, signer as Signer);
+    },
+    [signer]
+  );
+
+  const getTvlData = useCallback(
+    async (synthAddress: string) => {
+      const empContract = Emp__factory.connect(synthAddress, signer as Signer);
+      try {
+        const tvl = await empContract.rawTotalPositionCollateral();
+        const totalSupply = await empContract.totalTokensOutstanding();
+        return {
+          tvl,
+          totalSupply,
+        };
+      } catch (err) {
+        console.error(err);
+        return Promise.reject('EMP State retrieval failed.');
+      }
+    },
+    [signer]
+  );
+
   return {
     mint,
     redeem,
     withdraw,
     getUserPosition,
     queryEmpState,
+    getEmpContract,
+    getTvlData,
   };
 };
 

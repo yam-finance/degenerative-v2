@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { ISynthInfo, IToken, IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
 import { SynthMap, CollateralMap } from '@/utils/TokenList';
 
-import { useEmp, useToken, useUniswap } from '@/hooks';
+import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
 import { BigNumber, utils } from 'ethers';
 import { parseBytes32String } from '@ethersproject/strings';
@@ -29,7 +29,6 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const emp = useEmp();
   const erc20 = useToken();
-  const { getPrice } = useUniswap();
 
   // TODO DEBUG
   useEffect(() => {
@@ -109,6 +108,7 @@ export const UserProvider: React.FC = ({ children }) => {
     setSynthsInWallet(synthsOwned);
   };
 
+  /*
   // TODO
   const getMarketData = async () => {
     const marketData = await Object.keys(SynthMap).map(async (name) => {
@@ -127,6 +127,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
     console.log(marketData);
   };
+  */
 
   return (
     <UserContext.Provider

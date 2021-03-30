@@ -32,11 +32,12 @@ export interface ISynthInfo {
 export interface ISynthMarketData {
   price: string;
   tvl: string;
-  apy: number;
+  apr: string;
   volume24h: string;
   marketCap: string;
   totalSupply: string;
-  metadata: ISynthMetadata;
+  liquidity: string;
+  isExpired: boolean;
 }
 
 export interface IMap<T> {

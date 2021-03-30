@@ -11,14 +11,19 @@
     "prettier": "yarn prettier --write src/"
   },
   "dependencies": {
+    "@reactchartjs/react-chart.js": "^1.0.0-rc.3",
     "@rollup/plugin-eslint": "^8.0.1",
     "@uniswap/sdk": "^3.0.3",
     "axios": "^0.21.1",
+    "chart.js": "^2.9.4",
     "ethers": "^5.0.31",
     "graphql-hooks": "^5.1.1",
+    "graphql-request": "^3.4.0",
+    "numeral": "^2.0.6",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-feather": "^2.0.9",
+    "react-query": "^3.13.0",
     "react-router-dom": "^5.2.0",
     "ts-generator": "^0.1.1",
     "use-async-effect": "^2.2.2",
@@ -27,6 +32,7 @@
   "devDependencies": {
     "@testing-library/react-hooks": "^5.1.0",
     "@typechain/ethers-v5": "^6.0.0",
+    "@types/numeral": "^2.0.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.7",
