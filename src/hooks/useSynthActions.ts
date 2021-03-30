@@ -4,10 +4,21 @@ import { UserContext } from '@/contexts';
 import { useEmp, useToken, useWrapEth } from '@/hooks';
 import { isEmpty } from '@/utils';
 
+// TODO DEBUG
+import { logger, utils } from 'ethers';
+
 export const useSynthActions = () => {
   const { currentSynth, currentCollateral } = useContext(UserContext);
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
+
+  const [loading, setLoading] = useState(false);
+  const [tokenAmount, setTokenAmount] = useState(0);
+  const [collateralAmount, setCollateralAmount] = useState(0);
+
+  const emp = useEmp();
+  const collateral = useToken();
+  const wrapEth = useWrapEth();
 
   useEffect(() => {
     if (currentSynth && !isEmpty(currentSynth) && currentCollateral && !isEmpty(currentCollateral)) {
@@ -15,14 +26,6 @@ export const useSynthActions = () => {
       setCollateralAddress(currentCollateral.address);
     }
   }, [currentSynth]);
-
-  const emp = useEmp();
-  const collateral = useToken();
-  const wrapEth = useWrapEth();
-
-  const [loading, setLoading] = useState(false);
-  const [tokenAmount, setTokenAmount] = useState(0);
-  const [collateralAmount, setCollateralAmount] = useState(0);
 
   const onApprove = async () => {
     setLoading(true);
@@ -72,7 +75,12 @@ export const useSynthActions = () => {
 
   const onRedeem = () => {};
 
-  const getEmpAllowance = async () => !!(await collateral.getAllowance(collateralAddress, empAddress));
+  //const getEmpAllowance = async () => !!(await collateral.getAllowance(collateralAddress, empAddress));
+  const getEmpAllowance = async () => {
+    console.log('???????????');
+    console.log(await collateral.getAllowance(collateralAddress, empAddress));
+    return !!(await collateral.getAllowance(collateralAddress, empAddress));
+  };
 
   return {
     tokenAmount,

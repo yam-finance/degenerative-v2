@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
-import { providers, Signer } from 'ethers';
+import { providers, Signer, utils } from 'ethers';
 
 import { MetamaskProvider } from '@/types';
 

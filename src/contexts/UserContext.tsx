@@ -108,27 +108,6 @@ export const UserProvider: React.FC = ({ children }) => {
     setSynthsInWallet(synthsOwned);
   };
 
-  /*
-  // TODO
-  const getMarketData = async () => {
-    const marketData = await Object.keys(SynthMap).map(async (name) => {
-      // TODO change to only query relevant data from EMP
-      const { rawTotalPositionCollateral, totalTokensOutstanding } = await emp.queryEmpState(SynthMap[name].emp.address);
-
-      const synthMarketData: ISynthMarketData = {
-        metadata: SynthMap[name].metadata,
-        tvl: rawTotalPositionCollateral?.toString() as string,
-        volume24h: data.volumeUSD as string,
-        marketCap: totalTokensOutstanding?.toString() as string, // TODO multiply by priceUsd
-        totalSupply: totalTokensOutstanding?.toString() as string,
-      };
-      return synthMarketData;
-    });
-
-    console.log(marketData);
-  };
-  */
-
   return (
     <UserContext.Provider
       value={{

@@ -90,6 +90,9 @@ export const useEmp = () => {
 
   const queryEmpState = useCallback(
     async (synthAddress: string) => {
+      console.log('QUERYING');
+      console.log(synthAddress);
+      console.log(signer);
       const empContract = Emp__factory.connect(synthAddress, signer as Signer);
       try {
         const res = (
@@ -159,6 +162,8 @@ export const useEmp = () => {
       try {
         const tvl = await empContract.rawTotalPositionCollateral();
         const totalSupply = await empContract.totalTokensOutstanding();
+        console.log(tvl);
+        console.log(totalSupply);
         return {
           tvl,
           totalSupply,

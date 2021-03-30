@@ -25,11 +25,13 @@ export const Minter: React.FC = () => {
   const [invalidTokens, setInvalidTokens] = useState(false);
   const [invalidCollateral, setInvalidCollateral] = useState(false);
 
-  useAsyncEffect(async () => {
-    if (currentCollateral && !isEmpty(currentCollateral) && account) {
-      setMaxCollateral(await erc20.getBalance(currentCollateral.address));
-      setIsApproved(await actions.getEmpAllowance());
-    }
+  useEffect(() => {
+    (async () => {
+      if (currentCollateral && !isEmpty(currentCollateral) && account) {
+        setMaxCollateral(await erc20.getBalance(currentCollateral.address));
+        setIsApproved(await actions.getEmpAllowance());
+      }
+    })();
   }, [currentSynth, currentCollateral, account]);
 
   const [formState, { number }] = useFormState<MinterFormFields>(
@@ -57,9 +59,10 @@ export const Minter: React.FC = () => {
   const ApproveButton: React.FC = () => {
     return (
       <button
-        onClick={(e) => {
+        onClick={async (e) => {
           e.preventDefault();
-          actions.onApprove();
+          await actions.onApprove();
+          setIsApproved(true);
         }}
         className="button w-button"
       >
@@ -89,6 +92,7 @@ export const Minter: React.FC = () => {
       <div>
         <input
           type="number"
+          className="form-input border-bottom-none w-input"
           value={ethAmount}
           onChange={(e) => {
             e.preventDefault();
@@ -96,6 +100,7 @@ export const Minter: React.FC = () => {
           }}
         />
         <button
+          className="button w-button"
           onClick={(e) => {
             e.preventDefault();
             actions.onWrapEth(ethAmount);
@@ -131,8 +136,8 @@ export const Minter: React.FC = () => {
           Mint
         </button>
       </div>
-          <WrapEthButton />
       */}
+      <WrapEthButton />
 
       <div className="padding-8 portrait-padding-4 w-form">
         <ActionCard>
