@@ -8,10 +8,12 @@ import zombieHead from '@/assets/zombie_head_large.png';
 import discord from '@/assets/discord.svg';
 import accountImage from '@/assets/ellipse.png';
 
+import clsx from 'clsx';
+
 const Navbar = () => {
   const { account } = useContext(EthereumContext);
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
-  const [openDropdown, setOpenDropdown] = useState(false);
+  const [openWalletMenu, setWalletMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
 
   useEffect(() => {
@@ -22,8 +24,12 @@ const Navbar = () => {
     }
   }, [account]);
 
-  const toggleDropdown = () => setOpenDropdown(!openDropdown);
+  const toggleDropdown = () => setWalletMenu(!openWalletMenu);
   const toggleMenu = () => setOpenMenu(!openMenu);
+
+  const DropdownMenu: React.FC<{ openDropdown: boolean; className: string }> = ({ openDropdown, className, children, ...other }) => {
+    return <nav className={clsx('w-dropdown-list', openDropdown && 'w--open', className)}>{children}</nav>;
+  };
 
   const Navigation: React.FC = () => {
     return (
@@ -84,11 +90,11 @@ const Navbar = () => {
           >
             <Icon name="ChevronDown" className="icon opacity-100" />
           </div>
-          <nav className={`dropdown-list top-right box-shadow-medium radius-large w-dropdown-list${openDropdown ? '.w--open' : ''}`}>
+          <DropdownMenu className="dropdown-list top-right box-shadow-medium radius-large w-dropdown-list" openDropdown={openWalletMenu}>
             <Link to="#" className="dropdown-link w-dropdown-link">
               Disconnect
             </Link>
-          </nav>
+          </DropdownMenu>
         </div>
         <div className="margin-left-6 hide tablet-block relative w-dropdown">
           <div
@@ -100,9 +106,9 @@ const Navbar = () => {
           >
             <Icon name="Menu" className="icon opacity-100" />
           </div>
-          <nav className={`menu background-color-1 border-1px blur sheen w-dropdown-list${openMenu ? '.w--open' : ''}`}>
+          <DropdownMenu className="menu background-color-1 border-1px blur sheen w-dropdown-list" openDropdown={openMenu}>
             <Navigation />
-          </nav>
+          </DropdownMenu>
         </div>
         <div className="overlay blur radius-full"></div>
       </div>
