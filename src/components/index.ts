@@ -1,6 +1,7 @@
 export * from './ActionCard';
 export * from './Breadcrumbs';
 export * from './ConnectWallet';
+export * from './Dropdown';
 export * from './Icon';
 export * from './Minter';
 export * from './NavbarButton';
