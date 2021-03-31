@@ -11,6 +11,8 @@ import accountImage from '@/assets/ellipse.png';
 const Navbar = () => {
   const { account } = useContext(EthereumContext);
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
 
   useEffect(() => {
     if (account) {
@@ -19,6 +21,9 @@ const Navbar = () => {
       setAccountDisplay('Not Connected');
     }
   }, [account]);
+
+  const toggleDropdown = () => setOpenDropdown(!openDropdown);
+  const toggleMenu = () => setOpenMenu(!openMenu);
 
   const Navigation: React.FC = () => {
     return (
@@ -69,21 +74,33 @@ const Navbar = () => {
           <div className="text-xs">Metamask</div>
           <div className="text-color-4">{accountDisplay}</div>
         </div>
-        <div className="margin-left-6 tablet-hide relative w-dropdown">
-          <div className="icon-button w-dropdown-toggle">
+        <div className={`margin-left-6 tablet-hide relative w-dropdown`}>
+          <div
+            className={`icon-button w-dropdown-toggle`}
+            onClick={(e) => {
+              e.preventDefault();
+              toggleDropdown();
+            }}
+          >
             <Icon name="ChevronDown" className="icon opacity-100" />
           </div>
-          <nav className="dropdown-list top-right box-shadow-medium radius-large w-dropdown-list">
+          <nav className={`dropdown-list top-right box-shadow-medium radius-large w-dropdown-list${openDropdown ? '.w--open' : ''}`}>
             <Link to="#" className="dropdown-link w-dropdown-link">
               Disconnect
             </Link>
           </nav>
         </div>
         <div className="margin-left-6 hide tablet-block relative w-dropdown">
-          <div className="icon-button front w-dropdown-toggle">
+          <div
+            className="icon-button front w-dropdown-toggle"
+            onClick={(e) => {
+              e.preventDefault();
+              toggleMenu();
+            }}
+          >
             <Icon name="Menu" className="icon opacity-100" />
           </div>
-          <nav className="menu background-color-1 border-1px blur sheen w-dropdown-list">
+          <nav className={`menu background-color-1 border-1px blur sheen w-dropdown-list${openMenu ? '.w--open' : ''}`}>
             <Navigation />
           </nav>
         </div>

@@ -17,6 +17,7 @@ export const MarketProvider: React.FC = ({ children }) => {
   const { getEmpContract, getTvlData, queryEmpState } = useEmp();
 
   useEffect(() => {
+    console.log(signer);
     const initializeMarketData = async () => {
       const formatForDisplay = (num: string) => numeral(num).format('0.0a');
 
@@ -27,18 +28,18 @@ export const MarketProvider: React.FC = ({ children }) => {
 
         try {
           // TODO Not sure why none of the contract getters are working. FIX IMMEDIATELY
-          const { tvl, totalSupply } = await getTvlData(synth.emp.address);
-          console.log('TVL DATA');
-          console.log(tvl);
-          console.log(totalSupply);
+          //const { tvl, totalSupply } = await getTvlData(synth.emp.address);
+          //console.log('TVL DATA');
+          //console.log(tvl);
+          //console.log(totalSupply);
 
           //const expirationTimestamp = await emp.expirationTimestamp();
           //const isExpired = expirationTimestamp.toNumber() > Date.now();
           //const empstate = await queryEmpState(synth.emp.address);
 
           const isExpired = false; // TODO
-          //const tvl = '1000';
-          //const totalSupply = '5555';
+          const tvl = '1000';
+          const totalSupply = '5555';
 
           const collateralPriceUsd = await getUsdPriceData(CollateralMap[synth.metadata.collateral].address);
 
@@ -58,8 +59,8 @@ export const MarketProvider: React.FC = ({ children }) => {
           data[synthName] = {
             price: priceUsd.toFixed(2).toString(),
             liquidity: formatForDisplay(liquidity),
-            totalSupply: formatForDisplay(totalSupply.toString()),
-            tvl: formatForDisplay(tvl.toString()),
+            totalSupply: formatForDisplay(totalSupply),
+            tvl: formatForDisplay(tvl),
             marketCap: formatForDisplay(marketCap),
             volume24h: formatForDisplay('0'), // TODO need to get from subgraph
             apr: apr,

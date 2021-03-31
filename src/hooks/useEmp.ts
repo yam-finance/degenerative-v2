@@ -13,6 +13,8 @@ export const useEmp = () => {
       const [collateralAmount, tokenAmount] = [new Unsigned(collateral), new Unsigned(tokens)];
       const empContract = Emp__factory.connect(synthAddress, signer as Signer);
       try {
+        // TODO DEBUG
+        console.log(empContract.totalTokensOutstanding());
         console.log('COLLATERAL: ' + collateralAmount.rawValue);
         console.log('TOKEN : ' + tokenAmount.rawValue);
         const gasLimit = await empContract.estimateGas.create(collateralAmount, tokenAmount);
