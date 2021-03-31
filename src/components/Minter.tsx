@@ -62,7 +62,7 @@ export const Minter: React.FC = () => {
         onClick={async (e) => {
           e.preventDefault();
           await actions.onApprove();
-          setIsApproved(true);
+          setIsApproved(true); // TODO check for approval first
         }}
         className="button w-button"
       >

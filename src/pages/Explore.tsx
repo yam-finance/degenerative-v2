@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SearchForm } from '@/components';
-import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
+import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { ISynthInfo } from '@/types';
 import { MarketContext } from '@/contexts';
 import { SynthMap } from '@/utils';
@@ -9,7 +9,8 @@ import box from '@/assets/Box-01.png';
 
 const Explore = () => {
   const { marketData } = useContext(MarketContext);
-  const [availableSynths, setAvailableSynths] = useState([]);
+
+  const [filter, setFilter] = useState('');
   const [sidebarSynth, setSidebarSynth] = useState();
 
   const SynthBlock: React.FC<{ synth: ISynthInfo }> = ({ synth }) => {
@@ -32,16 +33,12 @@ const Explore = () => {
     );
   };
 
-  // TODO factor out table row components
   const SynthTableRow: React.FC<{ synth: ISynthInfo }> = ({ synth }) => {
     const { name, expired } = synth.metadata;
-    //const test = useMarketData(synth);
-    //console.log(test);
-    const style = 'table-row margin-y-2 w-inline-block';
 
-    if (!marketData[name]) return <div className={style}>Loading...</div>;
+    if (!marketData[name]) return <TableRow>Loading...</TableRow>;
     return (
-      <Link to="#" className={style}>
+      <TableRow to="#">
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={box} loading="lazy" alt="" className="width-6" />
@@ -60,7 +57,7 @@ const Explore = () => {
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{marketData[name].marketCap}</div>
         </div>
-      </Link>
+      </TableRow>
     );
   };
 

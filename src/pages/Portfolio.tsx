@@ -2,11 +2,11 @@ import React, { useContext, useEffect } from 'react';
 
 import { EthereumContext, UserContext } from '@/contexts';
 
-import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
+import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { Link } from 'react-router-dom';
 
 import { IMintedPosition, ISynthInWallet } from '@/types';
-import { Divide } from 'react-feather';
+import clsx from 'clsx';
 
 interface PortfolioTableProps {
   title: string;
@@ -26,22 +26,16 @@ interface SynthsInWalletRowProps {
 const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
 
-  useEffect(() => {
-    console.log('minted CHANGED');
-    console.log(mintedPositions);
-  }, [mintedPositions]);
+  const PlaceholderRow: React.FC = ({ children }) => {
+    return <div className="table-row margin-y-2 w-inline-block">{children}</div>;
+  };
 
-  useEffect(() => {
-    console.log('in wallet CHANGED');
-    console.log(synthsInWallet);
-  }, [synthsInWallet]);
-
-  const MintedTableRow: React.FC<MintedRowProps> = (props) => {
+  const MintedRow: React.FC<MintedRowProps> = (props) => {
     const { name, collateral, type, cycle, year } = props.mintedPosition.metadata;
     const { tokenAmount, collateralAmount, collateralRatio } = props.mintedPosition;
 
     return (
-      <Link to={`/synths/${type}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
+      <TableRow to={`/synths/${type}/${cycle}${year}`}>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={props.imgLocation} alt={name} />
@@ -74,7 +68,7 @@ const Portfolio = () => {
           <div className="button-secondary button-tiny margin-right-1 white">Farm</div>
           <div className="button-secondary button-tiny white">Manage</div>
         </div>
-      </Link>
+      </TableRow>
     );
   };
 
@@ -83,8 +77,10 @@ const Portfolio = () => {
     const { name, type, cycle, year, expired } = props.synthsInWallet.metadata;
     const link = `/synths/${type}/${cycle}${year}`;
 
+    const classes = clsx('table-row', 'margin-y-2', 'w-inline-block');
+
     return (
-      <Link to={link} className="table-row margin-y-2 w-inline-block">
+      <TableRow to={link}>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={props.imgLocation} alt={name} />
@@ -113,7 +109,7 @@ const Portfolio = () => {
             Manage
           </Link>
         </div>
-      </Link>
+      </TableRow>
     );
   };
 
@@ -122,11 +118,13 @@ const Portfolio = () => {
       <MainDisplay>
         <MainHeading>Your Positions</MainHeading>
         <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
-          {mintedPositions.length > 0
-            ? mintedPositions.map((minted, index) => {
-                return <MintedTableRow imgLocation="src/assets/Box-01.png" mintedPosition={minted} key={index} />;
-              })
-            : 'You do not have any synths minted'}
+          {mintedPositions.length > 0 ? (
+            mintedPositions.map((minted, index) => {
+              return <MintedRow imgLocation="src/assets/Box-01.png" mintedPosition={minted} key={index} />;
+            })
+          ) : (
+            <TableRow>You do not have any synths minted</TableRow>
+          )}
         </Table>
         <Table title="Synths In Wallet" headers={['Token', 'Balance', 'Price', 'Status', 'Actions']}>
           {synthsInWallet.length > 0 ? (
@@ -134,12 +132,12 @@ const Portfolio = () => {
               return <SynthsInWalletRow imgLocation="src/assets/Box-01.png" synthsInWallet={inWallet} key={index} />;
             })
           ) : (
-            <div>You do not have any synths in your wallet</div>
+            <TableRow>You do not have any synths in your wallet</TableRow>
           )}
         </Table>
         {/* TODO Add pool positions */}
       </MainDisplay>
-      <SideDisplay>test</SideDisplay>
+      <SideDisplay></SideDisplay>
     </>
   );
 };

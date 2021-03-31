@@ -1,4 +1,6 @@
 import React from 'react';
+import clsx from 'clsx';
+import { Link } from 'react-router-dom';
 
 export interface TableProps {
   title?: string;
@@ -28,7 +30,28 @@ export const Table: React.FC<TableProps> = ({ title, headers, headerClass, class
 };
 
 // TODO Make a generic composable table + table row + table cells
-export interface TableCellProps {
+// All table rows use same styles
+
+interface TableRowProps {
+  className?: string;
+  to?: string;
+}
+
+export const TableRow: React.FC<TableRowProps> = ({ className, to, children }) => {
+  const style = clsx('table-row', 'margin-y-2', 'w-inline-block', className);
+
+  if (to) {
+    return (
+      <Link to={to} className={style}>
+        {children}
+      </Link>
+    );
+  } else {
+    return <div className={style}>{children}</div>;
+  }
+};
+
+interface TableCellProps {
   className?: string;
 }
 
