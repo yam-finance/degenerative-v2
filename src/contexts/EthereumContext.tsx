@@ -6,6 +6,7 @@ import { MetamaskProvider } from '@/types';
 const initialState = {
   ethereum: undefined as MetamaskProvider | undefined,
   setEthereum: (ethereum: MetamaskProvider | undefined) => {},
+  disconnectWallet: () => {},
   provider: undefined as providers.Web3Provider | undefined,
   signer: undefined as Signer | undefined,
   chainId: 0 as number,
@@ -31,7 +32,7 @@ export const EthereumProvider: React.FC = ({ children }) => {
     }
   }, [ethereum, chainId]);
 
-  // TODO This is not working. Will work if event handlers are on ethereum object,
+  // TODO Listeners do not work on provider. Will work if event handlers are on ethereum object,
   //    and ethereum object is MetamaskProvider
   // Must react to changes in wallet state
   useEffect(() => {
@@ -67,11 +68,14 @@ export const EthereumProvider: React.FC = ({ children }) => {
     }
   }, [ethereum, provider]);
 
+  const disconnectWallet = () => ethereum?.emit('disconnect');
+
   return (
     <EthereumContext.Provider
       value={{
         ethereum,
         setEthereum,
+        disconnectWallet,
         provider,
         signer,
         account,

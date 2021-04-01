@@ -9,7 +9,7 @@ import discord from '@/assets/discord.svg';
 import accountImage from '@/assets/ellipse.png';
 
 const Navbar = () => {
-  const { account } = useContext(EthereumContext);
+  const { account, disconnectWallet } = useContext(EthereumContext);
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
   const [openWalletMenu, setWalletMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
@@ -74,9 +74,9 @@ const Navbar = () => {
           <div className="text-xs">Metamask</div>
           <div className="text-color-4">{accountDisplay}</div>
         </div>
-        <div className={`margin-left-6 tablet-hide relative w-dropdown`}>
+        <div className="margin-left-6 tablet-hide relative w-dropdown">
           <div
-            className={`icon-button w-dropdown-toggle`}
+            className="icon-button w-dropdown-toggle"
             onClick={(e) => {
               e.preventDefault();
               toggleDropdown();
@@ -85,9 +85,15 @@ const Navbar = () => {
             <Icon name="ChevronDown" className="icon opacity-100" />
           </div>
           <Dropdown className="dropdown-list top-right box-shadow-medium radius-large w-dropdown-list" openDropdown={openWalletMenu}>
-            <Link to="#" className="dropdown-link w-dropdown-link">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                disconnectWallet();
+              }}
+              className="dropdown-link w-dropdown-link"
+            >
               Disconnect
-            </Link>
+            </button>
           </Dropdown>
         </div>
         <div className="margin-left-6 hide tablet-block relative w-dropdown">

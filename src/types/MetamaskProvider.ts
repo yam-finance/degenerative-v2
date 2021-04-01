@@ -8,6 +8,7 @@ interface RequestArguments {
 
 export interface MetamaskProvider {
   //request(args: RequestArguments): Promise<any>;
+  emit(eventName: EventType): () => any;
   addListener(eventName: EventType, listener?: Listener): () => any;
   removeListener(eventName: EventType, listener?: Listener): () => any;
 }

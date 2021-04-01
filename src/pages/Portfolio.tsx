@@ -6,12 +6,6 @@ import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/compon
 import { Link } from 'react-router-dom';
 
 import { IMintedPosition, ISynthInWallet } from '@/types';
-import clsx from 'clsx';
-
-interface PortfolioTableProps {
-  title: string;
-  headers: string[];
-}
 
 interface MintedRowProps {
   imgLocation: string; // TODO move to ISynthMetadata type
