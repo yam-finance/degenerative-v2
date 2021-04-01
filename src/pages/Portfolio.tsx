@@ -26,10 +26,6 @@ interface SynthsInWalletRowProps {
 const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
 
-  const PlaceholderRow: React.FC = ({ children }) => {
-    return <div className="table-row margin-y-2 w-inline-block">{children}</div>;
-  };
-
   const MintedRow: React.FC<MintedRowProps> = (props) => {
     const { name, collateral, type, cycle, year } = props.mintedPosition.metadata;
     const { tokenAmount, collateralAmount, collateralRatio } = props.mintedPosition;
@@ -77,8 +73,6 @@ const Portfolio = () => {
     const { name, type, cycle, year, expired } = props.synthsInWallet.metadata;
     const link = `/synths/${type}/${cycle}${year}`;
 
-    const classes = clsx('table-row', 'margin-y-2', 'w-inline-block');
-
     return (
       <TableRow to={link}>
         <div className="flex-align-center expand">
@@ -116,7 +110,7 @@ const Portfolio = () => {
   return (
     <>
       <MainDisplay>
-        <MainHeading>Your Positions</MainHeading>
+        <MainHeading>Portfolio</MainHeading>
         <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
           {mintedPositions.length > 0 ? (
             mintedPositions.map((minted, index) => {

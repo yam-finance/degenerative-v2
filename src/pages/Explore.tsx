@@ -64,7 +64,7 @@ const Explore = () => {
   return (
     <>
       <MainDisplay>
-        <MainHeading>Explore</MainHeading>
+        <MainHeading>Explore Synths</MainHeading>
         <div className="padding-x-8 flex-row margin-top-4 flex-wrap">
           <SearchForm className="margin-0 margin-right-2 expand portrait-width-full portrait-margin-bottom-2 w-form" />
         </div>
