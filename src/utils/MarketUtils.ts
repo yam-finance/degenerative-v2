@@ -1,5 +1,7 @@
 import { request } from 'graphql-request';
 import axios from 'axios';
+import numeral from 'numeral';
+import { BigNumber } from 'ethers';
 import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY } from '@/utils';
 
 // Get USD price of token and cache to sessionstorage
@@ -32,3 +34,8 @@ export const getApr = () => {};
 
 // TODO Used for chart datasets
 export const getPriceHistory = () => {};
+
+export const formatForDisplay = (num: string | number | BigNumber) => {
+  if (BigNumber.isBigNumber(num)) num = num.toString();
+  return numeral(num).format('0.0a');
+};

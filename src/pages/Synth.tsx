@@ -4,28 +4,28 @@ import { useParams, NavLink } from 'react-router-dom';
 import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
-import { ISynthMetadata } from '@/types';
+import { ISynthInfo } from '@/types';
 import { isEmpty } from '@/utils';
 
 interface SynthParams {
-  group: string;
-  synthName: string;
+  type: string;
+  name: string;
   action: string;
 }
 
-const Synth: React.FC = () => {
-  const { group, synthName, action } = useParams<SynthParams>();
+export const Synth: React.FC = () => {
+  const { type, name, action } = useParams<SynthParams>();
   const { currentSynth, setSynth } = useContext(UserContext);
   const actions = useSynthActions();
-  const [{ type, cycle, year }, setMetadata] = useState({} as ISynthMetadata);
+  const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
 
   useEffect(() => {
-    setSynth(`${group}${synthName}`.toUpperCase());
+    setSynth(`${type}-${name}`);
   }, []);
 
   useEffect(() => {
     if (!currentSynth || isEmpty(currentSynth)) return;
-    setMetadata(currentSynth.metadata);
+    setSynthInfo(currentSynth);
   }, [currentSynth]);
 
   const ActionSelector: React.FC = () => {
@@ -77,5 +77,3 @@ const Synth: React.FC = () => {
     </>
   );
 };
-
-export default Synth;

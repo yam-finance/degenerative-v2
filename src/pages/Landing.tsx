@@ -2,7 +2,7 @@ import React from 'react';
 
 import { MainDisplay, SideDisplay, ConnectWallet, Minter } from '@/components';
 
-const Landing: React.FC = () => {
+export const Landing: React.FC = () => {
   return (
     <>
       <MainDisplay>
@@ -12,5 +12,3 @@ const Landing: React.FC = () => {
     </>
   );
 };
-
-export default Landing;

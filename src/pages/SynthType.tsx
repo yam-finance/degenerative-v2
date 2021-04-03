@@ -3,52 +3,50 @@ import { Link, useParams } from 'react-router-dom';
 import { useSynthActions } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
-import { SynthMap, SynthTypes } from '@/utils';
-import { ISynthMetadata } from '@/types';
+import { SynthInfo, SynthCopy } from '@/utils';
 
 interface SynthParams {
   group: string;
 }
 
 // TODO add this data to
-interface ISynthGroupItem {
+interface ISynthTypeItem {
+  name: string;
   maturity: string;
   apy: string;
   balance: string;
   liquidity: string;
   price: string;
-  metadata: ISynthMetadata;
 }
 
-const Synth: React.FC = () => {
+export const SynthType: React.FC = () => {
   const { currentSynth, setSynth, synthsInWallet } = useContext(UserContext);
   const { group } = useParams<SynthParams>();
-  const [synthGroup, setSynthGroup] = useState<ISynthGroupItem[]>([]);
+  const [synthGroup, setSynthGroup] = useState<ISynthTypeItem[]>([]);
 
   useEffect(() => {
     // TODO Change to take market data from UserContext
-    const synths: ISynthGroupItem[] = [];
-    Object.values(SynthMap)
-      .map((synth) => synth.metadata)
-      .filter((metadata) => metadata.type === group)
-      .forEach((element) => {
+    const synths: ISynthTypeItem[] = [];
+    Object.entries(SynthInfo)
+      .filter((synth) => synth[1].type === group)
+      .forEach((synth) => {
         synths.push({
-          maturity: element.cycle,
+          name: synth[0],
+          maturity: synth[1].cycle,
           apy: '0', //TODO
           // TODO should be showing minted positions
-          balance: synthsInWallet.find((el) => el.metadata.name === element.name)?.tokenAmount ?? '0',
+          balance: synthsInWallet.find((el) => el.name === synth[0])?.tokenAmount ?? '0',
           liquidity: '0', // TODO
           price: '100', // TODO
-          metadata: element,
         });
       });
     setSynthGroup(synths);
   }, []);
 
-  const SynthGroupRow: React.FC<{ synthGroupItem: ISynthGroupItem }> = (props) => {
+  const SynthGroupRow: React.FC<{ synthGroupItem: ISynthTypeItem }> = (props) => {
     const { synthGroupItem } = props;
-    const { apy, balance, liquidity, price } = synthGroupItem;
-    const { name, cycle, year, type } = synthGroupItem.metadata;
+    const { name, apy, balance, liquidity, price } = synthGroupItem;
+    const { cycle, year, type } = SynthInfo[name];
 
     return (
       <Link to={`/synths/${type}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
@@ -77,7 +75,7 @@ const Synth: React.FC = () => {
     <>
       <MainDisplay>
         <MainHeading className="margin-bottom-1">{group}</MainHeading>
-        <div className="padding-x-8 flex-align-baseline">{SynthTypes[group]}</div>
+        <div className="padding-x-8 flex-align-baseline">{SynthCopy[group]}</div>
         <div className="width-full margin-y-2 w-embed w-script">{/* Add graph here */}</div>
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <div className="padding-x-5 flex-row">
@@ -105,5 +103,3 @@ const Synth: React.FC = () => {
     </>
   );
 };
-
-export default Synth;

@@ -7,7 +7,7 @@ import './degenerative.css';
 //import './webflow.css';
 import './normalize.css';
 
-import { Landing, Synth, Explore, Portfolio, SynthGroup, NotFound } from '@/pages';
+import { Landing, Synth, Explore, Portfolio, SynthType, NotFound } from '@/pages';
 import { Navbar } from '@/components';
 
 const App: React.FC = () => {
@@ -24,9 +24,9 @@ const App: React.FC = () => {
             <Route exact strict path="/" component={Landing} />
             <Route exact strict path="/portfolio" component={Portfolio} />
             <Route exact strict path="/synths" component={Explore} />
-            <Route exact strict path="/synths/:group" component={SynthGroup} /> {/* TODO */}
-            <Redirect exact strict from="/synths/:group/:synthName" to="/synths/:group/:synthName/mint" />
-            <Route exact strict path="/synths/:group/:synthName/:action" component={Synth} />
+            <Route exact strict path="/synths/:type" component={SynthType} /> {/* TODO */}
+            <Redirect exact strict from="/synths/:type/:id" to="/synths/:type/:id/mint" />
+            <Route exact strict path="/synths/:type/:id/:action" component={Synth} />
             <Route component={NotFound} />
           </Switch>
         </FlexRow>

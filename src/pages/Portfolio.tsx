@@ -17,7 +17,7 @@ interface SynthsInWalletRowProps {
   synthsInWallet: ISynthInWallet;
 }
 
-const Portfolio = () => {
+export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
 
   const MintedRow: React.FC<MintedRowProps> = (props) => {
@@ -129,5 +129,3 @@ const Portfolio = () => {
     </>
   );
 };
-
-export default Portfolio;

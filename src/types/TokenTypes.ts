@@ -10,20 +10,25 @@ export interface IToken extends IContract {
   //priceUsd: number;
 }
 
-export interface ISynthMetadata {
-  name: string;
+// TODO remove
+//export interface ISynthMetadata {
+//  name: string;
+//  //type: string;
+//  cycle: string;
+//  year: string;
+//  collateral: string;
+//  //expired: boolean;
+//  //apy?: number;
+//  //description?: string
+//}
+
+export interface ISynthInfo {
+  // TODO add image location
   type: string;
   cycle: string;
   year: string;
   collateral: string;
-  expired: boolean;
-  //apy?: number;
-  //description?: string
-}
-
-export interface ISynthInfo {
-  // TODO add image location
-  metadata: ISynthMetadata;
+  //metadata: ISynthMetadata;
   token: IToken;
   emp: IContract;
   pool: IContract;
