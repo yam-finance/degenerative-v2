@@ -15,6 +15,8 @@ export const MarketProvider: React.FC = ({ children }) => {
   const [synthMarketData, setSynthMarketData] = useState<IMap<ISynthMarketData>>(initialState.synthMarketData);
   const { getEmpContract, getTvlData, queryEmpState } = useEmp();
 
+  // TODO This entire context can be moved to utils with other synth information by connecting to
+  //      app's eth node rather than user's connection
   useEffect(() => {
     const initializeMarketData = async () => {
       const data: typeof synthMarketData = {};

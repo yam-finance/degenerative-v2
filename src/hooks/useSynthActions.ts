@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 
 import { UserContext } from '@/contexts';
 import { useEmp, useToken, useWrapEth } from '@/hooks';
-import { isEmpty } from '@/utils';
+import { SynthInfo, CollateralMap } from '@/utils';
 
 // TODO DEBUG
 import { logger, utils } from 'ethers';
@@ -21,9 +21,9 @@ export const useSynthActions = () => {
   const wrapEth = useWrapEth();
 
   useEffect(() => {
-    if (currentSynth && !isEmpty(currentSynth) && currentCollateral && !isEmpty(currentCollateral)) {
-      setEmpAddress(currentSynth.emp.address);
-      setCollateralAddress(currentCollateral.address);
+    if (currentSynth && currentCollateral) {
+      setEmpAddress(SynthInfo[currentSynth].emp.address);
+      setCollateralAddress(CollateralMap[currentCollateral].address);
     }
   }, [currentSynth]);
 

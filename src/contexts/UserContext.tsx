@@ -6,7 +6,6 @@ import { CollateralMap, SynthInfo } from '@/utils/TokenList';
 import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
 import { BigNumber, utils } from 'ethers';
-import { parseBytes32String } from '@ethersproject/strings';
 
 const initialState = {
   mintedPositions: [] as IMintedPosition[],
@@ -14,8 +13,8 @@ const initialState = {
   //poolPositions: [] as IPoolPosition[],
   setSynth: (synthName: string) => {},
   getSponsorPosition: (synthName: string) => {},
-  currentSynth: {} as ISynthInfo | undefined,
-  currentCollateral: {} as IToken | undefined,
+  currentSynth: '',
+  currentCollateral: '',
 };
 
 export const UserContext = createContext(initialState);
@@ -24,8 +23,8 @@ export const UserProvider: React.FC = ({ children }) => {
   const { account, signer } = useContext(EthereumContext);
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);
   const [synthsInWallet, setSynthsInWallet] = useState<ISynthInWallet[]>([]);
-  const [currentSynth, setCurrentSynth] = useState<ISynthInfo>();
-  const [currentCollateral, setCurrentCollateral] = useState<IToken>();
+  const [currentSynth, setCurrentSynth] = useState('');
+  const [currentCollateral, setCurrentCollateral] = useState('');
 
   const emp = useEmp();
   const erc20 = useToken();
@@ -38,7 +37,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (currentSynth) {
-      setCurrentCollateral(CollateralMap[currentSynth.collateral]);
+      setCurrentCollateral(SynthInfo[currentSynth].collateral);
     }
   }, [currentSynth]);
 
@@ -51,7 +50,8 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const setSynth = (synthName: string) => {
     console.log('SET SYNTH CALLED');
-    setCurrentSynth(SynthInfo[synthName]);
+    console.log(synthName);
+    setCurrentSynth(synthName);
   };
 
   const updateMintedPositions = () => {

@@ -1,12 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import useAsyncEffect from 'use-async-effect';
 import { useFormState } from 'react-use-form-state';
 import { BigNumber, utils } from 'ethers';
 
 import { useSynthActions, useToken } from '@/hooks';
 import { UserContext, EthereumContext } from '@/contexts';
 import { Icon, ActionCard, UtilizationGauge } from '@/components';
-import { isEmpty } from '@/utils';
+import { CollateralMap } from '@/utils';
 
 interface MinterFormFields {
   tokenAmount: number;
@@ -26,12 +25,14 @@ export const Minter: React.FC = () => {
   const [invalidCollateral, setInvalidCollateral] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      if (currentCollateral && !isEmpty(currentCollateral) && account) {
-        setMaxCollateral(await erc20.getBalance(currentCollateral.address));
-        setIsApproved(await actions.getEmpAllowance());
-      }
-    })();
+    const initMinterState = async () => {
+      const collateralBalance = await erc20.getBalance(CollateralMap[currentCollateral].address);
+      const empAllowance = await actions.getEmpAllowance();
+      setMaxCollateral(collateralBalance);
+      setIsApproved(empAllowance);
+    };
+
+    if (currentCollateral && account) initMinterState();
   }, [currentSynth, currentCollateral, account]);
 
   const [formState, { number }] = useFormState<MinterFormFields>(
@@ -80,7 +81,7 @@ export const Minter: React.FC = () => {
         }}
         className="button w-button"
       >
-        {`Mint ${formState.values.tokenAmount} ${currentSynth?.metadata.name} for ${formState.values.collateralAmount} ${currentSynth?.metadata.collateral}`}
+        {`Mint ${formState.values.tokenAmount} ${currentSynth} for ${formState.values.collateralAmount} ${currentCollateral}`}
       </button>
     );
   };
@@ -141,7 +142,7 @@ export const Minter: React.FC = () => {
 
       <div className="padding-8 portrait-padding-4 w-form">
         <ActionCard>
-          <h5 className="margin-0">How much {currentSynth.metadata.name} would you like to mint?</h5>
+          <h5 className="margin-0">How much {currentSynth} would you like to mint?</h5>
           <div className="margin-y-4">
             <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
               Mint Maximum
@@ -162,7 +163,7 @@ export const Minter: React.FC = () => {
                 <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
                   <div className="padding-0 flex-align-center w-dropdown-toggle">
                     <Icon name="ChevronDown" className="icon medium opacity-100 margin-right-1" />
-                    <a href="#">{currentSynth.metadata.collateral}</a>
+                    <a href="#">{currentCollateral}</a>
                   </div>
                   {/* TODO make dropdown? */}
                   <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
@@ -195,14 +196,14 @@ export const Minter: React.FC = () => {
                 <div data-hover="" data-delay="0" className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
                   {/* TODO i think this div and dropdown are unnecessary */}
                   <div className="padding-0 flex-align-center w-dropdown-toggle">
-                    <a href="#">{currentSynth.metadata.name}</a>
+                    <a href="#">{currentSynth}</a>
                   </div>
                 </div>
                 <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
                   <label className="opacity-60 weight-medium">Mint</label>
                 </div>
               </div>
-              <div className="text-xs opacity-50 margin-top-1">Mint a minimum of 5 {currentSynth.metadata.name}</div>
+              <div className="text-xs opacity-50 margin-top-1">Mint a minimum of 5 {currentSynth}</div>
             </div>
           </div>
           <UtilizationGauge />

@@ -5,27 +5,27 @@ import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { ISynthInfo } from '@/types';
-import { isEmpty } from '@/utils';
+import { SynthInfo, isEmpty } from '@/utils';
 
 interface SynthParams {
   type: string;
-  name: string;
+  cycleYear: string;
   action: string;
 }
 
 export const Synth: React.FC = () => {
-  const { type, name, action } = useParams<SynthParams>();
+  const { type, cycleYear, action } = useParams<SynthParams>();
   const { currentSynth, setSynth } = useContext(UserContext);
   const actions = useSynthActions();
   const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
 
   useEffect(() => {
-    setSynth(`${type}-${name}`);
+    // TODO validate and redirect
+    setSynth(`${type}-${cycleYear}`);
   }, []);
 
   useEffect(() => {
-    if (!currentSynth || isEmpty(currentSynth)) return;
-    setSynthInfo(currentSynth);
+    if (currentSynth && !isEmpty(currentSynth)) setSynthInfo(SynthInfo[currentSynth]);
   }, [currentSynth]);
 
   const ActionSelector: React.FC = () => {

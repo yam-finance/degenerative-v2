@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSynthActions } from '@/hooks';
-import { UserContext } from '@/contexts';
+import { UserContext, MarketContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
-import { SynthInfo, SynthCopy } from '@/utils';
+import { SynthInfo, SynthCopy, isEmpty } from '@/utils';
 
 interface SynthParams {
-  group: string;
+  type: string;
 }
 
 // TODO add this data to
@@ -21,33 +21,38 @@ interface ISynthTypeItem {
 
 export const SynthType: React.FC = () => {
   const { currentSynth, setSynth, synthsInWallet } = useContext(UserContext);
-  const { group } = useParams<SynthParams>();
+  const { synthMarketData } = useContext(MarketContext);
+  const { type } = useParams<SynthParams>();
   const [synthGroup, setSynthGroup] = useState<ISynthTypeItem[]>([]);
 
   useEffect(() => {
-    // TODO Change to take market data from UserContext
-    const synths: ISynthTypeItem[] = [];
-    Object.entries(SynthInfo)
-      .filter((synth) => synth[1].type === group)
-      .forEach((synth) => {
-        synths.push({
-          name: synth[0],
-          maturity: synth[1].cycle,
-          apy: '0', //TODO
-          // TODO should be showing minted positions
-          balance: synthsInWallet.find((el) => el.name === synth[0])?.tokenAmount ?? '0',
-          liquidity: '0', // TODO
-          price: '100', // TODO
+    const initSynthTypes = () => {
+      const synths: ISynthTypeItem[] = [];
+      Object.entries(SynthInfo)
+        .filter((synth) => synth[1].type === type)
+        .forEach(([synthName, synthInfo]) => {
+          synths.push({
+            name: synthName,
+            maturity: synthInfo.cycle, // TODO change to isExpired
+            apy: synthMarketData[synthName].apr, //TODO
+            // TODO should be showing minted positions
+            balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? '0',
+            liquidity: synthMarketData[synthName].liquidity, // TODO
+            price: synthMarketData[synthName].price, // TODO
+          });
         });
-      });
-    setSynthGroup(synths);
-  }, []);
+      setSynthGroup(synths);
+    };
+
+    if (!isEmpty(synthMarketData)) initSynthTypes();
+  }, [synthMarketData]);
 
   const SynthGroupRow: React.FC<{ synthGroupItem: ISynthTypeItem }> = (props) => {
     const { synthGroupItem } = props;
     const { name, apy, balance, liquidity, price } = synthGroupItem;
     const { cycle, year, type } = SynthInfo[name];
 
+    // TODO change maturity to show if live or expired
     return (
       <Link to={`/synths/${type}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
         <div className="expand">
@@ -74,8 +79,8 @@ export const SynthType: React.FC = () => {
   return (
     <>
       <MainDisplay>
-        <MainHeading className="margin-bottom-1">{group}</MainHeading>
-        <div className="padding-x-8 flex-align-baseline">{SynthCopy[group]}</div>
+        <MainHeading className="margin-bottom-1">{type}</MainHeading>
+        <div className="padding-x-8 flex-align-baseline">{SynthCopy[type]}</div>
         <div className="width-full margin-y-2 w-embed w-script">{/* Add graph here */}</div>
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <div className="padding-x-5 flex-row">
@@ -96,7 +101,7 @@ export const SynthType: React.FC = () => {
             ? synthGroup.map((synth, index) => {
                 return <SynthGroupRow synthGroupItem={synth} key={index} />;
               })
-            : 'There are no synths in this group'}
+            : 'There are no synths in this type'}
         </Table>
       </MainDisplay>
       <SideDisplay></SideDisplay>

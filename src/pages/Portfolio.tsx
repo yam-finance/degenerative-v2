@@ -1,11 +1,10 @@
 import React, { useContext, useEffect } from 'react';
-
-import { EthereumContext, UserContext } from '@/contexts';
-
-import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { Link } from 'react-router-dom';
 
+import { EthereumContext, UserContext } from '@/contexts';
+import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMintedPosition, ISynthInWallet } from '@/types';
+import { SynthInfo } from '@/utils';
 
 interface MintedRowProps {
   imgLocation: string; // TODO move to ISynthMetadata type

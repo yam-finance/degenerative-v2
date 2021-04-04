@@ -28,7 +28,6 @@ export interface ISynthInfo {
   cycle: string;
   year: string;
   collateral: string;
-  //metadata: ISynthMetadata;
   token: IToken;
   emp: IContract;
   pool: IContract;
