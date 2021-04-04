@@ -1,33 +1,24 @@
 import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import { EthereumContext, UserContext } from '@/contexts';
+import { MarketContext, UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMintedPosition, ISynthInWallet } from '@/types';
 import { SynthInfo } from '@/utils';
 
-interface MintedRowProps {
-  imgLocation: string; // TODO move to ISynthMetadata type
-  mintedPosition: IMintedPosition;
-}
-
-interface SynthsInWalletRowProps {
-  imgLocation: string; // TODO move to ISynthMetadata type
-  synthsInWallet: ISynthInWallet;
-}
-
 export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
+  const { synthMarketData } = useContext(MarketContext);
 
-  const MintedRow: React.FC<MintedRowProps> = (props) => {
-    const { name, collateral, type, cycle, year } = props.mintedPosition.metadata;
-    const { tokenAmount, collateralAmount, collateralRatio } = props.mintedPosition;
+  const MintedRow: React.FC<IMintedPosition> = (props) => {
+    const { imgLocation, collateral, type, cycle, year } = SynthInfo[props.name];
+    const { name, tokenAmount, collateralAmount, collateralRatio } = props;
 
     return (
       <TableRow to={`/synths/${type}/${cycle}${year}`}>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={props.imgLocation} alt={name} />
+            <img src={imgLocation} alt={name} />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>
@@ -61,16 +52,17 @@ export const Portfolio = () => {
     );
   };
 
-  const SynthsInWalletRow: React.FC<SynthsInWalletRowProps> = (props) => {
-    const { tokenAmount } = props.synthsInWallet;
-    const { name, type, cycle, year, expired } = props.synthsInWallet.metadata;
+  const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
+    const { name, tokenAmount } = props;
+    const { imgLocation, type, cycle, year } = SynthInfo[name];
+    const { isExpired } = synthMarketData[name];
     const link = `/synths/${type}/${cycle}${year}`;
 
     return (
       <TableRow to={link}>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={props.imgLocation} alt={name} />
+            <img src={imgLocation} alt={name} />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>
@@ -86,7 +78,7 @@ export const Portfolio = () => {
           <div className="height-8 width-32 w-embed w-script"></div>
         </div>
         <div className="expand">
-          <div className={`pill ${expired ? 'red' : 'green'}`}>{expired ? 'EXPIRED' : 'LIVE'}</div>
+          <div className={`pill ${isExpired ? 'red' : 'green'}`}>{isExpired ? 'EXPIRED' : 'LIVE'}</div>
         </div>
         <div className="expand flex-align-baseline">
           <Link to={`${link}/mint`} className="button-secondary button-tiny margin-right-1 white">
@@ -107,7 +99,7 @@ export const Portfolio = () => {
         <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
           {mintedPositions.length > 0 ? (
             mintedPositions.map((minted, index) => {
-              return <MintedRow imgLocation="src/assets/Box-01.png" mintedPosition={minted} key={index} />;
+              return <MintedRow {...minted} key={index} />;
             })
           ) : (
             <TableRow>You do not have any synths minted</TableRow>
@@ -116,7 +108,7 @@ export const Portfolio = () => {
         <Table title="Synths In Wallet" headers={['Token', 'Balance', 'Price', 'Status', 'Actions']}>
           {synthsInWallet.length > 0 ? (
             synthsInWallet.map((inWallet, index) => {
-              return <SynthsInWalletRow imgLocation="src/assets/Box-01.png" synthsInWallet={inWallet} key={index} />;
+              return <SynthsInWalletRow {...inWallet} key={index} />;
             })
           ) : (
             <TableRow>You do not have any synths in your wallet</TableRow>

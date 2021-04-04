@@ -47,9 +47,8 @@ export const SynthType: React.FC = () => {
     if (!isEmpty(synthMarketData)) initSynthTypes();
   }, [synthMarketData]);
 
-  const SynthGroupRow: React.FC<{ synthGroupItem: ISynthTypeItem }> = (props) => {
-    const { synthGroupItem } = props;
-    const { name, apy, balance, liquidity, price } = synthGroupItem;
+  const SynthGroupRow: React.FC<ISynthTypeItem> = (props) => {
+    const { name, apy, balance, liquidity, price } = props;
     const { cycle, year, type } = SynthInfo[name];
 
     // TODO change maturity to show if live or expired
@@ -85,9 +84,7 @@ export const SynthType: React.FC = () => {
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <div className="padding-x-5 flex-row">
           <div className="tabs">
-            <a href="#" className="tab active">
-              Live
-            </a>
+            <div className="tab active">Live</div>
             <a href="#" className="tab">
               Expired
             </a>
@@ -99,7 +96,7 @@ export const SynthType: React.FC = () => {
         <Table headers={['Maturity', 'APY', 'Your Balance', 'Liquidity', 'Price']}>
           {synthGroup.length > 0
             ? synthGroup.map((synth, index) => {
-                return <SynthGroupRow synthGroupItem={synth} key={index} />;
+                return <SynthGroupRow {...synth} key={index} />;
               })
             : 'There are no synths in this type'}
         </Table>

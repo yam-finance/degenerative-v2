@@ -23,7 +23,7 @@ export interface IToken extends IContract {
 //}
 
 export interface ISynthInfo {
-  // TODO add image location
+  imgLocation: string;
   type: string;
   cycle: string;
   year: string;

@@ -5,6 +5,7 @@ import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/compon
 import { ISynthInfo, IMap } from '@/types';
 import { MarketContext } from '@/contexts';
 import { SynthInfo, SynthCopy, isEmpty, formatForDisplay } from '@/utils';
+import { useQuery } from '@/hooks';
 import box from '@/assets/Box-01.png';
 
 interface ISynthTypeData {
@@ -16,8 +17,9 @@ interface ISynthTypeData {
 
 export const Explore = () => {
   const { synthMarketData } = useContext(MarketContext);
+  const query = useQuery();
 
-  const [filter, setFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState(query.get('search') ?? '');
   const [sidebarSynth, setSidebarSynth] = useState();
   const [synthTypeData, setSynthTypeData] = useState<IMap<ISynthTypeData>>({});
 
@@ -25,26 +27,26 @@ export const Explore = () => {
     const AggregateSynthTypeData = () => {
       const aggregateData: IMap<ISynthTypeData> = {};
 
-      Object.entries(SynthInfo).forEach(([synthName, synthInfo]) => {
-        const { type } = synthInfo;
-        const marketData = synthMarketData[synthName];
-        const currentData = aggregateData[synthName];
+      Object.entries(SynthInfo)
+        .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
+        .forEach(([synthName, synthInfo]) => {
+          const { type } = synthInfo;
+          const marketData = synthMarketData[synthName];
+          const currentData = aggregateData[synthName];
 
-        aggregateData[type] = {
-          aprMin: Math.min(currentData?.aprMin ?? Infinity, Number(marketData.apr)),
-          aprMax: Math.max(currentData?.aprMin ?? -Infinity, Number(marketData.apr)),
-          totalLiquidity: Number(currentData?.totalLiquidity ?? 0) + Number(marketData.liquidity),
-          totalMarketCap: Number(currentData?.totalMarketCap ?? 0) + Number(marketData.marketCap),
-        };
-
-        console.log(aggregateData[type]);
-      });
+          aggregateData[type] = {
+            aprMin: Math.min(currentData?.aprMin ?? Infinity, Number(marketData.apr)),
+            aprMax: Math.max(currentData?.aprMin ?? -Infinity, Number(marketData.apr)),
+            totalLiquidity: currentData?.totalLiquidity ?? 0 + Number(marketData.liquidity),
+            totalMarketCap: currentData?.totalMarketCap ?? 0 + Number(marketData.marketCap),
+          };
+        });
 
       setSynthTypeData(aggregateData);
     };
 
     if (synthMarketData && !isEmpty(synthMarketData)) AggregateSynthTypeData();
-  }, [synthMarketData]);
+  }, [synthMarketData, searchTerm]);
 
   const SynthBlock: React.FC<{ type: string }> = ({ type }) => {
     //const { type, cycle, year } = SynthInfo[name];
@@ -107,7 +109,7 @@ export const Explore = () => {
       <MainDisplay>
         <MainHeading>Explore Synths</MainHeading>
         <div className="padding-x-8 flex-row margin-top-4 flex-wrap">
-          <SearchForm className="margin-0 margin-right-2 expand portrait-width-full portrait-margin-bottom-2 w-form" />
+          <SearchForm setSearch={setSearchTerm} className="margin-0 margin-right-2 expand portrait-width-full portrait-margin-bottom-2 w-form" />
         </div>
         <div className="padding-x-8 flex-align-baseline"></div>
         <div className="grid-3-columns margin-x-8 margin-top-4">

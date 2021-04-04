@@ -8,14 +8,12 @@ export interface IMintedPosition {
   collateralAmount: string;
   //collateralPriceUsd: string;
   collateralRatio: string;
-  //metadata: ISynthMetadata; // TODO remove this
 }
 
 export interface ISynthInWallet {
   name: string;
   tokenAmount: string;
-  //priceUsd: number;
-  //metadata: ISynthMetadata;  // TODO remove
+  //tokenPriceUsd: number;
 }
 
 // TODO complete this later
