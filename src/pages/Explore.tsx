@@ -32,13 +32,18 @@ export const Explore = () => {
         .forEach(([synthName, synthInfo]) => {
           const { type } = synthInfo;
           const marketData = synthMarketData[synthName];
-          const currentData = aggregateData[synthName];
+          const currentData = aggregateData[type] ?? {
+            aprMin: Infinity,
+            aprMax: 0,
+            totalLiquidity: 0,
+            totalMarketCap: 0,
+          };
 
           aggregateData[type] = {
-            aprMin: Math.min(currentData?.aprMin ?? Infinity, Number(marketData.apr)),
-            aprMax: Math.max(currentData?.aprMin ?? -Infinity, Number(marketData.apr)),
-            totalLiquidity: currentData?.totalLiquidity ?? 0 + Number(marketData.liquidity),
-            totalMarketCap: currentData?.totalMarketCap ?? 0 + Number(marketData.marketCap),
+            aprMin: Math.min(currentData.aprMin, Number(marketData.apr)),
+            aprMax: Math.max(currentData.aprMax, Number(marketData.apr)),
+            totalLiquidity: currentData.totalLiquidity + Number(marketData.liquidity),
+            totalMarketCap: currentData.totalMarketCap + Number(marketData.marketCap),
           };
         });
 

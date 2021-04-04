@@ -52,7 +52,7 @@ export const MarketProvider: React.FC = ({ children }) => {
           }
 
           const marketCap = (priceUsd * Number(totalSupply)).toString();
-          const apr = '100'; // TODO
+          const apr = String((Math.random() * 100).toFixed(2)); // TODO
 
           data[synthName] = {
             price: priceUsd.toFixed(2).toString(),
