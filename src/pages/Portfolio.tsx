@@ -10,6 +10,10 @@ export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
   const { synthMarketData } = useContext(MarketContext);
 
+  useEffect(() => {
+    console.log(synthsInWallet);
+  }, [synthsInWallet]);
+
   const MintedRow: React.FC<IMintedPosition> = (props) => {
     const { imgLocation, collateral, type, cycle, year } = SynthInfo[props.name];
     const { name, tokenAmount, collateralAmount, collateralRatio } = props;
@@ -106,7 +110,7 @@ export const Portfolio = () => {
           )}
         </Table>
         <Table title="Synths In Wallet" headers={['Token', 'Balance', 'Price', 'Status', 'Actions']}>
-          {synthsInWallet.length > 0 ? (
+          {synthsInWallet && synthsInWallet.length > 0 ? (
             synthsInWallet.map((inWallet, index) => {
               return <SynthsInWalletRow {...inWallet} key={index} />;
             })

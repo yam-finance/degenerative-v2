@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SearchForm } from '@/components';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
-import { ISynthInfo, IMap } from '@/types';
+import { IMap } from '@/types';
 import { MarketContext } from '@/contexts';
 import { SynthInfo, SynthCopy, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
@@ -13,6 +13,9 @@ interface ISynthTypeData {
   aprMax: number;
   totalLiquidity: number;
   totalMarketCap: number;
+  totalTvl: number;
+  totalVolume24h: number;
+  numSynths: number;
 }
 
 export const Explore = () => {
@@ -20,7 +23,7 @@ export const Explore = () => {
   const query = useQuery();
 
   const [searchTerm, setSearchTerm] = useState(query.get('search') ?? '');
-  const [sidebarSynth, setSidebarSynth] = useState();
+  const [sidebarData, setSidebarData] = useState<string>('');
   const [synthTypeData, setSynthTypeData] = useState<IMap<ISynthTypeData>>({});
 
   useEffect(() => {
@@ -37,6 +40,9 @@ export const Explore = () => {
             aprMax: 0,
             totalLiquidity: 0,
             totalMarketCap: 0,
+            totalTvl: 0,
+            totalVolume24h: 0,
+            numSynths: 0,
           };
 
           aggregateData[type] = {
@@ -44,6 +50,9 @@ export const Explore = () => {
             aprMax: Math.max(currentData.aprMax, Number(marketData.apr)),
             totalLiquidity: currentData.totalLiquidity + Number(marketData.liquidity),
             totalMarketCap: currentData.totalMarketCap + Number(marketData.marketCap),
+            totalTvl: currentData.totalTvl + Number(marketData.tvl),
+            totalVolume24h: currentData.totalVolume24h + Number(marketData.volume24h),
+            numSynths: currentData.numSynths + 1,
           };
         });
 
@@ -63,7 +72,7 @@ export const Explore = () => {
     // TODO add description, APY, and set sidebar
     if (!synthTypeData[type]) return <div className={style}>Loading...</div>;
     return (
-      <Link to={`/synths/${type}`} className={style}>
+      <Link to={`/synths/${type}`} className={style} onMouseEnter={() => setSidebarData(type)}>
         <img src={box} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{type}</h5>
         <p className="text-small opacity-60">{description}</p>
@@ -82,7 +91,7 @@ export const Explore = () => {
 
     if (!synthTypeData[type]) return <TableRow>Loading...</TableRow>;
     return (
-      <TableRow to={`/synths/${type}`}>
+      <TableRow to={`/synths/${type}`} onMouseEnter={() => setSidebarData(type)}>
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={box} loading="lazy" alt="" className="width-6" />
@@ -107,8 +116,37 @@ export const Explore = () => {
     );
   };
 
+  const Sidebar: React.FC = () => {
+    if (!sidebarData) return null;
+    return (
+      <>
+        <h3 className="margin-bottom-1">${formatForDisplay(synthTypeData[sidebarData].totalTvl)}</h3>
+        <div>Total value locked</div>
+        <div className="margin-top-8">
+          <div className="flex-align-baseline margin-bottom-2">
+            <div className="expand flex-align-center">
+              <div>Synth trading volume</div>
+            </div>
+            <div className="weight-medium text-color-4">${formatForDisplay(synthTypeData[sidebarData].totalVolume24h)}</div>
+          </div>
+          <div className="flex-align-baseline margin-bottom-2">
+            <div className="expand flex-align-center">
+              <div>Synth marketcap</div>
+            </div>
+            <div className="weight-medium text-color-4">${formatForDisplay(synthTypeData[sidebarData].totalMarketCap)}</div>
+          </div>
+          <div className="flex-align-baseline margin-bottom-2">
+            <div className="expand flex-align-center">
+              <div>Total synths</div>
+            </div>
+            <div className="weight-medium text-color-4">{synthTypeData[sidebarData].numSynths}</div>
+          </div>
+        </div>
+      </>
+    );
+  };
+
   // TODO add loading spinner
-  //if (isEmpty(synthTypeData)) return null;
   return (
     <>
       <MainDisplay>
@@ -128,7 +166,9 @@ export const Explore = () => {
           })}
         </Table>
       </MainDisplay>
-      <SideDisplay></SideDisplay>
+      <SideDisplay>
+        <Sidebar />
+      </SideDisplay>
     </>
   );
 };

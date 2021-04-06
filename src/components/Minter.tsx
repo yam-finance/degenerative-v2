@@ -15,21 +15,23 @@ interface MinterFormFields {
 export const Minter: React.FC = () => {
   const { account } = useContext(EthereumContext);
   const { currentSynth, currentCollateral } = useContext(UserContext);
-  // TODO get max # of collateral available, user's balances
   const actions = useSynthActions(); // TODO pass this in
   const erc20 = useToken();
 
   const [maxCollateral, setMaxCollateral] = useState<BigNumber>(BigNumber.from(0));
-  const [isApproved, setIsApproved] = useState(false);
   const [invalidTokens, setInvalidTokens] = useState(false);
   const [invalidCollateral, setInvalidCollateral] = useState(false);
 
   useEffect(() => {
     const initMinterState = async () => {
-      const collateralBalance = await erc20.getBalance(CollateralMap[currentCollateral].address);
-      const empAllowance = await actions.getEmpAllowance();
+      let collateralBalance = BigNumber.from(0);
+      try {
+        collateralBalance = (await erc20.getBalance(CollateralMap[currentCollateral].address)) ?? BigNumber.from(1);
+      } catch (err) {
+        console.log('ERROR');
+        console.log(err);
+      }
       setMaxCollateral(collateralBalance);
-      setIsApproved(empAllowance);
     };
 
     if (currentCollateral && account) initMinterState();
@@ -63,7 +65,6 @@ export const Minter: React.FC = () => {
         onClick={async (e) => {
           e.preventDefault();
           await actions.onApprove();
-          setIsApproved(true); // TODO check for approval first
         }}
         className="button w-button"
       >
@@ -207,7 +208,7 @@ export const Minter: React.FC = () => {
             </div>
           </div>
           <UtilizationGauge />
-          {isApproved ? <MintButton /> : <ApproveButton />}
+          {actions.isEmpAllowed ? <MintButton /> : <ApproveButton />}
           <div className="text-xs opacity-50 margin-top-2">
             There will be 2 transactions. <br />
             First to approve your WETH, second to mint.

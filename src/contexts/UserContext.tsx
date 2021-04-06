@@ -29,18 +29,13 @@ export const UserProvider: React.FC = ({ children }) => {
   const emp = useEmp();
   const erc20 = useToken();
 
-  // TODO DEBUG
-  useEffect(() => {
-    console.log('WTF');
-    console.log(currentSynth);
-  }, []);
-
   useEffect(() => {
     if (currentSynth) {
       setCurrentCollateral(SynthInfo[currentSynth].collateral);
     }
   }, [currentSynth]);
 
+  // TODO update when user has minted tokens
   useEffect(() => {
     if (signer && account) {
       updateMintedPositions();

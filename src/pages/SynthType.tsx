@@ -20,10 +20,12 @@ interface ISynthTypeItem {
 }
 
 export const SynthType: React.FC = () => {
-  const { currentSynth, setSynth, synthsInWallet } = useContext(UserContext);
+  const { synthsInWallet } = useContext(UserContext);
   const { synthMarketData } = useContext(MarketContext);
   const { type } = useParams<SynthParams>();
   const [synthGroup, setSynthGroup] = useState<ISynthTypeItem[]>([]);
+
+  // TODO redirect if type does not exist
 
   useEffect(() => {
     const initSynthTypes = () => {
@@ -85,12 +87,8 @@ export const SynthType: React.FC = () => {
         <div className="padding-x-5 flex-row">
           <div className="tabs">
             <div className="tab active">Live</div>
-            <a href="#" className="tab">
-              Expired
-            </a>
-            <a href="#" className="tab">
-              All
-            </a>
+            <div className="tab">Expired</div>
+            <div className="tab">All</div>
           </div>
         </div>
         <Table headers={['Maturity', 'APY', 'Your Balance', 'Liquidity', 'Price']}>

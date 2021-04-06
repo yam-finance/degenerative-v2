@@ -12,7 +12,7 @@ export const Breadcrumbs = () => {
       {breadcrumbs.map(({ breadcrumb, match }, idx) => (
         <div key={idx}>
           <Link to={match.url}>{breadcrumb}</Link>
-          {idx < breadcrumbs.length - 1 && <Icon name="ChevronRight" className="icon margin-x-1 margin-top-1 padding-top-1 medium" />}
+          {idx < breadcrumbs.length - 1 && <Icon name="ChevronRight" className="icon medium margin-x-1 padding-top-1" />}
         </div>
       ))}
     </div>

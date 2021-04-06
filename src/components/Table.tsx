@@ -35,19 +35,24 @@ export const Table: React.FC<TableProps> = ({ title, headers, headerClass, class
 interface TableRowProps {
   className?: string;
   to?: string;
+  onMouseEnter?: () => void;
 }
 
-export const TableRow: React.FC<TableRowProps> = ({ className, to, children }) => {
+export const TableRow: React.FC<TableRowProps> = ({ className, to, onMouseEnter, children }) => {
   const style = clsx('table-row', 'margin-y-2', 'w-inline-block', className);
 
   if (to) {
     return (
-      <Link to={to} className={style}>
+      <Link to={to} className={style} onMouseEnter={onMouseEnter}>
         {children}
       </Link>
     );
   } else {
-    return <div className={style}>{children}</div>;
+    return (
+      <div className={style} onMouseEnter={onMouseEnter}>
+        {children}
+      </div>
+    );
   }
 };
 
