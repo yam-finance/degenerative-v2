@@ -3,10 +3,10 @@ import { Line } from 'react-chartjs-2';
 import { IMap } from '@/types';
 
 interface SynthPriceChartProps {
-  synthNames: string[];
+  type: string;
 }
 
-const SynthPriceChart: React.FC<SynthPriceChartProps> = ({ synthNames }) => {
+const SynthPriceChart: React.FC<SynthPriceChartProps> = ({ type }) => {
   const [synthPrices, setSynthPrices] = useState<IMap<number[]>>();
 
   useEffect(() => {

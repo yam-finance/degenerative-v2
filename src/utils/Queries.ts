@@ -17,3 +17,13 @@ export const UNISWAP_MARKET_DATA_QUERY = gql`
     }
   }
 `;
+
+export const UNISWAP_DAILY_PRICE_QUERY = gql`
+  query tokenDayDatas($tokenAddresses: [String!], $startingTime: Int!) {
+    tokenDayDatas(orderBy: date, orderDirection: asc, where: { token_in: $tokenAddresses, date_gt: $startingTime }) {
+      id
+      date
+      priceUSD
+    }
+  }
+`;
