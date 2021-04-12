@@ -81,7 +81,7 @@ export const SynthType: React.FC = () => {
 
     const options = {
       tooltips: {
-        mode: 'index',
+        //mode: 'index', // TODO this breaks build, but is needed
         intersect: false,
         backgroundColor: '#191053',
         titleFontFamily: 'Open Sauce',

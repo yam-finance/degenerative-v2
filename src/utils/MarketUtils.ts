@@ -35,9 +35,9 @@ export const getUsdPriceHistory = async (tokenName: string) => {
     const res = await axios.get(`https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`);
     const prices = res.data.prices;
     console.log(prices);
-    const priceHistory = prices.map(([timestamp, price]) => {
+    const priceHistory = prices.map(([timestamp, price]: number[]) => {
       const newTimestamp = timestamp.toString().substring(0, timestamp.toString().length - 3);
-      const date = getDateString(fromUnixTime(newTimestamp));
+      const date = getDateString(fromUnixTime(Number(newTimestamp)));
       return [date, price];
     });
 
