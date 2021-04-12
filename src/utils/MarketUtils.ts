@@ -1,24 +1,47 @@
 import { request } from 'graphql-request';
 import axios from 'axios';
 import numeral from 'numeral';
-import { sub, getUnixTime, fromUnixTime, formatISO } from 'date-fns';
+import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
-import { BigNumber } from 'ethers';
+import { BigNumber, utils, constants } from 'ethers';
 import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY } from '@/utils';
-import { SynthInfo } from './TokenList';
+import { CollateralMap, SynthInfo, SynthTypes } from './TokenList';
 import { IMap } from '@/types';
-import { Database } from 'react-feather';
+
+sessionStorage.clear();
+
+export const getDateString = (date: Date) => formatISO(date, { representation: 'date' });
 
 // Get USD price of token and cache to sessionstorage
-export const getUsdPriceData = async (tokenAddress: string) => {
+export const getUsdPrice = async (tokenAddress: string) => {
   const cached = sessionStorage.getItem(tokenAddress);
-  if (cached) return Promise.resolve(cached);
+  if (cached) return Promise.resolve(Number(cached));
 
   try {
     const res = await axios.get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${tokenAddress}&vs_currencies=usd`);
-    const price = res.data[tokenAddress].usd;
-    sessionStorage.setItem(tokenAddress, price);
+    const price = Number(res.data[tokenAddress].usd);
+    sessionStorage.setItem(tokenAddress, price.toString());
     return Promise.resolve(price);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
+
+// Get USD price history of token from Coingecko
+export const getUsdPriceHistory = async (tokenName: string) => {
+  console.log(tokenName);
+  const cgId = CollateralMap[tokenName].coingeckoId;
+  try {
+    const res = await axios.get(`https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`);
+    const prices = res.data.prices;
+    console.log(prices);
+    const priceHistory = prices.map(([timestamp, price]) => {
+      const newTimestamp = timestamp.toString().substring(0, timestamp.toString().length - 3);
+      const date = getDateString(fromUnixTime(newTimestamp));
+      return [date, price];
+    });
+
+    return Promise.resolve(priceHistory);
   } catch (err) {
     return Promise.reject(err);
   }
@@ -37,21 +60,35 @@ export const getPoolData = async (poolAddress: string) => {
 // TODO get APR from Degenerative API
 export const getApr = () => {};
 
+/** Get reference price history. Returns price in wei. */
+export const getReferencePriceHistory = async (type: string) => {
+  try {
+    let res;
+    switch (type) {
+      case 'uGas':
+        res = await axios.get('https://data.yam.finance/median-history');
+        break;
+      case 'uStonks':
+        res = await axios.get('https://data.yam.finance/ustonks/index-history'); // TODO this is too big
+        break;
+      default:
+        break;
+    }
+
+    return res?.data;
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
+
 interface PriceHistoryResponse {
   date: number;
   id: string;
   priceUSD: string;
 }
 
-/** Get all price data for this synth type and format for chart.
- *  Returns object of objects
- *  synthName: {
- *    unixTime: price
- *    ...
- *  } */
+/** Get labels, reference price data and all market price data for this synth type. */
 export const getDailyPriceHistory = async (type: string) => {
-  const toDateString = (date: Date) => formatISO(date, { representation: 'date' });
-
   // TODO defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 
@@ -69,31 +106,22 @@ export const getDailyPriceHistory = async (type: string) => {
     startingTime: startingTime,
   });
 
-  // Find min and max date
-  let min: Date | undefined;
-  let max: Date | undefined;
-  dailyPriceResponse.tokenDayDatas.forEach((data) => {
-    const date = fromUnixTime(data.date);
-    if (!min) {
-      min = date;
-    } else {
-      if (date < min) min = date;
-    }
-
-    if (!max) {
-      max = date;
-    } else {
-      if (date > max) max = date;
-    }
-  });
+  // Use reduce to find min and max range dates
+  const [min, max] = dailyPriceResponse.tokenDayDatas
+    .map((data) => fromUnixTime(data.date))
+    .reduce((acc: Date[], val: Date) => {
+      acc[0] = acc[0] === undefined || val < acc[0] ? val : acc[0];
+      acc[1] = acc[1] === undefined || val > acc[1] ? val : acc[1];
+      return acc;
+    }, []);
 
   // Generate array of dates from min to max, convert to ISO string
   const dateArray = (() => {
     if (min && max) {
       const dates: string[] = [];
-      const currentDate = min;
+      const currentDate = new Date(min);
       while (currentDate <= max) {
-        dates.push(formatISO(currentDate, { representation: 'date' }));
+        dates.push(getDateString(currentDate));
         currentDate.setDate(currentDate.getDate() + 1);
       }
       return dates;
@@ -102,7 +130,24 @@ export const getDailyPriceHistory = async (type: string) => {
     }
   })();
 
-  // TODO Get reference index prices for each date
+  // Get reference index prices (USD) for each date
+  // TODO this should be done on API
+  const referenceData = await (async () => {
+    const refPrices = await getReferencePriceHistory(type);
+    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(SynthTypes[type].collateral));
+
+    if (min && max) {
+      const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
+      const maxIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(max));
+      return refPrices.slice(minIndex, maxIndex).map((ref: any) => {
+        const dateString = getDateString(new Date(ref.timestamp));
+        // TODO change to use strategy based on synth type
+        const usdPricePerGwei = (collateralUsd.get(dateString) ?? 1) / 10 ** 9;
+        const price = ref.price / 1000; // TODO numbers don't work without dividing by 1000. Not sure why.
+        return Math.round(price * usdPricePerGwei * 100) / 100;
+      });
+    }
+  })();
 
   // TODO timezone not converting to UTC correctly
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -115,12 +160,11 @@ export const getDailyPriceHistory = async (type: string) => {
 
     if (!priceData[synthName]) priceData[synthName] = {};
     const date = formatISO(fromUnixTime(dayData.date), { representation: 'date' });
-    priceData[synthName][date] = Math.round((Number(dayData.priceUSD) + Number.EPSILON) * 100) / 100;
+    priceData[synthName][date] = Math.round(Number(dayData.priceUSD) * 100) / 100;
   });
 
-  // Create response object of arrays for labels, index price data, and all daily synth prices
-  // TODO get reference index price data
-  const res: IMap<number[]> = {};
+  // Create object of arrays for reference prices and all synth prices
+  const res: IMap<number[]> = { Reference: referenceData };
   dateArray.forEach((date) => {
     Object.keys(priceData).forEach((synthName) => {
       if (!res[synthName]) res[synthName] = [];
@@ -134,8 +178,6 @@ export const getDailyPriceHistory = async (type: string) => {
       }
     });
   });
-
-  console.log(res);
 
   return {
     labels: dateArray,

@@ -1,11 +1,11 @@
 import Collateral from '@/assets/collateral.json';
-import Descriptions from '@/assets/descriptions.json';
+import Types from '@/assets/types.json'; // TODO rename to groups
 import Assets from '@/assets/assets.json';
-import { ISynthInfo, IToken, IMap } from '@/types';
+import { ISynthInfo, ISynthType, IToken, IMap } from '@/types';
 
 //export const SynthMap: IMap<ISynthInfo> = Synths;
 export const CollateralMap: IMap<IToken> = Collateral;
-export const SynthCopy: IMap<string> = Descriptions; // TODO make this map of all copy for synth types
+export const SynthTypes: IMap<ISynthType> = Types; // TODO make this map of all copy for synth types
 
 // Synth will be indexed by the name eg. uGas-JAN21
 export const SynthInfo: IMap<ISynthInfo> = (() => {
@@ -18,7 +18,7 @@ export const SynthInfo: IMap<ISynthInfo> = (() => {
       // Add in synth type information to object
       synthInfo[name] = {
         ...synth,
-        imgLocation: 'src/assets/Box-01.png', // TODO add image locations
+        imgLocation: 'src/assets/Box-01.png', // TODO add image locations to json
         type: type,
       };
     });

@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { ISynthMarketData, IMap, Emp } from '@/types';
-import { SynthInfo, CollateralMap, getUsdPriceData, getApr, getPoolData, formatForDisplay } from '@/utils';
+import { SynthInfo, CollateralMap, getUsdPrice, getApr, getPoolData, formatForDisplay } from '@/utils';
 import { useEmp } from '@/hooks';
 import { EthereumContext } from '@/contexts';
 
@@ -39,7 +39,7 @@ export const MarketProvider: React.FC = ({ children }) => {
           const tvl = '1000';
           const totalSupply = '5555';
 
-          const collateralPriceUsd = await getUsdPriceData(CollateralMap[synth.collateral].address);
+          const collateralPriceUsd = await getUsdPrice(CollateralMap[synth.collateral].address);
 
           const pool = await getPoolData(synth.pool.address);
           const liquidity = pool.reserveUSD;

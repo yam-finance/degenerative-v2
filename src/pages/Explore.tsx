@@ -4,7 +4,7 @@ import { SearchForm } from '@/components';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMap } from '@/types';
 import { MarketContext } from '@/contexts';
-import { SynthInfo, SynthCopy, isEmpty, formatForDisplay } from '@/utils';
+import { SynthInfo, SynthTypes, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
 import box from '@/assets/Box-01.png';
 
@@ -64,7 +64,7 @@ export const Explore = () => {
 
   const SynthBlock: React.FC<{ type: string }> = ({ type }) => {
     //const { type, cycle, year } = SynthInfo[name];
-    const description = SynthCopy[type];
+    const description = SynthTypes[type].description;
     const { aprMin, aprMax } = synthTypeData[type];
 
     const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block';
@@ -87,7 +87,7 @@ export const Explore = () => {
 
   const SynthTableRow: React.FC<{ type: string }> = ({ type }) => {
     const { aprMin, aprMax, totalLiquidity, totalMarketCap } = synthTypeData[type];
-    const description = SynthCopy[type];
+    const description = SynthTypes[type].description;
 
     if (!synthTypeData[type]) return <TableRow>Loading...</TableRow>;
     return (

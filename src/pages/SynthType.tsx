@@ -4,7 +4,7 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 import { UserContext, MarketContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
-import { SynthInfo, SynthCopy, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
+import { SynthInfo, SynthTypes, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 import { IMap } from '@/types';
 
 interface SynthParams {
@@ -70,7 +70,7 @@ export const SynthType: React.FC = () => {
         // TODO add reference data
         label: name,
         data: prices,
-        borderColor: '#FF0099',
+        borderColor: name === 'Reference' ? '#fff' : '#FF0099',
         borderWidth: 1,
         pointRadius: 0,
         pointHoverRadius: 4,
@@ -95,9 +95,6 @@ export const SynthType: React.FC = () => {
         yPadding: 8,
         cornerRadius: 8,
         caretSize: 0,
-      },
-      legend: {
-        display: false,
       },
       layout: {
         padding: {
@@ -133,9 +130,14 @@ export const SynthType: React.FC = () => {
         ],
       },
     };
+
+    const legend = {
+      display: false,
+    };
+
     console.log(data);
 
-    return <Line data={data} options={options} />;
+    return <Line data={data} options={options} legend={legend} />;
   };
 
   const SynthGroupRow: React.FC<ISynthTypeItem> = (props) => {
@@ -170,7 +172,7 @@ export const SynthType: React.FC = () => {
     <>
       <MainDisplay>
         <MainHeading className="margin-bottom-1">{type}</MainHeading>
-        <div className="padding-x-8 flex-align-baseline">{SynthCopy[type]}</div>
+        <div className="padding-x-8 flex-align-baseline">{SynthTypes[type].description}</div>
         <div className="width-full margin-y-2 w-embed w-script">{historicPriceData && <Chart />}</div>
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <div className="padding-x-5 flex-row">

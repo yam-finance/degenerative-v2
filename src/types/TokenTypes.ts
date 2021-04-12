@@ -6,6 +6,7 @@ export interface IToken extends IContract {
   name?: string;
   decimals?: number;
   symbol?: string;
+  coingeckoId?: string;
   //balance: BigNumber;
   //priceUsd: number;
 }
@@ -27,10 +28,15 @@ export interface ISynthInfo {
   type: string;
   cycle: string;
   year: string;
-  collateral: string;
+  collateral: string; // TODO remove, get collateral through type
   token: IToken;
   emp: IContract;
   pool: IContract;
+}
+
+export interface ISynthType {
+  description: string;
+  collateral: string;
 }
 
 export interface ISynthMarketData {
