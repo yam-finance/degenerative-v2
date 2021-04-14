@@ -70,7 +70,7 @@ export const Explore = () => {
 
     const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block';
 
-    if (!synthTypeData[type]) return <div className={style}>Loading...</div>;
+    if (isEmpty(synthMarketData)) return <div className={style}>Loading...</div>;
     return (
       <Link to={`/synths/${type}`} className={style} onMouseEnter={() => setSidebarData(type)}>
         <img src={box} loading="lazy" alt="" className="width-16" />
@@ -89,7 +89,7 @@ export const Explore = () => {
     const { aprMin, aprMax, totalLiquidity, totalMarketCap } = synthTypeData[type];
     const description = SynthTypes[type].description;
 
-    if (!synthTypeData[type]) return <TableRow>Loading...</TableRow>;
+    if (isEmpty(synthMarketData)) return <TableRow>Loading...</TableRow>;
     return (
       <TableRow to={`/synths/${type}`} onMouseEnter={() => setSidebarData(type)}>
         <div className="flex-align-center portrait-width-full width-1-2">

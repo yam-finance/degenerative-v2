@@ -24,17 +24,17 @@ export const MarketProvider: React.FC = ({ children }) => {
     const initializeMarketData = async () => {
       const data: typeof synthMarketData = {};
 
-      for (const synthName in SynthInfo) {
-        const synth = SynthInfo[synthName];
-        const collateral = CollateralMap[synth.collateral];
+      try {
+        const requests = Object.entries(SynthInfo).map(([name, synth]) => {
+          const collateral = CollateralMap[synth.collateral];
+          return Promise.all([name, synth, collateral, getEmpState(synth.emp.address), getUsdPrice(collateral.address), getPoolData(synth.pool.address)]);
+        });
+        const resolved = await Promise.all(requests);
 
-        try {
-          const { tvl, totalSupply, expirationTimestamp } = await getEmpState(synth.emp.address);
+        for (const synthData of resolved) {
+          const [name, synth, collateral, { tvl, totalSupply, expirationTimestamp }, collateralPriceUsd, pool] = synthData;
+
           const isExpired = expirationTimestamp.toNumber() < Math.trunc(Date.now() / 1000);
-
-          const collateralPriceUsd = await getUsdPrice(collateral.address);
-
-          const pool = await getPoolData(synth.pool.address);
           const liquidity = pool.reserveUSD;
 
           let priceUsd;
@@ -48,7 +48,7 @@ export const MarketProvider: React.FC = ({ children }) => {
           const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, collateral.decimals));
           const apr = String((Math.random() * 100).toFixed(2)); // TODO get actual APR
 
-          data[synthName] = {
+          data[name] = {
             price: priceUsd.toFixed(2),
             liquidity: liquidity,
             totalSupply: utils.formatUnits(totalSupply, collateral.decimals),
@@ -58,9 +58,9 @@ export const MarketProvider: React.FC = ({ children }) => {
             apr: apr,
             isExpired: isExpired,
           };
-        } catch (err) {
-          console.error(err);
         }
+      } catch (err) {
+        console.log(err);
       }
 
       setSynthMarketData(data);
