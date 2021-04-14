@@ -4,6 +4,10 @@ import { SynthInfo, CollateralMap, getUsdPrice, getApr, getPoolData, formatForDi
 import { useEmp } from '@/hooks';
 import { EthereumContext } from '@/contexts';
 
+// TODO DEBUG
+import { getEmpState } from '@/utils/EmpUtils';
+import { utils } from 'ethers';
+
 const initialState = {
   synthMarketData: {} as IMap<ISynthMarketData>,
 };
@@ -13,7 +17,6 @@ export const MarketContext = createContext(initialState);
 export const MarketProvider: React.FC = ({ children }) => {
   const { signer } = useContext(EthereumContext);
   const [synthMarketData, setSynthMarketData] = useState<IMap<ISynthMarketData>>(initialState.synthMarketData);
-  const { getEmpContract, getTvlData, queryEmpState } = useEmp();
 
   // TODO This entire context can be moved to utils with other synth information by connecting to
   //      app's eth node rather than user's connection
@@ -23,23 +26,13 @@ export const MarketProvider: React.FC = ({ children }) => {
 
       for (const synthName in SynthInfo) {
         const synth = SynthInfo[synthName];
+        const collateral = CollateralMap[synth.collateral];
 
         try {
-          // TODO Not sure why none of the contract getters are working. FIX IMMEDIATELY
-          //const { tvl, totalSupply } = await getTvlData(synth.emp.address);
-          //console.log('TVL DATA');
-          //console.log(tvl);
-          //console.log(totalSupply);
+          const { tvl, totalSupply, expirationTimestamp } = await getEmpState(synth.emp.address);
+          const isExpired = expirationTimestamp.toNumber() < Math.trunc(Date.now() / 1000);
 
-          //const expirationTimestamp = await emp.expirationTimestamp();
-          //const isExpired = expirationTimestamp.toNumber() > Date.now();
-          //const empstate = await queryEmpState(synth.emp.address);
-
-          const isExpired = false; // TODO
-          const tvl = '1000';
-          const totalSupply = '5555';
-
-          const collateralPriceUsd = await getUsdPrice(CollateralMap[synth.collateral].address);
+          const collateralPriceUsd = await getUsdPrice(collateral.address);
 
           const pool = await getPoolData(synth.pool.address);
           const liquidity = pool.reserveUSD;
@@ -51,15 +44,16 @@ export const MarketProvider: React.FC = ({ children }) => {
             priceUsd = pool.token1Price * collateralPriceUsd;
           }
 
-          const marketCap = (priceUsd * Number(totalSupply)).toString();
-          const apr = String((Math.random() * 100).toFixed(2)); // TODO
+          const realTvl = collateralPriceUsd * Number(utils.formatUnits(tvl, collateral.decimals));
+          const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, collateral.decimals));
+          const apr = String((Math.random() * 100).toFixed(2)); // TODO get actual APR
 
           data[synthName] = {
-            price: priceUsd.toFixed(2).toString(),
+            price: priceUsd.toFixed(2),
             liquidity: liquidity,
-            totalSupply: totalSupply,
-            tvl: tvl,
-            marketCap: marketCap,
+            totalSupply: utils.formatUnits(totalSupply, collateral.decimals),
+            tvl: realTvl.toString(),
+            marketCap: marketCap.toString(),
             volume24h: '0', // TODO need to get from subgraph
             apr: apr,
             isExpired: isExpired,

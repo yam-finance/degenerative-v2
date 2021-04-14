@@ -11,7 +11,6 @@ interface SynthParams {
   type: string;
 }
 
-// TODO add this data to
 interface ISynthTypeItem {
   name: string;
   maturity: string;
@@ -64,10 +63,10 @@ export const SynthType: React.FC = () => {
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
+    console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
       datasets: Object.entries(historicPriceData.synthPrices).map(([name, prices]) => ({
-        // TODO add reference data
         label: name,
         data: prices,
         borderColor: name === 'Reference' ? '#fff' : '#FF0099',

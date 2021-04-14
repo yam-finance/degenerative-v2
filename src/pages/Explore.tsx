@@ -60,6 +60,7 @@ export const Explore = () => {
     };
 
     if (synthMarketData && !isEmpty(synthMarketData)) AggregateSynthTypeData();
+    console.log(synthMarketData);
   }, [synthMarketData, searchTerm]);
 
   const SynthBlock: React.FC<{ type: string }> = ({ type }) => {
@@ -69,7 +70,6 @@ export const Explore = () => {
 
     const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block';
 
-    // TODO add description, APY, and set sidebar
     if (!synthTypeData[type]) return <div className={style}>Loading...</div>;
     return (
       <Link to={`/synths/${type}`} className={style} onMouseEnter={() => setSidebarData(type)}>
@@ -101,6 +101,7 @@ export const Explore = () => {
             <div className="text-xs opacity-50">{description}</div>
           </div>
         </div>
+        <div></div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">
             {aprMin}-{aprMax}%
@@ -121,23 +122,23 @@ export const Explore = () => {
     return (
       <>
         <h3 className="margin-bottom-1">${formatForDisplay(synthTypeData[sidebarData].totalTvl)}</h3>
-        <div>Total value locked</div>
+        <div>Total Value Locked</div>
         <div className="margin-top-8">
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
-              <div>Synth trading volume</div>
+              <div>Synth Trading Volume</div>
             </div>
             <div className="weight-medium text-color-4">${formatForDisplay(synthTypeData[sidebarData].totalVolume24h)}</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
-              <div>Synth marketcap</div>
+              <div>Synth Marketcap</div>
             </div>
             <div className="weight-medium text-color-4">${formatForDisplay(synthTypeData[sidebarData].totalMarketCap)}</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
-              <div>Total synths</div>
+              <div>Total Synths</div>
             </div>
             <div className="weight-medium text-color-4">{synthTypeData[sidebarData].numSynths}</div>
           </div>
@@ -160,7 +161,7 @@ export const Explore = () => {
             return <SynthBlock type={type} key={index} />;
           })}
         </div>
-        <Table headers={['Synth', 'APY', 'Liquidity', 'Market Cap']} headerClass={['width-1-2', '', '', '']}>
+        <Table headers={['Synth', 'APR', 'Liquidity', 'Market Cap']} headerClass={['width-1-2', '', '', '']}>
           {Object.keys(synthTypeData).map((type, index) => {
             return <SynthTableRow type={type} key={index} />;
           })}

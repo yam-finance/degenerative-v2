@@ -1,16 +1,13 @@
 import { request } from 'graphql-request';
 import axios from 'axios';
-import numeral from 'numeral';
 import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, utils, constants } from 'ethers';
-import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY } from '@/utils';
+import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString } from '@/utils';
 import { CollateralMap, SynthInfo, SynthTypes } from './TokenList';
 import { IMap } from '@/types';
 
 sessionStorage.clear();
-
-export const getDateString = (date: Date) => formatISO(date, { representation: 'date' });
 
 // Get USD price of token and cache to sessionstorage
 export const getUsdPrice = async (tokenAddress: string) => {
@@ -29,12 +26,10 @@ export const getUsdPrice = async (tokenAddress: string) => {
 
 // Get USD price history of token from Coingecko
 export const getUsdPriceHistory = async (tokenName: string) => {
-  console.log(tokenName);
   const cgId = CollateralMap[tokenName].coingeckoId;
   try {
     const res = await axios.get(`https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`);
     const prices = res.data.prices;
-    console.log(prices);
     const priceHistory = prices.map(([timestamp, price]: number[]) => {
       const newTimestamp = timestamp.toString().substring(0, timestamp.toString().length - 3);
       const date = getDateString(fromUnixTime(Number(newTimestamp)));
@@ -60,27 +55,6 @@ export const getPoolData = async (poolAddress: string) => {
 // TODO get APR from Degenerative API
 export const getApr = () => {};
 
-/** Get reference price history. Returns price in wei. */
-export const getReferencePriceHistory = async (type: string) => {
-  try {
-    let res;
-    switch (type) {
-      case 'uGas':
-        res = await axios.get('https://data.yam.finance/median-history');
-        break;
-      case 'uStonks':
-        res = await axios.get('https://data.yam.finance/ustonks/index-history'); // TODO this is too big
-        break;
-      default:
-        break;
-    }
-
-    return res?.data;
-  } catch (err) {
-    return Promise.reject(err);
-  }
-};
-
 interface PriceHistoryResponse {
   date: number;
   id: string;
@@ -99,6 +73,7 @@ export const getDailyPriceHistory = async (type: string) => {
   );
 
   const addressList = Array.from(relevantSynths.keys());
+  // TODO grab paired data, not USD
   const dailyPriceResponse: {
     tokenDayDatas: PriceHistoryResponse[];
   } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
@@ -134,18 +109,11 @@ export const getDailyPriceHistory = async (type: string) => {
   // TODO this should be done on API
   const referenceData = await (async () => {
     const refPrices = await getReferencePriceHistory(type);
-    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(SynthTypes[type].collateral));
 
     if (min && max) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
       const maxIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(max));
-      return refPrices.slice(minIndex, maxIndex).map((ref: any) => {
-        const dateString = getDateString(new Date(ref.timestamp));
-        // TODO change to use strategy based on synth type
-        const usdPricePerGwei = (collateralUsd.get(dateString) ?? 1) / 10 ** 9;
-        const price = ref.price / 1000; // TODO numbers don't work without dividing by 1000. Not sure why.
-        return Math.round(price * usdPricePerGwei * 100) / 100;
-      });
+      return refPrices.slice(minIndex, maxIndex).map((ref: any) => ref.price);
     }
   })();
 
@@ -183,9 +151,4 @@ export const getDailyPriceHistory = async (type: string) => {
     labels: dateArray,
     synthPrices: res,
   };
-};
-
-export const formatForDisplay = (num: string | number | BigNumber) => {
-  if (BigNumber.isBigNumber(num)) num = num.toString();
-  return numeral(num).format('0.0a');
 };
