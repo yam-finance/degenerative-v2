@@ -1,37 +1,47 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 
 import { UserContext } from '@/contexts';
 import { useEmp, useToken, useWrapEth } from '@/hooks';
+import { SynthInfo, CollateralMap } from '@/utils';
 
-export const useSynthState = () => {
+export const useSynthActions = () => {
   const { currentSynth, currentCollateral } = useContext(UserContext);
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
 
-  useEffect(() => {
-    if (currentSynth && currentCollateral) {
-      setEmpAddress(currentSynth.emp.address);
-      setCollateralAddress(currentCollateral.address);
-    }
-  }, [currentSynth]);
+  const [loading, setLoading] = useState(false);
+  const [tokenAmount, setTokenAmount] = useState(0);
+  const [collateralAmount, setCollateralAmount] = useState(0);
+  const [isEmpAllowed, setIsEmpAllowed] = useState(false);
 
   const emp = useEmp();
   const collateral = useToken();
   const wrapEth = useWrapEth();
 
-  const [loading, setLoading] = useState(false);
-  const [tokenAmount, setTokenAmount] = useState(0);
-  const [collateralAmount, setCollateralAmount] = useState(0);
+  useEffect(() => {
+    if (currentSynth && currentCollateral) {
+      setEmpAddress(SynthInfo[currentSynth].emp.address);
+      setCollateralAddress(CollateralMap[currentCollateral].address);
+    }
+  }, [currentSynth]);
+
+  useEffect(() => {
+    checkEmpAllowance();
+  }, [collateralAddress, empAddress]);
+
+  const checkEmpAllowance = async () => {
+    if (collateralAddress && empAddress) {
+      setIsEmpAllowed(await collateral.getAllowance(collateralAddress, empAddress));
+    }
+  };
 
   const onApprove = async () => {
-    setLoading(true);
     try {
       const tx = await collateral.approveSpender(collateralAddress, empAddress);
       await tx?.wait();
+      checkEmpAllowance();
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -71,8 +81,6 @@ export const useSynthState = () => {
 
   const onRedeem = () => {};
 
-  const onGetAllowance = async () => console.log(await collateral.getAllowance(collateralAddress, empAddress));
-
   return {
     tokenAmount,
     setTokenAmount,
@@ -81,11 +89,11 @@ export const useSynthState = () => {
     onMint,
     onRedeem,
     onApprove,
-    onGetAllowance,
+    isEmpAllowed,
     onWrapEth,
   };
 };
 
-export type ISynthState = typeof useSynthState;
+export type ISynthState = typeof useSynthActions;
 
-export default useSynthState;
+export default useSynthActions;

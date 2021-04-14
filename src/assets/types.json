@@ -1,0 +1,10 @@
+{
+  "uGas": {
+    "description": "Speculate or hedge on Ethereum gas prices",
+    "collateral": "WETH"
+  },
+  "uStonks": {
+    "description": "Track the top ten stocks chosen by the Wall Street Bets community",
+    "collateral": "USDC"
+  }
+}

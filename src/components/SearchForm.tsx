@@ -1,26 +1,32 @@
 import React from 'react';
-import { Search } from 'react-feather';
+import { Search as SearchIcon } from 'react-feather';
+import { Redirect } from 'react-router-dom';
+import { useFormState } from 'react-use-form-state';
 
-type SearchProps = {
+type SearchFormProps = {
   className: string;
+  setSearch?: (search: string) => void;
 };
 
-// TODO Add function onEnter
-export const SearchForm: React.FC<SearchProps> = ({ className }) => {
+interface SearchFormFields {
+  search: string;
+}
+
+export const SearchForm: React.FC<SearchFormProps> = ({ className, setSearch }) => {
+  const [formState, { text }] = useFormState<SearchFormFields>(null, {
+    onChange: (e, stateValues, nextStateValues) => {
+      if (setSearch) setSearch(nextStateValues.search);
+    },
+  });
+
+  const handleSubmit = () => <Redirect to={`/synths?search=${formState.values.search}`} />;
+
   return (
     <div className={className}>
-      <form id="email-form" name="email-form">
+      <form onSubmit={handleSubmit}>
         <div className="relative">
-          <input
-            type="text"
-            className="form-input margin-0 has-icon w-input"
-            maxLength={256}
-            name="Synth-2"
-            placeholder="Search synths"
-            id="Synth-2"
-            required
-          />
-          <Search className="absolute-top-left icon margin-3" />
+          <input {...text('search')} className="form-input margin-0 has-icon w-input" maxLength={256} placeholder="Search synths" required />
+          <SearchIcon className="absolute-top-left icon margin-3" />
         </div>
       </form>
     </div>

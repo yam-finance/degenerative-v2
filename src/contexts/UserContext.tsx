@@ -1,11 +1,9 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import useAsyncEffect from 'use-async-effect';
 
 import { ISynthInfo, IToken, IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
-import { SynthMap, CollateralMap } from '@/utils/TokenList';
+import { CollateralMap, SynthInfo } from '@/utils/TokenList';
 
-import { useEmp, useToken, useUniswap } from '@/hooks';
-import { useQuery } from 'graphql-hooks';
+import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
 import { BigNumber, utils } from 'ethers';
 
@@ -13,10 +11,10 @@ const initialState = {
   mintedPositions: [] as IMintedPosition[],
   synthsInWallet: [] as ISynthInWallet[],
   //poolPositions: [] as IPoolPosition[],
-  setSynth: (name: string) => {},
-  //getMarketData: () => {},
-  currentSynth: {} as ISynthInfo | undefined,
-  currentCollateral: {} as IToken | undefined,
+  setSynth: (synthName: string) => {},
+  getSponsorPosition: (synthName: string) => {},
+  currentSynth: '',
+  currentCollateral: '',
 };
 
 export const UserContext = createContext(initialState);
@@ -25,80 +23,75 @@ export const UserProvider: React.FC = ({ children }) => {
   const { account, signer } = useContext(EthereumContext);
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);
   const [synthsInWallet, setSynthsInWallet] = useState<ISynthInWallet[]>([]);
-  const [currentSynth, setCurrentSynth] = useState<ISynthInfo>();
-  const [currentCollateral, setCurrentCollateral] = useState<IToken>();
+  const [currentSynth, setCurrentSynth] = useState('');
+  const [currentCollateral, setCurrentCollateral] = useState('');
 
   const emp = useEmp();
   const erc20 = useToken();
-  const { getPrice } = useUniswap();
-
-  /*
-  // TODO DEBUG
-  useEffect(() => {
-    console.log(SynthMap);
-    setCurrentSynth(SynthMap['UGASMAR21']);
-  }, []);
-  */
 
   useEffect(() => {
     if (currentSynth) {
-      console.log('CURRENT SYNTH');
-      console.log(currentSynth);
-      setCurrentCollateral(CollateralMap[currentSynth.metadata.collateral]);
+      setCurrentCollateral(SynthInfo[currentSynth].collateral);
     }
   }, [currentSynth]);
 
+  // TODO update when user has minted tokens
   useEffect(() => {
     if (signer && account) {
       updateMintedPositions();
       updateSynthsInWallet();
-      //getMarketData();
     }
   }, [signer, account]);
 
-  const setSynth = (name: string) => {
+  const setSynth = (synthName: string) => {
     console.log('SET SYNTH CALLED');
-    console.log(name);
-    setCurrentSynth(SynthMap[name]);
+    console.log(synthName);
+    setCurrentSynth(synthName);
   };
 
   const updateMintedPositions = () => {
     const minted: IMintedPosition[] = [];
-
-    Object.keys(SynthMap).forEach(async (name) => {
-      const synth = SynthMap[name];
-      const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(synth.emp.address);
-
-      if (rawCollateral.gt(0) && tokensOutstanding.gt(0)) {
-        const position: IMintedPosition = {
-          tokenAmount: utils.formatEther(tokensOutstanding),
-          // tokenPrice: await (await getPrice(synth.token, collateral)).price,
-          collateralAmount: utils.formatEther(rawCollateral),
-          // collateralPrice:
-          collateralRatio: rawCollateral.div(tokensOutstanding).toString(),
-          metadata: synth.metadata,
-        };
-
-        minted.push(position);
+    Object.keys(SynthInfo).forEach(async (name) => {
+      try {
+        const mintedPosition = await getSponsorPosition(name);
+        minted.push(mintedPosition);
+      } catch (err) {
+        // Do nothing
       }
     });
-
     setMintedPositions(minted);
+  };
+
+  const getSponsorPosition = async (synthName: string) => {
+    const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(SynthInfo[synthName].emp.address);
+
+    if (rawCollateral.gt(0) && tokensOutstanding.gt(0)) {
+      const mintedPosition: IMintedPosition = {
+        name: synthName,
+        tokenAmount: utils.formatEther(tokensOutstanding),
+        // tokenPrice: await (await getPrice(synth.token, collateral)).price,
+        collateralAmount: utils.formatEther(rawCollateral),
+        // collateralPrice:
+        collateralRatio: rawCollateral.div(tokensOutstanding).toString(),
+      };
+      return Promise.resolve(mintedPosition);
+    } else {
+      return Promise.reject('Account does not have a sponsor position.');
+    }
   };
 
   // TODO
   const updateSynthsInWallet = () => {
     const synthsOwned: ISynthInWallet[] = [];
 
-    Object.keys(SynthMap).forEach(async (name) => {
-      const synth = SynthMap[name];
+    Object.entries(SynthInfo).forEach(async ([name, synth]) => {
       const balance = await erc20.getBalance(synth.token.address);
 
       if (balance.gt(0)) {
         const inWallet: ISynthInWallet = {
+          name: name,
           // TODO add price USD
           tokenAmount: utils.formatEther(balance),
-          metadata: synth.metadata,
         };
 
         synthsOwned.push(inWallet);
@@ -108,26 +101,6 @@ export const UserProvider: React.FC = ({ children }) => {
     setSynthsInWallet(synthsOwned);
   };
 
-  // TODO
-  /*
-  const getMarketData = async () => {
-    const marketData = await Object.keys(SynthMap).map(async (name) => {
-      // TODO change to only query relevant data from EMP
-      const { rawTotalPositionCollateral, totalTokensOutstanding } = await emp.queryEmpState(SynthMap[name].emp.address);
-
-      const synthMarketData: ISynthMarketData = {
-        metadata: SynthMap[name].metadata,
-        tvl: rawTotalPositionCollateral?.toString() as string,
-        volume24h: data.volumeUSD as string,
-        marketCap: totalTokensOutstanding?.toString() as string, // TODO multiply by priceUsd
-        totalSupply: totalTokensOutstanding?.toString() as string,
-      };
-      return synthMarketData;
-    });
-
-    console.log(marketData);
-  };*/
-
   return (
     <UserContext.Provider
       value={{
@@ -136,7 +109,7 @@ export const UserProvider: React.FC = ({ children }) => {
         currentSynth,
         currentCollateral,
         setSynth,
-        //getMarketData,
+        getSponsorPosition,
       }}
     >
       {children}

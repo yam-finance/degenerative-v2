@@ -6,36 +6,48 @@ export interface IToken extends IContract {
   name?: string;
   decimals?: number;
   symbol?: string;
+  coingeckoId?: string;
   //balance: BigNumber;
   //priceUsd: number;
 }
 
-export interface ISynthMetadata {
-  name: string;
+// TODO remove
+//export interface ISynthMetadata {
+//  name: string;
+//  //type: string;
+//  cycle: string;
+//  year: string;
+//  collateral: string;
+//  //expired: boolean;
+//  //apy?: number;
+//  //description?: string
+//}
+
+export interface ISynthInfo {
+  imgLocation: string;
   type: string;
   cycle: string;
   year: string;
-  collateral: string;
-  expired: boolean;
-  //apy?: number;
-  //description?: string
-}
-
-export interface ISynthInfo {
-  // TODO add image location
-  metadata: ISynthMetadata;
+  collateral: string; // TODO remove, get collateral through type
   token: IToken;
   emp: IContract;
   pool: IContract;
 }
 
+export interface ISynthType {
+  description: string;
+  collateral: string;
+}
+
 export interface ISynthMarketData {
+  price: string;
   tvl: string;
-  //apy: number;
+  apr: string;
   volume24h: string;
   marketCap: string;
   totalSupply: string;
-  metadata: ISynthMetadata;
+  liquidity: string;
+  isExpired: boolean;
 }
 
 export interface IMap<T> {

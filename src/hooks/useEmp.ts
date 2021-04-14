@@ -1,20 +1,21 @@
-import { useState, useContext, useCallback, useEffect } from 'react';
+import { useContext, useCallback } from 'react';
 import { Signer, BigNumber } from 'ethers';
 
 import { EthereumContext } from '@/contexts/EthereumContext';
-import { Emp__factory } from '@/types/contracts';
-import { IEmpState, IUserPositions } from '@/types/EmpState';
-import Unsigned from '@/types/Unsigned';
+import { Emp__factory, Unsigned, IEmpState, IUserPositions } from '@/types';
 
 // Stateless hook for EMP contract helper functions
 export const useEmp = () => {
-  const { account, signer } = useContext(EthereumContext);
+  const { account, signer, provider } = useContext(EthereumContext);
 
   const mint = useCallback(
     async (synthAddress: string, collateral: number, tokens: number) => {
       const [collateralAmount, tokenAmount] = [new Unsigned(collateral), new Unsigned(tokens)];
       const empContract = Emp__factory.connect(synthAddress, signer as Signer);
+      console.log(empContract);
       try {
+        // TODO DEBUG
+        console.log(empContract.totalTokensOutstanding());
         console.log('COLLATERAL: ' + collateralAmount.rawValue);
         console.log('TOKEN : ' + tokenAmount.rawValue);
         const gasLimit = await empContract.estimateGas.create(collateralAmount, tokenAmount);
@@ -92,6 +93,9 @@ export const useEmp = () => {
 
   const queryEmpState = useCallback(
     async (synthAddress: string) => {
+      console.log('QUERYING');
+      console.log(synthAddress);
+      console.log(signer);
       const empContract = Emp__factory.connect(synthAddress, signer as Signer);
       try {
         const res = (
@@ -148,12 +152,48 @@ export const useEmp = () => {
     [signer]
   );
 
+  // TODO debug
+  const getEmpContract = useCallback(
+    async (synthAddress: string) => {
+      return Emp__factory.connect(synthAddress, signer as Signer);
+    },
+    [signer]
+  );
+
+  const getTvlData = useCallback(
+    async (synthAddress: string) => {
+      console.log(provider);
+      if (provider) {
+        const empContract = Emp__factory.connect(synthAddress, provider);
+        console.log(empContract);
+        try {
+          const tvl = await empContract.rawTotalPositionCollateral();
+          const totalSupply = await empContract.totalTokensOutstanding();
+          console.log(tvl);
+          console.log(totalSupply);
+          return {
+            tvl,
+            totalSupply,
+          };
+        } catch (err) {
+          console.error(err);
+          return Promise.reject('EMP State retrieval failed.');
+        }
+      } else {
+        return Promise.reject('No signer or provider');
+      }
+    },
+    [provider]
+  );
+
   return {
     mint,
     redeem,
     withdraw,
     getUserPosition,
     queryEmpState,
+    getEmpContract,
+    getTvlData,
   };
 };
 

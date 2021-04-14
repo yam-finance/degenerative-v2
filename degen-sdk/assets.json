@@ -1,5 +1,5 @@
 {
-  "ugas": [
+  "uGas": [
     {
       "name": "January",
       "cycle": "JAN",
@@ -85,7 +85,7 @@
       }
     }
   ],
-  "ustonks": [
+  "uStonks": [
     {
       "name": "April",
       "cycle": "APR",

@@ -1,7 +1,6 @@
 // Types pertaining to the user
-import { ISynthMetadata } from '.';
-
 export interface IMintedPosition {
+  name: string;
   //tokenName: string;
   tokenAmount: string;
   //tokenPriceUsd: string;
@@ -9,13 +8,12 @@ export interface IMintedPosition {
   collateralAmount: string;
   //collateralPriceUsd: string;
   collateralRatio: string;
-  metadata: ISynthMetadata;
 }
 
 export interface ISynthInWallet {
+  name: string;
   tokenAmount: string;
-  //priceUsd: number;
-  metadata: ISynthMetadata;
+  //tokenPriceUsd: number;
 }
 
 // TODO complete this later
