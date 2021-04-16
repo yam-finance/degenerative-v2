@@ -3,12 +3,11 @@ name: Feature request
 about: Suggest an idea for this project
 title: ''
 labels: ''
-assignees: ''
 
 ---
 
-**Describe the feature request**
+### Description:
 A clear and concise description of what you want.
 
-**Describe alternatives you've considered**
+### Alternatives considered:
 A clear and concise description of any alternative solutions or features you've considered.

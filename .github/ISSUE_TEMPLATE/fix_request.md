@@ -6,12 +6,12 @@ labels: ''
 
 ---
 
-**Describe the issue of the fix request:**
+### Description:
 A clear and concise description of what the issue is for fixing.
 
-**Links related:**
+### Links related:
 Add links related to the description...
 http://...
 
-**Screenshots:**
+### Screenshots:
 If applicable, add screenshots to help explain your problem.

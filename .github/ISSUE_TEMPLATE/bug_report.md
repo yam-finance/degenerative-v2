@@ -6,22 +6,22 @@ labels: 'bug'
 
 ---
 
-**Describe the bug:**
+### Description:
 A clear and concise description of what the bug is.
 
-**To Reproduce:**
+### To Reproduce:
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
 3. See error
 
-**Expected behavior:**
+### Expected behavior:
 A clear and concise description of what you expected to happen.
 
-**Screenshots:**
+### Screenshots:
 If applicable, add screenshots to help explain your problem.
 
-**Device:**
+### Devices:
 - Smartphone: [yes, no]
 - OS: [Windows, iOS, ...]
 - Browser [Chrome, Safari, ...]
