@@ -59,8 +59,10 @@ export const Portfolio = () => {
   const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
     const { name, tokenAmount } = props;
     const { imgLocation, type, cycle, year } = SynthInfo[name];
-    const { isExpired } = synthMarketData[name];
+    const { daysTillExpiry } = synthMarketData[name];
     const link = `/synths/${type}/${cycle}${year}`;
+
+    const isExpired = daysTillExpiry <= 0;
 
     return (
       <TableRow to={link}>

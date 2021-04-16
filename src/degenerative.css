@@ -5847,6 +5847,7 @@ a:hover {
   align-items: center;
   border-radius: 0.5rem;
   background-color: hsla(0, 0%, 100%, 0.04);
+  cursor: pointer;
 }
 
 .tab {

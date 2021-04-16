@@ -47,9 +47,10 @@ export interface ISynthMarketData {
   marketCap: string;
   totalSupply: string;
   liquidity: string;
-  isExpired: boolean;
+  daysTillExpiry: number;
 }
 
+// TODO use Record<T1, T2> instead
 export interface IMap<T> {
   [key: string]: T;
 }
