@@ -50,6 +50,7 @@ export interface ISynthMarketData {
   minTokens: number;
   daysTillExpiry: number;
   globalUtilization: number; // Inverse of GCR taken from EMP
+  liquidationPoint: number;
 }
 
 // TODO use Record<T1, T2> instead

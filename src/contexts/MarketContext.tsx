@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { ISynthMarketData, IMap } from '@/types';
-import { SynthInfo, CollateralMap, getUsdPrice, getApr, getPoolData } from '@/utils';
-import { getEmpState } from '@/utils/EmpUtils';
+import { SynthInfo, CollateralMap, getUsdPrice, getApr, getPoolData, getEmpState } from '@/utils';
 import { utils } from 'ethers';
 
 const initialState = {
@@ -22,12 +21,19 @@ export const MarketProvider: React.FC = ({ children }) => {
       try {
         const requests = Object.entries(SynthInfo).map(([name, synth]) => {
           const collateral = CollateralMap[synth.collateral];
-          return Promise.all([name, synth, collateral, getEmpState(synth.emp.address), getUsdPrice(collateral.address), getPoolData(synth.pool.address)]);
+          return Promise.all([name, synth, collateral, getEmpState(synth), getUsdPrice(collateral.address), getPoolData(synth.pool.address)]);
         });
         const resolved = await Promise.all(requests);
 
         for (const synthData of resolved) {
-          const [name, synth, collateral, { tvl, totalSupply, expirationTimestamp, globalUtilization, minTokens }, collateralPriceUsd, pool] = synthData;
+          const [
+            name,
+            synth,
+            collateral,
+            { tvl, totalSupply, expirationTimestamp, rawGlobalUtilization, minTokens, liquidationPoint },
+            collateralPriceUsd,
+            pool,
+          ] = synthData;
 
           //const isExpired = expirationTimestamp.toNumber() < Math.trunc(Date.now() / 1000);
           const dateToday = new Date(Math.trunc(Date.now() / 1000));
@@ -36,10 +42,13 @@ export const MarketProvider: React.FC = ({ children }) => {
           const liquidity = pool.reserveUSD;
 
           let priceUsd;
+          let pricePerCollateral;
           if (synth.collateral === pool.token0.symbol) {
             priceUsd = pool.token0Price * collateralPriceUsd;
+            pricePerCollateral = pool.token0Price;
           } else {
             priceUsd = pool.token1Price * collateralPriceUsd;
+            pricePerCollateral = pool.token1Price;
           }
 
           const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, collateral.decimals));
@@ -47,8 +56,7 @@ export const MarketProvider: React.FC = ({ children }) => {
           const apr = String((Math.random() * 100).toFixed(2)); // TODO get actual APR
 
           console.log(name);
-          console.log(globalUtilization);
-          console.log(1 / globalUtilization);
+          console.log(rawGlobalUtilization);
 
           data[name] = {
             price: priceUsd.toFixed(2),
@@ -57,8 +65,9 @@ export const MarketProvider: React.FC = ({ children }) => {
             tvl: tvlUsd.toString(),
             marketCap: marketCap.toString(),
             volume24h: '0', // TODO need to get from subgraph
-            globalUtilization,
+            globalUtilization: rawGlobalUtilization * pricePerCollateral,
             minTokens: minTokens,
+            liquidationPoint: liquidationPoint,
             apr: apr,
             daysTillExpiry: daysTillExpiry,
           };

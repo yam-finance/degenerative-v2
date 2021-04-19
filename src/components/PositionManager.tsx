@@ -5,13 +5,10 @@ import { BigNumber, utils } from 'ethers';
 import { Icon } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken } from '@/hooks';
-import { CollateralMap } from '@/utils';
+import { CollateralMap, roundDecimals } from '@/utils';
 import clsx from 'clsx';
 
-/* NOTE:
-  This component essentially has two reducers, one for the component's state and one for the form.
-  The component's state is the actual sponsor position. The form is the pending position.
-*/
+/* The component's state is the actual sponsor position. The form is the pending position. */
 
 const initialMinterState = {
   mode: 'mint',
@@ -19,6 +16,7 @@ const initialMinterState = {
   sponsorTokens: 0,
   utilization: 0,
   globalUtilization: 0,
+  liquidationPoint: 0,
   minTokens: 0,
   maxCollateral: 0, // TODO replace with synthInWallet item
 };
@@ -37,6 +35,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         sponsorTokens: initialized.sponsorTokens,
         utilization: initialized.utilization,
         globalUtilization: initialized.globalUtilization,
+        liquidationPoint: initialized.liquidation,
         minTokens: initialized.minTokens,
         maxCollateral: initialized.maxCollateral,
       };
@@ -91,16 +90,14 @@ export const PositionManager = () => {
 
       const cr = Number(sponsorPosition?.collateralRatio) ?? 0; // TODO replace with utilization
 
-      console.log('GLOBAL UTIL, FIX THIS IN THE MORNING');
-      console.log(empInfo.globalUtilization);
-
       dispatch({
         type: 'INIT_SPONSOR_POSITION',
         payload: {
           sponsorCollateral: Number(sponsorPosition?.collateralAmount ?? 0),
           sponsorTokens: Number(sponsorPosition?.tokenAmount ?? 0),
           utilization: cr > 0 ? 1 / cr : 0, // TODO change to utilization
-          globalUtilization: empInfo.globalUtilization,
+          globalUtilization: roundDecimals(empInfo.globalUtilization, 4),
+          liquidationPoint: empInfo.liquidationPoint,
           minTokens: empInfo.minTokens,
           maxCollateral: Number(utils.formatEther(collateralBalance)),
         },
@@ -147,7 +144,7 @@ export const PositionManager = () => {
     e.preventDefault();
     console.log(state.maxCollateral);
     formState.setField('pendingCollateral', state.maxCollateral);
-    formState.setField('pendingTokens', synthMarketData[currentSynth].globalUtilization);
+    formState.setField('pendingTokens', state.maxCollateral * state.globalUtilization);
   };
 
   const CollateralWindow: React.FC<{ name: string }> = ({ name, children }) => {
@@ -161,6 +158,21 @@ export const PositionManager = () => {
         </div>
         {children}
         <div className="nub background-color-5"></div>
+      </div>
+    );
+  };
+
+  const TokenWindow: React.FC<{ name: string }> = ({ name }) => {
+    return (
+      <div className="background-color-debt padding-2 radius-large z-10 width-32 debts disabled">
+        <h6 className="text-align-center margin-bottom-0">Debt</h6>
+        <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">0 {name}</h5>
+        <div className="height-9 flex-align-end">
+          <a href="#" className="button-secondary button-tiny white width-full w-button">
+            Edit
+          </a>
+        </div>
+        <div className="nub background-color-debt left"></div>
       </div>
     );
   };
@@ -220,16 +232,7 @@ export const PositionManager = () => {
               <div className="gcr"></div>
             </div>
             <div className="expand padding-left-2">
-              <div className="background-color-debt padding-2 radius-large z-10 width-32 debts disabled">
-                <h6 className="text-align-center margin-bottom-0">Debt</h6>
-                <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">0 {currentSynth}</h5>
-                <div className="height-9 flex-align-end">
-                  <a href="#" className="button-secondary button-tiny white width-full w-button">
-                    Edit
-                  </a>
-                </div>
-                <div className="nub background-color-debt left"></div>
-              </div>
+              <TokenWindow name={currentSynth} />
             </div>
           </div>
         </form>
