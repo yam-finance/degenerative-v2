@@ -46,7 +46,6 @@ export const useToken = () => {
 
   const getBalance = useCallback(
     async (tokenAddress: string) => {
-      console.log(await signer?.getAddress());
       if (account && signer) {
         const tokenContract = Erc20__factory.connect(tokenAddress, signer);
         return await tokenContract.balanceOf(account);

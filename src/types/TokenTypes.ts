@@ -47,7 +47,9 @@ export interface ISynthMarketData {
   marketCap: string;
   totalSupply: string;
   liquidity: string;
+  minTokens: number;
   daysTillExpiry: number;
+  globalUtilization: number; // Inverse of GCR taken from EMP
 }
 
 // TODO use Record<T1, T2> instead
