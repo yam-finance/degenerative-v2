@@ -5,7 +5,7 @@ import { useEmp, useToken, useWrapEth } from '@/hooks';
 import { SynthInfo, CollateralMap } from '@/utils';
 
 export const useSynthActions = () => {
-  const { currentSynth, currentCollateral } = useContext(UserContext);
+  const { currentSynth, currentCollateral, emp } = useContext(UserContext);
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
 
@@ -14,7 +14,6 @@ export const useSynthActions = () => {
   const [collateralAmount, setCollateralAmount] = useState(0);
   const [isEmpAllowed, setIsEmpAllowed] = useState(false);
 
-  const emp = useEmp();
   const collateral = useToken();
   const wrapEth = useWrapEth();
 
@@ -45,16 +44,13 @@ export const useSynthActions = () => {
     }
   };
 
-  const onMint = async () => {
+  const onMint = async (collateralAmount: number, tokenAmount: number) => {
     if (collateralAmount > 0 && tokenAmount > 0) {
-      setLoading(true);
       try {
         const txReceipt = await emp.mint(empAddress, collateralAmount, tokenAmount);
         console.log(txReceipt.transactionHash);
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     } else {
       console.error('Collateral amount or token amount is not greater than 0.');
@@ -63,7 +59,6 @@ export const useSynthActions = () => {
 
   const onWrapEth = async (ethAmount: number) => {
     if (ethAmount > 0) {
-      setLoading(true);
       try {
         const result = await wrapEth(ethAmount);
         if (result) {
@@ -71,8 +66,6 @@ export const useSynthActions = () => {
         }
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     } else {
       console.error('Collateral amount or token amount is not greater than 0.');

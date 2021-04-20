@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 
 import { EthereumContext } from '@/contexts';
-import { providers } from 'ethers';
 
 export const ConnectWallet: React.FC = () => {
   const { setEthereum } = useContext(EthereumContext);

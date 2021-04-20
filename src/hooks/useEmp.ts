@@ -76,6 +76,7 @@ export const useEmp = () => {
       const empContract = Emp__factory.connect(synthAddress, signer as Signer);
       try {
         const userPositions = await empContract.positions(account as string);
+
         return {
           tokensOutstanding: userPositions[0].rawValue,
           withdrawalRequestPassTimeStamp: userPositions[1],
