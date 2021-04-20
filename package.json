@@ -25,7 +25,6 @@
     "graphql-request": "^3.4.0",
     "i18next": "^20.2.1",
     "i18next-browser-languagedetector": "^6.1.0",
-    "i18next-http-backend": "^1.2.1",
     "numeral": "^2.0.6",
     "react": "^17.0.0",
     "react-chartjs-2": "^2.11.1",

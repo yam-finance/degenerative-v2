@@ -7,8 +7,10 @@ function LanguageSwitcher() {
   return (
     <div className="select">
       <select value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)}>
-        <option value="en">English</option>
         <option value="zh">Chinese</option>
+        <option value="en">English</option>
+        <option value="fr">French</option>
+        <option value="de">German</option>
       </select>
     </div>
   );

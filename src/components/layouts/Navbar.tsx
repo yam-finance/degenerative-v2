@@ -65,7 +65,8 @@ const Navbar = () => {
     <div className="flex-column padding-y-8 margin-right-3 sticky-top-0 max-height-viewport-full overflow-auto tablet-absolute-top tablet-padding-y-2">
       <Link to="/" className="margin-left-6 flex-row-middle padding-left-3 padding-right-3 w-inline-block">
         <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
-        <h5 className="margin-0 margin-right-2 expand">{t('app_name')}</h5>
+        <h5 className="margin-0 margin-right-2 expand">Degenerative</h5>
+        <h5 className="margin-0 margin-right-2 expand">{t('hello')}</h5>
         <LanguageSwitcher />
         <div className="pill">v 2.0</div>
       </Link>
