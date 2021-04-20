@@ -93,7 +93,7 @@ export const PositionManager = () => {
   const actions = useSynthActions();
   const erc20 = useToken(); // TODO remove after getting from synthsInWallet
 
-  let utilization = 0;
+  //let utilization = 0;
 
   const [formState, { number }] = useFormState<MinterFormFields>(
     {
@@ -106,14 +106,15 @@ export const PositionManager = () => {
         const tokens = Number(pendingTokens);
         const collateral = Number(pendingCollateral);
 
-        utilization = tokens / collateral;
-        //dispatch({
-        // type: 'UPDATE_PENDING_UTILIZATION',
-        // payload: {
-        //   pendingCollateral: collateral,
-        //   pendingTokens: tokens,
-        // },
-        //});
+        //utilization = tokens / collateral;
+        //console.log(utilization);
+        dispatch({
+          type: 'UPDATE_PENDING_UTILIZATION',
+          payload: {
+            pendingCollateral: collateral,
+            pendingTokens: tokens,
+          },
+        });
       },
     }
   );
@@ -197,15 +198,26 @@ export const PositionManager = () => {
     );
   };
 
-  const TokenWindow: React.FC<{ name: string; utilization: number; tokenAmount: number }> = ({ name, utilization, tokenAmount }) => {
+  const TokenWindow: React.FC<{ name: string; utilization: number; pendingUtilization: number; tokenAmount: number }> = ({
+    name,
+    utilization,
+    pendingUtilization,
+    tokenAmount,
+  }) => {
     const [editing, setEditing] = useState<boolean>(false);
 
+    // Calculate distance from top of gauge
+    const displacementFromTop = pendingUtilization < 1 ? (1 - pendingUtilization) * 100 : 0;
+    const windowDisplacement = {
+      top: `${displacementFromTop}%`,
+    };
+
     return (
-      <div className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${tokenAmount <= 0 && 'disabled'}`}>
+      <div className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${tokenAmount <= 0 && 'disabled'}`} style={windowDisplacement}>
         <h6 className="text-align-center margin-bottom-0">Debt</h6>
         {utilization && (
           <>
-            <h4 className="text-align-center margin-top-2 margin-bottom-0">{utilization * 100}%</h4>
+            <h4 className="text-align-center margin-top-2 margin-bottom-0">{pendingUtilization * 100}%</h4>
             <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
           </>
         )}
@@ -229,8 +241,9 @@ export const PositionManager = () => {
   }
   const GaugeLabel: React.FC<GaugeLabelProps> = ({ label, tooltip, className, height, emphasized }) => {
     const labelHeight = {
-      height: `${height * 100}%`,
+      bottom: `${height * 100}%`,
     };
+
     return (
       <div className={className} style={labelHeight}>
         <div className="margin-0 w-dropdown">
@@ -246,7 +259,14 @@ export const PositionManager = () => {
     );
   };
 
-  const Gauge: React.FC<{ utilization: number; pendingUtilization: number }> = ({ utilization, pendingUtilization }) => {
+  interface GaugeProps {
+    utilization: number;
+    pendingUtilization: number;
+    globalUtilization: number;
+    liquidation: number;
+  }
+
+  const Gauge: React.FC<GaugeProps> = ({ utilization, pendingUtilization, globalUtilization, liquidation }) => {
     const debtHeight = {
       height: `${utilization * 100}%`,
     };
@@ -255,15 +275,23 @@ export const PositionManager = () => {
       height: `${pendingUtilization * 100}%`,
     };
 
+    const globalUtilizationHeight = {
+      bottom: `${globalUtilization * 100}%`,
+    };
+
+    const liquidationHeight = {
+      bottom: `${liquidation * 100}%`,
+    };
+
     return (
       <div className="gauge">
-        <div className={`collateral large ${utilization > 0 ? 'empty' : ''}`}></div>
+        <div className={`collateral large ${utilization > 0 ? '' : 'empty'}`}></div>
         <div className="debt" style={pendingDebtHeight}>
           <div className="gradient" />
         </div>
-        <div className="liquidation-point" />
-        <div className="gcr" />
-        {utilization && (
+        <div className="liquidation-point" style={liquidationHeight} />
+        <div className="gcr" style={globalUtilizationHeight} />
+        {utilization > 0 && (
           <div className="old-position" style={debtHeight}>
             <div className="width-1px background-color-white expand"></div>
           </div>
@@ -276,11 +304,12 @@ export const PositionManager = () => {
     return (
       <div className="old-position-marker">
         <div className="old-position-outer-line"></div>
-        <div className="text-block">{utilization * 100}% Utilization</div>
+        <div className="text-block">{utilization * 100}% Current Utilization</div>
       </div>
     );
   };
 
+  // TODO pass in values from form
   const ActionButton: React.FC = () => {
     const style = clsx('button', 'width-full', 'text-small', 'w-button', Number(formState.values.pendingTokens) > 0 ? '' : 'disabled');
 
@@ -295,7 +324,7 @@ export const PositionManager = () => {
   if (state.loading) {
     return (
       <div className="flex-align-center flex-justify-center">
-        <Icon name="Loader" className="spin " />;
+        <Icon name="Loader" className="spin " />
       </div>
     );
   }
@@ -330,9 +359,19 @@ export const PositionManager = () => {
                 <div className="nub background-color-5"></div>
               </div>
             </div>
-            <Gauge utilization={utilization} pendingUtilization={state.pendingUtilization} />
+            <Gauge
+              utilization={state.utilization}
+              pendingUtilization={state.pendingUtilization}
+              globalUtilization={state.globalUtilization}
+              liquidation={state.liquidationPoint}
+            />
             <div className="expand padding-left-2">
-              <TokenWindow name={currentSynth} utilization={state.utilization} tokenAmount={Number(formState.values.pendingTokens)} />
+              <TokenWindow
+                name={currentSynth}
+                utilization={state.utilization}
+                pendingUtilization={state.pendingUtilization}
+                tokenAmount={Number(formState.values.pendingTokens)}
+              />
             </div>
           </div>
           <UtilizationMarker utilization={state.utilization} />
