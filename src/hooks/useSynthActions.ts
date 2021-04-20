@@ -44,21 +44,7 @@ export const useSynthActions = () => {
     }
   };
 
-  //const onMint = async (collateralAmount: number, tokenAmount: number) => {
-  //  if (collateralAmount > 0 && tokenAmount > 0) {
-  //    try {
-  //      const txReceipt = await emp.mint(empAddress, collateralAmount, tokenAmount);
-  //      console.log(txReceipt.transactionHash);
-  //    } catch (err) {
-  //      console.error(err);
-  //    }
-  //  } else {
-  //    console.error('Collateral amount or token amount is not greater than 0.');
-  //  }
-  //};
-
-  // TODO remove this, pass in values and remove all unnecessary state in this hook
-  const onMint = async () => {
+  const onMint = async (collateralAmount: number, tokenAmount: number) => {
     if (collateralAmount > 0 && tokenAmount > 0) {
       try {
         const txReceipt = await emp.mint(empAddress, collateralAmount, tokenAmount);

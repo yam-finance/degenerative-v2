@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { ISynthMarketData, IMap } from '@/types';
-import { SynthInfo, CollateralMap, getUsdPrice, getApr, getPoolData, getEmpState } from '@/utils';
+import { SynthInfo, CollateralMap, getUsdPrice, getApr, getPoolData, getEmpState, roundDecimals } from '@/utils';
 import { utils } from 'ethers';
 
 const initialState = {
@@ -65,7 +65,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             tvl: tvlUsd.toString(),
             marketCap: marketCap.toString(),
             volume24h: '0', // TODO need to get from subgraph
-            globalUtilization: rawGlobalUtilization * pricePerCollateral,
+            globalUtilization: roundDecimals(rawGlobalUtilization * pricePerCollateral, 4),
             minTokens: minTokens,
             liquidationPoint: liquidationPoint,
             apr: apr,

@@ -1,16 +1,17 @@
-import React, { useReducer, useEffect, useContext } from 'react';
+import React, { useReducer, useEffect, useContext, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 import { BigNumber, utils } from 'ethers';
 
 import { Icon } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
-import { useToken } from '@/hooks';
+import { useToken, useSynthActions } from '@/hooks';
 import { CollateralMap, roundDecimals } from '@/utils';
 import clsx from 'clsx';
 
 /* The component's state is the actual sponsor position. The form is the pending position. */
 
 const initialMinterState = {
+  loading: true,
   mode: 'mint',
   sponsorCollateral: 0,
   sponsorTokens: 0,
@@ -19,10 +20,12 @@ const initialMinterState = {
   liquidationPoint: 0,
   minTokens: 0,
   maxCollateral: 0, // TODO replace with synthInWallet item
+
+  pendingUtilization: 0,
 };
 
 type State = typeof initialMinterState;
-type Action = 'INIT_SPONSOR_POSITION' | 'UPDATE_SPONSOR_POSITION' | 'SET_MAX_COLLATERAL';
+type Action = 'INIT_SPONSOR_POSITION' | 'UPDATE_SPONSOR_POSITION' | 'UPDATE_PENDING_UTILIZATION' | 'SET_MAX_COLLATERAL';
 
 const Reducer = (state: State, action: { type: Action; payload: any }) => {
   switch (action.type) {
@@ -31,6 +34,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       console.log(initialized);
       return {
         ...state,
+        loading: false,
         sponsorCollateral: initialized.sponsorCollateral,
         sponsorTokens: initialized.sponsorTokens,
         utilization: initialized.utilization,
@@ -49,6 +53,20 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         utilization: pendingTokens / pendingCollateral,
       };
     }
+    case 'UPDATE_PENDING_UTILIZATION': {
+      const { pendingCollateral, pendingTokens } = action.payload;
+
+      console.log('PENDING COLLAT');
+      console.log(pendingCollateral);
+      console.log('PENDING TOKEN');
+      console.log(pendingTokens);
+
+      const util = pendingTokens / pendingCollateral;
+      return {
+        ...state,
+        pendingUtilization: util > 0 && util !== Infinity ? util : 0,
+      };
+    }
     case 'SET_MAX_COLLATERAL': {
       return {
         ...state,
@@ -63,16 +81,42 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
 interface MinterFormFields {
   pendingCollateral: number;
   pendingTokens: number;
-  pendingUtilization: number;
 }
 
+// TODO Replace minter with this component
 export const PositionManager = () => {
   const { account } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, synthsInWallet, mintedPositions } = useContext(UserContext);
   const { synthMarketData } = useContext(MarketContext);
 
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
+  const actions = useSynthActions();
   const erc20 = useToken(); // TODO remove after getting from synthsInWallet
+
+  let utilization = 0;
+
+  const [formState, { number }] = useFormState<MinterFormFields>(
+    {
+      pendingCollateral: state.sponsorCollateral,
+      pendingTokens: state.sponsorTokens,
+    },
+    {
+      onChange: (e, stateValues, nextStateValues) => {
+        const { pendingCollateral, pendingTokens } = nextStateValues;
+        const tokens = Number(pendingTokens);
+        const collateral = Number(pendingCollateral);
+
+        utilization = tokens / collateral;
+        //dispatch({
+        // type: 'UPDATE_PENDING_UTILIZATION',
+        // payload: {
+        //   pendingCollateral: collateral,
+        //   pendingTokens: tokens,
+        // },
+        //});
+      },
+    }
+  );
 
   useEffect(() => {
     const initMinterState = async () => {
@@ -90,18 +134,26 @@ export const PositionManager = () => {
 
       const cr = Number(sponsorPosition?.collateralRatio) ?? 0; // TODO replace with utilization
 
+      const sponsorCollateral = Number(sponsorPosition?.collateralAmount ?? 0);
+      const sponsorTokens = Number(sponsorPosition?.tokenAmount ?? 0);
+
       dispatch({
         type: 'INIT_SPONSOR_POSITION',
         payload: {
-          sponsorCollateral: Number(sponsorPosition?.collateralAmount ?? 0),
-          sponsorTokens: Number(sponsorPosition?.tokenAmount ?? 0),
+          loading: false,
+          mode: sponsorPosition ? 'manage' : 'mint',
+          sponsorCollateral: sponsorCollateral,
+          sponsorTokens: sponsorTokens,
           utilization: cr > 0 ? 1 / cr : 0, // TODO change to utilization
-          globalUtilization: roundDecimals(empInfo.globalUtilization, 4),
+          globalUtilization: empInfo.globalUtilization,
           liquidationPoint: empInfo.liquidationPoint,
           minTokens: empInfo.minTokens,
           maxCollateral: Number(utils.formatEther(collateralBalance)),
         },
       });
+
+      // Set form to initial state
+      setFormState(sponsorCollateral, sponsorTokens);
     };
 
     if (currentCollateral && account && synthMarketData[currentSynth] && synthsInWallet) {
@@ -109,42 +161,25 @@ export const PositionManager = () => {
     }
   }, [currentSynth, currentCollateral, synthMarketData, account]);
 
-  const [formState, { number }] = useFormState<MinterFormFields>(
-    {
-      pendingTokens: 0,
-      pendingCollateral: 0,
-      pendingUtilization: 0,
-    },
-    {
-      onChange: (e, stateValues, nextStateValues) => {
-        const { pendingCollateral, pendingTokens } = nextStateValues;
-        const tokens = Number(pendingTokens);
-        const collateral = Number(pendingCollateral);
+  const setFormState = (collateral: number, tokens: number) => {
+    formState.setField('pendingCollateral', collateral);
+    formState.setField('pendingTokens', tokens);
 
-        formState.setField('pendingUtilization', collateral / tokens);
-
-        // TODO add red line around inputs
-        //actions.setCollateralAmount(collateral);
-        //actions.setTokenAmount(tokens);
-
-        /*
-        dispatch({
-          type: 'UPDATE_SPONSOR_POSITION',
-          payload: {
-            sponsorTokens: tokens,
-            sponsorCollateral: collateral,
-          },
-        });
-        */
+    dispatch({
+      type: 'UPDATE_PENDING_UTILIZATION',
+      payload: {
+        pendingCollateral: collateral,
+        pendingTokens: tokens,
       },
-    }
-  );
+    });
+  };
 
   const setMaximum = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log(state.maxCollateral);
-    formState.setField('pendingCollateral', state.maxCollateral);
-    formState.setField('pendingTokens', state.maxCollateral * state.globalUtilization);
+
+    const newCollateral = state.maxCollateral;
+    const newTokens = state.maxCollateral * state.globalUtilization;
+    setFormState(newCollateral, newTokens);
   };
 
   const CollateralWindow: React.FC<{ name: string }> = ({ name, children }) => {
@@ -162,15 +197,23 @@ export const PositionManager = () => {
     );
   };
 
-  const TokenWindow: React.FC<{ name: string }> = ({ name }) => {
+  const TokenWindow: React.FC<{ name: string; utilization: number; tokenAmount: number }> = ({ name, utilization, tokenAmount }) => {
+    const [editing, setEditing] = useState<boolean>(false);
+
     return (
-      <div className="background-color-debt padding-2 radius-large z-10 width-32 debts disabled">
+      <div className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${tokenAmount <= 0 && 'disabled'}`}>
         <h6 className="text-align-center margin-bottom-0">Debt</h6>
-        <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">0 {name}</h5>
+        {utilization && (
+          <>
+            <h4 className="text-align-center margin-top-2 margin-bottom-0">{utilization * 100}%</h4>
+            <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
+          </>
+        )}
+        <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">
+          {tokenAmount} {name}
+        </h5>
         <div className="height-9 flex-align-end">
-          <a href="#" className="button-secondary button-tiny white width-full w-button">
-            Edit
-          </a>
+          <button className="button-secondary button-tiny white width-full w-button">Edit</button>
         </div>
         <div className="nub background-color-debt left"></div>
       </div>
@@ -181,11 +224,15 @@ export const PositionManager = () => {
     label: string;
     tooltip: string;
     className: string;
+    height: number;
     emphasized?: boolean;
   }
-  const GaugeLabel: React.FC<GaugeLabelProps> = ({ label, tooltip, className, emphasized }) => {
+  const GaugeLabel: React.FC<GaugeLabelProps> = ({ label, tooltip, className, height, emphasized }) => {
+    const labelHeight = {
+      height: `${height * 100}%`,
+    };
     return (
-      <div className={className}>
+      <div className={className} style={labelHeight}>
         <div className="margin-0 w-dropdown">
           <div className="padding-0 width-4 height-4 flex-align-center flex-justify-center w-dropdown-toggle">
             <Icon name="Info" className="icon medium" />
@@ -199,6 +246,59 @@ export const PositionManager = () => {
     );
   };
 
+  const Gauge: React.FC<{ utilization: number; pendingUtilization: number }> = ({ utilization, pendingUtilization }) => {
+    const debtHeight = {
+      height: `${utilization * 100}%`,
+    };
+
+    const pendingDebtHeight = {
+      height: `${pendingUtilization * 100}%`,
+    };
+
+    return (
+      <div className="gauge">
+        <div className={`collateral large ${utilization > 0 ? 'empty' : ''}`}></div>
+        <div className="debt" style={pendingDebtHeight}>
+          <div className="gradient" />
+        </div>
+        <div className="liquidation-point" />
+        <div className="gcr" />
+        {utilization && (
+          <div className="old-position" style={debtHeight}>
+            <div className="width-1px background-color-white expand"></div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const UtilizationMarker: React.FC<{ utilization: number }> = ({ utilization }) => {
+    return (
+      <div className="old-position-marker">
+        <div className="old-position-outer-line"></div>
+        <div className="text-block">{utilization * 100}% Utilization</div>
+      </div>
+    );
+  };
+
+  const ActionButton: React.FC = () => {
+    const style = clsx('button', 'width-full', 'text-small', 'w-button', Number(formState.values.pendingTokens) > 0 ? '' : 'disabled');
+
+    return (
+      <button onClick={() => actions.onMint(Number(formState.values.pendingCollateral), Number(formState.values.pendingTokens))} className={style}>
+        {`Mint ${formState.values.pendingTokens} ${currentSynth} for ${formState.values.pendingCollateral} ${currentCollateral}`}
+      </button>
+    );
+  };
+
+  // TODO fix loader
+  if (state.loading) {
+    return (
+      <div className="flex-align-center flex-justify-center">
+        <Icon name="Loader" className="spin " />;
+      </div>
+    );
+  }
   return (
     <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
       <div className="margin-0 w-form">
@@ -207,9 +307,15 @@ export const PositionManager = () => {
           <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20">Tweak your position settings</p>
           <div className="flex-row">
             <div className="expand relative padding-right-2">
-              <GaugeLabel label="GCR" tooltip="TODO" className="gcr-legend" />
-              <GaugeLabel label="Liquidation" tooltip="TODO" className="liquidation-legend" emphasized />
-              <CollateralWindow name={currentCollateral}>
+              <GaugeLabel label="GCR" tooltip="TODO" className="gcr-legend" height={state.globalUtilization} />
+              <GaugeLabel label="Liquidation" tooltip="TODO" className="liquidation-legend" height={state.liquidationPoint} emphasized />
+              <div className="background-color-5 padding-2 radius-large z-10 width-32 collat">
+                <h6 className="text-align-center margin-bottom-0">Collateral</h6>
+                <div className="width-full flex-justify-center margin-top-1 w-dropdown">
+                  <div className="padding-0 flex-align-center">
+                    <a className="weight-bold">{currentCollateral}</a>
+                  </div>
+                </div>
                 <input
                   {...number('pendingCollateral')}
                   type="number"
@@ -221,20 +327,15 @@ export const PositionManager = () => {
                 <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny white width-full w-button">
                   Max {state.maxCollateral.toFixed(2)}
                 </button>
-              </CollateralWindow>
-            </div>
-            <div className="gauge">
-              <div className="collateral large empty"></div>
-              <div className="debt _0">
-                <div className="gradient"></div>
+                <div className="nub background-color-5"></div>
               </div>
-              <div className="liquidation-point"></div>
-              <div className="gcr"></div>
             </div>
+            <Gauge utilization={utilization} pendingUtilization={state.pendingUtilization} />
             <div className="expand padding-left-2">
-              <TokenWindow name={currentSynth} />
+              <TokenWindow name={currentSynth} utilization={state.utilization} tokenAmount={Number(formState.values.pendingTokens)} />
             </div>
           </div>
+          <UtilizationMarker utilization={state.utilization} />
         </form>
       </div>
       <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
@@ -291,9 +392,7 @@ export const PositionManager = () => {
             </p>
           </div>
           <div className="expand flex-align-end">
-            <a href="#" className={`button width-full text-small w-button ${Number(formState.values.pendingTokens) > 0 ? '' : 'disabled'}`}>
-              {`Mint ${formState.values.pendingTokens} ${currentSynth} for ${formState.values.pendingCollateral} ${currentCollateral}`}
-            </a>
+            <ActionButton />
           </div>
         </div>
       </div>
