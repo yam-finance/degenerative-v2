@@ -2,4 +2,3 @@ preserve_hierarchy: true
 files:
   - source: /public/locales/en.json
     translation: /public/locales/%two_letters_code%.json
-    excluded_target_languages: [en]
