@@ -9,6 +9,7 @@ const initialState = {
 
 export const MarketContext = createContext(initialState);
 
+// TODO Rename to SynthContext, put useEmp hook in here
 export const MarketProvider: React.FC = ({ children }) => {
   const [synthMarketData, setSynthMarketData] = useState<IMap<ISynthMarketData>>(initialState.synthMarketData);
 

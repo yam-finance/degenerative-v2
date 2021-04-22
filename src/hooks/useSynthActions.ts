@@ -57,6 +57,20 @@ export const useSynthActions = () => {
     }
   };
 
+  const onDeposit = async (oldCollateral: number, newCollateral: number) => {
+    if (oldCollateral > 0 && newCollateral > 0 && newCollateral > oldCollateral) {
+      const collateralAmount = newCollateral - oldCollateral;
+      try {
+        const txReceipt = await emp.deposit(empAddress, collateralAmount);
+        console.log(txReceipt.transactionHash);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.error('Invalid collateral amounts.');
+    }
+  };
+
   const onWrapEth = async (ethAmount: number) => {
     if (ethAmount > 0) {
       try {
@@ -80,6 +94,7 @@ export const useSynthActions = () => {
     collateralAmount,
     setCollateralAmount,
     onMint,
+    onDeposit,
     onRedeem,
     onApprove,
     isEmpAllowed,

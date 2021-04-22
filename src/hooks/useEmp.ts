@@ -9,9 +9,9 @@ export const useEmp = () => {
   const { account, signer, provider } = useContext(EthereumContext);
 
   const mint = useCallback(
-    async (synthAddress: string, collateral: number, tokens: number) => {
+    async (empAddress: string, collateral: number, tokens: number) => {
       const [collateralAmount, tokenAmount] = [new Unsigned(collateral), new Unsigned(tokens)];
-      const empContract = Emp__factory.connect(synthAddress, signer as Signer);
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
       console.log(empContract);
       try {
         // TODO DEBUG
@@ -33,13 +33,49 @@ export const useEmp = () => {
     [signer]
   );
 
-  // TODO Settle?
+  const deposit = useCallback(
+    async (empAddress: string, collateral: number) => {
+      const collateralAmount = new Unsigned(collateral);
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      try {
+        const gasLimit = await empContract.estimateGas.deposit(collateralAmount);
+        const tx = await empContract.deposit(collateralAmount, {
+          gasLimit: gasLimit,
+        });
+        return tx.wait();
+      } catch (err) {
+        console.error(err);
+        return Promise.reject('Deposit failed');
+      }
+    },
+    [signer]
+  );
+
   const redeem = useCallback(
-    async (synthAddress: string, tokens: number) => {
+    async (empAddress: string, tokens: number) => {
       const tokenAmount = new Unsigned(tokens);
-      const empContract = Emp__factory.connect(synthAddress, signer as Signer);
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.redeem(tokenAmount);
+        const tx = await empContract.redeem(tokenAmount, {
+          gasLimit: gasLimit,
+        });
+        return tx.wait();
+      } catch (err) {
+        console.error(err);
+        return Promise.reject('Redeem failed.');
+      }
+    },
+    [signer]
+  );
+
+  /* TODO Repay is not implemented on old EMP contracts. Figure out wtf to do!
+  const repay = useCallback(
+    async (empAddress: string, tokens: number) => {
+      const tokenAmount = new Unsigned(tokens);
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      try {
+        const gasLimit = await empContract.estimateGas.repay(tokenAmount);
         const tx = await empContract.redeem(tokenAmount, {
           gasLimit: gasLimit,
         });
@@ -51,11 +87,36 @@ export const useEmp = () => {
     },
     [signer]
   );
+  */
 
+  // TODO finish implementation. Needs its own page.
+  const settle = useCallback(
+    async (empAddress: string, tokens: number) => {
+      const tokenAmount = new Unsigned(tokens);
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      try {
+        const gasLimit = await empContract.estimateGas.settleExpired();
+        const tx = await empContract.settleExpired({
+          gasLimit: gasLimit,
+        });
+        return tx.wait();
+      } catch (err) {
+        console.error(err);
+        return Promise.reject('Withdraw failed.');
+      }
+    },
+    [signer]
+  );
+
+  const requestWithdrawal = useCallback(async (empAddress: string, collateral: number) => {}, [signer]);
+
+  const cancelWithdrawalRequest = useCallback(async () => {}, [signer]);
+
+  // NOTE: Only works up to GCR. Otherwise will fail.
   const withdraw = useCallback(
-    async (synthAddress: string, collateral: number) => {
+    async (empAddress: string, collateral: number) => {
       const collateralAmount = new Unsigned(collateral);
-      const empContract = Emp__factory.connect(synthAddress, signer as Signer);
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.redeem(collateralAmount);
         const tx = await empContract.withdraw(collateralAmount, {
@@ -71,9 +132,9 @@ export const useEmp = () => {
   );
 
   const getUserPosition = useCallback(
-    async (synthAddress: string) => {
+    async (empAddress: string) => {
       if (!account) return Promise.reject('Wallet not connected');
-      const empContract = Emp__factory.connect(synthAddress, signer as Signer);
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
       try {
         const userPositions = await empContract.positions(account as string);
 
@@ -92,12 +153,13 @@ export const useEmp = () => {
     [signer, account]
   );
 
+  // TODO remove?
   const queryEmpState = useCallback(
-    async (synthAddress: string) => {
+    async (empAddress: string) => {
       console.log('QUERYING');
-      console.log(synthAddress);
+      console.log(empAddress);
       console.log(signer);
-      const empContract = Emp__factory.connect(synthAddress, signer as Signer);
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
       try {
         const res = (
           await Promise.allSettled([
@@ -153,48 +215,13 @@ export const useEmp = () => {
     [signer]
   );
 
-  // TODO debug
-  const getEmpContract = useCallback(
-    async (synthAddress: string) => {
-      return Emp__factory.connect(synthAddress, signer as Signer);
-    },
-    [signer]
-  );
-
-  const getTvlData = useCallback(
-    async (synthAddress: string) => {
-      console.log(provider);
-      if (provider) {
-        const empContract = Emp__factory.connect(synthAddress, provider);
-        console.log(empContract);
-        try {
-          const tvl = await empContract.rawTotalPositionCollateral();
-          const totalSupply = await empContract.totalTokensOutstanding();
-          console.log(tvl);
-          console.log(totalSupply);
-          return {
-            tvl,
-            totalSupply,
-          };
-        } catch (err) {
-          console.error(err);
-          return Promise.reject('EMP State retrieval failed.');
-        }
-      } else {
-        return Promise.reject('No signer or provider');
-      }
-    },
-    [provider]
-  );
-
   return {
     mint,
+    deposit,
     redeem,
     withdraw,
     getUserPosition,
     queryEmpState,
-    getEmpContract,
-    getTvlData,
   };
 };
 
