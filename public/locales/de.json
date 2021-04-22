@@ -1,6 +1,6 @@
 {
   "hello": "Hallo",
   "bye": "Tschüss",
-  "asset-detail-expiry": "is a synthetic that will expire at",
-  "test": "This is a test variable: {{testVariable}}"
+  "asset-detail-expiry": "ist ein Synthetik, das abläuft um",
+  "test": "Dies ist eine Testvariable: {{testVariable}}"
 }
