@@ -388,7 +388,6 @@ export const PositionManager = () => {
 
       const isRedeemValid = redeemableTokens > 0 && redeemableTokens < sponsorTokens;
 
-      // TODO Add approve for emp to spend synth
       return (
         <button onClick={() => actions.onRedeem(redeemableTokens)} className={clsx(baseStyle, isRedeemValid ? '' : 'disabled')}>
           {`Redeem ${redeemableTokens} ${currentSynth} and receive ${resultingCollateral} ${currentCollateral}`}
@@ -396,20 +395,18 @@ export const PositionManager = () => {
       );
     };
 
+    // TODO Implement withdraw button + flow (request withdrawal, etc)
+
     console.log(action);
-    if (!actions.collateralApproval) {
-      return <CollateralApproveButton />;
-    } else {
-      switch (action) {
-        case 'MINT':
-          return !actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />;
-        case 'ADD_COLLATERAL':
-          return !actions.collateralApproval ? <CollateralApproveButton /> : <AddCollateralButton />;
-        case 'REDEEM':
-          return !actions.synthApproval ? <TokenApproveButton /> : <RedeemButton />;
-        default:
-          return null;
-      }
+    switch (action) {
+      case 'MINT':
+        return !actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />;
+      case 'ADD_COLLATERAL':
+        return !actions.collateralApproval ? <CollateralApproveButton /> : <AddCollateralButton />;
+      case 'REDEEM':
+        return !actions.synthApproval ? <TokenApproveButton /> : <RedeemButton />;
+      default:
+        return null;
     }
   };
 
