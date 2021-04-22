@@ -111,7 +111,7 @@ dist
 dist
 dist-ssr
 *.local
-src/types/contracts
+#src/types/contracts
 degen-sdk/types
 .env
 artifacts
