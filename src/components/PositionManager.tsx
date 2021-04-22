@@ -10,9 +10,11 @@ import clsx from 'clsx';
 
 /* The component's state is the actual sponsor position. The form is the pending position. */
 
+type MinterAction = 'MINT' | 'ADD_COLLATERAL' | 'REPAY_DEBT' | 'REDEEM' | 'WITHDRAW';
+
 const initialMinterState = {
   loading: true,
-  mode: 'mint',
+  action: 'MINT' as MinterAction,
   sponsorCollateral: 0,
   sponsorTokens: 0,
   utilization: 0,
@@ -22,10 +24,12 @@ const initialMinterState = {
   maxCollateral: 0, // TODO replace with synthInWallet item
 
   pendingUtilization: 0,
+  editCollateral: true,
+  editTokens: true,
 };
 
 type State = typeof initialMinterState;
-type Action = 'INIT_SPONSOR_POSITION' | 'UPDATE_SPONSOR_POSITION' | 'UPDATE_PENDING_UTILIZATION' | 'SET_MAX_COLLATERAL';
+type Action = 'INIT_SPONSOR_POSITION' | 'UPDATE_SPONSOR_POSITION' | 'UPDATE_PENDING_UTILIZATION' | 'CHANGE_ACTION' | 'OPEN_INPUTS';
 
 const Reducer = (state: State, action: { type: Action; payload: any }) => {
   switch (action.type) {
@@ -55,22 +59,27 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     }
     case 'UPDATE_PENDING_UTILIZATION': {
       const { pendingCollateral, pendingTokens } = action.payload;
-
-      console.log('PENDING COLLAT');
-      console.log(pendingCollateral);
-      console.log('PENDING TOKEN');
-      console.log(pendingTokens);
-
       const util = pendingTokens / pendingCollateral;
+
       return {
         ...state,
-        pendingUtilization: util > 0 && util !== Infinity ? util : 0,
+        pendingUtilization: util > 0 && util !== Infinity ? roundDecimals(util, 2) : 0,
       };
     }
-    case 'SET_MAX_COLLATERAL': {
+    case 'CHANGE_ACTION': {
+      console.log(action.payload);
       return {
         ...state,
-        maxCollateral: action.payload,
+        action: action.payload,
+      };
+    }
+    case 'OPEN_INPUTS': {
+      const { editCollateral, editTokens } = action.payload;
+      console.log(action.payload);
+      return {
+        ...state,
+        editCollateral: editCollateral,
+        editTokens: editTokens,
       };
     }
     default:
@@ -93,8 +102,6 @@ export const PositionManager = () => {
   const actions = useSynthActions();
   const erc20 = useToken(); // TODO remove after getting from synthsInWallet
 
-  //let utilization = 0;
-
   const [formState, { number }] = useFormState<MinterFormFields>(
     {
       pendingCollateral: state.sponsorCollateral,
@@ -106,8 +113,6 @@ export const PositionManager = () => {
         const tokens = Number(pendingTokens);
         const collateral = Number(pendingCollateral);
 
-        //utilization = tokens / collateral;
-        //console.log(utilization);
         dispatch({
           type: 'UPDATE_PENDING_UTILIZATION',
           payload: {
@@ -138,14 +143,16 @@ export const PositionManager = () => {
       const sponsorCollateral = Number(sponsorPosition?.collateralAmount ?? 0);
       const sponsorTokens = Number(sponsorPosition?.tokenAmount ?? 0);
 
+      const initialAction = sponsorPosition ? 'ADD_COLLATERAL' : 'MINT';
+
       dispatch({
         type: 'INIT_SPONSOR_POSITION',
         payload: {
           loading: false,
-          mode: sponsorPosition ? 'manage' : 'mint',
+          action: initialAction,
           sponsorCollateral: sponsorCollateral,
           sponsorTokens: sponsorTokens,
-          utilization: cr > 0 ? 1 / cr : 0, // TODO change to utilization
+          utilization: cr > 0 ? 1 / cr : 0,
           globalUtilization: empInfo.globalUtilization,
           liquidationPoint: empInfo.liquidationPoint,
           minTokens: empInfo.minTokens,
@@ -161,6 +168,41 @@ export const PositionManager = () => {
       initMinterState();
     }
   }, [currentSynth, currentCollateral, synthMarketData, account]);
+
+  // Set windows and fields based on action selected
+  useEffect(() => {
+    // TODO Define types to check against instead of switch
+    const openCollateralInput = (action: MinterAction) => {
+      switch (action) {
+        case 'MINT':
+        case 'ADD_COLLATERAL':
+          return true;
+        default:
+          return false;
+      }
+    };
+
+    const openTokenInput = (action: MinterAction) => {
+      switch (action) {
+        case 'MINT':
+        case 'REPAY_DEBT':
+          return true;
+        default:
+          return false;
+      }
+    };
+
+    dispatch({
+      type: 'OPEN_INPUTS',
+      payload: {
+        editCollateral: openCollateralInput(state.action),
+        editTokens: openTokenInput(state.action),
+      },
+    });
+
+    // Reset form state to sponsor
+    setFormState(state.sponsorCollateral, state.sponsorTokens);
+  }, [state.action]);
 
   const setFormState = (collateral: number, tokens: number) => {
     formState.setField('pendingCollateral', collateral);
@@ -181,55 +223,6 @@ export const PositionManager = () => {
     const newCollateral = state.maxCollateral;
     const newTokens = state.maxCollateral * state.globalUtilization;
     setFormState(newCollateral, newTokens);
-  };
-
-  const CollateralWindow: React.FC<{ name: string }> = ({ name, children }) => {
-    return (
-      <div className="background-color-5 padding-2 radius-large z-10 width-32 collat">
-        <h6 className="text-align-center margin-bottom-0">Collateral</h6>
-        <div className="width-full flex-justify-center margin-top-1 w-dropdown">
-          <div className="padding-0 flex-align-center">
-            <a className="weight-bold">{name}</a>
-          </div>
-        </div>
-        {children}
-        <div className="nub background-color-5"></div>
-      </div>
-    );
-  };
-
-  const TokenWindow: React.FC<{ name: string; utilization: number; pendingUtilization: number; tokenAmount: number }> = ({
-    name,
-    utilization,
-    pendingUtilization,
-    tokenAmount,
-  }) => {
-    const [editing, setEditing] = useState<boolean>(false);
-
-    // Calculate distance from top of gauge
-    const displacementFromTop = pendingUtilization < 1 ? (1 - pendingUtilization) * 100 : 0;
-    const windowDisplacement = {
-      top: `${displacementFromTop}%`,
-    };
-
-    return (
-      <div className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${tokenAmount <= 0 && 'disabled'}`} style={windowDisplacement}>
-        <h6 className="text-align-center margin-bottom-0">Debt</h6>
-        {utilization && (
-          <>
-            <h4 className="text-align-center margin-top-2 margin-bottom-0">{pendingUtilization * 100}%</h4>
-            <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
-          </>
-        )}
-        <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">
-          {tokenAmount} {name}
-        </h5>
-        <div className="height-9 flex-align-end">
-          <button className="button-secondary button-tiny white width-full w-button">Edit</button>
-        </div>
-        <div className="nub background-color-debt left"></div>
-      </div>
-    );
   };
 
   interface GaugeLabelProps {
@@ -309,22 +302,119 @@ export const PositionManager = () => {
     );
   };
 
-  // TODO pass in values from form
-  const ActionButton: React.FC = () => {
-    const style = clsx('button', 'width-full', 'text-small', 'w-button', Number(formState.values.pendingTokens) > 0 ? '' : 'disabled');
+  interface ActionButtonProps {
+    action: MinterAction;
+    sponsorCollateral: number;
+    sponsorTokens: number;
+    pendingCollateral: number;
+    pendingTokens: number;
+  }
+
+  const ActionButton: React.FC<ActionButtonProps> = ({ action, sponsorCollateral, sponsorTokens, pendingCollateral, pendingTokens }) => {
+    const baseStyle = clsx('button', 'width-full', 'text-small', 'w-button');
+    const responsiveStyle = clsx(baseStyle, pendingTokens > 0 ? '' : 'disabled');
+
+    const ApproveButton: React.FC = () => (
+      <button
+        onClick={async (e) => {
+          e.preventDefault();
+          await actions.onApprove();
+        }}
+        className={baseStyle}
+      >
+        Approve EMP
+      </button>
+    );
+
+    const MintButton: React.FC = () => (
+      <button onClick={() => actions.onMint(pendingCollateral, pendingTokens)} className={clsx(baseStyle, pendingTokens > 0 ? '' : 'disabled')}>
+        {`Mint ${pendingTokens} ${currentSynth} for ${pendingCollateral} ${currentCollateral}`}
+      </button>
+    );
+
+    // TODO add deposit function
+    const AddCollateralButton: React.FC = () => {
+      const difference = pendingCollateral - sponsorCollateral;
+
+      return (
+        <button
+          disabled={difference <= 0}
+          onClick={() => actions.onDeposit(sponsorCollateral, pendingCollateral)}
+          className={clsx(baseStyle, sponsorCollateral < pendingCollateral ? '' : 'disabled')}
+        >
+          {`Add ${difference} ${currentCollateral} to sponsor position`}
+        </button>
+      );
+    };
+
+    console.log(action);
+    if (!actions.isEmpAllowed) {
+      return <ApproveButton />;
+    } else {
+      switch (action) {
+        case 'MINT':
+          return <MintButton />;
+        case 'ADD_COLLATERAL':
+          return <AddCollateralButton />;
+        default:
+          return null;
+      }
+    }
+  };
+
+  const ActionSelector: React.FC<{ currentAction: MinterAction; noPosition: boolean }> = ({ currentAction, noPosition }) => {
+    const changeAction = (action: MinterAction) => {
+      dispatch({
+        type: 'CHANGE_ACTION',
+        payload: action,
+      });
+    };
+
+    const styles = 'button-secondary button-tiny glass margin-1 w-button';
+
+    // TODO replace with class
+    const disabledButton = {
+      opacity: 0.1,
+    };
 
     return (
-      <button onClick={() => actions.onMint(Number(formState.values.pendingCollateral), Number(formState.values.pendingTokens))} className={style}>
-        {`Mint ${formState.values.pendingTokens} ${currentSynth} for ${formState.values.pendingCollateral} ${currentCollateral}`}
-      </button>
+      <>
+        <button className={clsx(styles, currentAction === 'MINT' && 'selected')} onClick={() => changeAction('MINT')}>
+          Mint Synth
+        </button>
+        <button
+          style={noPosition ? disabledButton : {}}
+          disabled={noPosition}
+          className={clsx(styles, currentAction === 'ADD_COLLATERAL' && 'selected')}
+          onClick={() => changeAction('ADD_COLLATERAL')}
+        >
+          Add Collateral
+        </button>
+        <button
+          style={noPosition ? disabledButton : {}}
+          disabled={noPosition}
+          className={clsx(styles, currentAction === 'REPAY_DEBT' && 'selected')}
+          onClick={() => changeAction('REPAY_DEBT')}
+        >
+          Repay Debt
+        </button>
+        <button
+          style={noPosition ? disabledButton : {}}
+          disabled={noPosition}
+          className={clsx(styles, currentAction === 'REDEEM' && 'selected')}
+          onClick={() => changeAction('REDEEM')}
+        >
+          Redeem Synth
+        </button>
+      </>
     );
   };
 
-  // TODO fix loader
+  // TODO fix loader, center and make spin
   if (state.loading) {
     return (
       <div className="flex-align-center flex-justify-center">
-        <Icon name="Loader" className="spin " />
+        <Icon name="Loader" className="spin" />
       </div>
     );
   }
@@ -336,7 +426,7 @@ export const PositionManager = () => {
           <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20">Tweak your position settings</p>
           <div className="flex-row">
             <div className="expand relative padding-right-2">
-              <GaugeLabel label="GCR" tooltip="TODO" className="gcr-legend" height={state.globalUtilization} />
+              <GaugeLabel label="Global Utilization" tooltip="TODO" className="gcr-legend" height={state.globalUtilization} />
               <GaugeLabel label="Liquidation" tooltip="TODO" className="liquidation-legend" height={state.liquidationPoint} emphasized />
               <div className="background-color-5 padding-2 radius-large z-10 width-32 collat">
                 <h6 className="text-align-center margin-bottom-0">Collateral</h6>
@@ -352,8 +442,13 @@ export const PositionManager = () => {
                   maxLength={256}
                   placeholder="0"
                   required
+                  disabled={!state.editCollateral}
                 />
-                <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny white width-full w-button">
+                <button
+                  onClick={(e) => setMaximum(e)}
+                  className={`button-secondary button-tiny white width-full ${!state.editCollateral && 'disabled'}`}
+                  disabled={!state.editCollateral}
+                >
                   Max {state.maxCollateral.toFixed(2)}
                 </button>
                 <div className="nub background-color-5"></div>
@@ -366,12 +461,37 @@ export const PositionManager = () => {
               liquidation={state.liquidationPoint}
             />
             <div className="expand padding-left-2">
-              <TokenWindow
-                name={currentSynth}
-                utilization={state.utilization}
-                pendingUtilization={state.pendingUtilization}
-                tokenAmount={Number(formState.values.pendingTokens)}
-              />
+              <div
+                className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${
+                  Number(formState.values.pendingTokens) === 0 && state.sponsorTokens === 0 && 'disabled'
+                }`}
+                style={{
+                  top: `${state.pendingUtilization < 1 ? (1 - state.pendingUtilization) * 100 : 0}%`,
+                }}
+              >
+                <h6 className="text-align-center margin-bottom-0">Debt</h6>
+                {state.pendingUtilization >= 0 && (
+                  <>
+                    <h4 className="text-align-center margin-top-2 margin-bottom-0">{state.pendingUtilization * 100}%</h4>
+                    <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
+                  </>
+                )}
+                <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">
+                  {formState.values.pendingTokens} {currentSynth}
+                </h5>
+                <div className="height-9 flex-align-end">
+                  <input
+                    {...number('pendingTokens')}
+                    type="number"
+                    className="form-input small margin-bottom-1 w-input"
+                    maxLength={256}
+                    placeholder="0"
+                    required
+                    disabled={!state.editTokens}
+                  />
+                </div>
+                <div className="nub background-color-debt left"></div>
+              </div>
             </div>
           </div>
           <UtilizationMarker utilization={state.utilization} />
@@ -385,7 +505,7 @@ export const PositionManager = () => {
             </div>
             <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
               <a href="#" className="text-small break-no-wrap">
-                Advanced features
+                Advanced Features
               </a>
               <p className="text-xs opacity-50 margin-0">Coming soon</p>
             </nav>
@@ -395,11 +515,8 @@ export const PositionManager = () => {
           <div>
             <h6 className="margin-bottom-0">Actions</h6>
             <div className="divider margin-y-2"></div>
-            {/* TODO Mode selector, select mode in state */}
             <div className="flex-row flex-wrap">
-              <a href="#" className="button-secondary button-tiny glass margin-1 w-button">
-                Mint Synth
-              </a>
+              <ActionSelector currentAction={state.action} noPosition={!state.sponsorCollateral} />
             </div>
           </div>
           <div className="margin-top-8">
@@ -423,15 +540,24 @@ export const PositionManager = () => {
           <div className="margin-top-8">
             <h6 className="margin-bottom-0">TX Details</h6>
             <div className="divider margin-y-2"></div>
-            <p className="text-xs">
-              No collateral deposited yet.
-              <br />
-              {`Must mint a minimum of ${state.minTokens} ${currentSynth}.`}
-              <br />
-            </p>
+            {!state.sponsorCollateral ? (
+              <p className="text-xs">
+                No collateral deposited yet.
+                <br />
+                {`Must mint a minimum of ${state.minTokens} ${currentSynth}.`}
+                <br />
+              </p>
+            ) : // TODO add TX detail component
+            null}
           </div>
           <div className="expand flex-align-end">
-            <ActionButton />
+            <ActionButton
+              action={state.action}
+              sponsorCollateral={state.sponsorCollateral}
+              sponsorTokens={state.sponsorTokens}
+              pendingCollateral={Number(formState.values.pendingCollateral)}
+              pendingTokens={Number(formState.values.pendingTokens)}
+            />
           </div>
         </div>
       </div>

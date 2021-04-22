@@ -5435,6 +5435,13 @@ a:hover {
   text-align: center;
 }
 
+.button-secondary.disabled {
+  background-color: #140c4a;
+  background-image: none;
+  box-shadow: none;
+  opacity: 0.4;
+}
+
 .button-secondary:hover {
   background-color: #2a1064;
   color: #fff;
@@ -6630,11 +6637,12 @@ a:hover {
 
 .background-color-debt.padding-2.radius-large.z-10.width-32.collat {
   margin-top: -70px;
+  height: auto;
 }
 
 .background-color-debt.padding-2.radius-large.z-10.width-32.debts {
   top: 50%;
-  height: 140px;
+  height: auto;
   margin-top: -70px;
 }
 
