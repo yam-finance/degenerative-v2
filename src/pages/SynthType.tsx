@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Redirect, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 import { UserContext, MarketContext } from '@/contexts';
@@ -13,46 +13,63 @@ interface SynthParams {
 
 interface ISynthTypeItem {
   name: string;
-  maturity: string;
+  maturity: number;
   apy: string;
   balance: string;
   liquidity: string;
   price: string;
 }
 
+type SynthTableFilter = 'Live' | 'Expired' | 'All';
+
 export const SynthType: React.FC = () => {
   const { synthsInWallet } = useContext(UserContext);
   const { synthMarketData } = useContext(MarketContext);
   const { type } = useParams<SynthParams>();
-  const [synthGroup, setSynthGroup] = useState<ISynthTypeItem[]>([]);
+  const [synthGroup, setSynthGroup] = useState<Record<string, ISynthTypeItem>>({});
   const [historicPriceData, setHistoricPriceData] = useState<{
     labels: string[];
     synthPrices: IMap<number[]>;
   }>();
+  const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('All');
+  const [synthInFocus, setSynthInFocus] = useState<string>('');
 
   // TODO redirect if type does not exist
 
   useEffect(() => {
     const initSynthTypes = () => {
-      const synths: ISynthTypeItem[] = [];
+      let selectedSynth: string | undefined;
+      const synths: typeof synthGroup = {};
       Object.entries(SynthInfo)
         .filter((synth) => synth[1].type === type)
+        .filter(([synthName, synthInfo]) => {
+          if (filterSynths === 'All') {
+            return true;
+          } else if (filterSynths === 'Live') {
+            return synthMarketData[synthName].daysTillExpiry > 0;
+          } else {
+            return synthMarketData[synthName].daysTillExpiry <= 0;
+          }
+        })
         .forEach(([synthName, synthInfo]) => {
-          synths.push({
+          if (!selectedSynth) selectedSynth = synthName;
+          const maturity = synthMarketData[synthName].daysTillExpiry;
+          synths[synthName] = {
             name: synthName,
-            maturity: synthInfo.cycle, // TODO change to isExpired
+            maturity: maturity,
             apy: synthMarketData[synthName].apr, //TODO
             // TODO should be showing minted positions
             balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? '0',
             liquidity: synthMarketData[synthName].liquidity, // TODO
             price: synthMarketData[synthName].price, // TODO
-          });
+          };
         });
+      if (selectedSynth) setSynthInFocus(selectedSynth);
       setSynthGroup(synths);
     };
 
     if (!isEmpty(synthMarketData)) initSynthTypes();
-  }, [synthMarketData]);
+  }, [synthMarketData, filterSynths]);
 
   useEffect(() => {
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(type));
@@ -66,17 +83,23 @@ export const SynthType: React.FC = () => {
     console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
-      datasets: Object.entries(historicPriceData.synthPrices).map(([name, prices]) => ({
-        label: name,
-        data: prices,
-        borderColor: name === 'Reference' ? '#fff' : '#FF0099',
-        borderWidth: 1,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        pointHoverBackgroundColor: '#FF0099',
-        tension: 0.1,
-      })),
+      datasets: Object.entries(historicPriceData.synthPrices)
+        .filter(([name, prices]) => {
+          return name === synthInFocus || name === 'Reference';
+        }) // TODO
+        .map(([name, prices]) => ({
+          label: name,
+          data: prices,
+          borderColor: name === 'Reference' ? '#fff' : '#FF0099',
+          borderWidth: 1,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: '#FF0099',
+          tension: 0.1,
+        })),
     };
+
+    console.log(data);
 
     const options = {
       tooltips: {
@@ -97,7 +120,8 @@ export const SynthType: React.FC = () => {
       },
       layout: {
         padding: {
-          left: -10,
+          left: 5,
+          right: 5,
           bottom: -10,
         },
       },
@@ -106,7 +130,7 @@ export const SynthType: React.FC = () => {
           {
             ticks: {
               beginAtZero: false,
-              display: false,
+              display: true,
             },
             gridLines: {
               drawBorder: false,
@@ -134,13 +158,11 @@ export const SynthType: React.FC = () => {
       display: false,
     };
 
-    console.log(data);
-
     return <Line data={data} options={options} legend={legend} />;
   };
 
   const SynthGroupRow: React.FC<ISynthTypeItem> = (props) => {
-    const { name, apy, balance, liquidity, price } = props;
+    const { name, maturity, apy, balance, liquidity, price } = props;
     const { cycle, year, type } = SynthInfo[name];
 
     // TODO change maturity to show if live or expired
@@ -148,7 +170,7 @@ export const SynthType: React.FC = () => {
       <Link to={`/synths/${type}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
         <div className="expand">
           <div className="margin-right-1 text-color-4">{name}</div>
-          <div className="text-xs">{`${cycle}${year}`}</div>
+          <div className="text-xs">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{apy}%</div>
@@ -167,29 +189,63 @@ export const SynthType: React.FC = () => {
     );
   };
 
+  const TableFilter: React.FC = () => {
+    const setFilter = (filter: SynthTableFilter) => {
+      setSynthInFocus('');
+      setFilterSynths(filter);
+    };
+
+    return (
+      <div className="padding-x-5 flex-row">
+        <div className="tabs">
+          <div className={`tab ${filterSynths === 'Live' && 'active'}`} onClick={() => setFilterSynths('Live')}>
+            Live
+          </div>
+          <div className={`tab ${filterSynths === 'Expired' && 'active'}`} onClick={() => setFilterSynths('Expired')}>
+            Expired
+          </div>
+          <div className={`tab ${filterSynths === 'All' && 'active'}`} onClick={() => setFilterSynths('All')}>
+            All
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const ChartSelector: React.FC = () => {
+    return (
+      <div className="tabs portrait-margin-top-1">
+        {Object.keys(synthGroup).map((synthName, index) => {
+          return (
+            <div className={`tab ${synthInFocus === synthName && 'active'}`} onClick={() => setSynthInFocus(synthName)} key={index}>
+              {synthName}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <>
       <MainDisplay>
         <MainHeading className="margin-bottom-1">{type}</MainHeading>
         <div className="padding-x-8 flex-align-baseline">{SynthTypes[type].description}</div>
+        <div className="padding-x-8 padding-y-1 flex-row portrait-flex-column portrait-flex-align-start">
+          <ChartSelector />
+        </div>
         <div className="width-full margin-y-2 w-embed w-script">{historicPriceData && <Chart />}</div>
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
-        <div className="padding-x-5 flex-row">
-          <div className="tabs">
-            <div className="tab active">Live</div>
-            <div className="tab">Expired</div>
-            <div className="tab">All</div>
-          </div>
-        </div>
+        <TableFilter />
         <Table headers={['Maturity', 'APY', 'Your Balance', 'Liquidity', 'Price']}>
-          {synthGroup.length > 0
-            ? synthGroup.map((synth, index) => {
+          {Object.keys(synthGroup).length > 0
+            ? Object.entries(synthGroup).map(([name, synth], index) => {
                 return <SynthGroupRow {...synth} key={index} />;
               })
             : 'There are no synths in this type'}
         </Table>
       </MainDisplay>
-      <SideDisplay></SideDisplay>
+      <SideDisplay>{/* TODO add synth copy */}</SideDisplay>
     </>
   );
 };

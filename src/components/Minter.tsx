@@ -78,7 +78,7 @@ export const Minter: React.FC = () => {
       <button
         onClick={(e) => {
           e.preventDefault();
-          actions.onMint();
+          //actions.onMint();
         }}
         className="button w-button"
       >

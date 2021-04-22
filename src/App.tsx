@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import ContextProviders from '@/contexts';
 import './degenerative.css';
@@ -11,9 +12,14 @@ import { Landing, Synth, Explore, Portfolio, SynthType, NotFound } from '@/pages
 import { Navbar } from '@/components';
 
 const App: React.FC = () => {
+  const { i18n } = useTranslation();
   const FlexRow: React.FC = ({ children }) => {
     return <div className="flex-row min-height-viewport-full tablet-flex-column">{children}</div>;
   };
+
+  useEffect(() => {
+    document.dir = i18n.dir();
+  }, [i18n, i18n.language]);
 
   return (
     <Router>

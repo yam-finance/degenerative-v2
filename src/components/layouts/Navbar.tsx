@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SearchForm, NavbarButton, Icon, Dropdown } from '@/components';
+import LanguageSwitcher from '@/components/LangSwitcher';
 import { EthereumContext } from '@/contexts';
+import { useTranslation } from 'react-i18next';
 
 import zombieHead from '@/assets/zombie_head_large.png';
 import discord from '@/assets/discord.svg';
@@ -13,6 +15,7 @@ const Navbar = () => {
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
   const [openWalletMenu, setWalletMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (account) {
@@ -63,6 +66,8 @@ const Navbar = () => {
       <Link to="/" className="margin-left-6 flex-row-middle padding-left-3 padding-right-3 w-inline-block">
         <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
         <h5 className="margin-0 margin-right-2 expand">Degenerative</h5>
+        <h5 className="margin-0 margin-right-2 expand">{t('test', {testVariable: t('bye')})}</h5>
+        <LanguageSwitcher />
         <div className="pill">v 2.0</div>
       </Link>
       <div className="expand tablet-hide">

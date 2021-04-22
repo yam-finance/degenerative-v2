@@ -47,9 +47,13 @@ export interface ISynthMarketData {
   marketCap: string;
   totalSupply: string;
   liquidity: string;
-  isExpired: boolean;
+  minTokens: number;
+  daysTillExpiry: number;
+  globalUtilization: number; // Inverse of GCR taken from EMP
+  liquidationPoint: number;
 }
 
+// TODO use Record<T1, T2> instead
 export interface IMap<T> {
   [key: string]: T;
 }

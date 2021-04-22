@@ -1,4 +1,4 @@
-// Types pertaining to the user
+// Types pertaining to the user. BigNumbers stored as strings.
 export interface IMintedPosition {
   name: string;
   //tokenName: string;
@@ -7,7 +7,8 @@ export interface IMintedPosition {
   //collateralName: string;
   collateralAmount: string;
   //collateralPriceUsd: string;
-  collateralRatio: string;
+  collateralRatio: string; // TODO replace with utilization
+  //utilization: number;
 }
 
 export interface ISynthInWallet {

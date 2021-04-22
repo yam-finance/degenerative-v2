@@ -3,7 +3,7 @@ import { useParams, NavLink } from 'react-router-dom';
 
 import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext } from '@/contexts';
-import { MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
+import { MainDisplay, MainHeading, Minter, PositionManager, SideDisplay } from '@/components';
 import { ISynthInfo } from '@/types';
 import { SynthInfo, isEmpty } from '@/utils';
 
@@ -32,9 +32,11 @@ export const Synth: React.FC = () => {
     return (
       <div className="padding-x-8 flex-row">
         <div className="tabs margin-right-2">
+          {/*
           <NavLink to={`/synths/${type}/${cycle}${year}/mint`} className="tab large" activeClassName="active">
             Mint
           </NavLink>
+          */}
           <NavLink to={`/synths/${type}/${cycle}${year}/manage`} className="tab large" activeClassName="active">
             Manage
           </NavLink>
@@ -53,8 +55,8 @@ export const Synth: React.FC = () => {
     switch (action) {
       case 'mint':
         return <Minter />;
-      //case 'manage':
-      //  return <Manage />
+      case 'manage':
+        return <PositionManager />;
       //case 'trade':
       //  return <Trade />
       //case 'lp':
