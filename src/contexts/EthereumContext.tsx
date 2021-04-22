@@ -13,6 +13,7 @@ const initialState = {
   account: undefined as string | undefined,
 };
 
+// TODO Add in web3-react + web3modal
 export const EthereumContext = createContext(initialState);
 
 export const EthereumProvider: React.FC = ({ children }) => {

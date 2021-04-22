@@ -15,6 +15,7 @@ const initialState = {
   getSponsorPosition: (synthName: string) => {},
   currentSynth: '',
   currentCollateral: '',
+  emp: {} as ReturnType<typeof useEmp>,
 };
 
 export const UserContext = createContext(initialState);
@@ -72,7 +73,7 @@ export const UserProvider: React.FC = ({ children }) => {
         // tokenPrice: await (await getPrice(synth.token, collateral)).price,
         collateralAmount: utils.formatEther(rawCollateral),
         // collateralPrice:
-        collateralRatio: rawCollateral.div(tokensOutstanding).toString(),
+        collateralRatio: rawCollateral.div(tokensOutstanding).toString(), // TODO replace with utilization
       };
       return Promise.resolve(mintedPosition);
     } else {
@@ -110,6 +111,7 @@ export const UserProvider: React.FC = ({ children }) => {
         currentCollateral,
         setSynth,
         getSponsorPosition,
+        emp,
       }}
     >
       {children}

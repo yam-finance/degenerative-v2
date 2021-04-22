@@ -6,7 +6,6 @@ export const Landing: React.FC = () => {
   return (
     <>
       <MainDisplay>
-        <Minter />
         <ConnectWallet />
       </MainDisplay>
     </>
