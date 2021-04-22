@@ -89,6 +89,7 @@ export const useEmp = () => {
   );
   */
 
+  // TODO finish implementation. Needs its own page.
   const settle = useCallback(
     async (empAddress: string, tokens: number) => {
       const tokenAmount = new Unsigned(tokens);
@@ -107,7 +108,11 @@ export const useEmp = () => {
     [signer]
   );
 
-  // TODO add request withdraw
+  const requestWithdrawal = useCallback(async (empAddress: string, collateral: number) => {}, [signer]);
+
+  const cancelWithdrawalRequest = useCallback(async () => {}, [signer]);
+
+  // NOTE: Only works up to GCR. Otherwise will fail.
   const withdraw = useCallback(
     async (empAddress: string, collateral: number) => {
       const collateralAmount = new Unsigned(collateral);

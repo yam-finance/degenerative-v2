@@ -10,6 +10,14 @@ import clsx from 'clsx';
 
 /* The component's state is the actual sponsor position. The form is the pending position. */
 
+/* TODO remove this when added to copy
+  - Mint: Create new position OR add synths to existing position.
+  - Add collateral: Adds collateral to position, reducing utilization.
+  - Repay Debt: Removes synths from position. Must have synths in wallet to do so.
+  - Withdraw collateral: Removes collateral from position, increasing utilization. May have to request
+  - Redeem: Repays debt AND removes collateral to maintain same utilization.
+  - Settle: Settles sponsor position AFTER expiry.
+*/
 type MinterAction = 'MINT' | 'ADD_COLLATERAL' | 'REPAY_DEBT' | 'REDEEM' | 'WITHDRAW';
 
 const initialMinterState = {
@@ -176,6 +184,7 @@ export const PositionManager = () => {
       switch (action) {
         case 'MINT':
         case 'ADD_COLLATERAL':
+        case 'REDEEM':
           return true;
         default:
           return false;
@@ -186,6 +195,7 @@ export const PositionManager = () => {
       switch (action) {
         case 'MINT':
         case 'REPAY_DEBT':
+        case 'REDEEM':
           return true;
         default:
           return false;
@@ -326,11 +336,16 @@ export const PositionManager = () => {
       </button>
     );
 
-    const MintButton: React.FC = () => (
-      <button onClick={() => actions.onMint(pendingCollateral, pendingTokens)} className={clsx(baseStyle, pendingTokens > 0 ? '' : 'disabled')}>
-        {`Mint ${pendingTokens} ${currentSynth} for ${pendingCollateral} ${currentCollateral}`}
-      </button>
-    );
+    const MintButton: React.FC = () => {
+      const newTokens = pendingTokens - state.sponsorTokens;
+      const newCollateral = pendingCollateral - state.sponsorCollateral;
+
+      return (
+        <button onClick={() => actions.onMint(newCollateral, newTokens)} className={clsx(baseStyle, newTokens > 0 ? '' : 'disabled')} disabled={newTokens > 0}>
+          {`Mint ${newTokens} new ${currentSynth} for ${newCollateral} ${currentCollateral}`}
+        </button>
+      );
+    };
 
     // TODO add deposit function
     const AddCollateralButton: React.FC = () => {
@@ -533,7 +548,7 @@ export const PositionManager = () => {
                 <div className="expand flex-align-center">
                   <div>{currentSynth}</div>
                 </div>
-                <div className="weight-medium text-color-4">{state.sponsorTokens}0</div>
+                <div className="weight-medium text-color-4">{state.sponsorTokens}</div>
               </div>
             </div>
           </div>
