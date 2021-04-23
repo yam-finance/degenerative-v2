@@ -358,9 +358,14 @@ export const PositionManager = () => {
     const MintButton: React.FC = () => {
       const newTokens = pendingTokens - state.sponsorTokens;
       const newCollateral = pendingCollateral - state.sponsorCollateral;
+      const positionAboveGlobalUtilization = state.pendingUtilization >= state.globalUtilization;
 
       return (
-        <button onClick={() => actions.onMint(newCollateral, newTokens)} className={clsx(baseStyle, newTokens > 0 ? '' : 'disabled')} disabled={newTokens > 0}>
+        <button
+          onClick={() => actions.onMint(newCollateral, newTokens)}
+          className={clsx(baseStyle, newTokens > 0 && positionAboveGlobalUtilization ? '' : 'disabled')}
+          disabled={newTokens < 0 || !positionAboveGlobalUtilization}
+        >
           {`Mint ${newTokens} new ${currentSynth} for ${newCollateral} ${currentCollateral}`}
         </button>
       );
