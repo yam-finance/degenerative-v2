@@ -12,10 +12,8 @@ export const useEmp = () => {
     async (empAddress: string, collateral: number, tokens: number) => {
       const [collateralAmount, tokenAmount] = [new Unsigned(collateral), new Unsigned(tokens)];
       const empContract = Emp__factory.connect(empAddress, signer as Signer);
-      console.log(empContract);
+
       try {
-        // TODO DEBUG
-        console.log(empContract.totalTokensOutstanding());
         console.log('COLLATERAL: ' + collateralAmount.rawValue);
         console.log('TOKEN : ' + tokenAmount.rawValue);
         const gasLimit = await empContract.estimateGas.create(collateralAmount, tokenAmount);
@@ -109,6 +107,8 @@ export const useEmp = () => {
   );
 
   const requestWithdrawal = useCallback(async (empAddress: string, collateral: number) => {}, [signer]);
+
+  const withdrawPassedRequest = useCallback(() => {}, [signer]);
 
   const cancelWithdrawalRequest = useCallback(async () => {}, [signer]);
 

@@ -53,8 +53,8 @@ export const Minter: React.FC = () => {
         setInvalidCollateral(collateral == 0);
         if (invalidTokens || invalidCollateral) return;
 
-        actions.setCollateralAmount(collateral);
-        actions.setTokenAmount(tokens);
+        //actions.setCollateralAmount(collateral);
+        //actions.setTokenAmount(tokens);
       },
     }
   );
@@ -64,7 +64,7 @@ export const Minter: React.FC = () => {
       <button
         onClick={async (e) => {
           e.preventDefault();
-          await actions.onApprove();
+          //await actions.onApprove();
         }}
         className="button w-button"
       >
@@ -208,7 +208,7 @@ export const Minter: React.FC = () => {
             </div>
           </div>
           <UtilizationGauge />
-          {actions.isEmpAllowed ? <MintButton /> : <ApproveButton />}
+          {/*actions.isEmpAllowed ? <MintButton /> : <ApproveButton />*/}
           <div className="text-xs opacity-50 margin-top-2">
             There will be 2 transactions. <br />
             First to approve your WETH, second to mint.

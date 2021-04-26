@@ -118,8 +118,17 @@ export const PositionManager = () => {
     {
       onChange: (e, stateValues, nextStateValues) => {
         const { pendingCollateral, pendingTokens } = nextStateValues;
+
         const tokens = Number(pendingTokens);
-        const collateral = Number(pendingCollateral);
+
+        // Special case for redeem. Must maintain utilization.
+        let collateral: number;
+        if (state.action === 'REDEEM') {
+          collateral = tokens / state.utilization;
+          formState.setField('pendingCollateral', collateral);
+        } else {
+          collateral = Number(pendingCollateral);
+        }
 
         dispatch({
           type: 'UPDATE_PENDING_UTILIZATION',
@@ -184,7 +193,6 @@ export const PositionManager = () => {
       switch (action) {
         case 'MINT':
         case 'ADD_COLLATERAL':
-        case 'REDEEM':
           return true;
         default:
           return false;
@@ -322,32 +330,47 @@ export const PositionManager = () => {
 
   const ActionButton: React.FC<ActionButtonProps> = ({ action, sponsorCollateral, sponsorTokens, pendingCollateral, pendingTokens }) => {
     const baseStyle = clsx('button', 'width-full', 'text-small', 'w-button');
-    const responsiveStyle = clsx(baseStyle, pendingTokens > 0 ? '' : 'disabled');
 
-    const ApproveButton: React.FC = () => (
+    const CollateralApproveButton: React.FC = () => (
       <button
         onClick={async (e) => {
           e.preventDefault();
-          await actions.onApprove();
+          await actions.onApproveCollateral();
         }}
         className={baseStyle}
       >
-        Approve EMP
+        Approve EMP for {currentCollateral}
+      </button>
+    );
+
+    const TokenApproveButton: React.FC = () => (
+      <button
+        onClick={async (e) => {
+          e.preventDefault();
+          await actions.onApproveSynth();
+        }}
+        className={baseStyle}
+      >
+        Approve EMP for {currentSynth}
       </button>
     );
 
     const MintButton: React.FC = () => {
       const newTokens = pendingTokens - state.sponsorTokens;
       const newCollateral = pendingCollateral - state.sponsorCollateral;
+      const positionAboveGlobalUtilization = state.pendingUtilization >= state.globalUtilization;
 
       return (
-        <button onClick={() => actions.onMint(newCollateral, newTokens)} className={clsx(baseStyle, newTokens > 0 ? '' : 'disabled')} disabled={newTokens > 0}>
+        <button
+          onClick={() => actions.onMint(newCollateral, newTokens)}
+          className={clsx(baseStyle, newTokens > 0 && positionAboveGlobalUtilization ? '' : 'disabled')}
+          disabled={newTokens < 0 || !positionAboveGlobalUtilization}
+        >
           {`Mint ${newTokens} new ${currentSynth} for ${newCollateral} ${currentCollateral}`}
         </button>
       );
     };
 
-    // TODO add deposit function
     const AddCollateralButton: React.FC = () => {
       const difference = pendingCollateral - sponsorCollateral;
 
@@ -362,18 +385,33 @@ export const PositionManager = () => {
       );
     };
 
+    // TODO Repay debt button
+
+    const RedeemButton: React.FC = () => {
+      const redeemableTokens = sponsorTokens - pendingTokens;
+      const resultingCollateral = redeemableTokens / state.utilization;
+
+      const isRedeemValid = redeemableTokens > 0 && redeemableTokens < sponsorTokens;
+
+      return (
+        <button onClick={() => actions.onRedeem(redeemableTokens)} className={clsx(baseStyle, isRedeemValid ? '' : 'disabled')}>
+          {`Redeem ${redeemableTokens} ${currentSynth} and receive ${resultingCollateral} ${currentCollateral}`}
+        </button>
+      );
+    };
+
+    // TODO Implement withdraw button + flow (request withdrawal, etc)
+
     console.log(action);
-    if (!actions.isEmpAllowed) {
-      return <ApproveButton />;
-    } else {
-      switch (action) {
-        case 'MINT':
-          return <MintButton />;
-        case 'ADD_COLLATERAL':
-          return <AddCollateralButton />;
-        default:
-          return null;
-      }
+    switch (action) {
+      case 'MINT':
+        return !actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />;
+      case 'ADD_COLLATERAL':
+        return !actions.collateralApproval ? <CollateralApproveButton /> : <AddCollateralButton />;
+      case 'REDEEM':
+        return !actions.synthApproval ? <TokenApproveButton /> : <RedeemButton />;
+      default:
+        return null;
     }
   };
 
@@ -455,6 +493,7 @@ export const PositionManager = () => {
                   type="number"
                   className="form-input small margin-bottom-1 w-input"
                   maxLength={256}
+                  min={0}
                   placeholder="0"
                   required
                   disabled={!state.editCollateral}
@@ -500,6 +539,7 @@ export const PositionManager = () => {
                     type="number"
                     className="form-input small margin-bottom-1 w-input"
                     maxLength={256}
+                    min="0"
                     placeholder="0"
                     required
                     disabled={!state.editTokens}

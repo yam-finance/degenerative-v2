@@ -8,37 +8,59 @@ export const useSynthActions = () => {
   const { currentSynth, currentCollateral, emp } = useContext(UserContext);
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
+  const [synthAddress, setSynthAddress] = useState('');
 
   const [loading, setLoading] = useState(false);
-  const [tokenAmount, setTokenAmount] = useState(0);
-  const [collateralAmount, setCollateralAmount] = useState(0);
-  const [isEmpAllowed, setIsEmpAllowed] = useState(false);
+  const [collateralApproval, setCollateralApproval] = useState(false);
+  const [synthApproval, setSynthApproval] = useState(false);
 
-  const collateral = useToken();
+  const erc20 = useToken();
   const wrapEth = useWrapEth();
 
   useEffect(() => {
     if (currentSynth && currentCollateral) {
       setEmpAddress(SynthInfo[currentSynth].emp.address);
       setCollateralAddress(CollateralMap[currentCollateral].address);
+      setSynthAddress(SynthInfo[currentSynth].token.address);
     }
   }, [currentSynth]);
 
   useEffect(() => {
-    checkEmpAllowance();
+    checkCollateralAllowance();
   }, [collateralAddress, empAddress]);
 
-  const checkEmpAllowance = async () => {
-    if (collateralAddress && empAddress) {
-      setIsEmpAllowed(await collateral.getAllowance(collateralAddress, empAddress));
+  useEffect(() => {
+    checkSynthAllowance();
+  }, [synthAddress, empAddress]);
+
+  const checkCollateralAllowance = async () => {
+    if (synthAddress && empAddress) {
+      setCollateralApproval(await erc20.getAllowance(collateralAddress, empAddress));
     }
   };
 
-  const onApprove = async () => {
+  const checkSynthAllowance = async () => {
+    if (synthAddress && empAddress) {
+      setSynthApproval(await erc20.getAllowance(synthAddress, empAddress));
+    }
+  };
+
+  // TODO combine with synth approval?
+  const onApproveCollateral = async () => {
     try {
-      const tx = await collateral.approveSpender(collateralAddress, empAddress);
+      const tx = await erc20.approveSpender(collateralAddress, empAddress);
       await tx?.wait();
-      checkEmpAllowance();
+      checkCollateralAllowance();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const onApproveSynth = async () => {
+    try {
+      const tx = await erc20.approveSpender(synthAddress, empAddress);
+      await tx?.wait();
+      checkSynthAllowance();
     } catch (err) {
       console.error(err);
     }
@@ -86,18 +108,27 @@ export const useSynthActions = () => {
     }
   };
 
-  const onRedeem = () => {};
+  const onRedeem = async (tokenAmount: number) => {
+    if (tokenAmount > 0) {
+      try {
+        const txReceipt = await emp.redeem(empAddress, tokenAmount);
+        console.log(txReceipt.transactionHash);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.error('Invalid collateral amounts.');
+    }
+  };
 
   return {
-    tokenAmount,
-    setTokenAmount,
-    collateralAmount,
-    setCollateralAmount,
+    collateralApproval,
+    synthApproval,
     onMint,
     onDeposit,
     onRedeem,
-    onApprove,
-    isEmpAllowed,
+    onApproveCollateral,
+    onApproveSynth,
     onWrapEth,
   };
 };
