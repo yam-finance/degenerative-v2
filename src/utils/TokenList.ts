@@ -1,28 +1,37 @@
 import Collateral from '@/assets/collateral.json';
 import Types from '@/assets/types.json'; // TODO rename to groups
 import Assets from '@/assets/assets.json';
-import { ISynthInfo, ISynthType, IToken, IMap } from '@/types';
+import AssetsNew from '@/assets/assets_new.json';
+import { ISynthInfo, ISynthType, IToken } from '@/types';
+
+const ChainMap: Record<number, string> = {
+  1: 'mainnet',
+  42: 'kovan',
+  1337: 'mainnet',
+};
 
 //export const SynthMap: IMap<ISynthInfo> = Synths;
-export const CollateralMap: IMap<IToken> = Collateral;
-export const SynthTypes: IMap<ISynthType> = Types; // TODO make this map of all copy for synth types
+export const CollateralMap: Record<string, IToken> = Collateral;
+export const SynthTypes: Record<string, ISynthType> = Types; // TODO make this map of all copy for synth types
 
-// Synth will be indexed by the name eg. uGas-JAN21
-export const SynthInfo: IMap<ISynthInfo> = (() => {
-  const synthInfo: IMap<ISynthInfo> = {};
-  const assets: any = Assets;
+export const getSynthMetadata = (chainId: number) => {
+  const chain = ChainMap[chainId];
+  const assets: any = AssetsNew;
 
-  for (const type in assets) {
-    assets[type].forEach((synth: any) => {
-      const name = `${type}-${synth.cycle}${synth.year}`;
+  const synthInfo: Record<string, ISynthInfo> = {};
+  const networkAssets = assets[chain];
+
+  for (const group in networkAssets) {
+    networkAssets[group].forEach((synth: any) => {
+      const name = `${group}-${synth.cycle}${synth.year}`;
       // Add in synth type information to object
       synthInfo[name] = {
         ...synth,
         imgLocation: 'src/assets/Box-01.png', // TODO add image locations to json
-        type: type,
+        type: group,
       };
     });
   }
 
   return synthInfo;
-})();
+};

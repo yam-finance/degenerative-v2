@@ -5,14 +5,14 @@ import { CollateralMap, roundDecimals } from '@/utils';
 export const EthNodeProvider = new providers.JsonRpcProvider('https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud');
 
 /** Grabs TVL, total supply and if synth is expired. */
-export const getEmpState = async (synth: ISynthInfo) => {
+export const getEmpState = async (synth: ISynthInfo, provider = EthNodeProvider) => {
   const empAddress = synth.emp.address;
   const synthDecimals = synth.token.decimals ?? 18;
   const collateral = synth.collateral;
   const collateralDecimals = CollateralMap[collateral].decimals;
 
   try {
-    const empContract = Emp__factory.connect(empAddress, EthNodeProvider);
+    const empContract = Emp__factory.connect(empAddress, provider);
     const [cumulativeFeeMultiplier, totalCollateral, totalSupply, expirationTimestamp, minimumTokens, collateralRequirement] = await Promise.all([
       empContract.cumulativeFeeMultiplier(),
       empContract.rawTotalPositionCollateral(),

@@ -1,11 +1,12 @@
 import { useState, useContext, useEffect, useCallback } from 'react';
 
-import { UserContext } from '@/contexts';
+import { UserContext, MarketContext } from '@/contexts';
 import { useEmp, useToken, useWrapEth } from '@/hooks';
-import { SynthInfo, CollateralMap } from '@/utils';
+import { CollateralMap } from '@/utils';
 
 export const useSynthActions = () => {
   const { currentSynth, currentCollateral, emp } = useContext(UserContext);
+  const { synthMetadata } = useContext(MarketContext);
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
   const [synthAddress, setSynthAddress] = useState('');
@@ -19,9 +20,9 @@ export const useSynthActions = () => {
 
   useEffect(() => {
     if (currentSynth && currentCollateral) {
-      setEmpAddress(SynthInfo[currentSynth].emp.address);
+      setEmpAddress(synthMetadata[currentSynth].emp.address);
       setCollateralAddress(CollateralMap[currentCollateral].address);
-      setSynthAddress(SynthInfo[currentSynth].token.address);
+      setSynthAddress(synthMetadata[currentSynth].token.address);
     }
   }, [currentSynth]);
 

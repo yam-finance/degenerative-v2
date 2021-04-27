@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
 
 import { useSynthActions } from '@/hooks/useSynthActions';
-import { UserContext } from '@/contexts';
+import { UserContext, MarketContext } from '@/contexts';
 import { MainDisplay, MainHeading, Minter, PositionManager, SideDisplay } from '@/components';
 import { ISynthInfo } from '@/types';
-import { SynthInfo, isEmpty } from '@/utils';
+import { isEmpty } from '@/utils';
 
 interface SynthParams {
   type: string;
@@ -16,6 +16,7 @@ interface SynthParams {
 export const Synth: React.FC = () => {
   const { type, cycleYear, action } = useParams<SynthParams>();
   const { currentSynth, setSynth } = useContext(UserContext);
+  const { synthMetadata } = useContext(MarketContext);
   const actions = useSynthActions();
   const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
 
@@ -25,7 +26,7 @@ export const Synth: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (currentSynth && !isEmpty(currentSynth)) setSynthInfo(SynthInfo[currentSynth]);
+    if (currentSynth && !isEmpty(currentSynth)) setSynthInfo(synthMetadata[currentSynth]);
   }, [currentSynth]);
 
   const ActionSelector: React.FC = () => {

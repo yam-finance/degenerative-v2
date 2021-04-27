@@ -4,7 +4,7 @@ import { SearchForm } from '@/components';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMap } from '@/types';
 import { MarketContext } from '@/contexts';
-import { SynthInfo, SynthTypes, isEmpty, formatForDisplay } from '@/utils';
+import { SynthTypes, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
 import box from '@/assets/Box-01.png';
 
@@ -19,7 +19,7 @@ interface ISynthTypeData {
 }
 
 export const Explore = () => {
-  const { synthMarketData } = useContext(MarketContext);
+  const { loading, synthMetadata, synthMarketData } = useContext(MarketContext);
   const query = useQuery();
 
   const [searchTerm, setSearchTerm] = useState(query.get('search') ?? '');
@@ -30,9 +30,10 @@ export const Explore = () => {
     const AggregateSynthTypeData = () => {
       const aggregateData: IMap<ISynthTypeData> = {};
 
-      Object.entries(SynthInfo)
+      Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
+          console.log(synthName);
           const { type } = synthInfo;
           const marketData = synthMarketData[synthName];
           const currentData = aggregateData[type] ?? {
@@ -59,12 +60,12 @@ export const Explore = () => {
       setSynthTypeData(aggregateData);
     };
 
-    if (synthMarketData && !isEmpty(synthMarketData)) AggregateSynthTypeData();
+    console.log(synthMetadata);
     console.log(synthMarketData);
+    if (!isEmpty(synthMetadata) && !isEmpty(synthMarketData)) AggregateSynthTypeData();
   }, [synthMarketData, searchTerm]);
 
   const SynthBlock: React.FC<{ type: string }> = ({ type }) => {
-    //const { type, cycle, year } = SynthInfo[name];
     const description = SynthTypes[type].description;
     const { aprMin, aprMax } = synthTypeData[type];
 

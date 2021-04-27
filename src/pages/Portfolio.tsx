@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { MarketContext, UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMintedPosition, ISynthInWallet } from '@/types';
-import { SynthInfo } from '@/utils';
 
 export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
@@ -15,7 +14,7 @@ export const Portfolio = () => {
   }, [synthsInWallet]);
 
   const MintedRow: React.FC<IMintedPosition> = (props) => {
-    const { imgLocation, collateral, type, cycle, year } = SynthInfo[props.name];
+    const { imgLocation, collateral, type, cycle, year } = synthMetadata[props.name];
     const { name, tokenAmount, collateralAmount, collateralRatio } = props;
 
     return (
@@ -58,7 +57,7 @@ export const Portfolio = () => {
 
   const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
     const { name, tokenAmount } = props;
-    const { imgLocation, type, cycle, year } = SynthInfo[name];
+    const { imgLocation, type, cycle, year } = synthMetadata[name];
     const { daysTillExpiry } = synthMarketData[name];
     const link = `/synths/${type}/${cycle}${year}`;
 

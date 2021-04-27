@@ -4,8 +4,8 @@ import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, utils, constants } from 'ethers';
 import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString } from '@/utils';
-import { CollateralMap, SynthInfo, SynthTypes } from './TokenList';
-import { IMap } from '@/types';
+import { CollateralMap, SynthTypes } from './TokenList';
+import { IMap, ISynthInfo } from '@/types';
 
 sessionStorage.clear();
 
@@ -62,12 +62,12 @@ interface PriceHistoryResponse {
 }
 
 /** Get labels, reference price data and all market price data for this synth type. */
-export const getDailyPriceHistory = async (type: string) => {
+export const getDailyPriceHistory = async (type: string, synthMetadata: Record<string, ISynthInfo>) => {
   // TODO defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 
   const relevantSynths = new Map(
-    Object.entries(SynthInfo)
+    Object.entries(synthMetadata)
       .filter(([name, synth]) => synth.type === type)
       .map(([name, synth]) => [synth.token.address, name])
   );

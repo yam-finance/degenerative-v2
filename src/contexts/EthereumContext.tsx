@@ -1,9 +1,9 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 import { providers, Signer, utils } from 'ethers';
 
 import { MetamaskProvider } from '@/types';
 
-const initialState = {
+const initialEthereumState = {
   ethereum: undefined as MetamaskProvider | undefined,
   setEthereum: (ethereum: MetamaskProvider | undefined) => {},
   disconnectWallet: () => {},
@@ -14,14 +14,14 @@ const initialState = {
 };
 
 // TODO Add in web3-react + web3modal
-export const EthereumContext = createContext(initialState);
+export const EthereumContext = createContext(initialEthereumState);
 
 export const EthereumProvider: React.FC = ({ children }) => {
   const [ethereum, setEthereum] = useState<MetamaskProvider | undefined>(window.ethereum);
   const [provider, setProvider] = useState<providers.Web3Provider>();
   const [signer, setSigner] = useState<Signer>();
   const [account, setAccount] = useState<string | undefined>(undefined);
-  const [chainId, setChainId] = useState<number>(1);
+  const [chainId, setChainId] = useState<number>(0);
 
   useEffect(() => {
     // Mainnet
@@ -30,6 +30,7 @@ export const EthereumProvider: React.FC = ({ children }) => {
       const web3Signer = web3.getSigner();
       setSigner(web3Signer);
       setProvider(web3);
+      setChain(web3);
     }
   }, [ethereum, chainId]);
 
@@ -44,8 +45,7 @@ export const EthereumProvider: React.FC = ({ children }) => {
       };
 
       const onChainChanged = async () => {
-        const network = await provider.getNetwork();
-        setChainId(network.chainId);
+        setChain(provider);
       };
 
       const onDisconnect = () => {
@@ -68,6 +68,11 @@ export const EthereumProvider: React.FC = ({ children }) => {
       };
     }
   }, [ethereum, provider]);
+
+  const setChain = async (provider: providers.Web3Provider) => {
+    const network = await provider.getNetwork();
+    setChainId(network.chainId);
+  };
 
   const disconnectWallet = () => ethereum?.emit('disconnect');
 

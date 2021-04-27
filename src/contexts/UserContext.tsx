@@ -1,11 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
-import { ISynthInfo, IToken, IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
-import { CollateralMap, SynthInfo } from '@/utils/TokenList';
+import { IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
 
 import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
 import { BigNumber, utils } from 'ethers';
+import { MarketContext } from './MarketContext';
 
 const initialState = {
   mintedPositions: [] as IMintedPosition[],
@@ -22,6 +22,8 @@ export const UserContext = createContext(initialState);
 
 export const UserProvider: React.FC = ({ children }) => {
   const { account, signer } = useContext(EthereumContext);
+  const { synthMetadata } = useContext(MarketContext);
+
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);
   const [synthsInWallet, setSynthsInWallet] = useState<ISynthInWallet[]>([]);
   const [currentSynth, setCurrentSynth] = useState('');
@@ -32,7 +34,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (currentSynth) {
-      setCurrentCollateral(SynthInfo[currentSynth].collateral);
+      setCurrentCollateral(synthMetadata[currentSynth].collateral);
     }
   }, [currentSynth]);
 
@@ -52,7 +54,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const updateMintedPositions = () => {
     const minted: IMintedPosition[] = [];
-    Object.keys(SynthInfo).forEach(async (name) => {
+    Object.keys(synthMetadata).forEach(async (name) => {
       try {
         const mintedPosition = await getSponsorPosition(name);
         minted.push(mintedPosition);
@@ -64,7 +66,7 @@ export const UserProvider: React.FC = ({ children }) => {
   };
 
   const getSponsorPosition = async (synthName: string) => {
-    const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(SynthInfo[synthName].emp.address);
+    const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(synthMetadata[synthName].emp.address);
 
     if (rawCollateral.gt(0) && tokensOutstanding.gt(0)) {
       const mintedPosition: IMintedPosition = {
@@ -85,7 +87,7 @@ export const UserProvider: React.FC = ({ children }) => {
   const updateSynthsInWallet = () => {
     const synthsOwned: ISynthInWallet[] = [];
 
-    Object.entries(SynthInfo).forEach(async ([name, synth]) => {
+    Object.entries(synthMetadata).forEach(async ([name, synth]) => {
       const balance = await erc20.getBalance(synth.token.address);
 
       if (balance.gt(0)) {

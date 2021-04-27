@@ -4,8 +4,7 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 import { UserContext, MarketContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
-import { SynthInfo, SynthTypes, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
-import { IMap } from '@/types';
+import { SynthTypes, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 
 interface SynthParams {
   type: string;
@@ -24,12 +23,12 @@ type SynthTableFilter = 'Live' | 'Expired' | 'All';
 
 export const SynthType: React.FC = () => {
   const { synthsInWallet } = useContext(UserContext);
-  const { synthMarketData } = useContext(MarketContext);
+  const { synthMetadata, synthMarketData } = useContext(MarketContext);
   const { type } = useParams<SynthParams>();
   const [synthGroup, setSynthGroup] = useState<Record<string, ISynthTypeItem>>({});
   const [historicPriceData, setHistoricPriceData] = useState<{
     labels: string[];
-    synthPrices: IMap<number[]>;
+    synthPrices: Record<string, number[]>;
   }>();
   const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('All');
   const [synthInFocus, setSynthInFocus] = useState<string>('');
@@ -40,7 +39,7 @@ export const SynthType: React.FC = () => {
     const initSynthTypes = () => {
       let selectedSynth: string | undefined;
       const synths: typeof synthGroup = {};
-      Object.entries(SynthInfo)
+      Object.entries(synthMetadata)
         .filter((synth) => synth[1].type === type)
         .filter(([synthName, synthInfo]) => {
           if (filterSynths === 'All') {
@@ -163,7 +162,7 @@ export const SynthType: React.FC = () => {
 
   const SynthGroupRow: React.FC<ISynthTypeItem> = (props) => {
     const { name, maturity, apy, balance, liquidity, price } = props;
-    const { cycle, year, type } = SynthInfo[name];
+    const { cycle, year, type } = synthMetadata[name];
 
     // TODO change maturity to show if live or expired
     return (
