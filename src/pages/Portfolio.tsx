@@ -7,7 +7,7 @@ import { IMintedPosition, ISynthInWallet } from '@/types';
 
 export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
-  const { synthMarketData } = useContext(MarketContext);
+  const { synthMetadata, synthMarketData } = useContext(MarketContext);
 
   useEffect(() => {
     console.log(synthsInWallet);

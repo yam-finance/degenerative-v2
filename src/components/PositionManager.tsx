@@ -83,7 +83,6 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     }
     case 'OPEN_INPUTS': {
       const { editCollateral, editTokens } = action.payload;
-      console.log(action.payload);
       return {
         ...state,
         editCollateral: editCollateral,

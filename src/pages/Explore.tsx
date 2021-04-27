@@ -35,26 +35,38 @@ export const Explore = () => {
         .forEach(([synthName, synthInfo]) => {
           console.log(synthName);
           const { type } = synthInfo;
-          const marketData = synthMarketData[synthName];
-          const currentData = aggregateData[type] ?? {
-            aprMin: Infinity,
-            aprMax: 0,
-            totalLiquidity: 0,
-            totalMarketCap: 0,
-            totalTvl: 0,
-            totalVolume24h: 0,
-            numSynths: 0,
-          };
+          try {
+            const marketData = synthMarketData[synthName];
+            const currentData = aggregateData[type] ?? {
+              aprMin: Infinity,
+              aprMax: 0,
+              totalLiquidity: 0,
+              totalMarketCap: 0,
+              totalTvl: 0,
+              totalVolume24h: 0,
+              numSynths: 0,
+            };
 
-          aggregateData[type] = {
-            aprMin: Math.min(currentData.aprMin, Number(marketData.apr)),
-            aprMax: Math.max(currentData.aprMax, Number(marketData.apr)),
-            totalLiquidity: currentData.totalLiquidity + Number(marketData.liquidity),
-            totalMarketCap: currentData.totalMarketCap + Number(marketData.marketCap),
-            totalTvl: currentData.totalTvl + Number(marketData.tvl),
-            totalVolume24h: currentData.totalVolume24h + Number(marketData.volume24h),
-            numSynths: currentData.numSynths + 1,
-          };
+            aggregateData[type] = {
+              aprMin: Math.min(currentData.aprMin, Number(marketData.apr)),
+              aprMax: Math.max(currentData.aprMax, Number(marketData.apr)),
+              totalLiquidity: currentData.totalLiquidity + Number(marketData.liquidity),
+              totalMarketCap: currentData.totalMarketCap + Number(marketData.marketCap),
+              totalTvl: currentData.totalTvl + Number(marketData.tvl),
+              totalVolume24h: currentData.totalVolume24h + Number(marketData.volume24h),
+              numSynths: currentData.numSynths + 1,
+            };
+          } catch (err) {
+            aggregateData[type] = {
+              aprMin: 0,
+              aprMax: 0,
+              totalLiquidity: 0,
+              totalMarketCap: 0,
+              totalTvl: 0,
+              totalVolume24h: 0,
+              numSynths: 1,
+            };
+          }
         });
 
       setSynthTypeData(aggregateData);

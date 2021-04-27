@@ -26,8 +26,8 @@ export const Synth: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (currentSynth && !isEmpty(currentSynth)) setSynthInfo(synthMetadata[currentSynth]);
-  }, [currentSynth]);
+    if (currentSynth && !isEmpty(currentSynth) && !isEmpty(synthMetadata)) setSynthInfo(synthMetadata[currentSynth]);
+  }, [currentSynth, synthMetadata]);
 
   const ActionSelector: React.FC = () => {
     return (

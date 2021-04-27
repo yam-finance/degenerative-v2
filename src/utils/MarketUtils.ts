@@ -43,11 +43,13 @@ export const getUsdPriceHistory = async (tokenName: string) => {
 };
 
 // Get Uniswap pool data
-export const getPoolData = async (poolAddress: string) => {
+export const getPoolData = async (poolAddress: string, chainId: number) => {
   try {
-    const data = await request(UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, { poolAddress: poolAddress });
+    const data = await request(UNISWAP_ENDPOINT[chainId], UNISWAP_MARKET_DATA_QUERY, { poolAddress: poolAddress });
+    console.log(data.pair);
     return data.pair;
   } catch (err) {
+    console.log(err);
     return Promise.reject(err);
   }
 };
@@ -62,7 +64,7 @@ interface PriceHistoryResponse {
 }
 
 /** Get labels, reference price data and all market price data for this synth type. */
-export const getDailyPriceHistory = async (type: string, synthMetadata: Record<string, ISynthInfo>) => {
+export const getDailyPriceHistory = async (type: string, synthMetadata: Record<string, ISynthInfo>, chainId: number) => {
   // TODO defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 
@@ -76,7 +78,7 @@ export const getDailyPriceHistory = async (type: string, synthMetadata: Record<s
   // TODO grab paired data, not USD
   const dailyPriceResponse: {
     tokenDayDatas: PriceHistoryResponse[];
-  } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
+  } = await request(UNISWAP_ENDPOINT[chainId], UNISWAP_DAILY_PRICE_QUERY, {
     tokenAddresses: addressList,
     startingTime: startingTime,
   });

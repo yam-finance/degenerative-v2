@@ -1,6 +1,11 @@
 import { gql } from 'graphql-request';
 
-export const UNISWAP_ENDPOINT = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2';
+//export const UNISWAP_ENDPOINT = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2';
+export const UNISWAP_ENDPOINT: Record<number, string> = {
+  1: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
+  42: 'https://api.thegraph.com/subgraphs/name/sc0vu/uniswap-v2-kovan',
+  1337: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
+};
 
 export const UNISWAP_MARKET_DATA_QUERY = gql`
   query pair($poolAddress: Bytes!) {

@@ -6,6 +6,7 @@ import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
 import { BigNumber, utils } from 'ethers';
 import { MarketContext } from './MarketContext';
+import { isEmpty } from '@/utils';
 
 const initialState = {
   mintedPositions: [] as IMintedPosition[],
@@ -33,18 +34,20 @@ export const UserProvider: React.FC = ({ children }) => {
   const erc20 = useToken();
 
   useEffect(() => {
-    if (currentSynth) {
+    if (currentSynth && !isEmpty(synthMetadata)) {
+      console.log(currentSynth);
+      console.log(synthMetadata);
       setCurrentCollateral(synthMetadata[currentSynth].collateral);
     }
-  }, [currentSynth]);
+  }, [currentSynth, synthMetadata]);
 
   // TODO update when user has minted tokens
   useEffect(() => {
-    if (signer && account) {
+    if (signer && account && synthMetadata) {
       updateMintedPositions();
       updateSynthsInWallet();
     }
-  }, [signer, account]);
+  }, [signer, account, synthMetadata]);
 
   const setSynth = (synthName: string) => {
     console.log('SET SYNTH CALLED');

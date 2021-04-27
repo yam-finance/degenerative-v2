@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link, Redirect, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
-import { UserContext, MarketContext } from '@/contexts';
+import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
 import { SynthTypes, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 
@@ -23,6 +23,7 @@ type SynthTableFilter = 'Live' | 'Expired' | 'All';
 
 export const SynthType: React.FC = () => {
   const { synthsInWallet } = useContext(UserContext);
+  const { chainId } = useContext(EthereumContext);
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
   const { type } = useParams<SynthParams>();
   const [synthGroup, setSynthGroup] = useState<Record<string, ISynthTypeItem>>({});
@@ -42,6 +43,8 @@ export const SynthType: React.FC = () => {
       Object.entries(synthMetadata)
         .filter((synth) => synth[1].type === type)
         .filter(([synthName, synthInfo]) => {
+          console.log(synthName);
+          console.log(synthInfo);
           if (filterSynths === 'All') {
             return true;
           } else if (filterSynths === 'Live') {
@@ -71,7 +74,7 @@ export const SynthType: React.FC = () => {
   }, [synthMarketData, filterSynths]);
 
   useEffect(() => {
-    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(type));
+    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(type, synthMetadata, chainId));
 
     getChartData();
   }, []);
