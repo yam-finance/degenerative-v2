@@ -1,7 +1,6 @@
 import Collateral from '@/assets/collateral.json';
 import Types from '@/assets/types.json'; // TODO rename to groups
 import Assets from '@/assets/assets.json';
-import AssetsNew from '@/assets/assets_new.json';
 import { ISynthInfo, ISynthType, IToken } from '@/types';
 
 const ChainMap: Record<number, string> = {
@@ -16,7 +15,7 @@ export const SynthTypes: Record<string, ISynthType> = Types; // TODO make this m
 
 export const getSynthMetadata = (chainId: number) => {
   const chain = ChainMap[chainId];
-  const assets: any = AssetsNew;
+  const assets: any = Assets;
 
   const synthInfo: Record<string, ISynthInfo> = {};
   const networkAssets = assets[chain];
