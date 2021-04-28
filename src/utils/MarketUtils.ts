@@ -63,7 +63,6 @@ export const getUsdPriceHistory = async (tokenName: string, chainId: number) => 
 export const getPoolData = async (poolAddress: string, chainId: number) => {
   try {
     const data = await request(UNISWAP_ENDPOINT[chainId], UNISWAP_MARKET_DATA_QUERY, { poolAddress: poolAddress });
-    console.log(data.pair);
     return data.pair;
   } catch (err) {
     console.log(err);

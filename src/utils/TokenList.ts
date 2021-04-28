@@ -1,7 +1,7 @@
 import Collateral from '@/assets/collateral.json';
 import Types from '@/assets/types.json'; // TODO rename to groups
 import Assets from '@/assets/assets.json';
-import { ISynthInfo, ISynthType, IToken } from '@/types';
+import { ICollateral, ISynthInfo, ISynthType, IToken } from '@/types';
 
 const ChainMap: Record<number, string> = {
   1: 'mainnet',
@@ -35,4 +35,4 @@ export const getSynthMetadata = (chainId: number) => {
   return synthInfo;
 };
 
-export const getCollateralData = (chainId: number) => CollateralMap[ChainMap[chainId]];
+export const getCollateralData = (chainId: number): Record<string, ICollateral> => CollateralMap[ChainMap[chainId]];

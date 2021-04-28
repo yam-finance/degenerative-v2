@@ -6,7 +6,7 @@ import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
 import { BigNumber, utils } from 'ethers';
 import { MarketContext } from './MarketContext';
-import { isEmpty } from '@/utils';
+import { isEmpty, roundDecimals } from '@/utils';
 
 const initialState = {
   mintedPositions: [] as IMintedPosition[],
@@ -57,6 +57,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const updateMintedPositions = () => {
     const minted: IMintedPosition[] = [];
+    console.log(synthMetadata);
     Object.keys(synthMetadata).forEach(async (name) => {
       try {
         const mintedPosition = await getSponsorPosition(name);
@@ -69,16 +70,25 @@ export const UserProvider: React.FC = ({ children }) => {
   };
 
   const getSponsorPosition = async (synthName: string) => {
-    const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(synthMetadata[synthName].emp.address);
+    const synth = synthMetadata[synthName];
+    const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(synth.emp.address);
 
     if (rawCollateral.gt(0) && tokensOutstanding.gt(0)) {
+      const tokens = Number(utils.formatUnits(tokensOutstanding, synth.token.decimals));
+      const collateral = Number(utils.formatUnits(rawCollateral, synth.token.decimals));
+
+      console.log(tokens);
+      console.log(collateral);
+      console.log(collateral / tokens);
+
+      // TODO get decimals for synth formatting
       const mintedPosition: IMintedPosition = {
         name: synthName,
-        tokenAmount: utils.formatEther(tokensOutstanding),
+        tokenAmount: roundDecimals(tokens, 2),
         // tokenPrice: await (await getPrice(synth.token, collateral)).price,
-        collateralAmount: utils.formatEther(rawCollateral),
+        collateralAmount: roundDecimals(collateral, 2),
         // collateralPrice:
-        collateralRatio: rawCollateral.div(tokensOutstanding).toString(), // TODO replace with utilization
+        utilization: roundDecimals(tokens / collateral, 2), // TODO replace with utilization
       };
       return Promise.resolve(mintedPosition);
     } else {
@@ -94,10 +104,12 @@ export const UserProvider: React.FC = ({ children }) => {
       const balance = await erc20.getBalance(synth.token.address);
 
       if (balance.gt(0)) {
+        const synth = synthMetadata[name];
+        const tokens = Number(utils.formatUnits(balance, synth.token.decimals));
+
         const inWallet: ISynthInWallet = {
           name: name,
-          // TODO add price USD
-          tokenAmount: utils.formatEther(balance),
+          tokenAmount: roundDecimals(tokens, 2),
         };
 
         synthsOwned.push(inWallet);

@@ -2,18 +2,18 @@
 export interface IMintedPosition {
   name: string;
   //tokenName: string;
-  tokenAmount: string;
+  tokenAmount: number;
   //tokenPriceUsd: string;
   //collateralName: string;
-  collateralAmount: string;
+  collateralAmount: number;
   //collateralPriceUsd: string;
-  collateralRatio: string; // TODO replace with utilization
-  //utilization: number;
+  //collateralRatio: number; // TODO replace with utilization
+  utilization: number;
 }
 
 export interface ISynthInWallet {
   name: string;
-  tokenAmount: string;
+  tokenAmount: number;
   //tokenPriceUsd: number;
 }
 

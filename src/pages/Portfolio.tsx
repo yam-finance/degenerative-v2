@@ -1,13 +1,14 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { MarketContext, UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMintedPosition, ISynthInWallet } from '@/types';
+import { getUsdPrice, roundDecimals } from '@/utils';
 
 export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
-  const { synthMetadata, synthMarketData } = useContext(MarketContext);
+  const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
 
   useEffect(() => {
     console.log(synthsInWallet);
@@ -15,7 +16,10 @@ export const Portfolio = () => {
 
   const MintedRow: React.FC<IMintedPosition> = (props) => {
     const { imgLocation, collateral, type, cycle, year } = synthMetadata[props.name];
-    const { name, tokenAmount, collateralAmount, collateralRatio } = props;
+    const { price: tokenPrice } = synthMarketData[props.name];
+    const { name, tokenAmount, collateralAmount, utilization } = props;
+    const [collateralPrice, setCollateralPrice] = useState(0);
+    (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
 
     return (
       <TableRow to={`/synths/${type}/${cycle}${year}`}>
@@ -29,15 +33,15 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">$1,000{/* TODO Placeholder */}</div>
+          <div className="text-color-4">${roundDecimals(Number(tokenPrice) * tokenAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">$10,500{/* TODO Placeholder */}</div>
+          <div className="text-color-4">${roundDecimals(collateralPrice * collateralAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${collateralAmount} ${collateral}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">{`${collateralRatio}`}</div>
+          <div className="text-color-4">{utilization}</div>
           <div className="gauge horizontal overflow-hidden">
             <div className="collateral"></div>
             <div className="debt horizontal">
@@ -58,7 +62,7 @@ export const Portfolio = () => {
   const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
     const { name, tokenAmount } = props;
     const { imgLocation, type, cycle, year } = synthMetadata[name];
-    const { daysTillExpiry } = synthMarketData[name];
+    const { price: tokenPrice, daysTillExpiry } = synthMarketData[name];
     const link = `/synths/${type}/${cycle}${year}`;
 
     const isExpired = daysTillExpiry <= 0;
@@ -75,11 +79,11 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">$1,000{/* TODO Placeholder */}</div>
+          <div className="text-color-4">${roundDecimals(Number(tokenPrice) * tokenAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">$10,500{/* TODO Placeholder */}</div>
+          <div className="text-color-4">${tokenPrice}</div>
           <div className="height-8 width-32 w-embed w-script"></div>
         </div>
         <div className="expand">

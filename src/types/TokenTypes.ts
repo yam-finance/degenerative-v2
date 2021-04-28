@@ -6,9 +6,13 @@ export interface IToken extends IContract {
   name?: string;
   decimals?: number;
   symbol?: string;
-  coingeckoId?: string;
+  //coingeckoId?: string;
   //balance: BigNumber;
   //priceUsd: number;
+}
+
+export interface ICollateral extends IContract {
+  coingeckoId: string;
 }
 
 // TODO remove

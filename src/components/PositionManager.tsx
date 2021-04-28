@@ -157,7 +157,9 @@ export const PositionManager = () => {
       const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
       const synthInWallet = synthsInWallet.find((balance) => balance.name == currentSynth);
 
-      const cr = Number(sponsorPosition?.collateralRatio) ?? 0; // TODO replace with utilization
+      const utilization = Number(sponsorPosition?.utilization) ?? 0;
+      console.log('utilization IS ');
+      console.log(utilization);
 
       const sponsorCollateral = Number(sponsorPosition?.collateralAmount ?? 0);
       const sponsorTokens = Number(sponsorPosition?.tokenAmount ?? 0);
@@ -171,7 +173,7 @@ export const PositionManager = () => {
           action: initialAction,
           sponsorCollateral: sponsorCollateral,
           sponsorTokens: sponsorTokens,
-          utilization: cr > 0 ? 1 / cr : 0,
+          utilization: utilization,
           globalUtilization: empInfo.globalUtilization,
           liquidationPoint: empInfo.liquidationPoint,
           minTokens: empInfo.minTokens,

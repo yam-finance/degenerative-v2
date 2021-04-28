@@ -1,13 +1,13 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { EthereumContext } from '@/contexts';
-import { ISynthMarketData, ISynthInfo, IToken } from '@/types';
+import { ISynthMarketData, ISynthInfo, ICollateral } from '@/types';
 import { getSynthMetadata, getUsdPrice, getApr, getPoolData, getEmpState, roundDecimals, getCollateralData } from '@/utils';
 import { utils } from 'ethers';
 
 const initialState = {
   synthMarketData: {} as Record<string, ISynthMarketData>,
   synthMetadata: {} as Record<string, ISynthInfo>,
-  collateralData: {} as Record<string, IToken>,
+  collateralData: {} as Record<string, ICollateral>,
   loading: false,
 };
 
@@ -51,7 +51,6 @@ export const MarketProvider: React.FC = ({ children }) => {
             collateralPriceUsd,
             pool,
           ] = synthData;
-          console.log(pool);
 
           try {
             const dateToday = new Date(Math.trunc(Date.now() / 1000));
