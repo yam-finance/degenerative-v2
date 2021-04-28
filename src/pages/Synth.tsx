@@ -3,7 +3,7 @@ import { useParams, NavLink } from 'react-router-dom';
 
 import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext, MarketContext } from '@/contexts';
-import { MainDisplay, MainHeading, Minter, PositionManager, SideDisplay } from '@/components';
+import { MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { ISynthInfo } from '@/types';
 import { isEmpty } from '@/utils';
 
@@ -50,7 +50,7 @@ export const Synth: React.FC = () => {
   const Action: React.FC = () => {
     switch (action) {
       case 'manage':
-        return <PositionManager />;
+        return <Minter />;
       //case 'trade':
       //  return <Trade />
       //case 'lp':
