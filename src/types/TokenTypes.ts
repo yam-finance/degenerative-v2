@@ -11,7 +11,7 @@ export interface IToken extends IContract {
   //priceUsd: number;
 }
 
-export interface ICollateral extends IContract {
+export interface ICollateral extends IToken {
   coingeckoId: string;
 }
 
