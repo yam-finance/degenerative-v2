@@ -319,7 +319,7 @@ export const PositionManager = () => {
     return (
       <div className="old-position-marker">
         <div className="old-position-outer-line"></div>
-        <div className="text-block">{utilization * 100}% Current Utilization</div>
+        <div className="text-block">{roundDecimals(utilization * 100, 2)}% Current Utilization</div>
       </div>
     );
   };
