@@ -33,11 +33,6 @@ export const Synth: React.FC = () => {
     return (
       <div className="padding-x-8 flex-row">
         <div className="tabs margin-right-2">
-          {/*
-          <NavLink to={`/synths/${type}/${cycle}${year}/mint`} className="tab large" activeClassName="active">
-            Mint
-          </NavLink>
-          */}
           <NavLink to={`/synths/${type}/${cycle}${year}/manage`} className="tab large" activeClassName="active">
             Manage
           </NavLink>
@@ -54,8 +49,6 @@ export const Synth: React.FC = () => {
 
   const Action: React.FC = () => {
     switch (action) {
-      case 'mint':
-        return <Minter />;
       case 'manage':
         return <PositionManager />;
       //case 'trade':

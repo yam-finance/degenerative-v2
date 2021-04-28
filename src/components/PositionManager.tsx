@@ -51,7 +51,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         sponsorTokens: initialized.sponsorTokens,
         utilization: initialized.utilization,
         globalUtilization: initialized.globalUtilization,
-        liquidationPoint: initialized.liquidation,
+        liquidationPoint: initialized.liquidationPoint,
         minTokens: initialized.minTokens,
         maxCollateral: initialized.maxCollateral,
       };
@@ -247,6 +247,33 @@ export const PositionManager = () => {
     setFormState(newCollateral, newTokens);
   };
 
+  // TODO THIS IS A TEMPORARY STOPGAP. Wrap eth must be added to collateral window option
+  const WrapEthButton: React.FC = () => {
+    const [ethAmount, setEthAmount] = useState(0);
+
+    return (
+      <div>
+        <input
+          type="number"
+          className="form-input border-bottom-none w-input"
+          value={ethAmount}
+          onChange={(e) => {
+            e.preventDefault();
+            setEthAmount(Number(e.target.value));
+          }}
+        />
+        <button
+          className="button w-button"
+          onClick={(e) => {
+            e.preventDefault();
+            actions.onWrapEth(ethAmount);
+          }}
+        >
+          Wrap Eth
+        </button>
+      </div>
+    );
+  };
   interface GaugeLabelProps {
     label: string;
     tooltip: string;
@@ -319,7 +346,7 @@ export const PositionManager = () => {
     return (
       <div className="old-position-marker">
         <div className="old-position-outer-line"></div>
-        <div className="text-block">{roundDecimals(utilization * 100, 2)}% Current Utilization</div>
+        <div className="text-block">{roundDecimals(utilization * 100, 3)}% Current Utilization</div>
       </div>
     );
   };
@@ -362,13 +389,18 @@ export const PositionManager = () => {
     const MintButton: React.FC = () => {
       const newTokens = pendingTokens - state.sponsorTokens;
       const newCollateral = pendingCollateral - state.sponsorCollateral;
-      const positionAboveGlobalUtilization = state.pendingUtilization >= state.globalUtilization;
+
+      const disableMinting =
+        newTokens < 0 || Number(state.pendingUtilization) < Number(state.globalUtilization) || Number(state.pendingUtilization) > state.liquidationPoint;
+      console.log(state.pendingUtilization);
+      console.log(state.liquidationPoint);
+      console.log(disableMinting);
 
       return (
         <button
           onClick={() => actions.onMint(newCollateral, newTokens)}
-          className={clsx(baseStyle, newTokens > 0 && positionAboveGlobalUtilization ? '' : 'disabled')}
-          disabled={newTokens < 0 || !positionAboveGlobalUtilization}
+          className={clsx(baseStyle, disableMinting ? 'disabled' : '')}
+          disabled={disableMinting}
         >
           {`Mint ${newTokens} new ${currentSynth} for ${newCollateral} ${currentCollateral}`}
         </button>
@@ -434,35 +466,61 @@ export const PositionManager = () => {
       opacity: 0.1,
     };
 
+    const ActionDescription: React.FC<MinterAction> = (props) => {
+      switch (props) {
+        case 'MINT': {
+          return <div> Create a new position or create new synths from an existing position.</div>;
+        }
+        case 'ADD_COLLATERAL': {
+          return <div>Adds collateral to position, reducing utilization.</div>;
+        }
+        case 'REPAY_DEBT': {
+          return <div>Removes synths from position. Must have synths in wallet to do so.</div>;
+        }
+        case 'WITHDRAW': {
+          return <div>Removes collateral from position, increasing utilization. Withdrawals below global utilization must be requested.</div>;
+        }
+        case 'REDEEM': {
+          return <div>Repays debt and redeems equivalent collateral to maintain same utilization</div>;
+        }
+        default: {
+          return null;
+        }
+      }
+    };
+
     return (
       <>
-        <button className={clsx(styles, currentAction === 'MINT' && 'selected')} onClick={() => changeAction('MINT')}>
-          Mint Synth
-        </button>
-        <button
-          style={noPosition ? disabledButton : {}}
-          disabled={noPosition}
-          className={clsx(styles, currentAction === 'ADD_COLLATERAL' && 'selected')}
-          onClick={() => changeAction('ADD_COLLATERAL')}
-        >
-          Add Collateral
-        </button>
-        <button
-          style={noPosition ? disabledButton : {}}
-          disabled={noPosition}
-          className={clsx(styles, currentAction === 'REPAY_DEBT' && 'selected')}
-          onClick={() => changeAction('REPAY_DEBT')}
-        >
-          Repay Debt
-        </button>
-        <button
-          style={noPosition ? disabledButton : {}}
-          disabled={noPosition}
-          className={clsx(styles, currentAction === 'REDEEM' && 'selected')}
-          onClick={() => changeAction('REDEEM')}
-        >
-          Redeem Synth
-        </button>
+        <div className="flex-row flex-wrap">
+          <button className={clsx(styles, currentAction === 'MINT' && 'selected')} onClick={() => changeAction('MINT')}>
+            Mint Synth
+          </button>
+          <button
+            style={noPosition ? disabledButton : {}}
+            disabled={noPosition}
+            className={clsx(styles, currentAction === 'ADD_COLLATERAL' && 'selected')}
+            onClick={() => changeAction('ADD_COLLATERAL')}
+          >
+            Add Collateral
+          </button>
+          <button
+            style={noPosition ? disabledButton : {}}
+            disabled={noPosition}
+            className={clsx(styles, currentAction === 'REPAY_DEBT' && 'selected')}
+            onClick={() => changeAction('REPAY_DEBT')}
+          >
+            Repay Debt
+          </button>
+          <button
+            style={noPosition ? disabledButton : {}}
+            disabled={noPosition}
+            className={clsx(styles, currentAction === 'REDEEM' && 'selected')}
+            onClick={() => changeAction('REDEEM')}
+          >
+            Redeem Synth
+          </button>
+        </div>
+        <ActionDescription {...currentAction} />
       </>
     );
   };
@@ -476,150 +534,151 @@ export const PositionManager = () => {
     );
   }
   return (
-    <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
-      <div className="margin-0 w-form">
-        <form className="max-width-small flex-column background-color-2 padding-8 radius-xl box-shadow-large z-10 padding-y-12 landscape-padding-2">
-          <h3 className="margin-0 text-align-center">Mint {currentSynth}</h3>
-          <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20">Tweak your position settings</p>
-          <div className="flex-row">
-            <div className="expand relative padding-right-2">
-              <GaugeLabel label="Global Utilization" tooltip="TODO" className="gcr-legend" height={state.globalUtilization} />
-              <GaugeLabel label="Liquidation" tooltip="TODO" className="liquidation-legend" height={state.liquidationPoint} emphasized />
-              <div className="background-color-5 padding-2 radius-large z-10 width-32 collat">
-                <h6 className="text-align-center margin-bottom-0">Collateral</h6>
-                <div className="width-full flex-justify-center margin-top-1 w-dropdown">
-                  <div className="padding-0 flex-align-center">
-                    <a className="weight-bold">{currentCollateral}</a>
+    <>
+      <WrapEthButton />
+      <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
+        <div className="margin-0 w-form">
+          <form className="max-width-small flex-column background-color-2 padding-8 radius-xl box-shadow-large z-10 padding-y-12 landscape-padding-2">
+            <h3 className="margin-0 text-align-center">{currentSynth}</h3>
+            <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20">Tweak your position settings</p>
+            <div className="flex-row">
+              <div className="expand relative padding-right-2">
+                <GaugeLabel label="Global Utilization" tooltip="TODO" className="gcr-legend" height={state.globalUtilization} />
+                <GaugeLabel label="Liquidation" tooltip="TODO" className="liquidation-legend" height={state.liquidationPoint} emphasized />
+                <div className="background-color-5 padding-2 radius-large z-10 width-32 collat">
+                  <h6 className="text-align-center margin-bottom-0">Collateral</h6>
+                  <div className="width-full flex-justify-center margin-top-1 w-dropdown">
+                    <div className="padding-0 flex-align-center">
+                      <a className="weight-bold">{currentCollateral}</a>
+                    </div>
                   </div>
-                </div>
-                <input
-                  {...number('pendingCollateral')}
-                  type="number"
-                  className="form-input small margin-bottom-1 w-input"
-                  maxLength={256}
-                  min={0}
-                  placeholder="0"
-                  required
-                  disabled={!state.editCollateral}
-                />
-                <button
-                  onClick={(e) => setMaximum(e)}
-                  className={`button-secondary button-tiny white width-full ${!state.editCollateral && 'disabled'}`}
-                  disabled={!state.editCollateral}
-                >
-                  Max {state.maxCollateral.toFixed(2)}
-                </button>
-                <div className="nub background-color-5"></div>
-              </div>
-            </div>
-            <Gauge
-              utilization={state.utilization}
-              pendingUtilization={state.pendingUtilization}
-              globalUtilization={state.globalUtilization}
-              liquidation={state.liquidationPoint}
-            />
-            <div className="expand padding-left-2">
-              <div
-                className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${
-                  Number(formState.values.pendingTokens) === 0 && state.sponsorTokens === 0 && 'disabled'
-                }`}
-                style={{
-                  top: `${state.pendingUtilization < 1 ? (1 - state.pendingUtilization) * 100 : 0}%`,
-                }}
-              >
-                <h6 className="text-align-center margin-bottom-0">Debt</h6>
-                {state.pendingUtilization >= 0 && (
-                  <>
-                    <h4 className="text-align-center margin-top-2 margin-bottom-0">{state.pendingUtilization * 100}%</h4>
-                    <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
-                  </>
-                )}
-                <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">
-                  {formState.values.pendingTokens} {currentSynth}
-                </h5>
-                <div className="height-9 flex-align-end">
                   <input
-                    {...number('pendingTokens')}
+                    {...number('pendingCollateral')}
                     type="number"
                     className="form-input small margin-bottom-1 w-input"
                     maxLength={256}
-                    min="0"
+                    min={0}
                     placeholder="0"
                     required
-                    disabled={!state.editTokens}
+                    disabled={!state.editCollateral}
                   />
+                  <button
+                    onClick={(e) => setMaximum(e)}
+                    className={`button-secondary button-tiny white width-full ${!state.editCollateral && 'disabled'}`}
+                    disabled={!state.editCollateral}
+                  >
+                    Max {state.maxCollateral.toFixed(2)}
+                  </button>
+                  <div className="nub background-color-5"></div>
                 </div>
-                <div className="nub background-color-debt left"></div>
+              </div>
+              <Gauge
+                utilization={state.utilization}
+                pendingUtilization={state.pendingUtilization}
+                globalUtilization={state.globalUtilization}
+                liquidation={state.liquidationPoint}
+              />
+              <div className="expand padding-left-2">
+                <div
+                  className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${
+                    Number(formState.values.pendingTokens) === 0 && state.sponsorTokens === 0 && 'disabled'
+                  }`}
+                  style={{
+                    top: `${state.pendingUtilization < 1 ? (1 - state.pendingUtilization) * 100 : 0}%`,
+                  }}
+                >
+                  <h6 className="text-align-center margin-bottom-0">Debt</h6>
+                  {state.pendingUtilization >= 0 && (
+                    <>
+                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{state.pendingUtilization * 100}%</h4>
+                      <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
+                    </>
+                  )}
+                  <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">
+                    {formState.values.pendingTokens} {currentSynth}
+                  </h5>
+                  <div className="height-9 flex-align-end">
+                    <input
+                      {...number('pendingTokens')}
+                      type="number"
+                      className="form-input small margin-bottom-1 w-input"
+                      maxLength={256}
+                      min="0"
+                      placeholder="0"
+                      required
+                      disabled={!state.editTokens}
+                    />
+                  </div>
+                  <div className="nub background-color-debt left"></div>
+                </div>
               </div>
             </div>
-          </div>
-          <UtilizationMarker utilization={state.utilization} />
-        </form>
-      </div>
-      <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
-        <div className="flex-justify-end padding-2 landscape-padding-top-4">
-          <div data-hover="1" data-delay="0" className="margin-0 w-dropdown">
-            <div className="padding-0 w-dropdown-toggle">
-              <Icon name="Info" className="icon opacity-100" />
-            </div>
-            <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
-              <a href="#" className="text-small break-no-wrap">
-                Advanced Features
-              </a>
-              <p className="text-xs opacity-50 margin-0">Coming soon</p>
-            </nav>
-          </div>
+            <UtilizationMarker utilization={state.utilization} />
+          </form>
         </div>
-        <div className="padding-8 padding-top-0 flex-column expand">
-          <div>
-            <h6 className="margin-bottom-0">Actions</h6>
-            <div className="divider margin-y-2"></div>
-            <div className="flex-row flex-wrap">
+        <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
+          <div className="flex-justify-end padding-2 landscape-padding-top-4">
+            <div data-hover="1" data-delay="0" className="margin-0 w-dropdown">
+              <div className="padding-0 w-dropdown-toggle">
+                <Icon name="Info" className="icon opacity-100" />
+              </div>
+              <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
+                <a href="#" className="text-small break-no-wrap">
+                  Advanced Features
+                </a>
+                <p className="text-xs opacity-50 margin-0">Coming soon</p>
+              </nav>
+            </div>
+          </div>
+          <div className="padding-8 padding-top-0 flex-column expand">
+            <div>
+              <h6 className="margin-bottom-0">Actions</h6>
+              <div className="divider margin-y-2"></div>
               <ActionSelector currentAction={state.action} noPosition={!state.sponsorCollateral} />
             </div>
-          </div>
-          <div className="margin-top-8">
-            <h6 className="margin-bottom-0">Your wallet</h6>
-            <div className="divider margin-y-2"></div>
-            <div className="text-small">
-              <div className="flex-align-baseline margin-bottom-2">
-                <div className="expand flex-align-center">
-                  <div>{currentCollateral}</div>
+            <div className="margin-top-8">
+              <h6 className="margin-bottom-0">Your wallet</h6>
+              <div className="divider margin-y-2"></div>
+              <div className="text-small">
+                <div className="flex-align-baseline margin-bottom-2">
+                  <div className="expand flex-align-center">
+                    <div>{currentCollateral}</div>
+                  </div>
+                  <div className="weight-medium text-color-4">{state.maxCollateral}</div>
                 </div>
-                <div className="weight-medium text-color-4">{state.maxCollateral}</div>
-              </div>
-              <div className="flex-align-baseline margin-bottom-2">
-                <div className="expand flex-align-center">
-                  <div>{currentSynth}</div>
+                <div className="flex-align-baseline margin-bottom-2">
+                  <div className="expand flex-align-center">
+                    <div>{currentSynth}</div>
+                  </div>
+                  <div className="weight-medium text-color-4">{state.sponsorTokens}</div>
                 </div>
-                <div className="weight-medium text-color-4">{state.sponsorTokens}</div>
               </div>
             </div>
-          </div>
-          <div className="margin-top-8">
-            <h6 className="margin-bottom-0">TX Details</h6>
-            <div className="divider margin-y-2"></div>
-            {!state.sponsorCollateral ? (
-              <p className="text-xs">
-                No collateral deposited yet.
-                <br />
-                {`Must mint a minimum of ${state.minTokens} ${currentSynth}.`}
-                <br />
-              </p>
-            ) : // TODO add TX detail component
-            null}
-          </div>
-          <div className="expand flex-align-end">
-            <ActionButton
-              action={state.action}
-              sponsorCollateral={state.sponsorCollateral}
-              sponsorTokens={state.sponsorTokens}
-              pendingCollateral={Number(formState.values.pendingCollateral)}
-              pendingTokens={Number(formState.values.pendingTokens)}
-            />
+            <div className="margin-top-8">
+              <h6 className="margin-bottom-0">TX Details</h6>
+              <div className="divider margin-y-2"></div>
+              {!state.sponsorCollateral ? (
+                <p className="text-xs">
+                  No collateral deposited yet.
+                  <br />
+                  {`Must mint a minimum of ${state.minTokens} ${currentSynth}.`}
+                  <br />
+                </p>
+              ) : // TODO add TX detail component
+              null}
+            </div>
+            <div className="expand flex-align-end">
+              <ActionButton
+                action={state.action}
+                sponsorCollateral={state.sponsorCollateral}
+                sponsorTokens={state.sponsorTokens}
+                pendingCollateral={Number(formState.values.pendingCollateral)}
+                pendingTokens={Number(formState.values.pendingTokens)}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

@@ -15,18 +15,6 @@ export interface ICollateral extends IToken {
   coingeckoId: string;
 }
 
-// TODO remove
-//export interface ISynthMetadata {
-//  name: string;
-//  //type: string;
-//  cycle: string;
-//  year: string;
-//  collateral: string;
-//  //expired: boolean;
-//  //apy?: number;
-//  //description?: string
-//}
-
 export interface ISynthInfo {
   imgLocation: string;
   type: string;
