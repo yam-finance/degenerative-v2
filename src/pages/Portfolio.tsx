@@ -16,8 +16,9 @@ export const Portfolio = () => {
 
   const MintedRow: React.FC<IMintedPosition> = (props) => {
     const { imgLocation, collateral, type, cycle, year } = synthMetadata[props.name];
-    const { price: tokenPrice } = synthMarketData[props.name];
+    const { price: tokenPrice, globalUtilization, liquidationPoint } = synthMarketData[props.name];
     const { name, tokenAmount, collateralAmount, utilization } = props;
+
     const [collateralPrice, setCollateralPrice] = useState(0);
     (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
 
@@ -41,14 +42,14 @@ export const Portfolio = () => {
           <div className="text-xs opacity-50">{`${collateralAmount} ${collateral}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">{utilization}</div>
+          <div className="text-color-4">{utilization * 100}%</div>
           <div className="gauge horizontal overflow-hidden">
-            <div className="collateral"></div>
-            <div className="debt horizontal">
-              <div className="gradient horizontal"></div>
+            <div className="collateral" />
+            <div className="debt horizontal" style={{ width: `${utilization * 100}%` }}>
+              <div className="gradient horizontal" />
             </div>
-            <div className="gcr horizontal"></div>
-            <div className="liquidation-point horizontal"></div>
+            <div className="gcr horizontal" style={{ left: `${1 / globalUtilization}%` }} />
+            <div className="liquidation-point horizontal" style={{ left: `${liquidationPoint * 100}%` }} />
           </div>
         </div>
         <div className="expand flex-align-baseline">
