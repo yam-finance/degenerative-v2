@@ -2,11 +2,11 @@ import { useState, useContext, useEffect, useCallback } from 'react';
 
 import { UserContext, MarketContext } from '@/contexts';
 import { useEmp, useToken, useWrapEth } from '@/hooks';
-import { CollateralMap } from '@/utils';
+import { isEmpty } from '@/utils';
 
 export const useSynthActions = () => {
   const { currentSynth, currentCollateral, emp } = useContext(UserContext);
-  const { synthMetadata } = useContext(MarketContext);
+  const { synthMetadata, collateralData } = useContext(MarketContext);
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
   const [synthAddress, setSynthAddress] = useState('');
@@ -19,12 +19,12 @@ export const useSynthActions = () => {
   const wrapEth = useWrapEth();
 
   useEffect(() => {
-    if (currentSynth && currentCollateral) {
+    if (currentSynth && currentCollateral && !isEmpty(synthMetadata) && !isEmpty(collateralData)) {
       setEmpAddress(synthMetadata[currentSynth].emp.address);
-      setCollateralAddress(CollateralMap[currentCollateral].address);
+      setCollateralAddress(collateralData[currentCollateral].address);
       setSynthAddress(synthMetadata[currentSynth].token.address);
     }
-  }, [currentSynth]);
+  }, [currentSynth, synthMetadata, collateralData]);
 
   useEffect(() => {
     checkCollateralAllowance();

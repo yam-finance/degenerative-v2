@@ -10,7 +10,7 @@ const ChainMap: Record<number, string> = {
 };
 
 //export const SynthMap: IMap<ISynthInfo> = Synths;
-export const CollateralMap: Record<string, IToken> = Collateral;
+export const CollateralMap: any = Collateral;
 export const SynthTypes: Record<string, ISynthType> = Types; // TODO make this map of all copy for synth types
 
 export const getSynthMetadata = (chainId: number) => {
@@ -34,3 +34,5 @@ export const getSynthMetadata = (chainId: number) => {
 
   return synthInfo;
 };
+
+export const getCollateralData = (chainId: number) => CollateralMap[ChainMap[chainId]];

@@ -5,7 +5,7 @@ import { BigNumber, utils } from 'ethers';
 import { Icon } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, useSynthActions } from '@/hooks';
-import { CollateralMap, roundDecimals } from '@/utils';
+import { roundDecimals, isEmpty } from '@/utils';
 import clsx from 'clsx';
 
 /* The component's state is the actual sponsor position. The form is the pending position. */
@@ -103,7 +103,7 @@ interface MinterFormFields {
 export const PositionManager = () => {
   const { account } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, synthsInWallet, mintedPositions } = useContext(UserContext);
-  const { synthMarketData } = useContext(MarketContext);
+  const { synthMarketData, collateralData } = useContext(MarketContext);
 
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
   const actions = useSynthActions();
@@ -142,10 +142,13 @@ export const PositionManager = () => {
 
   useEffect(() => {
     const initMinterState = async () => {
+      const collateralAddress = collateralData[currentCollateral].address;
+      const collateralDecimals = collateralData[currentCollateral].decimals;
+
       let collateralBalance = BigNumber.from(0);
       try {
         // TODO grab from synthsInWallet
-        collateralBalance = (await erc20.getBalance(CollateralMap[currentCollateral].address)) ?? BigNumber.from(1);
+        collateralBalance = (await erc20.getBalance(collateralAddress)) ?? BigNumber.from(0);
       } catch (err) {
         console.log(err);
       }
@@ -172,7 +175,7 @@ export const PositionManager = () => {
           globalUtilization: empInfo.globalUtilization,
           liquidationPoint: empInfo.liquidationPoint,
           minTokens: empInfo.minTokens,
-          maxCollateral: Number(utils.formatEther(collateralBalance)),
+          maxCollateral: Number(utils.formatUnits(collateralBalance, collateralDecimals)),
         },
       });
 
@@ -180,10 +183,10 @@ export const PositionManager = () => {
       setFormState(sponsorCollateral, sponsorTokens);
     };
 
-    if (currentCollateral && account && synthMarketData[currentSynth] && synthsInWallet) {
+    if (currentCollateral && !isEmpty(collateralData) && !isEmpty(synthMarketData[currentSynth])) {
       initMinterState();
     }
-  }, [currentSynth, currentCollateral, synthMarketData, account]);
+  }, [currentSynth, currentCollateral, synthMarketData, collateralData, account]);
 
   // Set windows and fields based on action selected
   useEffect(() => {

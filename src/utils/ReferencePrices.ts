@@ -5,9 +5,9 @@ import { SynthTypes, getUsdPriceHistory, getDateString } from '@/utils';
 /** Get reference price history and transform for use in charts. Returns array
  *  of objects with keys of timestamp and price.
  */
-export const getReferencePriceHistory = async (type: string) => {
-  const fetchUgas = async (collateral: string) => {
-    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral));
+export const getReferencePriceHistory = async (type: string, chainId: number) => {
+  const fetchUgas = async (collateral: string, chainId: number) => {
+    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     const res = await axios.get('https://data.yam.finance/median-history');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
@@ -22,8 +22,8 @@ export const getReferencePriceHistory = async (type: string) => {
     });
   };
 
-  const fetchUstonks = async (collateral: string) => {
-    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral));
+  const fetchUstonks = async (collateral: string, chainId: number) => {
+    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     const res = await axios.get('https://data.yam.finance/ustonks/index-history');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
@@ -43,9 +43,9 @@ export const getReferencePriceHistory = async (type: string) => {
 
     switch (type) {
       case 'uGas':
-        return await fetchUgas(collateral);
+        return await fetchUgas(collateral, chainId);
       case 'uStonks':
-        return await fetchUstonks(collateral);
+        return await fetchUstonks(collateral, chainId);
       default:
         return Promise.reject('Type not recognized');
     }

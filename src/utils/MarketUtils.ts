@@ -3,13 +3,13 @@ import axios from 'axios';
 import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, utils, constants } from 'ethers';
-import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString } from '@/utils';
-import { CollateralMap, SynthTypes } from './TokenList';
+import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString, getCollateralData } from '@/utils';
 import { IMap, ISynthInfo } from '@/types';
 
 sessionStorage.clear();
 
 // Get USD price of token and cache to sessionstorage
+/*
 export const getUsdPrice = async (tokenAddress: string) => {
   const cached = sessionStorage.getItem(tokenAddress);
   if (cached) return Promise.resolve(Number(cached));
@@ -23,10 +23,27 @@ export const getUsdPrice = async (tokenAddress: string) => {
     return Promise.reject(err);
   }
 };
+*/
+
+export const getUsdPrice = async (cgId: string) => {
+  const cached = sessionStorage.getItem(cgId);
+  if (cached) return Promise.resolve(Number(cached));
+
+  try {
+    const res = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${cgId}&vs_currencies=usd`);
+    const price = Number(res.data[cgId].usd);
+    sessionStorage.setItem(cgId, price.toString());
+    return Promise.resolve(price);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
 
 // Get USD price history of token from Coingecko
-export const getUsdPriceHistory = async (tokenName: string) => {
-  const cgId = CollateralMap[tokenName].coingeckoId;
+export const getUsdPriceHistory = async (tokenName: string, chainId: number) => {
+  const collateral = getCollateralData(chainId);
+  const cgId = collateral[tokenName].coingeckoId;
+
   try {
     const res = await axios.get(`https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`);
     const prices = res.data.prices;
@@ -110,7 +127,7 @@ export const getDailyPriceHistory = async (type: string, synthMetadata: Record<s
   // Get reference index prices (USD) for each date
   // TODO this should be done on API
   const referenceData = await (async () => {
-    const refPrices = await getReferencePriceHistory(type);
+    const refPrices = await getReferencePriceHistory(type, chainId);
 
     if (min && max) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));

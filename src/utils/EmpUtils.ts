@@ -1,15 +1,16 @@
 import { BigNumber, providers, utils } from 'ethers';
 import { ISynthInfo, Emp__factory } from '@/types';
-import { CollateralMap, roundDecimals } from '@/utils';
+import { getCollateralData, roundDecimals } from '@/utils';
 
 export const EthNodeProvider = new providers.JsonRpcProvider('https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud');
 
 /** Grabs TVL, total supply and if synth is expired. */
-export const getEmpState = async (synth: ISynthInfo, provider = EthNodeProvider) => {
+export const getEmpState = async (synth: ISynthInfo, chainId: number, provider = EthNodeProvider) => {
   const empAddress = synth.emp.address;
   const synthDecimals = synth.token.decimals ?? 18;
-  const collateral = synth.collateral;
-  const collateralDecimals = CollateralMap[collateral].decimals;
+  const collateralName = synth.collateral;
+  const collateralData = getCollateralData(chainId);
+  const collateralDecimals = collateralData[collateralName].decimals;
 
   try {
     const empContract = Emp__factory.connect(empAddress, provider);
