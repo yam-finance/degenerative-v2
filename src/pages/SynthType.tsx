@@ -61,7 +61,7 @@ export const SynthType: React.FC = () => {
             maturity: maturity,
             apy: synthMarketData[synthName].apr, //TODO
             // TODO should be showing minted positions
-            balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? '0',
+            balance: String(synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? '0'),
             liquidity: synthMarketData[synthName].liquidity, // TODO
             price: synthMarketData[synthName].price, // TODO
           };

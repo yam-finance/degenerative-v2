@@ -25,7 +25,7 @@ export const MarketProvider: React.FC = ({ children }) => {
   // TODO This entire context can be moved to utils with other synth information by connecting to
   //      app's eth node rather than user's connection
   useEffect(() => {
-    const initializeMarketData = async (synthMetadata: Record<string, ISynthInfo>, collateralData: Record<string, IToken>) => {
+    const initializeMarketData = async (synthMetadata: Record<string, ISynthInfo>, collateralData: Record<string, ICollateral>) => {
       const data: typeof synthMarketData = {};
 
       try {
