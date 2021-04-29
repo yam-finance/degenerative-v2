@@ -17,7 +17,6 @@ export const Synth: React.FC = () => {
   const { type, cycleYear, action } = useParams<SynthParams>();
   const { currentSynth, setSynth } = useContext(UserContext);
   const { synthMetadata } = useContext(MarketContext);
-  const actions = useSynthActions();
   const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
 
   useEffect(() => {

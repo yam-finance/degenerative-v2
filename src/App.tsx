@@ -21,7 +21,7 @@ const App: React.FC = () => {
         <FlexRow>
           <Navbar />
           <Switch>
-            <Route exact strict path="/" component={Landing} />
+            <Redirect exact strict from="/" to="/synths" />
             <Route exact strict path="/portfolio" component={Portfolio} />
             <Route exact strict path="/synths" component={Explore} />
             <Route exact strict path="/synths/:type" component={SynthType} /> {/* TODO */}

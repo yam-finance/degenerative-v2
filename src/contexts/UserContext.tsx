@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { fromUnixTime } from 'date-fns';
 
 import { IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
 
@@ -35,8 +36,6 @@ export const UserProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (currentSynth && !isEmpty(synthMetadata)) {
-      console.log(currentSynth);
-      console.log(synthMetadata);
       setCurrentCollateral(synthMetadata[currentSynth].collateral);
     }
   }, [currentSynth, synthMetadata]);
@@ -71,17 +70,14 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const getSponsorPosition = async (synthName: string) => {
     const synth = synthMetadata[synthName];
-    const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(synth.emp.address);
+    const { tokensOutstanding, rawCollateral, withdrawalRequestPassTimeStamp, withdrawalRequestAmount } = await emp.getUserPosition(synth.emp.address);
 
-    if (rawCollateral.gt(0) && tokensOutstanding.gt(0)) {
+    if (rawCollateral.gt(0) || tokensOutstanding.gt(0)) {
       const tokens = Number(utils.formatUnits(tokensOutstanding, synth.token.decimals));
       const collateral = Number(utils.formatUnits(rawCollateral, synth.token.decimals));
+      const withdrawalRequest = Number(utils.formatUnits(withdrawalRequestAmount, synth.token.decimals));
+      const withdrawalRequestTimestamp = withdrawalRequestPassTimeStamp.toNumber();
 
-      console.log(tokens);
-      console.log(collateral);
-      console.log(collateral / tokens);
-
-      // TODO get decimals for synth formatting
       const mintedPosition: IMintedPosition = {
         name: synthName,
         tokenAmount: roundDecimals(tokens, 2),
@@ -89,7 +85,10 @@ export const UserProvider: React.FC = ({ children }) => {
         collateralAmount: roundDecimals(collateral, 2),
         // collateralPrice:
         utilization: roundDecimals(tokens / collateral, 2), // TODO replace with utilization
+        withdrawalRequestAmount: withdrawalRequest,
+        withdrawalRequestTimestamp: withdrawalRequestTimestamp,
       };
+
       return Promise.resolve(mintedPosition);
     } else {
       return Promise.reject('Account does not have a sponsor position.');

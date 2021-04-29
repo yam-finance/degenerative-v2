@@ -9,6 +9,8 @@ export interface IMintedPosition {
   //collateralPriceUsd: string;
   //collateralRatio: number; // TODO replace with utilization
   utilization: number;
+  withdrawalRequestAmount: number;
+  withdrawalRequestTimestamp: number; // Time when withdrawal request is approved, unix time
 }
 
 export interface ISynthInWallet {
