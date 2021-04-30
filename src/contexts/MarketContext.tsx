@@ -68,6 +68,10 @@ export const MarketProvider: React.FC = ({ children }) => {
               pricePerCollateral = pool.token1Price;
             }
 
+            console.log(name);
+            console.log(pricePerCollateral);
+            console.log(rawGlobalUtilization);
+
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, collateral.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, collateral.decimals));
             const apr = String((Math.random() * 100).toFixed(2)); // TODO get actual APR
@@ -80,6 +84,9 @@ export const MarketProvider: React.FC = ({ children }) => {
               marketCap: marketCap.toString(),
               volume24h: '0', // TODO need to get from subgraph
               globalUtilization: roundDecimals(rawGlobalUtilization * pricePerCollateral, 4),
+              // TODO temporary hardcode for testing
+              //globalUtilization: roundDecimals(3 * pricePerCollateral, 4),
+              // TODO
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
               apr: apr,

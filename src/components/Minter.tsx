@@ -413,7 +413,8 @@ export const Minter = () => {
       const newTokens = pendingTokens - state.sponsorTokens;
       const newCollateral = pendingCollateral - state.sponsorCollateral;
 
-      const disableMinting = newTokens <= 0 || state.pendingUtilization < state.globalUtilization || state.pendingUtilization > state.liquidationPoint;
+      const disableMinting =
+        newTokens <= 0 || newCollateral <= 0 || state.pendingUtilization > state.globalUtilization || state.pendingUtilization > state.liquidationPoint;
 
       return (
         <button onClick={() => actions.onMint(newCollateral, newTokens)} className={clsx(baseStyle, disableMinting && 'disabled')} disabled={disableMinting}>
@@ -444,7 +445,6 @@ export const Minter = () => {
       const redeemableTokens = sponsorTokens - pendingTokens;
       const resultingCollateral = redeemableTokens / state.utilization;
 
-      //const isRedeemValid = redeemableTokens > 0 && redeemableTokens < sponsorTokens;
       const disableRedeem = redeemableTokens <= 0 || redeemableTokens >= sponsorTokens;
 
       return (
@@ -660,16 +660,18 @@ export const Minter = () => {
                   <div className="nub background-color-5"></div>
                 </div>
               </div>
+
               <Gauge
                 utilization={state.utilization}
                 pendingUtilization={state.pendingUtilization}
                 globalUtilization={state.globalUtilization}
                 liquidation={state.liquidationPoint}
               />
+
               <div className="expand padding-left-2">
                 <div
                   className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${
-                    Number(formState.values.pendingTokens) === 0 && state.sponsorTokens === 0 && 'disabled'
+                    Number(formState.values.pendingTokens) === 0 && Number(formState.values.pendingCollateral) === 0 && 'disabled'
                   }`}
                   style={{
                     top: `${state.pendingUtilization < 1 ? (1 - state.pendingUtilization) * 100 : 0}%`,
@@ -706,7 +708,7 @@ export const Minter = () => {
         </div>
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
           <div className="flex-justify-end padding-2 landscape-padding-top-4">
-            <div data-hover="1" data-delay="0" className="margin-0 w-dropdown">
+            <div className="margin-0 w-dropdown">
               <div className="padding-0 w-dropdown-toggle">
                 <Icon name="Info" className="icon opacity-100" />
               </div>
@@ -724,6 +726,7 @@ export const Minter = () => {
               <div className="divider margin-y-2"></div>
               <ActionSelector currentAction={state.action} noPosition={!state.sponsorCollateral} />
             </div>
+
             <div className="margin-top-8">
               <h6 className="margin-bottom-0">Your wallet</h6>
               <div className="divider margin-y-2"></div>
@@ -742,6 +745,7 @@ export const Minter = () => {
                 </div>
               </div>
             </div>
+
             <div className="margin-top-8">
               <h6 className="margin-bottom-0">TX Details</h6>
               <div className="divider margin-y-2"></div>
@@ -757,6 +761,7 @@ export const Minter = () => {
                 <TransactionDetails />
               )}
             </div>
+
             <div className="expand flex-align-end">
               <ActionButton
                 action={state.action}

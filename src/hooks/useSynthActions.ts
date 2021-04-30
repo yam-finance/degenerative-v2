@@ -166,6 +166,8 @@ export const useSynthActions = () => {
     }
   };
 
+  const onSettle = async () => {};
+
   return {
     collateralApproval,
     synthApproval,
