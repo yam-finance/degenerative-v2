@@ -5,7 +5,6 @@ export * from './Dropdown';
 export * from './Icon';
 export * from './Minter';
 export * from './NavbarButton';
-export * from './PositionManager';
 export * from './SearchForm';
 export * from './Table';
 export { default as UtilizationGauge } from './UtilizationGauge';

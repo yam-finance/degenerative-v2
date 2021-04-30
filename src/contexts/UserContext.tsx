@@ -1,11 +1,13 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { fromUnixTime } from 'date-fns';
 
-import { ISynthInfo, IToken, IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
-import { CollateralMap, SynthInfo } from '@/utils/TokenList';
+import { IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
 
 import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
 import { BigNumber, utils } from 'ethers';
+import { MarketContext } from './MarketContext';
+import { isEmpty, roundDecimals } from '@/utils';
 
 const initialState = {
   mintedPositions: [] as IMintedPosition[],
@@ -22,6 +24,8 @@ export const UserContext = createContext(initialState);
 
 export const UserProvider: React.FC = ({ children }) => {
   const { account, signer } = useContext(EthereumContext);
+  const { synthMetadata } = useContext(MarketContext);
+
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);
   const [synthsInWallet, setSynthsInWallet] = useState<ISynthInWallet[]>([]);
   const [currentSynth, setCurrentSynth] = useState('');
@@ -31,18 +35,18 @@ export const UserProvider: React.FC = ({ children }) => {
   const erc20 = useToken();
 
   useEffect(() => {
-    if (currentSynth) {
-      setCurrentCollateral(SynthInfo[currentSynth].collateral);
+    if (currentSynth && !isEmpty(synthMetadata)) {
+      setCurrentCollateral(synthMetadata[currentSynth].collateral);
     }
-  }, [currentSynth]);
+  }, [currentSynth, synthMetadata]);
 
   // TODO update when user has minted tokens
   useEffect(() => {
-    if (signer && account) {
+    if (signer && account && synthMetadata) {
       updateMintedPositions();
       updateSynthsInWallet();
     }
-  }, [signer, account]);
+  }, [signer, account, synthMetadata]);
 
   const setSynth = (synthName: string) => {
     console.log('SET SYNTH CALLED');
@@ -52,7 +56,8 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const updateMintedPositions = () => {
     const minted: IMintedPosition[] = [];
-    Object.keys(SynthInfo).forEach(async (name) => {
+    console.log(synthMetadata);
+    Object.keys(synthMetadata).forEach(async (name) => {
       try {
         const mintedPosition = await getSponsorPosition(name);
         minted.push(mintedPosition);
@@ -64,17 +69,26 @@ export const UserProvider: React.FC = ({ children }) => {
   };
 
   const getSponsorPosition = async (synthName: string) => {
-    const { tokensOutstanding, rawCollateral } = await emp.getUserPosition(SynthInfo[synthName].emp.address);
+    const synth = synthMetadata[synthName];
+    const { tokensOutstanding, rawCollateral, withdrawalRequestPassTimeStamp, withdrawalRequestAmount } = await emp.getUserPosition(synth.emp.address);
 
-    if (rawCollateral.gt(0) && tokensOutstanding.gt(0)) {
+    if (rawCollateral.gt(0) || tokensOutstanding.gt(0)) {
+      const tokens = Number(utils.formatUnits(tokensOutstanding, synth.token.decimals));
+      const collateral = Number(utils.formatUnits(rawCollateral, synth.token.decimals));
+      const withdrawalRequest = Number(utils.formatUnits(withdrawalRequestAmount, synth.token.decimals));
+      const withdrawalRequestTimestamp = withdrawalRequestPassTimeStamp.toNumber();
+
       const mintedPosition: IMintedPosition = {
         name: synthName,
-        tokenAmount: utils.formatEther(tokensOutstanding),
+        tokenAmount: roundDecimals(tokens, 2),
         // tokenPrice: await (await getPrice(synth.token, collateral)).price,
-        collateralAmount: utils.formatEther(rawCollateral),
+        collateralAmount: roundDecimals(collateral, 2),
         // collateralPrice:
-        collateralRatio: rawCollateral.div(tokensOutstanding).toString(), // TODO replace with utilization
+        utilization: roundDecimals(tokens / collateral, 2), // TODO replace with utilization
+        withdrawalRequestAmount: withdrawalRequest,
+        withdrawalRequestTimestamp: withdrawalRequestTimestamp,
       };
+
       return Promise.resolve(mintedPosition);
     } else {
       return Promise.reject('Account does not have a sponsor position.');
@@ -85,14 +99,16 @@ export const UserProvider: React.FC = ({ children }) => {
   const updateSynthsInWallet = () => {
     const synthsOwned: ISynthInWallet[] = [];
 
-    Object.entries(SynthInfo).forEach(async ([name, synth]) => {
+    Object.entries(synthMetadata).forEach(async ([name, synth]) => {
       const balance = await erc20.getBalance(synth.token.address);
 
       if (balance.gt(0)) {
+        const synth = synthMetadata[name];
+        const tokens = Number(utils.formatUnits(balance, synth.token.decimals));
+
         const inWallet: ISynthInWallet = {
           name: name,
-          // TODO add price USD
-          tokenAmount: utils.formatEther(balance),
+          tokenAmount: roundDecimals(tokens, 2),
         };
 
         synthsOwned.push(inWallet);

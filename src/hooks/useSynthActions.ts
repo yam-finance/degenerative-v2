@@ -1,11 +1,12 @@
 import { useState, useContext, useEffect, useCallback } from 'react';
 
-import { UserContext } from '@/contexts';
-import { useEmp, useToken, useWrapEth } from '@/hooks';
-import { SynthInfo, CollateralMap } from '@/utils';
+import { UserContext, MarketContext } from '@/contexts';
+import { useToken, useWrapEth } from '@/hooks';
+import { isEmpty } from '@/utils';
 
 export const useSynthActions = () => {
   const { currentSynth, currentCollateral, emp } = useContext(UserContext);
+  const { synthMetadata, collateralData } = useContext(MarketContext);
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
   const [synthAddress, setSynthAddress] = useState('');
@@ -18,12 +19,12 @@ export const useSynthActions = () => {
   const wrapEth = useWrapEth();
 
   useEffect(() => {
-    if (currentSynth && currentCollateral) {
-      setEmpAddress(SynthInfo[currentSynth].emp.address);
-      setCollateralAddress(CollateralMap[currentCollateral].address);
-      setSynthAddress(SynthInfo[currentSynth].token.address);
+    if (currentSynth && currentCollateral && !isEmpty(synthMetadata) && !isEmpty(collateralData)) {
+      setEmpAddress(synthMetadata[currentSynth].emp.address);
+      setCollateralAddress(collateralData[currentCollateral].address);
+      setSynthAddress(synthMetadata[currentSynth].token.address);
     }
-  }, [currentSynth]);
+  }, [currentSynth, synthMetadata, collateralData]);
 
   useEffect(() => {
     checkCollateralAllowance();
@@ -117,7 +118,60 @@ export const useSynthActions = () => {
         console.error(err);
       }
     } else {
-      console.error('Invalid collateral amounts.');
+      console.error('Invalid collateral amount.');
+    }
+  };
+
+  const onWithdraw = async (collateralAmount: number) => {
+    if (collateralAmount > 0) {
+      try {
+        const txReceipt = await emp.withdraw(empAddress, collateralAmount);
+        console.log(txReceipt.transactionHash);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.error('Invalid collateral amount.');
+    }
+  };
+
+  const onRequestWithdraw = async (collateralAmount: number) => {
+    if (collateralAmount > 0) {
+      try {
+        const txReceipt = await emp.initWithdrawalRequest(empAddress, collateralAmount);
+        console.log(txReceipt.transactionHash);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.error('Invalid collateral amount.');
+    }
+  };
+
+  const onWithdrawPassedRequest = async () => {
+    try {
+      const txReceipt = await emp.withdrawPassedRequest(empAddress);
+      console.log(txReceipt.transactionHash);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const onCancelWithdraw = async () => {
+    try {
+      const txReceipt = await emp.cancelWithdrawalRequest(empAddress);
+      console.log(txReceipt.transactionHash);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const onSettle = async () => {
+    try {
+      const txReceipt = await emp.settle(empAddress);
+      console.log(txReceipt.transactionHash);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -129,6 +183,11 @@ export const useSynthActions = () => {
     onRedeem,
     onApproveCollateral,
     onApproveSynth,
+    onWithdraw,
+    onRequestWithdraw,
+    onWithdrawPassedRequest,
+    onCancelWithdraw,
+    onSettle,
     onWrapEth,
   };
 };

@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
 
 import { useSynthActions } from '@/hooks/useSynthActions';
-import { UserContext } from '@/contexts';
-import { MainDisplay, MainHeading, Minter, PositionManager, SideDisplay } from '@/components';
+import { UserContext, MarketContext } from '@/contexts';
+import { MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { ISynthInfo } from '@/types';
-import { SynthInfo, isEmpty } from '@/utils';
+import { isEmpty } from '@/utils';
 
 interface SynthParams {
   type: string;
@@ -16,7 +16,7 @@ interface SynthParams {
 export const Synth: React.FC = () => {
   const { type, cycleYear, action } = useParams<SynthParams>();
   const { currentSynth, setSynth } = useContext(UserContext);
-  const actions = useSynthActions();
+  const { synthMetadata } = useContext(MarketContext);
   const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
 
   useEffect(() => {
@@ -25,18 +25,13 @@ export const Synth: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (currentSynth && !isEmpty(currentSynth)) setSynthInfo(SynthInfo[currentSynth]);
-  }, [currentSynth]);
+    if (currentSynth && !isEmpty(currentSynth) && !isEmpty(synthMetadata)) setSynthInfo(synthMetadata[currentSynth]);
+  }, [currentSynth, synthMetadata]);
 
   const ActionSelector: React.FC = () => {
     return (
       <div className="padding-x-8 flex-row">
         <div className="tabs margin-right-2">
-          {/*
-          <NavLink to={`/synths/${type}/${cycle}${year}/mint`} className="tab large" activeClassName="active">
-            Mint
-          </NavLink>
-          */}
           <NavLink to={`/synths/${type}/${cycle}${year}/manage`} className="tab large" activeClassName="active">
             Manage
           </NavLink>
@@ -53,10 +48,8 @@ export const Synth: React.FC = () => {
 
   const Action: React.FC = () => {
     switch (action) {
-      case 'mint':
-        return <Minter />;
       case 'manage':
-        return <PositionManager />;
+        return <Minter />;
       //case 'trade':
       //  return <Trade />
       //case 'lp':

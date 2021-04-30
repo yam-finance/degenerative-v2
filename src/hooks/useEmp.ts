@@ -87,14 +87,32 @@ export const useEmp = () => {
   );
   */
 
-  // TODO finish implementation. Needs its own page.
   const settle = useCallback(
-    async (empAddress: string, tokens: number) => {
-      const tokenAmount = new Unsigned(tokens);
+    async (empAddress: string) => {
       const empContract = Emp__factory.connect(empAddress, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.settleExpired();
         const tx = await empContract.settleExpired({
+          gasLimit: gasLimit,
+        });
+        return tx.wait();
+      } catch (err) {
+        console.error(err);
+        return Promise.reject('Settle failed.');
+      }
+    },
+    [signer]
+  );
+
+  // NOTE: Only works up to GCR. Otherwise will fail.
+  const withdraw = useCallback(
+    async (empAddress: string, collateral: number) => {
+      const collateralAmount = new Unsigned(collateral);
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+
+      try {
+        const gasLimit = await empContract.estimateGas.withdraw(collateralAmount);
+        const tx = await empContract.withdraw(collateralAmount, {
           gasLimit: gasLimit,
         });
         return tx.wait();
@@ -106,26 +124,56 @@ export const useEmp = () => {
     [signer]
   );
 
-  const requestWithdrawal = useCallback(async (empAddress: string, collateral: number) => {}, [signer]);
-
-  const withdrawPassedRequest = useCallback(() => {}, [signer]);
-
-  const cancelWithdrawalRequest = useCallback(async () => {}, [signer]);
-
-  // NOTE: Only works up to GCR. Otherwise will fail.
-  const withdraw = useCallback(
+  const initWithdrawalRequest = useCallback(
     async (empAddress: string, collateral: number) => {
       const collateralAmount = new Unsigned(collateral);
       const empContract = Emp__factory.connect(empAddress, signer as Signer);
+
       try {
-        const gasLimit = await empContract.estimateGas.redeem(collateralAmount);
-        const tx = await empContract.withdraw(collateralAmount, {
+        const gasLimit = await empContract.estimateGas.requestWithdrawal(collateralAmount);
+        const tx = await empContract.requestWithdrawal(collateralAmount, {
           gasLimit: gasLimit,
         });
-        return await tx.wait();
+        return tx.wait();
       } catch (err) {
         console.error(err);
-        return Promise.reject('Withdraw failed.');
+        return Promise.reject('Request withdraw failed.');
+      }
+    },
+    [signer]
+  );
+
+  const withdrawPassedRequest = useCallback(
+    async (empAddress: string) => {
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+
+      try {
+        const gasLimit = await empContract.estimateGas.withdrawPassedRequest();
+        const tx = await empContract.withdrawPassedRequest({
+          gasLimit: gasLimit,
+        });
+        return tx.wait();
+      } catch (err) {
+        console.error(err);
+        return Promise.reject('Withdraw passed request failed.');
+      }
+    },
+    [signer]
+  );
+
+  const cancelWithdrawalRequest = useCallback(
+    async (empAddress: string) => {
+      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+
+      try {
+        const gasLimit = await empContract.estimateGas.cancelWithdrawal();
+        const tx = await empContract.cancelWithdrawal({
+          gasLimit: gasLimit,
+        });
+        return tx.wait();
+      } catch (err) {
+        console.error(err);
+        return Promise.reject('Cancel withdrawal failed.');
       }
     },
     [signer]
@@ -219,7 +267,11 @@ export const useEmp = () => {
     mint,
     deposit,
     redeem,
+    settle,
     withdraw,
+    initWithdrawalRequest,
+    withdrawPassedRequest,
+    cancelWithdrawalRequest,
     getUserPosition,
     queryEmpState,
   };

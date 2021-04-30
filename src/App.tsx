@@ -27,11 +27,11 @@ const App: React.FC = () => {
         <FlexRow>
           <Navbar />
           <Switch>
-            <Route exact strict path="/" component={Landing} />
+            <Redirect exact strict from="/" to="/synths" />
             <Route exact strict path="/portfolio" component={Portfolio} />
             <Route exact strict path="/synths" component={Explore} />
             <Route exact strict path="/synths/:type" component={SynthType} /> {/* TODO */}
-            <Redirect exact strict from="/synths/:type/:cycleYear" to="/synths/:type/:cycleYear/mint" />
+            <Redirect exact strict from="/synths/:type/:cycleYear" to="/synths/:type/:cycleYear/manage" />
             <Route exact strict path="/synths/:type/:cycleYear/:action" component={Synth} />
             <Route component={NotFound} />
           </Switch>

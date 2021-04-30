@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SearchForm, NavbarButton, Icon, Dropdown } from '@/components';
+import { SearchForm, NavbarButton, Icon, Dropdown, ConnectWallet } from '@/components';
 import LanguageSwitcher from '@/components/LangSwitcher';
 import { EthereumContext } from '@/contexts';
 // import { useTranslation } from 'react-i18next';
@@ -89,15 +89,19 @@ const Navbar = () => {
             <Icon name="ChevronDown" className="icon opacity-100" />
           </div>
           <Dropdown className="dropdown-list top-right box-shadow-medium radius-large w-dropdown-list" openDropdown={openWalletMenu}>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                disconnectWallet();
-              }}
-              className="dropdown-link w-dropdown-link"
-            >
-              Disconnect
-            </button>
+            {account ? (
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  disconnectWallet();
+                }}
+                className="dropdown-link w-dropdown-link"
+              >
+                Disconnect
+              </div>
+            ) : (
+              <ConnectWallet className={'dropdown-link w-dropdown-link'} />
+            )}
           </Dropdown>
         </div>
         <div className="margin-left-6 hide tablet-block relative w-dropdown">

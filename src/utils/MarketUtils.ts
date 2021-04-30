@@ -3,13 +3,13 @@ import axios from 'axios';
 import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, utils, constants } from 'ethers';
-import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString } from '@/utils';
-import { CollateralMap, SynthInfo, SynthTypes } from './TokenList';
-import { IMap } from '@/types';
+import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString, getCollateralData } from '@/utils';
+import { IMap, ISynthInfo } from '@/types';
 
 sessionStorage.clear();
 
 // Get USD price of token and cache to sessionstorage
+/*
 export const getUsdPrice = async (tokenAddress: string) => {
   const cached = sessionStorage.getItem(tokenAddress);
   if (cached) return Promise.resolve(Number(cached));
@@ -23,10 +23,30 @@ export const getUsdPrice = async (tokenAddress: string) => {
     return Promise.reject(err);
   }
 };
+*/
+
+export const getUsdPrice = async (cgId: string) => {
+  const cached = sessionStorage.getItem(cgId);
+  if (cached) return Promise.resolve(Number(cached));
+
+  try {
+    const res = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${cgId}&vs_currencies=usd`);
+    const price = Number(res.data[cgId].usd);
+    sessionStorage.setItem(cgId, price.toString());
+    return Promise.resolve(price);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
 
 // Get USD price history of token from Coingecko
-export const getUsdPriceHistory = async (tokenName: string) => {
-  const cgId = CollateralMap[tokenName].coingeckoId;
+export const getUsdPriceHistory = async (tokenName: string, chainId: number) => {
+  const collateral = getCollateralData(chainId);
+  console.log('collateral');
+  console.log(chainId);
+  console.log(collateral);
+  const cgId = collateral[tokenName].coingeckoId;
+
   try {
     const res = await axios.get(`https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`);
     const prices = res.data.prices;
@@ -43,11 +63,12 @@ export const getUsdPriceHistory = async (tokenName: string) => {
 };
 
 // Get Uniswap pool data
-export const getPoolData = async (poolAddress: string) => {
+export const getPoolData = async (poolAddress: string, chainId: number) => {
   try {
-    const data = await request(UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, { poolAddress: poolAddress });
+    const data = await request(UNISWAP_ENDPOINT[chainId], UNISWAP_MARKET_DATA_QUERY, { poolAddress: poolAddress });
     return data.pair;
   } catch (err) {
+    console.log(err);
     return Promise.reject(err);
   }
 };
@@ -62,21 +83,23 @@ interface PriceHistoryResponse {
 }
 
 /** Get labels, reference price data and all market price data for this synth type. */
-export const getDailyPriceHistory = async (type: string) => {
+export const getDailyPriceHistory = async (type: string, synthMetadata: Record<string, ISynthInfo>, chainId: number) => {
   // TODO defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 
   const relevantSynths = new Map(
-    Object.entries(SynthInfo)
+    Object.entries(synthMetadata)
       .filter(([name, synth]) => synth.type === type)
       .map(([name, synth]) => [synth.token.address, name])
   );
 
   const addressList = Array.from(relevantSynths.keys());
+
+  console.log('WTFJKLAJFKLAS');
   // TODO grab paired data, not USD
   const dailyPriceResponse: {
     tokenDayDatas: PriceHistoryResponse[];
-  } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
+  } = await request(UNISWAP_ENDPOINT[1], UNISWAP_DAILY_PRICE_QUERY, {
     tokenAddresses: addressList,
     startingTime: startingTime,
   });
@@ -108,7 +131,9 @@ export const getDailyPriceHistory = async (type: string) => {
   // Get reference index prices (USD) for each date
   // TODO this should be done on API
   const referenceData = await (async () => {
-    const refPrices = await getReferencePriceHistory(type);
+    const refPrices = await getReferencePriceHistory(type, chainId);
+    console.log('REF PRICES');
+    console.log(refPrices);
 
     if (min && max) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));

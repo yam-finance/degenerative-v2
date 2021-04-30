@@ -1,22 +1,26 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { MarketContext, UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMintedPosition, ISynthInWallet } from '@/types';
-import { SynthInfo } from '@/utils';
+import { getUsdPrice, roundDecimals } from '@/utils';
 
 export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
-  const { synthMarketData } = useContext(MarketContext);
+  const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
 
   useEffect(() => {
     console.log(synthsInWallet);
   }, [synthsInWallet]);
 
   const MintedRow: React.FC<IMintedPosition> = (props) => {
-    const { imgLocation, collateral, type, cycle, year } = SynthInfo[props.name];
-    const { name, tokenAmount, collateralAmount, collateralRatio } = props;
+    const { imgLocation, collateral, type, cycle, year } = synthMetadata[props.name];
+    const { price: tokenPrice, globalUtilization, liquidationPoint } = synthMarketData[props.name];
+    const { name, tokenAmount, collateralAmount, utilization } = props;
+
+    const [collateralPrice, setCollateralPrice] = useState(0);
+    (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
 
     return (
       <TableRow to={`/synths/${type}/${cycle}${year}`}>
@@ -30,22 +34,22 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">$1,000{/* TODO Placeholder */}</div>
+          <div className="text-color-4">${roundDecimals(Number(tokenPrice) * tokenAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">$10,500{/* TODO Placeholder */}</div>
+          <div className="text-color-4">${roundDecimals(collateralPrice * collateralAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${collateralAmount} ${collateral}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">{`${collateralRatio}`}</div>
+          <div className="text-color-4">{utilization * 100}%</div>
           <div className="gauge horizontal overflow-hidden">
-            <div className="collateral"></div>
-            <div className="debt horizontal">
-              <div className="gradient horizontal"></div>
+            <div className="collateral" />
+            <div className="debt horizontal" style={{ width: `${utilization * 100}%` }}>
+              <div className="gradient horizontal" />
             </div>
-            <div className="gcr horizontal"></div>
-            <div className="liquidation-point horizontal"></div>
+            <div className="gcr horizontal" style={{ left: `${1 / globalUtilization}%` }} />
+            <div className="liquidation-point horizontal" style={{ left: `${liquidationPoint * 100}%` }} />
           </div>
         </div>
         <div className="expand flex-align-baseline">
@@ -58,8 +62,8 @@ export const Portfolio = () => {
 
   const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
     const { name, tokenAmount } = props;
-    const { imgLocation, type, cycle, year } = SynthInfo[name];
-    const { daysTillExpiry } = synthMarketData[name];
+    const { imgLocation, type, cycle, year } = synthMetadata[name];
+    const { price: tokenPrice, daysTillExpiry } = synthMarketData[name];
     const link = `/synths/${type}/${cycle}${year}`;
 
     const isExpired = daysTillExpiry <= 0;
@@ -76,11 +80,11 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">$1,000{/* TODO Placeholder */}</div>
+          <div className="text-color-4">${roundDecimals(Number(tokenPrice) * tokenAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">$10,500{/* TODO Placeholder */}</div>
+          <div className="text-color-4">${tokenPrice}</div>
           <div className="height-8 width-32 w-embed w-script"></div>
         </div>
         <div className="expand">

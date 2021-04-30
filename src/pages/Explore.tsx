@@ -4,7 +4,7 @@ import { SearchForm } from '@/components';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMap } from '@/types';
 import { MarketContext } from '@/contexts';
-import { SynthInfo, SynthTypes, isEmpty, formatForDisplay } from '@/utils';
+import { SynthTypes, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
 import box from '@/assets/Box-01.png';
 
@@ -19,7 +19,7 @@ interface ISynthTypeData {
 }
 
 export const Explore = () => {
-  const { synthMarketData } = useContext(MarketContext);
+  const { loading, synthMetadata, synthMarketData } = useContext(MarketContext);
   const query = useQuery();
 
   const [searchTerm, setSearchTerm] = useState(query.get('search') ?? '');
@@ -30,41 +30,54 @@ export const Explore = () => {
     const AggregateSynthTypeData = () => {
       const aggregateData: IMap<ISynthTypeData> = {};
 
-      Object.entries(SynthInfo)
+      Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
+          console.log(synthName);
           const { type } = synthInfo;
-          const marketData = synthMarketData[synthName];
-          const currentData = aggregateData[type] ?? {
-            aprMin: Infinity,
-            aprMax: 0,
-            totalLiquidity: 0,
-            totalMarketCap: 0,
-            totalTvl: 0,
-            totalVolume24h: 0,
-            numSynths: 0,
-          };
+          try {
+            const marketData = synthMarketData[synthName];
+            const currentData = aggregateData[type] ?? {
+              aprMin: Infinity,
+              aprMax: 0,
+              totalLiquidity: 0,
+              totalMarketCap: 0,
+              totalTvl: 0,
+              totalVolume24h: 0,
+              numSynths: 0,
+            };
 
-          aggregateData[type] = {
-            aprMin: Math.min(currentData.aprMin, Number(marketData.apr)),
-            aprMax: Math.max(currentData.aprMax, Number(marketData.apr)),
-            totalLiquidity: currentData.totalLiquidity + Number(marketData.liquidity),
-            totalMarketCap: currentData.totalMarketCap + Number(marketData.marketCap),
-            totalTvl: currentData.totalTvl + Number(marketData.tvl),
-            totalVolume24h: currentData.totalVolume24h + Number(marketData.volume24h),
-            numSynths: currentData.numSynths + 1,
-          };
+            aggregateData[type] = {
+              aprMin: Math.min(currentData.aprMin, Number(marketData.apr)),
+              aprMax: Math.max(currentData.aprMax, Number(marketData.apr)),
+              totalLiquidity: currentData.totalLiquidity + Number(marketData.liquidity),
+              totalMarketCap: currentData.totalMarketCap + Number(marketData.marketCap),
+              totalTvl: currentData.totalTvl + Number(marketData.tvl),
+              totalVolume24h: currentData.totalVolume24h + Number(marketData.volume24h),
+              numSynths: currentData.numSynths + 1,
+            };
+          } catch (err) {
+            aggregateData[type] = {
+              aprMin: 0,
+              aprMax: 0,
+              totalLiquidity: 0,
+              totalMarketCap: 0,
+              totalTvl: 0,
+              totalVolume24h: 0,
+              numSynths: 1,
+            };
+          }
         });
 
       setSynthTypeData(aggregateData);
     };
 
-    if (synthMarketData && !isEmpty(synthMarketData)) AggregateSynthTypeData();
+    console.log(synthMetadata);
     console.log(synthMarketData);
+    if (!isEmpty(synthMetadata) && !isEmpty(synthMarketData)) AggregateSynthTypeData();
   }, [synthMarketData, searchTerm]);
 
   const SynthBlock: React.FC<{ type: string }> = ({ type }) => {
-    //const { type, cycle, year } = SynthInfo[name];
     const description = SynthTypes[type].description;
     const { aprMin, aprMax } = synthTypeData[type];
 
