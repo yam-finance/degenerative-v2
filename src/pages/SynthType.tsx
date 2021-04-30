@@ -31,7 +31,7 @@ export const SynthType: React.FC = () => {
     labels: string[];
     synthPrices: Record<string, number[]>;
   }>();
-  const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('All');
+  const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('Live');
   const [synthInFocus, setSynthInFocus] = useState<string>('');
 
   // TODO redirect if type does not exist
@@ -43,8 +43,6 @@ export const SynthType: React.FC = () => {
       Object.entries(synthMetadata)
         .filter((synth) => synth[1].type === type)
         .filter(([synthName, synthInfo]) => {
-          console.log(synthName);
-          console.log(synthInfo);
           if (filterSynths === 'All') {
             return true;
           } else if (filterSynths === 'Live') {
@@ -76,8 +74,8 @@ export const SynthType: React.FC = () => {
   useEffect(() => {
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(type, synthMetadata, chainId));
 
-    getChartData();
-  }, []);
+    if (chainId) getChartData();
+  }, [synthMetadata]);
 
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;

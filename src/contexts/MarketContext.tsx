@@ -68,10 +68,6 @@ export const MarketProvider: React.FC = ({ children }) => {
               pricePerCollateral = pool.token1Price;
             }
 
-            console.log(name);
-            console.log(pricePerCollateral);
-            console.log(rawGlobalUtilization);
-
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, collateral.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, collateral.decimals));
             const apr = String((Math.random() * 100).toFixed(2)); // TODO get actual APR

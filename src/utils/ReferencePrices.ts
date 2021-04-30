@@ -1,6 +1,7 @@
 // Get reference price history for each synth type
 import axios from 'axios';
 import { SynthTypes, getUsdPriceHistory, getDateString } from '@/utils';
+import { fromUnixTime } from 'date-fns';
 
 /** Get reference price history and transform for use in charts. Returns array
  *  of objects with keys of timestamp and price.
@@ -9,9 +10,10 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   const fetchUgas = async (collateral: string, chainId: number) => {
     const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     const res = await axios.get('https://data.yam.finance/median-history');
+    console.log(res.data);
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
-      const dateString = getDateString(new Date(timestamp));
+      const dateString = getDateString(fromUnixTime(timestamp));
       const usdPriceCollateral = (collateralUsd.get(dateString) ?? 1) / 10 ** 9;
       const scaledPrice = price / 1000; // TODO numbers don't work without dividing by 1000. Not sure why.
 

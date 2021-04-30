@@ -87,10 +87,8 @@ export const useEmp = () => {
   );
   */
 
-  // TODO finish implementation. Needs its own page.
   const settle = useCallback(
-    async (empAddress: string, tokens: number) => {
-      const tokenAmount = new Unsigned(tokens);
+    async (empAddress: string) => {
       const empContract = Emp__factory.connect(empAddress, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.settleExpired();
@@ -269,6 +267,7 @@ export const useEmp = () => {
     mint,
     deposit,
     redeem,
+    settle,
     withdraw,
     initWithdrawalRequest,
     withdrawPassedRequest,

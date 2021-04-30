@@ -166,7 +166,14 @@ export const useSynthActions = () => {
     }
   };
 
-  const onSettle = async () => {};
+  const onSettle = async () => {
+    try {
+      const txReceipt = await emp.settle(empAddress);
+      console.log(txReceipt.transactionHash);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return {
     collateralApproval,
@@ -180,6 +187,7 @@ export const useSynthActions = () => {
     onRequestWithdraw,
     onWithdrawPassedRequest,
     onCancelWithdraw,
+    onSettle,
     onWrapEth,
   };
 };
