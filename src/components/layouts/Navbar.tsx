@@ -42,8 +42,8 @@ const Navbar = () => {
         <NavbarButton text="Support" icon="LifeBuoy" to="#" external />
         <div className="expand"></div>
         <div className="nav-divider margin-y-5"></div>
-        <NavbarButton text="YAM" icon="ExternalLink" to="#" external />
-        <NavbarButton text="UMA" icon="ExternalLink" to="#" external />
+        <NavbarButton text="YAM" icon="ExternalLink" to="https://yam.finance/" external />
+        <NavbarButton text="UMA" icon="ExternalLink" to="https://umaproject.org/" external />
         <div className="margin-left-8 padding-3 tablet-margin-left-0">
           <div className="w-layout-grid flex-row">
             <a href="https://twitter.com/YamFinance" className="margin-right-0 w-inline-block">

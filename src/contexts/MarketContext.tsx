@@ -70,15 +70,16 @@ export const MarketProvider: React.FC = ({ children }) => {
 
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, collateral.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, collateral.decimals));
-            const apr = String((Math.random() * 100).toFixed(2)); // TODO get actual APR
+            const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
 
             data[name] = {
-              price: priceUsd.toFixed(2),
-              liquidity: liquidity,
-              totalSupply: utils.formatUnits(totalSupply, collateral.decimals),
-              tvl: tvlUsd.toString(),
-              marketCap: marketCap.toString(),
-              volume24h: '0', // TODO need to get from subgraph
+              price: roundDecimals(Number(pricePerCollateral), 4),
+              priceUsd: roundDecimals(priceUsd, 2),
+              liquidity: Math.trunc(liquidity),
+              totalSupply: roundDecimals(Number(utils.formatUnits(totalSupply, collateral.decimals)), 2),
+              tvl: tvlUsd,
+              marketCap: Math.trunc(marketCap),
+              volume24h: 0, // TODO need to get from subgraph
               globalUtilization: roundDecimals(rawGlobalUtilization * pricePerCollateral, 4),
               // TODO temporary hardcode for testing
               //globalUtilization: roundDecimals(3 * pricePerCollateral, 4),
@@ -89,18 +90,21 @@ export const MarketProvider: React.FC = ({ children }) => {
               daysTillExpiry: daysTillExpiry,
             };
           } catch (err0) {
-            console.error('Error retrieving market data this synth');
+            console.error(err0);
+            console.error('Could not retrieve market data this synth');
+
             data[name] = {
-              price: '0',
-              liquidity: '0',
-              totalSupply: '0',
-              tvl: '0',
-              marketCap: '0',
-              volume24h: '0', // TODO need to get from subgraph
+              price: 0,
+              priceUsd: 0,
+              liquidity: 0,
+              totalSupply: 0,
+              tvl: 0,
+              marketCap: 0,
+              volume24h: 0, // TODO need to get from subgraph
               globalUtilization: 0.1,
               minTokens: 1,
               liquidationPoint: 0.01,
-              apr: '0',
+              apr: 0,
               daysTillExpiry: 69,
             };
           }
@@ -117,7 +121,6 @@ export const MarketProvider: React.FC = ({ children }) => {
     if (chainId !== 0) {
       const metadata = getSynthMetadata(chainId);
       const collateral = getCollateralData(chainId);
-      console.log(collateral);
       initializeMarketData(metadata, collateral);
       setCollateralData(collateral);
       setSynthMetadata(metadata);

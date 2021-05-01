@@ -32,20 +32,16 @@ export interface ISynthType {
 }
 
 export interface ISynthMarketData {
-  price: string;
-  tvl: string;
-  apr: string;
-  volume24h: string;
-  marketCap: string;
-  totalSupply: string;
-  liquidity: string;
+  price: number;
+  priceUsd: number;
+  tvl: number;
+  apr: number;
+  volume24h: number;
+  marketCap: number;
+  totalSupply: number;
+  liquidity: number;
   minTokens: number;
   daysTillExpiry: number;
   globalUtilization: number; // Inverse of GCR taken from EMP
   liquidationPoint: number;
-}
-
-// TODO use Record<T1, T2> instead
-export interface IMap<T> {
-  [key: string]: T;
 }

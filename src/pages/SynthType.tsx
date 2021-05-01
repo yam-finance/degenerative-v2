@@ -13,10 +13,10 @@ interface SynthParams {
 interface ISynthTypeItem {
   name: string;
   maturity: number;
-  apy: string;
-  balance: string;
-  liquidity: string;
-  price: string;
+  apy: number;
+  balance: number;
+  liquidity: number;
+  price: number;
 }
 
 type SynthTableFilter = 'Live' | 'Expired' | 'All';
@@ -40,6 +40,7 @@ export const SynthType: React.FC = () => {
     const initSynthTypes = () => {
       let selectedSynth: string | undefined;
       const synths: typeof synthGroup = {};
+
       Object.entries(synthMetadata)
         .filter((synth) => synth[1].type === type)
         .filter(([synthName, synthInfo]) => {
@@ -59,7 +60,7 @@ export const SynthType: React.FC = () => {
             maturity: maturity,
             apy: synthMarketData[synthName].apr, //TODO
             // TODO should be showing minted positions
-            balance: String(synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? '0'),
+            balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? 0,
             liquidity: synthMarketData[synthName].liquidity, // TODO
             price: synthMarketData[synthName].price, // TODO
           };
@@ -80,7 +81,6 @@ export const SynthType: React.FC = () => {
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
-    console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
       datasets: Object.entries(historicPriceData.synthPrices)
@@ -98,8 +98,6 @@ export const SynthType: React.FC = () => {
           tension: 0.1,
         })),
     };
-
-    console.log(data);
 
     const options = {
       tooltips: {
@@ -238,11 +236,13 @@ export const SynthType: React.FC = () => {
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <TableFilter />
         <Table headers={['Maturity', 'APY', 'Your Balance', 'Liquidity', 'Price']}>
-          {Object.keys(synthGroup).length > 0
-            ? Object.entries(synthGroup).map(([name, synth], index) => {
-                return <SynthGroupRow {...synth} key={index} />;
-              })
-            : 'There are no synths in this type'}
+          {Object.keys(synthGroup).length > 0 ? (
+            Object.entries(synthGroup).map(([name, synth], index) => {
+              return <SynthGroupRow {...synth} key={index} />;
+            })
+          ) : (
+            <div className="table-row margin-y-2 w-inline-block">There are no synths in this type</div>
+          )}
         </Table>
       </MainDisplay>
       <SideDisplay>{/* TODO add synth copy */}</SideDisplay>

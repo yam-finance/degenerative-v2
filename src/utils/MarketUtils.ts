@@ -4,7 +4,7 @@ import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, utils, constants } from 'ethers';
 import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString, getCollateralData } from '@/utils';
-import { IMap, ISynthInfo } from '@/types';
+import { ISynthInfo } from '@/types';
 
 sessionStorage.clear();
 
@@ -132,8 +132,6 @@ export const getDailyPriceHistory = async (type: string, synthMetadata: Record<s
   // TODO this should be done on API
   const referenceData = await (async () => {
     const refPrices = await getReferencePriceHistory(type, chainId);
-    console.log('REF PRICES');
-    console.log(refPrices);
 
     if (min && max) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
@@ -146,7 +144,7 @@ export const getDailyPriceHistory = async (type: string, synthMetadata: Record<s
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   // Map price data to date for each synth for easy access
-  const priceData: IMap<IMap<number>> = {};
+  const priceData: Record<string, Record<string, number>> = {};
   dailyPriceResponse.tokenDayDatas.forEach((dayData) => {
     // id is concatenated with a timestamp at end. Not necessary for us since we have the date
     const synthName = relevantSynths.get(dayData.id.split('-')[0]) ?? '';
@@ -157,7 +155,7 @@ export const getDailyPriceHistory = async (type: string, synthMetadata: Record<s
   });
 
   // Create object of arrays for reference prices and all synth prices
-  const res: IMap<number[]> = { Reference: referenceData };
+  const res: Record<string, number[]> = { Reference: referenceData };
   dateArray.forEach((date) => {
     Object.keys(priceData).forEach((synthName) => {
       if (!res[synthName]) res[synthName] = [];

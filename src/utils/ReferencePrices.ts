@@ -10,7 +10,6 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   const fetchUgas = async (collateral: string, chainId: number) => {
     const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     const res = await axios.get('https://data.yam.finance/median-history');
-    console.log(res.data);
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
@@ -27,6 +26,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   const fetchUstonks = async (collateral: string, chainId: number) => {
     const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     const res = await axios.get('https://data.yam.finance/ustonks/index-history');
+    console.log(res.data);
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(new Date(timestamp));

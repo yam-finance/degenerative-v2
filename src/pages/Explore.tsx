@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SearchForm } from '@/components';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
-import { IMap } from '@/types';
 import { MarketContext } from '@/contexts';
 import { SynthTypes, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
@@ -24,11 +23,11 @@ export const Explore = () => {
 
   const [searchTerm, setSearchTerm] = useState(query.get('search') ?? '');
   const [sidebarData, setSidebarData] = useState<string>('');
-  const [synthTypeData, setSynthTypeData] = useState<IMap<ISynthTypeData>>({});
+  const [synthTypeData, setSynthTypeData] = useState<Record<string, ISynthTypeData>>({});
 
   useEffect(() => {
     const AggregateSynthTypeData = () => {
-      const aggregateData: IMap<ISynthTypeData> = {};
+      const aggregateData: Record<string, ISynthTypeData> = {};
 
       Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))

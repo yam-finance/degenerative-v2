@@ -31,6 +31,7 @@ const initialMinterState = {
   utilization: 0,
   globalUtilization: 0,
   liquidationPoint: 0,
+  tokenPrice: 0,
   minTokens: 0,
   maxCollateral: 0, // TODO replace with synthInWallet item
 
@@ -57,6 +58,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         utilization: initialized.utilization,
         globalUtilization: initialized.globalUtilization,
         liquidationPoint: initialized.liquidationPoint,
+        tokenPrice: initialized.tokenPrice,
         minTokens: initialized.minTokens,
         maxCollateral: initialized.maxCollateral,
       };
@@ -72,7 +74,8 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     }
     case 'UPDATE_PENDING_UTILIZATION': {
       const { pendingCollateral, pendingTokens } = action.payload;
-      const util = pendingTokens / pendingCollateral;
+      //const util = (pendingTokens / pendingCollateral) * state.tokenPrice;
+      const util = (pendingTokens * state.tokenPrice) / pendingCollateral;
 
       return {
         ...state,
@@ -80,7 +83,6 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       };
     }
     case 'CHANGE_ACTION': {
-      console.log(action.payload);
       return {
         ...state,
         action: action.payload,
@@ -154,9 +156,12 @@ export const Minter = () => {
       } catch (err) {
         console.log(err);
       }
-      const empInfo = synthMarketData[currentSynth];
-      // TODO change mintedPositions to a record
+      const marketData = synthMarketData[currentSynth];
+
+      console.log(mintedPositions);
+      console.log(currentSynth);
       const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
+      console.log(sponsorPosition);
       const synthInWallet = synthsInWallet.find((balance) => balance.name == currentSynth);
 
       const utilization = Number(sponsorPosition?.utilization) ?? 0;
@@ -186,9 +191,10 @@ export const Minter = () => {
           withdrawalRequestAmount: withdrawalRequestAmount,
           withdrawalRequestMinutesLeft: withdrawalRequestMinutesLeft,
           utilization: utilization,
-          globalUtilization: empInfo.globalUtilization,
-          liquidationPoint: empInfo.liquidationPoint,
-          minTokens: empInfo.minTokens,
+          globalUtilization: marketData.globalUtilization,
+          liquidationPoint: marketData.liquidationPoint,
+          tokenPrice: marketData.price,
+          minTokens: marketData.minTokens,
           maxCollateral: Number(utils.formatUnits(collateralBalance, collateralDecimals)),
         },
       });
@@ -266,7 +272,7 @@ export const Minter = () => {
     e.preventDefault();
 
     const newCollateral = state.maxCollateral;
-    const newTokens = state.maxCollateral * state.globalUtilization;
+    const newTokens = (state.maxCollateral * state.globalUtilization) / state.tokenPrice;
     setFormInputs(newCollateral, newTokens);
   };
 
@@ -414,7 +420,7 @@ export const Minter = () => {
       const newCollateral = pendingCollateral - state.sponsorCollateral;
 
       const disableMinting =
-        newTokens <= 0 || newCollateral <= 0 || state.pendingUtilization > state.globalUtilization || state.pendingUtilization > state.liquidationPoint;
+        newTokens <= 0 || newCollateral < 0 || state.pendingUtilization > state.globalUtilization || state.pendingUtilization > state.liquidationPoint;
 
       return (
         <button onClick={() => actions.onMint(newCollateral, newTokens)} className={clsx(baseStyle, disableMinting && 'disabled')} disabled={disableMinting}>
@@ -497,7 +503,6 @@ export const Minter = () => {
       }
     };
 
-    console.log(action);
     switch (action) {
       case 'MINT':
         return !actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />;
@@ -757,7 +762,6 @@ export const Minter = () => {
                   <br />
                 </p>
               ) : (
-                // TODO add TX detail component
                 <TransactionDetails />
               )}
             </div>

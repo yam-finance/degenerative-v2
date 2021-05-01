@@ -66,7 +66,7 @@ export const Portfolio = () => {
     const { price: tokenPrice, daysTillExpiry } = synthMarketData[name];
     const link = `/synths/${type}/${cycle}${year}`;
 
-    const isExpired = daysTillExpiry <= 0;
+    const isExpired = daysTillExpiry < 0;
 
     return (
       <TableRow to={link}>
