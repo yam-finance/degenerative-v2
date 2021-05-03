@@ -66,7 +66,7 @@ export const Explore = () => {
               totalTvl: 0,
               totalVolume24h: 0,
               numSynths: 1,
-              image: `src/assets/images/Box-01.png`,
+              image: 'src/assets/images/Box-01.png',
             };
           }
         });
