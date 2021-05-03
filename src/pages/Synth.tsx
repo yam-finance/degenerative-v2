@@ -8,20 +8,20 @@ import { ISynthInfo } from '@/types';
 import { isEmpty } from '@/utils';
 
 interface SynthParams {
-  type: string;
+  group: string;
   cycleYear: string;
   action: string;
 }
 
 export const Synth: React.FC = () => {
-  const { type, cycleYear, action } = useParams<SynthParams>();
+  const { group, cycleYear, action } = useParams<SynthParams>();
   const { currentSynth, setSynth } = useContext(UserContext);
   const { synthMetadata } = useContext(MarketContext);
   const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
 
   useEffect(() => {
     // TODO validate and redirect
-    setSynth(`${type}-${cycleYear}`);
+    setSynth(`${group}-${cycleYear}`);
   }, []);
 
   useEffect(() => {
@@ -32,13 +32,13 @@ export const Synth: React.FC = () => {
     return (
       <div className="padding-x-8 flex-row">
         <div className="tabs margin-right-2">
-          <NavLink to={`/synths/${type}/${cycle}${year}/manage`} className="tab large" activeClassName="active">
+          <NavLink to={`/synths/${group}/${cycle}${year}/manage`} className="tab large" activeClassName="active">
             Manage
           </NavLink>
-          <NavLink to={`/synths/${type}/${cycle}${year}/trade`} className="tab large" activeClassName="active">
+          <NavLink to={`/synths/${group}/${cycle}${year}/trade`} className="tab large" activeClassName="active">
             Trade
           </NavLink>
-          <NavLink to={`/synths/${type}/${cycle}${year}/lp`} className="tab large" activeClassName="active">
+          <NavLink to={`/synths/${group}/${cycle}${year}/lp`} className="tab large" activeClassName="active">
             LP
           </NavLink>
         </div>
@@ -63,7 +63,7 @@ export const Synth: React.FC = () => {
   return (
     <>
       <MainDisplay>
-        <MainHeading>{`${type} ${cycle}${year}`}</MainHeading>
+        <MainHeading>{`${group} ${cycle}${year}`}</MainHeading>
         <ActionSelector />
         <div className="border-bottom-1px margin-x-8 margin-y-4"></div>
         <Action />
