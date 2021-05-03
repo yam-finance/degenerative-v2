@@ -66,7 +66,8 @@ const Navbar = () => {
       <Link to="/" className="margin-left-6 flex-row-middle padding-left-3 padding-right-3 w-inline-block">
         <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
         <h5 className="margin-0 margin-right-2 expand">Degenerative</h5>
-        <LanguageSwitcher />
+        {/* TODO Figure out where to put this
+        <LanguageSwitcher /> */}
         <div className="pill">v 2.0</div>
       </Link>
       <div className="expand tablet-hide">

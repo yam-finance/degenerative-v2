@@ -15,7 +15,7 @@ export const Portfolio = () => {
   }, [synthsInWallet]);
 
   const MintedRow: React.FC<IMintedPosition> = (props) => {
-    const { imgLocation, collateral, type, cycle, year } = synthMetadata[props.name];
+    const { imgLocation, collateral, group, cycle, year } = synthMetadata[props.name];
     const { price: tokenPrice, globalUtilization, liquidationPoint } = synthMarketData[props.name];
     const { name, tokenAmount, collateralAmount, utilization } = props;
 
@@ -23,7 +23,7 @@ export const Portfolio = () => {
     (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
 
     return (
-      <TableRow to={`/synths/${type}/${cycle}${year}`}>
+      <TableRow to={`/synths/${group}/${cycle}${year}`}>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={imgLocation} alt={name} />
@@ -62,9 +62,9 @@ export const Portfolio = () => {
 
   const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
     const { name, tokenAmount } = props;
-    const { imgLocation, type, cycle, year } = synthMetadata[name];
+    const { imgLocation, group, cycle, year } = synthMetadata[name];
     const { price: tokenPrice, daysTillExpiry } = synthMarketData[name];
-    const link = `/synths/${type}/${cycle}${year}`;
+    const link = `/synths/${group}/${cycle}${year}`;
 
     const isExpired = daysTillExpiry < 0;
 

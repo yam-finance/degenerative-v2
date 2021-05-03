@@ -4,13 +4,13 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
-import { SynthTypes, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
+import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 
 interface SynthParams {
-  type: string;
+  group: string;
 }
 
-interface ISynthTypeItem {
+interface ISynthGroupItem {
   name: string;
   maturity: number;
   apy: number;
@@ -21,12 +21,12 @@ interface ISynthTypeItem {
 
 type SynthTableFilter = 'Live' | 'Expired' | 'All';
 
-export const SynthType: React.FC = () => {
+export const SynthGroup: React.FC = () => {
   const { synthsInWallet } = useContext(UserContext);
   const { chainId } = useContext(EthereumContext);
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
-  const { type } = useParams<SynthParams>();
-  const [synthGroup, setSynthGroup] = useState<Record<string, ISynthTypeItem>>({});
+  const { group } = useParams<SynthParams>();
+  const [synthGroup, setSynthGroup] = useState<Record<string, ISynthGroupItem>>({});
   const [historicPriceData, setHistoricPriceData] = useState<{
     labels: string[];
     synthPrices: Record<string, number[]>;
@@ -37,12 +37,12 @@ export const SynthType: React.FC = () => {
   // TODO redirect if type does not exist
 
   useEffect(() => {
-    const initSynthTypes = () => {
+    const initSynthGroups = () => {
       let selectedSynth: string | undefined;
       const synths: typeof synthGroup = {};
 
       Object.entries(synthMetadata)
-        .filter((synth) => synth[1].type === type)
+        .filter((synth) => synth[1].group === group)
         .filter(([synthName, synthInfo]) => {
           if (filterSynths === 'All') {
             return true;
@@ -69,11 +69,11 @@ export const SynthType: React.FC = () => {
       setSynthGroup(synths);
     };
 
-    if (!isEmpty(synthMarketData)) initSynthTypes();
+    if (!isEmpty(synthMarketData)) initSynthGroups();
   }, [synthMarketData, filterSynths]);
 
   useEffect(() => {
-    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(type, synthMetadata, chainId));
+    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
 
     if (chainId) getChartData();
   }, [synthMetadata]);
@@ -159,13 +159,13 @@ export const SynthType: React.FC = () => {
     return <Line data={data} options={options} legend={legend} />;
   };
 
-  const SynthGroupRow: React.FC<ISynthTypeItem> = (props) => {
+  const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
     const { name, maturity, apy, balance, liquidity, price } = props;
-    const { cycle, year, type } = synthMetadata[name];
+    const { cycle, year, group } = synthMetadata[name];
 
     // TODO change maturity to show if live or expired
     return (
-      <Link to={`/synths/${type}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
+      <Link to={`/synths/${group}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
         <div className="expand">
           <div className="margin-right-1 text-color-4">{name}</div>
           <div className="text-xs">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
@@ -227,8 +227,8 @@ export const SynthType: React.FC = () => {
   return (
     <>
       <MainDisplay>
-        <MainHeading className="margin-bottom-1">{type}</MainHeading>
-        <div className="padding-x-8 flex-align-baseline">{SynthTypes[type].description}</div>
+        <MainHeading className="margin-bottom-1">{group}</MainHeading>
+        <div className="padding-x-8 flex-align-baseline">{SynthGroups[group].description}</div>
         <div className="padding-x-8 padding-y-1 flex-row portrait-flex-column portrait-flex-align-start">
           <ChartSelector />
         </div>
@@ -241,7 +241,7 @@ export const SynthType: React.FC = () => {
               return <SynthGroupRow {...synth} key={index} />;
             })
           ) : (
-            <div className="table-row margin-y-2 w-inline-block">There are no synths in this type</div>
+            <div className="table-row margin-y-2 w-inline-block">There are no synths in this group</div>
           )}
         </Table>
       </MainDisplay>

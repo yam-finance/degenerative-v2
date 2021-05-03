@@ -17,7 +17,7 @@ export interface ICollateral extends IToken {
 
 export interface ISynthInfo {
   imgLocation: string;
-  type: string;
+  group: string;
   cycle: string;
   year: string;
   collateral: string; // TODO remove, get collateral through type
@@ -26,9 +26,10 @@ export interface ISynthInfo {
   pool: IContract;
 }
 
-export interface ISynthType {
+export interface ISynthGroup {
   description: string;
   collateral: string;
+  image: string;
 }
 
 export interface ISynthMarketData {

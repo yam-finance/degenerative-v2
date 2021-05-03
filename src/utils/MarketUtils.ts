@@ -83,13 +83,13 @@ interface PriceHistoryResponse {
 }
 
 /** Get labels, reference price data and all market price data for this synth type. */
-export const getDailyPriceHistory = async (type: string, synthMetadata: Record<string, ISynthInfo>, chainId: number) => {
+export const getDailyPriceHistory = async (group: string, synthMetadata: Record<string, ISynthInfo>, chainId: number) => {
   // TODO defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 
   const relevantSynths = new Map(
     Object.entries(synthMetadata)
-      .filter(([name, synth]) => synth.type === type)
+      .filter(([name, synth]) => synth.group === group)
       .map(([name, synth]) => [synth.token.address, name])
   );
 
@@ -131,7 +131,7 @@ export const getDailyPriceHistory = async (type: string, synthMetadata: Record<s
   // Get reference index prices (USD) for each date
   // TODO this should be done on API
   const referenceData = await (async () => {
-    const refPrices = await getReferencePriceHistory(type, chainId);
+    const refPrices = await getReferencePriceHistory(group, chainId);
 
     if (min && max) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));

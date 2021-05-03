@@ -48,6 +48,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     case 'INIT_SPONSOR_POSITION': {
       const initialized = action.payload;
       console.log(initialized);
+
       return {
         ...state,
         loading: false,
@@ -69,13 +70,13 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         ...state,
         sponsorCollateral: pendingCollateral,
         sponsorTokens: pendingTokens,
-        utilization: pendingTokens / pendingCollateral,
+        utilization: calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice),
       };
     }
     case 'UPDATE_PENDING_UTILIZATION': {
       const { pendingCollateral, pendingTokens } = action.payload;
-      //const util = (pendingTokens / pendingCollateral) * state.tokenPrice;
-      const util = (pendingTokens * state.tokenPrice) / pendingCollateral;
+      const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
+      //const util = (pendingCollateral / pendingTokens) * state.tokenPrice; // THIS IS CORRECT
 
       return {
         ...state,
@@ -100,6 +101,8 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       throw new Error('Invalid state change');
   }
 };
+
+const calculateUtilization = (collateral: number, tokens: number, price: number) => (tokens / collateral) * price;
 
 interface MinterFormFields {
   pendingCollateral: number;
@@ -272,7 +275,7 @@ export const Minter = () => {
     e.preventDefault();
 
     const newCollateral = state.maxCollateral;
-    const newTokens = (state.maxCollateral * state.globalUtilization) / state.tokenPrice;
+    const newTokens = (state.maxCollateral * state.tokenPrice) / state.globalUtilization;
     setFormInputs(newCollateral, newTokens);
   };
 

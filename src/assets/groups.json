@@ -1,18 +1,22 @@
 {
   "uGas": {
     "description": "Speculate or hedge on Ethereum gas prices",
-    "collateral": "WETH"
+    "collateral": "WETH",
+    "image": "ugas"
   },
   "uStonks": {
     "description": "Track the top ten stocks chosen by the Wall Street Bets community",
-    "collateral": "USDC"
+    "collateral": "USDC",
+    "image": "ustonks"
   },
   "uVolBtc": {
     "description": "Speculate on the volatility of BTC",
-    "collateral": "USDC"
+    "collateral": "USDC",
+    "image": "btc_corn"
   },
   "yamDollar": {
     "description": "Mint a stablecoin synth using your YAM tokens",
-    "collateral": "YAM"
+    "collateral": "YAM",
+    "image": "yield_dollar"
   }
 }

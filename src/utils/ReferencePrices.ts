@@ -1,6 +1,6 @@
 // Get reference price history for each synth type
 import axios from 'axios';
-import { SynthTypes, getUsdPriceHistory, getDateString } from '@/utils';
+import { SynthGroups, getUsdPriceHistory, getDateString } from '@/utils';
 import { fromUnixTime } from 'date-fns';
 
 /** Get reference price history and transform for use in charts. Returns array
@@ -41,7 +41,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
 
   try {
     // Get collateral price in USD
-    const collateral = SynthTypes[type].collateral;
+    const collateral = SynthGroups[type].collateral;
 
     switch (type) {
       case 'uGas':
