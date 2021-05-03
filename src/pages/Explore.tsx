@@ -15,6 +15,7 @@ interface ISynthGroupData {
   totalTvl: number;
   totalVolume24h: number;
   numSynths: number;
+  image: string;
 }
 
 export const Explore = () => {
@@ -32,7 +33,6 @@ export const Explore = () => {
       Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
-          console.log(synthName);
           const { group } = synthInfo;
           try {
             const marketData = synthMarketData[synthName];
@@ -44,6 +44,7 @@ export const Explore = () => {
               totalTvl: 0,
               totalVolume24h: 0,
               numSynths: 0,
+              image: '',
             };
 
             aggregateData[group] = {
@@ -54,6 +55,7 @@ export const Explore = () => {
               totalTvl: currentData.totalTvl + Number(marketData.tvl),
               totalVolume24h: currentData.totalVolume24h + Number(marketData.volume24h),
               numSynths: currentData.numSynths + 1,
+              image: `src/assets/images/${SynthGroups[group].image}.png`,
             };
           } catch (err) {
             aggregateData[group] = {
@@ -64,6 +66,7 @@ export const Explore = () => {
               totalTvl: 0,
               totalVolume24h: 0,
               numSynths: 1,
+              image: `src/assets/images/Box-01.png`,
             };
           }
         });
@@ -71,21 +74,19 @@ export const Explore = () => {
       setSynthGroupData(aggregateData);
     };
 
-    console.log(synthMetadata);
-    console.log(synthMarketData);
     if (!isEmpty(synthMetadata) && !isEmpty(synthMarketData)) AggregateSynthGroupData();
   }, [synthMarketData, searchTerm]);
 
   const SynthBlock: React.FC<{ group: string }> = ({ group }) => {
-    const { description, image } = SynthGroups[group];
-    const { aprMin, aprMax } = synthGroupData[group];
+    const { description } = SynthGroups[group];
+    const { aprMin, aprMax, image } = synthGroupData[group];
 
     const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block';
 
     if (isEmpty(synthMarketData)) return <div className={style}>Loading...</div>;
     return (
       <Link to={`/synths/${group}`} className={style} onMouseEnter={() => setSidebarData(group)}>
-        <img src={box} loading="lazy" alt="" className="width-16" />
+        <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
         <div className="button button-small">
@@ -98,15 +99,15 @@ export const Explore = () => {
   };
 
   const SynthTableRow: React.FC<{ group: string }> = ({ group }) => {
-    const { aprMin, aprMax, totalLiquidity, totalMarketCap } = synthGroupData[group];
-    const description = SynthGroups[group].description;
+    const { aprMin, aprMax, totalLiquidity, totalMarketCap, image } = synthGroupData[group];
+    const { description } = SynthGroups[group];
 
     if (isEmpty(synthMarketData)) return <TableRow>Loading...</TableRow>;
     return (
       <TableRow to={`/synths/${group}`} onMouseEnter={() => setSidebarData(group)}>
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={box} loading="lazy" alt="" className="width-6" />
+            <img src={image} loading="lazy" alt="" className="width-6" />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{group}</div>

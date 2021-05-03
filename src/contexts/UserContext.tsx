@@ -36,9 +36,6 @@ export const UserProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (currentSynth && !isEmpty(synthMetadata)) {
-      console.log('WTFFF');
-      console.log(currentSynth);
-      console.log(synthMetadata);
       setCurrentCollateral(synthMetadata[currentSynth].collateral);
     }
   }, [currentSynth, synthMetadata]);
@@ -52,8 +49,6 @@ export const UserProvider: React.FC = ({ children }) => {
   }, [signer, synthMetadata, synthMarketData]);
 
   const setSynth = (synthName: string) => {
-    console.log('SET SYNTH CALLED');
-    console.log(synthName);
     setCurrentSynth(synthName);
   };
 
