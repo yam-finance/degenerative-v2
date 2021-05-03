@@ -66,6 +66,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     }
     case 'UPDATE_SPONSOR_POSITION': {
       const { pendingCollateral, pendingTokens } = action.payload;
+
       return {
         ...state,
         sponsorCollateral: pendingCollateral,
@@ -75,13 +76,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     }
     case 'UPDATE_PENDING_UTILIZATION': {
       const { pendingCollateral, pendingTokens } = action.payload;
-      console.log('UPDATE');
-      console.log(pendingCollateral);
-      console.log(pendingTokens);
-      console.log(state.tokenPrice);
       const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
-      console.log(util);
-      //const util = (pendingCollateral / pendingTokens) * state.tokenPrice; // THIS IS CORRECT
 
       return {
         ...state,
@@ -164,12 +159,10 @@ export const Minter = () => {
       } catch (err) {
         console.log(err);
       }
+
       const marketData = synthMarketData[currentSynth];
 
-      console.log(mintedPositions);
-      console.log(currentSynth);
       const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
-      console.log(sponsorPosition);
       const synthInWallet = synthsInWallet.find((balance) => balance.name == currentSynth);
 
       const utilization = Number(sponsorPosition?.utilization) ?? 0;
@@ -356,7 +349,7 @@ export const Minter = () => {
     };
 
     const globalUtilizationHeight = {
-      bottom: `${globalUtilization * 100}%`,
+      bottom: `${globalUtilization * state.tokenPrice * 100}%`,
     };
 
     const liquidationHeight = {
@@ -694,7 +687,7 @@ export const Minter = () => {
                   <h6 className="text-align-center margin-bottom-0">Debt</h6>
                   {state.pendingUtilization >= 0 && (
                     <>
-                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{state.pendingUtilization * 100}%</h4>
+                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{roundDecimals(state.pendingUtilization * 100, 2)}%</h4>
                       <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
                     </>
                   )}
