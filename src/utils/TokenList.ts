@@ -2,6 +2,7 @@ import Collateral from '@/assets/collateral.json';
 import Groups from '@/assets/groups.json';
 import Assets from '@/assets/assets.json';
 import { ICollateral, ISynthInfo, ISynthGroup } from '@/types';
+import { recoverAddress } from '@ethersproject/transactions';
 
 const ChainMap: Record<number, string> = {
   1: 'mainnet',
@@ -28,7 +29,7 @@ export const getSynthMetadata = (chainId: number) => {
       // Add in synth type information to object
       synthInfo[name] = {
         ...synth,
-        imgLocation: `src/assets/images/${image}.png?raw`, // TODO add image locations to json
+        imgLocation: `src/assets/images/${image}.png`, // TODO add image locations to json
         group: group,
       };
     });

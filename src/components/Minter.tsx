@@ -75,7 +75,12 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     }
     case 'UPDATE_PENDING_UTILIZATION': {
       const { pendingCollateral, pendingTokens } = action.payload;
+      console.log('UPDATE');
+      console.log(pendingCollateral);
+      console.log(pendingTokens);
+      console.log(state.tokenPrice);
       const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
+      console.log(util);
       //const util = (pendingCollateral / pendingTokens) * state.tokenPrice; // THIS IS CORRECT
 
       return {
@@ -102,7 +107,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
   }
 };
 
-const calculateUtilization = (collateral: number, tokens: number, price: number) => (tokens / collateral) * price;
+const calculateUtilization = (collateral: number, tokens: number, price: number) => (tokens * price) / collateral;
 
 interface MinterFormFields {
   pendingCollateral: number;
@@ -275,7 +280,7 @@ export const Minter = () => {
     e.preventDefault();
 
     const newCollateral = state.maxCollateral;
-    const newTokens = (state.maxCollateral * state.tokenPrice) / state.globalUtilization;
+    const newTokens = state.maxCollateral * state.globalUtilization;
     setFormInputs(newCollateral, newTokens);
   };
 
@@ -306,6 +311,7 @@ export const Minter = () => {
       </div>
     );
   };
+
   interface GaugeLabelProps {
     label: string;
     tooltip: string;
@@ -639,7 +645,7 @@ export const Minter = () => {
             <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20">Tweak your position settings</p>
             <div className="flex-row">
               <div className="expand relative padding-right-2">
-                <GaugeLabel label="Global Utilization" tooltip="TODO" className="gcr-legend" height={state.globalUtilization} />
+                <GaugeLabel label="Global Utilization" tooltip="TODO" className="gcr-legend" height={state.globalUtilization * state.tokenPrice} />
                 <GaugeLabel label="Liquidation" tooltip="TODO" className="liquidation-legend" height={state.liquidationPoint} emphasized />
                 <div className="background-color-5 padding-2 radius-large z-10 width-32 collat">
                   <h6 className="text-align-center margin-bottom-0">Collateral</h6>

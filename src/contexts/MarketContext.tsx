@@ -80,9 +80,9 @@ export const MarketProvider: React.FC = ({ children }) => {
               tvl: tvlUsd,
               marketCap: Math.trunc(marketCap),
               volume24h: 0, // TODO need to get from subgraph
-              globalUtilization: roundDecimals(rawGlobalUtilization * pricePerCollateral, 4),
+              //globalUtilization: roundDecimals(rawGlobalUtilization * pricePerCollateral, 4),
               // TODO temporary hardcode for testing
-              //globalUtilization: roundDecimals(3 * pricePerCollateral, 4),
+              globalUtilization: roundDecimals(rawGlobalUtilization, 4),
               // TODO
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { MarketContext, UserContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMintedPosition, ISynthInWallet } from '@/types';
-import { getUsdPrice, roundDecimals } from '@/utils';
+import { getUsdPrice, roundDecimals, SynthGroups } from '@/utils';
 
 export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
@@ -15,9 +15,12 @@ export const Portfolio = () => {
   }, [synthsInWallet]);
 
   const MintedRow: React.FC<IMintedPosition> = (props) => {
-    const { imgLocation, collateral, group, cycle, year } = synthMetadata[props.name];
-    const { price: tokenPrice, globalUtilization, liquidationPoint } = synthMarketData[props.name];
+    const { collateral, group, cycle, year } = synthMetadata[props.name];
+    const { price, globalUtilization, liquidationPoint } = synthMarketData[props.name];
     const { name, tokenAmount, collateralAmount, utilization } = props;
+
+    // TODO get back to this!!
+    const imgLocation = `src/assets/images/${SynthGroups[group].image}.png`;
 
     const [collateralPrice, setCollateralPrice] = useState(0);
     (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
@@ -34,7 +37,7 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${roundDecimals(Number(tokenPrice) * tokenAmount, 2)}</div>
+          <div className="text-color-4">${roundDecimals(Number(price) * tokenAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
@@ -63,7 +66,7 @@ export const Portfolio = () => {
   const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
     const { name, tokenAmount } = props;
     const { imgLocation, group, cycle, year } = synthMetadata[name];
-    const { price: tokenPrice, daysTillExpiry } = synthMarketData[name];
+    const { price, daysTillExpiry } = synthMarketData[name];
     const link = `/synths/${group}/${cycle}${year}`;
 
     const isExpired = daysTillExpiry < 0;
@@ -80,11 +83,11 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${roundDecimals(Number(tokenPrice) * tokenAmount, 2)}</div>
+          <div className="text-color-4">${roundDecimals(Number(price) * tokenAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${tokenPrice}</div>
+          <div className="text-color-4">${price}</div>
           <div className="height-8 width-32 w-embed w-script"></div>
         </div>
         <div className="expand">
