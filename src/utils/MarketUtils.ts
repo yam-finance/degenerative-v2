@@ -84,7 +84,7 @@ interface PriceHistoryResponse {
 
 /** Get labels, reference price data and all market price data for this synth type. */
 export const getDailyPriceHistory = async (group: string, synthMetadata: Record<string, ISynthInfo>, chainId: number) => {
-  // TODO defaults to 30 days
+  // Defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 
   const relevantSynths = new Map(
@@ -95,8 +95,7 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
 
   const addressList = Array.from(relevantSynths.keys());
 
-  console.log('WTFJKLAJFKLAS');
-  // TODO grab paired data, not USD
+  // TODO Consider grabbing paired data, not USD
   const dailyPriceResponse: {
     tokenDayDatas: PriceHistoryResponse[];
   } = await request(UNISWAP_ENDPOINT[1], UNISWAP_DAILY_PRICE_QUERY, {
@@ -129,7 +128,6 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
   })();
 
   // Get reference index prices (USD) for each date
-  // TODO this should be done on API
   const referenceData = await (async () => {
     const refPrices = await getReferencePriceHistory(group, chainId);
 
@@ -139,9 +137,6 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
       return refPrices.slice(minIndex, maxIndex).map((ref: any) => ref.price);
     }
   })();
-
-  // TODO timezone not converting to UTC correctly
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   // Map price data to date for each synth for easy access
   const priceData: Record<string, Record<string, number>> = {};

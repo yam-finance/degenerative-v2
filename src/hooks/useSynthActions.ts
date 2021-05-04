@@ -46,7 +46,6 @@ export const useSynthActions = () => {
     }
   };
 
-  // TODO combine with synth approval?
   const onApproveCollateral = async () => {
     try {
       const tx = await erc20.approveSpender(collateralAddress, empAddress);
@@ -106,6 +105,19 @@ export const useSynthActions = () => {
       }
     } else {
       console.error('Collateral amount or token amount is not greater than 0.');
+    }
+  };
+
+  const onRepay = async (tokenAmount: number) => {
+    if (tokenAmount > 0) {
+      try {
+        const txReceipt = await emp.repay(empAddress, tokenAmount);
+        console.log(txReceipt.transactionHash);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.error('Invalid collateral amount.');
     }
   };
 
@@ -180,6 +192,7 @@ export const useSynthActions = () => {
     synthApproval,
     onMint,
     onDeposit,
+    onRepay,
     onRedeem,
     onApproveCollateral,
     onApproveSynth,

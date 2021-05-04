@@ -5,7 +5,6 @@ import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/compon
 import { MarketContext } from '@/contexts';
 import { SynthGroups, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
-import box from '@/assets/images/Box-01.png';
 
 interface ISynthGroupData {
   aprMin: number;
@@ -107,7 +106,7 @@ export const Explore = () => {
       <TableRow to={`/synths/${group}`} onMouseEnter={() => setSidebarData(group)}>
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={image} loading="lazy" alt="" className="width-6" />
+            <img src={image} loading="lazy" className="margin-1" />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{group}</div>

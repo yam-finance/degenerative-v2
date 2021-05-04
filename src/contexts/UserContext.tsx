@@ -93,7 +93,6 @@ export const UserProvider: React.FC = ({ children }) => {
     }
   };
 
-  // TODO
   const updateSynthsInWallet = () => {
     const synthsOwned: ISynthInWallet[] = [];
 

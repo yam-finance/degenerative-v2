@@ -2,7 +2,6 @@ import Collateral from '@/assets/collateral.json';
 import Groups from '@/assets/groups.json';
 import Assets from '@/assets/assets.json';
 import { ICollateral, ISynthInfo, ISynthGroup } from '@/types';
-import { recoverAddress } from '@ethersproject/transactions';
 
 const ChainMap: Record<number, string> = {
   1: 'mainnet',

@@ -19,7 +19,7 @@ import clsx from 'clsx';
   - Redeem: Repays debt AND removes collateral to maintain same utilization.
   - Settle: Settles sponsor position AFTER expiry.
 */
-type MinterAction = 'MINT' | 'ADD_COLLATERAL' | 'REPAY_DEBT' | 'REDEEM' | 'WITHDRAW';
+type MinterAction = 'MINT' | 'ADD_COLLATERAL' | 'REPAY' | 'REDEEM' | 'WITHDRAW';
 
 const initialMinterState = {
   loading: true,
@@ -225,7 +225,7 @@ export const Minter = () => {
     const openTokenInput = (action: MinterAction) => {
       switch (action) {
         case 'MINT':
-        case 'REPAY_DEBT':
+        case 'REPAY':
         case 'REDEEM':
           return true;
         default:
@@ -447,7 +447,16 @@ export const Minter = () => {
       );
     };
 
-    // TODO Repay debt button
+    const RepayButton: React.FC = () => {
+      const repayTokens = sponsorTokens - pendingTokens;
+      const disableRepay = repayTokens <= 0 || repayTokens >= sponsorTokens;
+
+      return (
+        <button onClick={() => actions.onRepay(repayTokens)} className={clsx(baseStyle, disableRepay && 'disabled')} disabled={disableRepay}>
+          {`Repay ${repayTokens} ${currentSynth}`}
+        </button>
+      );
+    };
 
     const RedeemButton: React.FC = () => {
       const redeemableTokens = sponsorTokens - pendingTokens;
@@ -510,6 +519,8 @@ export const Minter = () => {
         return !actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />;
       case 'ADD_COLLATERAL':
         return !actions.collateralApproval ? <CollateralApproveButton /> : <AddCollateralButton />;
+      case 'REPAY':
+        return !actions.synthApproval ? <TokenApproveButton /> : <RepayButton />;
       case 'REDEEM':
         return !actions.synthApproval ? <TokenApproveButton /> : <RedeemButton />;
       case 'WITHDRAW':
@@ -538,6 +549,7 @@ export const Minter = () => {
     };
 
     const ActionDescription: React.FC<MinterAction> = (props) => {
+      console.log(props);
       switch (props) {
         case 'MINT': {
           return <p> Create a new position or create new synths from an existing position.</p>;
@@ -545,7 +557,7 @@ export const Minter = () => {
         case 'ADD_COLLATERAL': {
           return <div>Adds collateral to position, reducing utilization.</div>;
         }
-        case 'REPAY_DEBT': {
+        case 'REPAY': {
           return <div>Removes synths from position. Must have synths in wallet to do so.</div>;
         }
         case 'WITHDRAW': {
@@ -577,8 +589,8 @@ export const Minter = () => {
           <button
             style={noPosition ? disabledButton : {}}
             disabled={noPosition}
-            className={clsx(styles, currentAction === 'REPAY_DEBT' && 'selected')}
-            onClick={() => changeAction('REPAY_DEBT')}
+            className={clsx(styles, currentAction === 'REPAY' && 'selected')}
+            onClick={() => changeAction('REPAY')}
           >
             Repay Debt
           </button>

@@ -1,4 +1,3 @@
-// TODO icon + text with link prop
 import React from 'react';
 import { Link } from 'react-router-dom';
 

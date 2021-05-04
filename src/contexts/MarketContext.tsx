@@ -13,7 +13,7 @@ const initialState = {
 
 export const MarketContext = createContext(initialState);
 
-// TODO Rename to SynthContext, put useEmp hook in here
+// TODO Rename to SynthContext (?)
 export const MarketProvider: React.FC = ({ children }) => {
   const [synthMarketData, setSynthMarketData] = useState(initialState.synthMarketData);
   const [synthMetadata, setSynthMetadata] = useState(initialState.synthMetadata);
@@ -22,8 +22,6 @@ export const MarketProvider: React.FC = ({ children }) => {
 
   const { chainId, provider } = useContext(EthereumContext);
 
-  // TODO This entire context can be moved to utils with other synth information by connecting to
-  //      app's eth node rather than user's connection
   useEffect(() => {
     const initializeMarketData = async (synthMetadata: Record<string, ISynthInfo>, collateralData: Record<string, ICollateral>) => {
       const data: typeof synthMarketData = {};
@@ -80,10 +78,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               tvl: tvlUsd,
               marketCap: Math.trunc(marketCap),
               volume24h: 0, // TODO need to get from subgraph
-              //globalUtilization: roundDecimals(rawGlobalUtilization * pricePerCollateral, 4),
-              // TODO temporary hardcode for testing
               globalUtilization: roundDecimals(rawGlobalUtilization, 4),
-              // TODO
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
               apr: apr,

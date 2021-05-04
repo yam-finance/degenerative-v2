@@ -20,7 +20,7 @@ export const Synth: React.FC = () => {
   const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
 
   useEffect(() => {
-    // TODO validate and redirect
+    // TODO validate and redirect if synth doesn't exist
     setSynth(`${group}-${cycleYear}`);
   }, []);
 

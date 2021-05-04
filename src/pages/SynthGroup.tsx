@@ -163,7 +163,6 @@ export const SynthGroup: React.FC = () => {
     const { name, maturity, apy, balance, liquidity, price } = props;
     const { cycle, year, group } = synthMetadata[name];
 
-    // TODO change maturity to show if live or expired
     return (
       <Link to={`/synths/${group}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
         <div className="expand">

@@ -3,7 +3,6 @@ import { Icon } from '@/components/Icon';
 import useBreadcrumbs from 'use-react-router-breadcrumbs';
 import { Link } from 'react-router-dom';
 
-// TODO display breadcrumbs based on page
 export const Breadcrumbs = () => {
   const breadcrumbs = useBreadcrumbs();
 

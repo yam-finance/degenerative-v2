@@ -30,7 +30,7 @@ const App: React.FC = () => {
             <Redirect exact strict from="/" to="/synths" />
             <Route exact strict path="/portfolio" component={Portfolio} />
             <Route exact strict path="/synths" component={Explore} />
-            <Route exact strict path="/synths/:group" component={SynthGroup} /> {/* TODO */}
+            <Route exact strict path="/synths/:group" component={SynthGroup} />
             <Redirect exact strict from="/synths/:group/:cycleYear" to="/synths/:group/:cycleYear/manage" />
             <Route exact strict path="/synths/:group/:cycleYear/:action" component={Synth} />
             <Route component={NotFound} />

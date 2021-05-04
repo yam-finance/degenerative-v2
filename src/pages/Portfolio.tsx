@@ -29,7 +29,7 @@ export const Portfolio = () => {
       <TableRow to={`/synths/${group}/${cycle}${year}`}>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={imgLocation} alt={name} />
+            <img src={imgLocation} alt={name} className="margin-1" />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>
@@ -75,7 +75,7 @@ export const Portfolio = () => {
       <TableRow to={link}>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={imgLocation} alt={name} />
+            <img src={imgLocation} alt={name} className="margin-1" />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>

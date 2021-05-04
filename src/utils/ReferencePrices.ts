@@ -14,7 +14,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
       const usdPriceCollateral = (collateralUsd.get(dateString) ?? 1) / 10 ** 9;
-      const scaledPrice = price / 1000; // TODO numbers don't work without dividing by 1000. Not sure why.
+      const scaledPrice = price / 1000; // Numbers don't work without dividing by 1000. Not sure why.
 
       return {
         timestamp: dateString,
