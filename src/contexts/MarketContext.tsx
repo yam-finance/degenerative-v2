@@ -89,6 +89,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             console.error(err0);
             console.error('Could not retrieve market data this synth');
 
+            // TODO is this necessary?
             data[name] = {
               price: 0,
               priceUsd: 0,

@@ -3,7 +3,8 @@ import { useParams, NavLink } from 'react-router-dom';
 
 import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext, MarketContext } from '@/contexts';
-import { MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
+import { Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
+import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import { ISynthInfo } from '@/types';
 import { isEmpty } from '@/utils';
 
@@ -15,9 +16,14 @@ interface SynthParams {
 
 export const Synth: React.FC = () => {
   const { group, cycleYear, action } = useParams<SynthParams>();
-  const { currentSynth, setSynth } = useContext(UserContext);
+  const { currentSynth, currentCollateral, setSynth, mintedPositions } = useContext(UserContext);
   const { synthMetadata } = useContext(MarketContext);
   const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
+
+  const [withdrawalAmount, setWithdrawalAmount] = useState(0);
+  const [withdrawalMinutesLeft, setWithdrawalMinutesLeft] = useState(0);
+
+  const actions = useSynthActions();
 
   useEffect(() => {
     // TODO validate and redirect if synth doesn't exist
@@ -25,8 +31,25 @@ export const Synth: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (currentSynth && !isEmpty(currentSynth) && !isEmpty(synthMetadata)) setSynthInfo(synthMetadata[currentSynth]);
+    if (currentSynth && !isEmpty(currentSynth) && !isEmpty(synthMetadata)) {
+      setSynthInfo(synthMetadata[currentSynth]);
+    }
   }, [currentSynth, synthMetadata]);
+
+  useEffect(() => {
+    const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
+
+    if (sponsorPosition) {
+      let withdrawalRequestMinutesLeft = 0;
+      if (sponsorPosition.withdrawalRequestTimestamp) {
+        const withdrawalDate = fromUnixTime(sponsorPosition.withdrawalRequestTimestamp);
+        withdrawalRequestMinutesLeft = differenceInMinutes(withdrawalDate, new Date());
+      }
+
+      setWithdrawalMinutesLeft(withdrawalRequestMinutesLeft);
+      setWithdrawalAmount(sponsorPosition.withdrawalRequestAmount);
+    }
+  }, [mintedPositions]);
 
   const ActionSelector: React.FC = () => {
     return (
@@ -49,7 +72,7 @@ export const Synth: React.FC = () => {
   const Action: React.FC = () => {
     switch (action) {
       case 'manage':
-        return <Minter />;
+        return <Minter actions={actions} />;
       //case 'trade':
       //  return <Trade />
       //case 'lp':
@@ -57,6 +80,47 @@ export const Synth: React.FC = () => {
       default:
         return null;
     }
+  };
+
+  const WithdrawalRequestDialog = () => {
+    return (
+      <div className="width-full padding-2 radius-large background-color-2 margin-bottom-6 text-color-4">
+        <div className="flex-align-center margin-bottom-2 flex-space-between">
+          <div className="text-xs opacity-50">Withdraw Request</div>
+          <Icon name="AlertOctagon" className="icon medium blue" />
+        </div>
+        <div className="flex-row">
+          <div className="width-2 radius-full background-color-white margin-right-2 blue"></div>
+          {withdrawalMinutesLeft > 0 ? (
+            <div>
+              <div className="text-small">
+                {withdrawalAmount} {currentCollateral} pending. Available for withdrawal in {withdrawalMinutesLeft} mins.
+              </div>
+              <div className="flex-row margin-top-2">
+                {/* TODO */}
+                <a href="#" className="button-secondary button-tiny margin-right-1 white w-button">
+                  Learn more
+                </a>
+                <button onClick={async () => await actions.onCancelWithdraw()} className="button-secondary button-tiny white w-button">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="text-small">
+                {withdrawalAmount} {currentCollateral} available for withdrawal.
+              </div>
+              <div className="flex-row margin-top-2">
+                <button onClick={async () => await actions.onWithdrawPassedRequest()} className="button-secondary button-tiny margin-right-1 white w-button">
+                  Withdraw
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   if (!currentSynth) return null;
@@ -68,7 +132,7 @@ export const Synth: React.FC = () => {
         <div className="border-bottom-1px margin-x-8 margin-y-4"></div>
         <Action />
       </MainDisplay>
-      <SideDisplay></SideDisplay>
+      <SideDisplay>{withdrawalAmount > 0 && <WithdrawalRequestDialog />}</SideDisplay>
     </>
   );
 };

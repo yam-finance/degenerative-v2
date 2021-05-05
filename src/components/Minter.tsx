@@ -5,7 +5,7 @@ import { fromUnixTime, differenceInMinutes } from 'date-fns';
 
 import { Icon } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
-import { useToken, useSynthActions } from '@/hooks';
+import { useToken, useSynthActions, ISynthActions } from '@/hooks';
 import { roundDecimals, isEmpty } from '@/utils';
 import clsx from 'clsx';
 
@@ -122,13 +122,13 @@ interface MinterFormFields {
   pendingTokens: number;
 }
 
-export const Minter = () => {
+export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
   const { account } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, synthsInWallet, mintedPositions } = useContext(UserContext);
   const { synthMarketData, collateralData } = useContext(MarketContext);
 
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
-  const actions = useSynthActions();
+  //const actions = useSynthActions();
   const erc20 = useToken(); // TODO remove after getting from synthsInWallet
 
   const [formState, { number }] = useFormState<MinterFormFields>(
@@ -286,9 +286,9 @@ export const Minter = () => {
   const setMaximum = (e: React.MouseEvent) => {
     e.preventDefault();
 
-    const newCollateral = state.maxCollateral;
+    const newCollateral = state.maxCollateral + state.sponsorCollateral;
     // Must divide by price because global utilization is scaled by price
-    const newTokens = state.maxCollateral * (state.globalUtilization / state.tokenPrice);
+    const newTokens = newCollateral * (state.globalUtilization / state.tokenPrice);
     setFormInputs(newCollateral, newTokens);
   };
 

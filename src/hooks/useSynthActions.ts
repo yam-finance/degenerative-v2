@@ -204,6 +204,4 @@ export const useSynthActions = () => {
   };
 };
 
-export type ISynthState = typeof useSynthActions;
-
-export default useSynthActions;
+export type ISynthActions = ReturnType<typeof useSynthActions>;
