@@ -45,4 +45,5 @@ export interface ISynthMarketData {
   daysTillExpiry: number;
   globalUtilization: number; // Inverse of GCR taken from EMP
   liquidationPoint: number;
+  withdrawalPeriod: number;
 }

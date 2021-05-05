@@ -45,7 +45,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             name,
             synth,
             collateral,
-            { tvl, totalSupply, expirationTimestamp, rawGlobalUtilization, minTokens, liquidationPoint },
+            { tvl, totalSupply, expirationTimestamp, rawGlobalUtilization, minTokens, liquidationPoint, withdrawalPeriod },
             collateralPriceUsd,
             pool,
           ] = synthData;
@@ -81,6 +81,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               globalUtilization: roundDecimals(rawGlobalUtilization, 4),
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
+              withdrawalPeriod: withdrawalPeriod / 60, // Convert to minutes
               apr: apr,
               daysTillExpiry: daysTillExpiry,
             };
@@ -99,6 +100,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               globalUtilization: 0.1,
               minTokens: 1,
               liquidationPoint: 0.01,
+              withdrawalPeriod: 0,
               apr: 0,
               daysTillExpiry: 69,
             };

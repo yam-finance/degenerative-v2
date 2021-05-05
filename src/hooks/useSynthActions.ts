@@ -67,7 +67,8 @@ export const useSynthActions = () => {
   };
 
   const onMint = async (collateralAmount: number, tokenAmount: number) => {
-    if (collateralAmount > 0 && tokenAmount > 0) {
+    // Collateral can be 0 if adding to existing position
+    if (collateralAmount >= 0 && tokenAmount > 0) {
       try {
         const txReceipt = await emp.mint(empAddress, collateralAmount, tokenAmount);
         console.log(txReceipt.transactionHash);

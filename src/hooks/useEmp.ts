@@ -20,7 +20,7 @@ export const useEmp = () => {
         const tx = await empContract.create(collateralAmount, tokenAmount, {
           gasLimit: gasLimit,
         });
-        const receipt = await tx.wait();
+        const receipt = tx.wait();
         return receipt;
         // TODO log transaction to analytics service
       } catch (err) {
