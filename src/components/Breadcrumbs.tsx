@@ -7,7 +7,7 @@ export const Breadcrumbs = () => {
   const breadcrumbs = useBreadcrumbs();
 
   return (
-    <div className="flex-align-center margin-top-10 padding-left-8 text-xs">
+    <div className="flex-align-center padding-left-8 text-xs breadcrumbMargin">
       {breadcrumbs.map(({ breadcrumb, match }, idx) => (
         <Fragment key={idx}>
           <Link to={match.url} className={`${idx < breadcrumbs.length - 1 && 'opacity-50'}`}>
