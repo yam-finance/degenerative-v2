@@ -1,6 +1,38 @@
+/* Button outline fix */
 button:focus {
   outline: none;
 }
+/* ---- */
+/* Circle Loader animation */
+.circle-svg-path {
+  opacity: 0.75;
+}
+
+.circle {
+  opacity: 0.25;
+}
+
+.circle-svg {
+  height: 1.25rem;
+  margin-right: 0.75rem;
+  color: rgba(0, 0, 0, 1);
+  width: 1.25rem;
+  -webkit-animation: spin 0.5s linear infinite;
+  animation: spin 0.5s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* ---- */
 
 @font-face {
   font-family: 'webflow-icons';
