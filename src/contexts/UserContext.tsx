@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { fromUnixTime } from 'date-fns';
 
 import { IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
 

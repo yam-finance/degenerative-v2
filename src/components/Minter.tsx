@@ -580,7 +580,7 @@ export const Minter = () => {
 
     const styles = 'button-secondary button-tiny glass margin-1 w-button';
 
-    // TODO replace with class
+    // TODO replace with a css class
     const disabledButton = {
       opacity: 0.1,
     };
@@ -588,7 +588,7 @@ export const Minter = () => {
     const ActionDescription: React.FC<{ action: MinterAction }> = ({ action }) => {
       switch (action) {
         case 'MINT': {
-          return <p> Create a new position or create new synths from an existing position.</p>;
+          return <div> Create a new position or create new synths from an existing position.</div>;
         }
         case 'ADD_COLLATERAL': {
           return <div>Adds collateral to position, reducing utilization.</div>;
