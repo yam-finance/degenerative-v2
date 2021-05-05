@@ -10,8 +10,6 @@ export const useSynthActions = () => {
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
   const [synthAddress, setSynthAddress] = useState('');
-
-  const [loading, setLoading] = useState(false);
   const [collateralApproval, setCollateralApproval] = useState(false);
   const [synthApproval, setSynthApproval] = useState(false);
 

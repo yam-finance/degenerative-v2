@@ -507,6 +507,7 @@ export const Minter = () => {
       const disableWithdrawal = withdrawalAmount <= 0 || state.withdrawalRequestMinutesLeft !== 0;
 
       if (state.pendingUtilization > state.globalUtilization && state.pendingUtilization < state.liquidationPoint) {
+        // Show Withdrawal Request modal
         return (
           <button
             onClick={() => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { withdrawalAmount: withdrawalAmount } })}
@@ -563,9 +564,6 @@ export const Minter = () => {
       case 'REDEEM':
         return !actions.synthApproval ? <TokenApproveButton /> : <RedeemButton />;
       case 'WITHDRAW':
-        // TODO Check if withdrawalAmount > 0
-        // if so, show WithdrawPassedRequest / CancelWithdraw button and display time till withdrawal
-        // else, show Withdraw / RequestWithdraw button
         return state.withdrawalRequestAmount > 0 ? <WithdrawRequestButton /> : <WithdrawButton />;
       default:
         return null;
@@ -702,7 +700,13 @@ export const Minter = () => {
               <p>
                 <span>Request permitted after {withdrawalPeriod} minutes</span>
               </p>
-              <button onClick={() => actions.onRequestWithdraw(state.modalWithdrawalAmount)} className="button w-button">
+              <button
+                onClick={async () => {
+                  await actions.onRequestWithdraw(state.modalWithdrawalAmount);
+                  closeModal();
+                }}
+                className="button w-button"
+              >
                 Request withdrawal
               </button>
             </div>
