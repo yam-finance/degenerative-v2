@@ -33,6 +33,61 @@ button:focus {
   }
 }
 /* ---- */
+/* Tooltip */
+.svgContainer {
+  position: absolute;
+  z-index: 10;
+}
+
+.svgPosTop {
+  margin-bottom: 2rem;
+}
+
+.svgPosBottom {
+  margin-top: 2rem;
+}
+
+.svgText {
+  background-color: rgba(0, 0, 0, 1);
+  border-radius: 0px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  pointer-events: none;
+  position: absolute;
+  bottom: 100%;
+  color: rgba(255, 255, 255, 1);
+}
+
+.svgTriangle {
+  height: 0.5rem;
+  position: absolute;
+  top: 100%;
+  color: rgba(0, 0, 0, 1);
+}
+
+.tooltipPolygon {
+  fill: currentColor;
+}
+
+.positionCenter {
+  width: 100%;
+  left: 0px;
+}
+
+.positionRight {
+  right: 0px;
+  margin-right: 0.75rem;
+}
+
+.positionLeft {
+  left: 0px;
+  margin-left: 0.75rem;
+}
+/* ---- */
 
 @font-face {
   font-family: 'webflow-icons';

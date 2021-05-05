@@ -1,3 +1,8 @@
+/** 
+ * @dev Example implementation: <Loader />
+ * @notice Rendering has to be handled on the component where this is implemented.
+ */
+
 import React from 'react';
 
 export const Loader = () => {
