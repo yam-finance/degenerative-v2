@@ -5873,7 +5873,6 @@ a:hover {
   width: 40px;
   height: 40px;
   border-radius: 1000px;
-  background-image: url('../images/Ellipse%202.png');
   background-position: 50% 50%;
   background-size: cover;
 }
@@ -17492,7 +17491,7 @@ a:hover {
 }
 @font-face {
   font-family: 'Open Sauce';
-  src: url('./assetsimages/OpenSauceSans-Regular.ttf') format('truetype');
+  src: url('./assets/OpenSauceSans-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;

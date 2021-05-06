@@ -3,7 +3,7 @@ import { useParams, NavLink } from 'react-router-dom';
 
 import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext, MarketContext } from '@/contexts';
-import { Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
+import { Page, Navbar, Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import { ISynthInfo, ISynthMarketData } from '@/types';
 import { isEmpty } from '@/utils';
@@ -146,7 +146,8 @@ export const Synth: React.FC = () => {
 
   if (!currentSynth) return null;
   return (
-    <>
+    <Page>
+      <Navbar />
       <MainDisplay>
         <MainHeading>{currentSynth}</MainHeading>
         <ActionSelector />
@@ -183,6 +184,6 @@ export const Synth: React.FC = () => {
           </div>
         </div>
       </SideDisplay>
-    </>
+    </Page>
   );
 };

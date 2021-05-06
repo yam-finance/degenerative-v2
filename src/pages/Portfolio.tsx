@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { MarketContext, UserContext } from '@/contexts';
-import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMintedPosition, ISynthInWallet } from '@/types';
 import { getUsdPrice, roundDecimals, SynthGroups } from '@/utils';
 
@@ -106,7 +106,8 @@ export const Portfolio = () => {
   };
 
   return (
-    <>
+    <Page>
+      <Navbar />
       <MainDisplay>
         <MainHeading>Portfolio</MainHeading>
         <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
@@ -130,6 +131,6 @@ export const Portfolio = () => {
         {/* TODO Add pool positions */}
       </MainDisplay>
       <SideDisplay></SideDisplay>
-    </>
+    </Page>
   );
 };

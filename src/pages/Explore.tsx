@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SearchForm } from '@/components';
-import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { MarketContext } from '@/contexts';
 import { SynthGroups, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
@@ -54,7 +54,7 @@ export const Explore = () => {
               totalTvl: currentData.totalTvl + Number(marketData.tvl),
               totalVolume24h: currentData.totalVolume24h + Number(marketData.volume24h),
               numSynths: currentData.numSynths + 1,
-              image: `src/assets/images/${SynthGroups[group].image}.png`,
+              image: `/images/${SynthGroups[group].image}.png`,
             };
           } catch (err) {
             aggregateData[group] = {
@@ -161,7 +161,8 @@ export const Explore = () => {
 
   // TODO add loading spinner
   return (
-    <>
+    <Page>
+      <Navbar />
       <MainDisplay>
         <MainHeading>Explore Synths</MainHeading>
         <div className="padding-x-8 flex-row margin-top-4 flex-wrap">
@@ -182,6 +183,6 @@ export const Explore = () => {
       <SideDisplay>
         <Sidebar />
       </SideDisplay>
-    </>
+    </Page>
   );
 };

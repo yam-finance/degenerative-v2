@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, Redirect, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
-import 'chartjs-adapter-date-fns';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
 import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 
 interface SynthParams {
@@ -224,7 +223,8 @@ export const SynthGroup: React.FC = () => {
   };
 
   return (
-    <>
+    <Page>
+      <Navbar />
       <MainDisplay>
         <MainHeading className="margin-bottom-1">{group}</MainHeading>
         <div className="padding-x-8 flex-align-baseline">{SynthGroups[group].description}</div>
@@ -245,6 +245,6 @@ export const SynthGroup: React.FC = () => {
         </Table>
       </MainDisplay>
       <SideDisplay>{/* TODO add synth copy */}</SideDisplay>
-    </>
+    </Page>
   );
 };
