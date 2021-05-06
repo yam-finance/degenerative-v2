@@ -45,15 +45,17 @@ export const MarketProvider: React.FC = ({ children }) => {
             name,
             synth,
             collateral,
-            { tvl, totalSupply, expirationTimestamp, rawGlobalUtilization, minTokens, liquidationPoint, withdrawalPeriod },
+            { tvl, totalSupply, expirationTimestamp, currentTime, rawGlobalUtilization, minTokens, liquidationPoint, withdrawalPeriod },
             collateralPriceUsd,
             pool,
           ] = synthData;
 
           try {
-            const dateToday = new Date(Math.trunc(Date.now() / 1000));
+            const dateToday = new Date(currentTime.toNumber());
             const expiration = new Date(expirationTimestamp.toNumber());
             const daysTillExpiry = Math.round((expiration.getTime() - dateToday.getTime()) / (3600 * 24));
+            const isExpired = dateToday >= expiration;
+
             const liquidity = pool.reserveUSD;
 
             let priceUsd;
@@ -84,6 +86,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               withdrawalPeriod: withdrawalPeriod / 60, // Convert to minutes
               apr: apr,
               daysTillExpiry: daysTillExpiry,
+              isExpired: isExpired,
             };
           } catch (err0) {
             console.error(err0);
@@ -104,6 +107,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               withdrawalPeriod: 0,
               apr: 0,
               daysTillExpiry: 69,
+              isExpired: false,
             };
           }
         }

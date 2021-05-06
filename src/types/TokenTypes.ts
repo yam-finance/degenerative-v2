@@ -43,6 +43,7 @@ export interface ISynthMarketData {
   liquidity: number;
   minTokens: number;
   daysTillExpiry: number;
+  isExpired: boolean;
   globalUtilization: number; // Inverse of GCR taken from EMP
   liquidationPoint: number;
   withdrawalPeriod: number;

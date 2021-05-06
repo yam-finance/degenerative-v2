@@ -19,7 +19,7 @@ import clsx from 'clsx';
   - Redeem: Repays debt AND removes collateral to maintain same utilization.
   - Settle: Settles sponsor position AFTER expiry.
 */
-type MinterAction = 'MINT' | 'ADD_COLLATERAL' | 'REPAY' | 'REDEEM' | 'WITHDRAW';
+type MinterAction = 'MINT' | 'ADD_COLLATERAL' | 'REPAY' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
 
 const initialMinterState = {
   loading: true,
@@ -34,6 +34,7 @@ const initialMinterState = {
   tokenPrice: 0,
   minTokens: 0,
   maxCollateral: 0, // TODO replace with synthInWallet item
+  isExpired: false,
 
   pendingUtilization: 0,
   editCollateral: true,
@@ -65,6 +66,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         tokenPrice: initialized.tokenPrice,
         minTokens: initialized.minTokens,
         maxCollateral: initialized.maxCollateral,
+        isExpired: initialized.isExpired,
       };
     }
     case 'UPDATE_SPONSOR_POSITION': {
@@ -211,6 +213,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           tokenPrice: marketData.price,
           minTokens: marketData.minTokens,
           maxCollateral: Number(utils.formatUnits(collateralBalance, collateralDecimals)),
+          isExpired: marketData.isExpired,
         },
       });
 
@@ -546,6 +549,18 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       }
     };
 
+    const SettleButton = () => {
+      return (
+        <button
+          onClick={() => callAction(actions.onWithdrawPassedRequest())}
+          className={clsx(baseStyle, !state.isExpired && 'disabled')}
+          disabled={!state.isExpired}
+        >
+          {`Settle ${currentSynth} for ${currentCollateral}`}
+        </button>
+      );
+    };
+
     if (waiting) {
       return (
         <button className={clsx(baseStyle, 'disabled')} disabled={true}>
@@ -565,6 +580,8 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
         return !actions.synthApproval ? <TokenApproveButton /> : <RedeemButton />;
       case 'WITHDRAW':
         return state.withdrawalRequestAmount > 0 ? <WithdrawRequestButton /> : <WithdrawButton />;
+      case 'SETTLE':
+        return <SettleButton />;
       default:
         return null;
     }
@@ -645,6 +662,14 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
             onClick={() => changeAction('REDEEM')}
           >
             Redeem Synth
+          </button>
+          <button
+            style={noPosition || !state.isExpired ? disabledButton : {}}
+            disabled={noPosition || !state.isExpired}
+            className={clsx(styles, currentAction === 'SETTLE' && 'selected')}
+            onClick={() => changeAction('SETTLE')}
+          >
+            Settle
           </button>
         </div>
         {/* <ActionDescription action={currentAction} /> */}
@@ -731,7 +756,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
         <div className="margin-0 w-form">
           <form className="max-width-small flex-column background-color-2 padding-8 radius-xl box-shadow-large z-10 padding-y-12 landscape-padding-2">
             <h3 className="margin-0 text-align-center">{currentSynth}</h3>
-            <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20">Tweak your position settings</p>
+            <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20" />
             <div className="flex-row">
               <div className="expand relative padding-right-2">
                 <GaugeLabel label="Global Utilization" tooltip="TODO" className="gcr-legend" height={state.globalUtilization} />

@@ -17,11 +17,13 @@ interface SynthParams {
 export const Synth: React.FC = () => {
   const { group, cycleYear, action } = useParams<SynthParams>();
   const { currentSynth, currentCollateral, setSynth, mintedPositions } = useContext(UserContext);
-  const { synthMetadata } = useContext(MarketContext);
+  const { synthMetadata, synthMarketData } = useContext(MarketContext);
   const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
 
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
   const [withdrawalMinutesLeft, setWithdrawalMinutesLeft] = useState(0);
+  const [daysTillExpiry, setDaysTillExpiry] = useState(0);
+  const [isExpired, setIsExpired] = useState(false);
 
   const actions = useSynthActions();
 
@@ -46,10 +48,14 @@ export const Synth: React.FC = () => {
         withdrawalRequestMinutesLeft = differenceInMinutes(withdrawalDate, new Date());
       }
 
+      console.log(sponsorPosition.withdrawalRequestAmount);
+      console.log(withdrawalRequestMinutesLeft);
       setWithdrawalMinutesLeft(withdrawalRequestMinutesLeft);
       setWithdrawalAmount(sponsorPosition.withdrawalRequestAmount);
+      setIsExpired(synthMarketData[currentSynth].isExpired);
+      setDaysTillExpiry(synthMarketData[currentSynth].daysTillExpiry);
     }
-  }, [mintedPositions]);
+  }, [mintedPositions, synthMarketData]);
 
   const ActionSelector: React.FC = () => {
     return (
@@ -82,7 +88,7 @@ export const Synth: React.FC = () => {
     }
   };
 
-  const WithdrawalRequestDialog = () => {
+  const WithdrawalRequestDialog: React.FC = () => {
     return (
       <div className="width-full padding-2 radius-large background-color-2 margin-bottom-6 text-color-4">
         <div className="flex-align-center margin-bottom-2 flex-space-between">
@@ -97,12 +103,14 @@ export const Synth: React.FC = () => {
                 {withdrawalAmount} {currentCollateral} pending. Available for withdrawal in {withdrawalMinutesLeft} mins.
               </div>
               <div className="flex-row margin-top-2">
-                {/* TODO */}
-                <a href="#" className="button-secondary button-tiny margin-right-1 white w-button">
+                <a
+                  href="https://docs.umaproject.org/synthetic-tokens/expiring-synthetic-tokens#slow-withdrawal"
+                  className="button-secondary button-tiny margin-right-1 white w-button"
+                >
                   Learn more
                 </a>
                 <button onClick={async () => await actions.onCancelWithdraw()} className="button-secondary button-tiny white w-button">
-                  Cancel
+                  Cancel Withdrawal
                 </button>
               </div>
             </div>
@@ -123,16 +131,36 @@ export const Synth: React.FC = () => {
     );
   };
 
+  const SettleDialog: React.FC = () => {
+    return (
+      <div className="width-full padding-2 radius-large background-color-2 margin-bottom-6 w-inline-block text-color-6">
+        <div className="flex-align-center margin-bottom-2 flex-space-between">
+          <div className="text-xs opacity-50">Settle</div>
+          <Icon name="AlertOctagon" className="icon medium blue" />
+        </div>
+        <div className="flex-row">
+          <div className="width-2 radius-full background-color-white margin-right-2 blue" />
+          <div className="text-small">
+            <strong>{isExpired ? `${currentSynth} has expired.` : `${currentSynth} will expire in ${daysTillExpiry} days.`}</strong>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (!currentSynth) return null;
   return (
     <>
       <MainDisplay>
-        <MainHeading>{`${group} ${cycle}${year}`}</MainHeading>
+        <MainHeading>{`${currentSynth}`}</MainHeading>
         <ActionSelector />
-        <div className="border-bottom-1px margin-x-8 margin-y-4"></div>
+        <div className="border-bottom-1px margin-x-8 margin-y-4" />
         <Action />
       </MainDisplay>
-      <SideDisplay>{withdrawalAmount > 0 && <WithdrawalRequestDialog />}</SideDisplay>
+      <SideDisplay>
+        {withdrawalAmount > 0 && <WithdrawalRequestDialog />}
+        <SettleDialog />
+      </SideDisplay>
     </>
   );
 };

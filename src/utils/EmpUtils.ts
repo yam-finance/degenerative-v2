@@ -18,18 +18,20 @@ export const getEmpState = async (synth: ISynthInfo, chainId: number, provider =
       cumulativeFeeMultiplier,
       totalCollateral,
       totalSupply,
-      expirationTimestamp,
       minimumTokens,
       collateralRequirement,
       withdrawalPeriod, // Given as seconds
+      expirationTimestamp,
+      currentTime,
     ] = await Promise.all([
       empContract.cumulativeFeeMultiplier(),
       empContract.rawTotalPositionCollateral(),
       empContract.totalTokensOutstanding(),
-      empContract.expirationTimestamp(),
       empContract.minSponsorTokens(),
       empContract.collateralRequirement(),
       empContract.withdrawalLiveness(),
+      empContract.expirationTimestamp(),
+      empContract.getCurrentTime(),
     ]);
 
     const feeMultiplier = Number(utils.formatEther(cumulativeFeeMultiplier));
@@ -48,6 +50,7 @@ export const getEmpState = async (synth: ISynthInfo, chainId: number, provider =
       tvl: totalCollateral,
       totalSupply,
       expirationTimestamp,
+      currentTime,
       rawGlobalUtilization: globalUtilRounded, // NOT scaled by price of synth
       minTokens,
       liquidationPoint,
