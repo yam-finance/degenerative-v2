@@ -362,8 +362,10 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       height: `${utilization * 100}%`,
     };
 
+    // NOTE: Gauge does not line up correctly without subtracting 2
+    const pendingDebtHeightPct = pendingUtilization * 100 - 2;
     const pendingDebtHeight = {
-      height: `${pendingUtilization * 100}%`,
+      height: `${pendingDebtHeightPct > 0 ? pendingDebtHeightPct : 0}%`,
     };
 
     const globalUtilizationHeight = {

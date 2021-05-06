@@ -5,8 +5,9 @@ import { useSynthActions } from '@/hooks/useSynthActions';
 import { UserContext, MarketContext } from '@/contexts';
 import { Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
-import { ISynthInfo } from '@/types';
+import { ISynthInfo, ISynthMarketData } from '@/types';
 import { isEmpty } from '@/utils';
+import numeral from 'numeral';
 
 interface SynthParams {
   group: string;
@@ -18,12 +19,11 @@ export const Synth: React.FC = () => {
   const { group, cycleYear, action } = useParams<SynthParams>();
   const { currentSynth, currentCollateral, setSynth, mintedPositions } = useContext(UserContext);
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
-  const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
 
+  const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
+  const [{ isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization }, setMarketData] = useState({} as ISynthMarketData);
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
   const [withdrawalMinutesLeft, setWithdrawalMinutesLeft] = useState(0);
-  const [daysTillExpiry, setDaysTillExpiry] = useState(0);
-  const [isExpired, setIsExpired] = useState(false);
 
   const actions = useSynthActions();
 
@@ -33,10 +33,11 @@ export const Synth: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (currentSynth && !isEmpty(currentSynth) && !isEmpty(synthMetadata)) {
+    if (currentSynth && !isEmpty(synthMarketData) && !isEmpty(synthMetadata)) {
       setSynthInfo(synthMetadata[currentSynth]);
+      setMarketData(synthMarketData[currentSynth]);
     }
-  }, [currentSynth, synthMetadata]);
+  }, [currentSynth, synthMetadata, synthMarketData]);
 
   useEffect(() => {
     const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
@@ -47,15 +48,10 @@ export const Synth: React.FC = () => {
         const withdrawalDate = fromUnixTime(sponsorPosition.withdrawalRequestTimestamp);
         withdrawalRequestMinutesLeft = differenceInMinutes(withdrawalDate, new Date());
       }
-
-      console.log(sponsorPosition.withdrawalRequestAmount);
-      console.log(withdrawalRequestMinutesLeft);
       setWithdrawalMinutesLeft(withdrawalRequestMinutesLeft);
       setWithdrawalAmount(sponsorPosition.withdrawalRequestAmount);
-      setIsExpired(synthMarketData[currentSynth].isExpired);
-      setDaysTillExpiry(synthMarketData[currentSynth].daysTillExpiry);
     }
-  }, [mintedPositions, synthMarketData]);
+  }, [currentSynth, mintedPositions]);
 
   const ActionSelector: React.FC = () => {
     return (
@@ -152,7 +148,7 @@ export const Synth: React.FC = () => {
   return (
     <>
       <MainDisplay>
-        <MainHeading>{`${currentSynth}`}</MainHeading>
+        <MainHeading>{currentSynth}</MainHeading>
         <ActionSelector />
         <div className="border-bottom-1px margin-x-8 margin-y-4" />
         <Action />
@@ -160,6 +156,26 @@ export const Synth: React.FC = () => {
       <SideDisplay>
         {withdrawalAmount > 0 && <WithdrawalRequestDialog />}
         <SettleDialog />
+        <div>
+          <div className="flex-align-baseline margin-bottom-2">
+            <div className="expand flex-align-center">
+              <div>{currentSynth} price</div>
+            </div>
+            <div className="weight-medium text-color-4">${numeral(priceUsd).format('0,0')}</div>
+          </div>
+          <div className="flex-align-baseline margin-bottom-2">
+            <div className="expand flex-align-center">
+              <div>{currentCollateral} price</div>
+            </div>
+            <div className="weight-medium text-color-4">${numeral(collateralPriceUsd).format('0,0')}</div>
+          </div>
+          <div className="flex-align-baseline margin-bottom-2">
+            <div className="expand flex-align-center">
+              <div>Global Utilization</div>
+            </div>
+            <div className="weight-medium text-color-4">{globalUtilization}%</div>
+          </div>
+        </div>
       </SideDisplay>
     </>
   );

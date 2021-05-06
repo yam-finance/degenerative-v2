@@ -75,6 +75,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             data[name] = {
               price: roundDecimals(Number(pricePerCollateral), 4),
               priceUsd: roundDecimals(priceUsd, 2),
+              collateralPriceUsd: roundDecimals(collateralPriceUsd, 2),
               liquidity: Math.trunc(liquidity),
               totalSupply: roundDecimals(Number(utils.formatUnits(totalSupply, collateral.decimals)), 2),
               tvl: tvlUsd,
@@ -96,6 +97,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             data[name] = {
               price: 0,
               priceUsd: 0,
+              collateralPriceUsd: 0,
               liquidity: 0,
               totalSupply: 0,
               tvl: 0,

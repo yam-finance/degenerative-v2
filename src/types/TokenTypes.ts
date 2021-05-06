@@ -35,6 +35,7 @@ export interface ISynthGroup {
 export interface ISynthMarketData {
   price: number;
   priceUsd: number;
+  collateralPriceUsd: number;
   tvl: number;
   apr: number;
   volume24h: number;
