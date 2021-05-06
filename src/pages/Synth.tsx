@@ -21,7 +21,7 @@ export const Synth: React.FC = () => {
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
 
   const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
-  const [{ isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization }, setMarketData] = useState({} as ISynthMarketData);
+  const [{ isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization, liquidationPoint }, setMarketData] = useState({} as ISynthMarketData);
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
   const [withdrawalMinutesLeft, setWithdrawalMinutesLeft] = useState(0);
 
@@ -173,7 +173,13 @@ export const Synth: React.FC = () => {
             <div className="expand flex-align-center">
               <div>Global Utilization</div>
             </div>
-            <div className="weight-medium text-color-4">{globalUtilization}%</div>
+            <div className="weight-medium text-color-4">{globalUtilization * 100}%</div>
+          </div>
+          <div className="flex-align-baseline margin-bottom-2">
+            <div className="expand flex-align-center">
+              <div>Liquidation</div>
+            </div>
+            <div className="weight-medium text-color-4">{liquidationPoint * 100}%</div>
           </div>
         </div>
       </SideDisplay>

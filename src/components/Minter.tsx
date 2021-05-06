@@ -196,7 +196,6 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       const withdrawalRequestAmount = sponsorPosition?.withdrawalRequestAmount ?? 0;
 
       const initialAction = sponsorPosition ? 'ADD_COLLATERAL' : 'MINT';
-      const globalUtilization = marketData.globalUtilization * marketData.price;
 
       dispatch({
         type: 'INIT_SPONSOR_POSITION',
@@ -208,7 +207,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           withdrawalRequestAmount: withdrawalRequestAmount,
           withdrawalRequestMinutesLeft: withdrawalRequestMinutesLeft,
           utilization: utilization,
-          globalUtilization: globalUtilization,
+          globalUtilization: marketData.globalUtilization,
           liquidationPoint: marketData.liquidationPoint,
           tokenPrice: marketData.price,
           minTokens: marketData.minTokens,

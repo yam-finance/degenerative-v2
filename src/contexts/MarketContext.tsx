@@ -68,6 +68,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               pricePerCollateral = pool.token1Price;
             }
 
+            const globalUtilization = rawGlobalUtilization * pricePerCollateral;
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, collateral.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, collateral.decimals));
             const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
@@ -81,7 +82,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               tvl: tvlUsd,
               marketCap: Math.trunc(marketCap),
               volume24h: 0, // TODO need to get from subgraph
-              globalUtilization: roundDecimals(rawGlobalUtilization, 4),
+              globalUtilization: roundDecimals(globalUtilization, 4),
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
               withdrawalPeriod: withdrawalPeriod / 60, // Convert to minutes
