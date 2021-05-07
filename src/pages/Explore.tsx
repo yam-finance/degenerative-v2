@@ -128,7 +128,7 @@ export const Explore = () => {
   };
 
   const Sidebar: React.FC = () => {
-    if (!sidebarData) return null;
+    if (!synthGroupData[sidebarData]) return null;
     return (
       <>
         <h3 className="margin-bottom-1">${formatForDisplay(synthGroupData[sidebarData].totalTvl)}</h3>
@@ -136,13 +136,13 @@ export const Explore = () => {
         <div className="margin-top-8">
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
-              <div>Synth Trading Volume</div>
+              <div>Trading Volume</div>
             </div>
             <div className="weight-medium text-color-4">${formatForDisplay(synthGroupData[sidebarData].totalVolume24h)}</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
-              <div>Synth Marketcap</div>
+              <div>Marketcap</div>
             </div>
             <div className="weight-medium text-color-4">${formatForDisplay(synthGroupData[sidebarData].totalMarketCap)}</div>
           </div>

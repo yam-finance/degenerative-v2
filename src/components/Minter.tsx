@@ -808,7 +808,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
                   <h6 className="text-align-center margin-bottom-0">Synth</h6>
                   {state.pendingUtilization >= 0 && (
                     <>
-                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{roundDecimals(state.pendingUtilization * 100, 2)}%</h4>
+                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{state.pendingUtilization.toFixed(2)}%</h4>
                       <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
                     </>
                   )}
