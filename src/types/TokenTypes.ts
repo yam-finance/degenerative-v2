@@ -30,6 +30,7 @@ export interface ISynthGroup {
   description: string;
   collateral: string;
   image: string;
+  creator: string;
 }
 
 export interface ISynthMarketData {

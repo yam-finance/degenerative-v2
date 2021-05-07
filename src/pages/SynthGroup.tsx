@@ -244,7 +244,24 @@ export const SynthGroup: React.FC = () => {
           )}
         </Table>
       </MainDisplay>
-      <SideDisplay>{/* TODO add synth copy */}</SideDisplay>
+      <SideDisplay>
+        <div className="flex-align-center">
+          <img src={`/images/${SynthGroups[group].image}.png`} className="width-16 margin-right-4" />
+          <div>
+            <h5 className="margin-bottom-1">{group}</h5>
+            <h6 className="margin-0">By {SynthGroups[group].creator}</h6>
+          </div>
+        </div>
+        <p className="text-small margin-top-2">{SynthGroups[group].description}</p>
+        <div>
+          <a href="#" className="button-secondary button-small margin-right-4 w-button">
+            Learn more
+          </a>
+          <a href="#" className="text-small weight-bold">
+            See tutorial
+          </a>
+        </div>
+      </SideDisplay>
     </Page>
   );
 };
