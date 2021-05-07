@@ -1,5 +1,5 @@
 /* Breadcrumb margin */
-.breadcrumbMargin {
+.breadcrumb-margin {
   margin-top: 2.5rem;
 }
 /* ---- */
@@ -9,7 +9,7 @@ button:focus {
 }
 /* ---- */
 /* Circle Loader animation */
-.circleSvgPath {
+.circle-svg-path {
   opacity: 0.75;
 }
 
@@ -17,7 +17,7 @@ button:focus {
   opacity: 0.25;
 }
 
-.circleSvg {
+.circle-svg {
   height: 1.25rem;
   margin-right: 0.75rem;
   color: rgba(0, 0, 0, 1);
@@ -39,20 +39,20 @@ button:focus {
 }
 /* ---- */
 /* Tooltip */
-.svgContainer {
+.svg-container {
   position: absolute;
   z-index: 10;
 }
 
-.svgPosTop {
+.svg-pos-top {
   margin-bottom: 2rem;
 }
 
-.svgPosBottom {
+.svg-pos-bottom {
   margin-top: 2rem;
 }
 
-.svgText {
+.svg-text {
   background-color: rgba(0, 0, 0, 1);
   border-radius: 0px;
   font-size: 0.75rem;
@@ -67,28 +67,28 @@ button:focus {
   color: rgba(255, 255, 255, 1);
 }
 
-.svgTriangle {
+.svg-triangle {
   height: 0.5rem;
   position: absolute;
   top: 100%;
   color: rgba(0, 0, 0, 1);
 }
 
-.tooltipPolygon {
+.tooltip-polygon {
   fill: currentColor;
 }
 
-.positionCenter {
+.position-center {
   width: 100%;
   left: 0px;
 }
 
-.positionRight {
+.position-right {
   right: 0px;
   margin-right: 0.75rem;
 }
 
-.positionLeft {
+.position-left {
   left: 0px;
   margin-left: 0.75rem;
 }
@@ -687,7 +687,7 @@ textarea.w-select {
   display: none !important;
 }
 @media screen and (max-width: 991px) {
-  .breadcrumbMargin {
+  .breadcrumb-margin {
     margin-top: 4rem;
   }
   .w-container {
