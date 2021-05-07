@@ -23,3 +23,5 @@ export const Tooltip = (props: any) => {
     </div >
   );
 };
+
+export default Tooltip;
