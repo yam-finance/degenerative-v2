@@ -1,6 +1,98 @@
+/* Breadcrumb margin */
+.breadcrumb-margin {
+  margin-top: 2.5rem;
+}
+/* ---- */
+/* Button outline fix */
 button:focus {
   outline: none;
 }
+/* ---- */
+/* Circle Loader animation */
+.circle-svg-path {
+  opacity: 0.75;
+}
+
+.circle {
+  opacity: 0.25;
+}
+
+.circle-svg {
+  height: 1.25rem;
+  margin-right: 0.75rem;
+  color: rgba(0, 0, 0, 1);
+  width: 1.25rem;
+  -webkit-animation: spin 0.5s linear infinite;
+  animation: spin 0.5s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* ---- */
+/* Tooltip */
+.svg-container {
+  position: absolute;
+  z-index: 10;
+}
+
+.svg-pos-top {
+  margin-bottom: 2rem;
+}
+
+.svg-pos-bottom {
+  margin-top: 2rem;
+}
+
+.svg-text {
+  background-color: rgba(0, 0, 0, 1);
+  border-radius: 0px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  pointer-events: none;
+  position: absolute;
+  bottom: 100%;
+  color: rgba(255, 255, 255, 1);
+}
+
+.svg-triangle {
+  height: 0.5rem;
+  position: absolute;
+  top: 100%;
+  color: rgba(0, 0, 0, 1);
+}
+
+.tooltip-polygon {
+  fill: currentColor;
+}
+
+.position-center {
+  width: 100%;
+  left: 0px;
+}
+
+.position-right {
+  right: 0px;
+  margin-right: 0.75rem;
+}
+
+.position-left {
+  left: 0px;
+  margin-left: 0.75rem;
+}
+/* ---- */
 
 @font-face {
   font-family: 'webflow-icons';
@@ -595,6 +687,9 @@ textarea.w-select {
   display: none !important;
 }
 @media screen and (max-width: 991px) {
+  .breadcrumb-margin {
+    margin-top: 4rem;
+  }
   .w-container {
     max-width: 728px;
   }
