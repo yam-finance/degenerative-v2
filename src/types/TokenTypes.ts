@@ -17,7 +17,7 @@ export interface ICollateral extends IToken {
 
 export interface ISynthInfo {
   imgLocation: string;
-  type: string;
+  group: string;
   cycle: string;
   year: string;
   collateral: string; // TODO remove, get collateral through type
@@ -26,26 +26,27 @@ export interface ISynthInfo {
   pool: IContract;
 }
 
-export interface ISynthType {
+export interface ISynthGroup {
   description: string;
   collateral: string;
+  image: string;
+  creator: string;
 }
 
 export interface ISynthMarketData {
-  price: string;
-  tvl: string;
-  apr: string;
-  volume24h: string;
-  marketCap: string;
-  totalSupply: string;
-  liquidity: string;
+  price: number;
+  priceUsd: number;
+  collateralPriceUsd: number;
+  tvl: number;
+  apr: number;
+  volume24h: number;
+  marketCap: number;
+  totalSupply: number;
+  liquidity: number;
   minTokens: number;
   daysTillExpiry: number;
+  isExpired: boolean;
   globalUtilization: number; // Inverse of GCR taken from EMP
   liquidationPoint: number;
-}
-
-// TODO use Record<T1, T2> instead
-export interface IMap<T> {
-  [key: string]: T;
+  withdrawalPeriod: number;
 }

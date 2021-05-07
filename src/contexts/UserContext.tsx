@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { fromUnixTime } from 'date-fns';
 
 import { IMintedPosition, ISynthInWallet, IPoolPosition } from '@/types';
 
@@ -24,7 +23,7 @@ export const UserContext = createContext(initialState);
 
 export const UserProvider: React.FC = ({ children }) => {
   const { account, signer } = useContext(EthereumContext);
-  const { synthMetadata } = useContext(MarketContext);
+  const { synthMetadata, synthMarketData } = useContext(MarketContext);
 
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);
   const [synthsInWallet, setSynthsInWallet] = useState<ISynthInWallet[]>([]);
@@ -42,21 +41,18 @@ export const UserProvider: React.FC = ({ children }) => {
 
   // TODO update when user has minted tokens
   useEffect(() => {
-    if (signer && account && synthMetadata) {
+    if (signer && synthMetadata && synthMarketData) {
       updateMintedPositions();
       updateSynthsInWallet();
     }
-  }, [signer, account, synthMetadata]);
+  }, [signer, synthMetadata, synthMarketData]);
 
   const setSynth = (synthName: string) => {
-    console.log('SET SYNTH CALLED');
-    console.log(synthName);
     setCurrentSynth(synthName);
   };
 
   const updateMintedPositions = () => {
     const minted: IMintedPosition[] = [];
-    console.log(synthMetadata);
     Object.keys(synthMetadata).forEach(async (name) => {
       try {
         const mintedPosition = await getSponsorPosition(name);
@@ -71,6 +67,7 @@ export const UserProvider: React.FC = ({ children }) => {
   const getSponsorPosition = async (synthName: string) => {
     const synth = synthMetadata[synthName];
     const { tokensOutstanding, rawCollateral, withdrawalRequestPassTimeStamp, withdrawalRequestAmount } = await emp.getUserPosition(synth.emp.address);
+    const { price } = synthMarketData[synthName];
 
     if (rawCollateral.gt(0) || tokensOutstanding.gt(0)) {
       const tokens = Number(utils.formatUnits(tokensOutstanding, synth.token.decimals));
@@ -84,7 +81,7 @@ export const UserProvider: React.FC = ({ children }) => {
         // tokenPrice: await (await getPrice(synth.token, collateral)).price,
         collateralAmount: roundDecimals(collateral, 2),
         // collateralPrice:
-        utilization: roundDecimals(tokens / collateral, 2), // TODO replace with utilization
+        utilization: roundDecimals((tokens / collateral) * price, 2),
         withdrawalRequestAmount: withdrawalRequest,
         withdrawalRequestTimestamp: withdrawalRequestTimestamp,
       };
@@ -95,7 +92,6 @@ export const UserProvider: React.FC = ({ children }) => {
     }
   };
 
-  // TODO
   const updateSynthsInWallet = () => {
     const synthsOwned: ISynthInWallet[] = [];
 

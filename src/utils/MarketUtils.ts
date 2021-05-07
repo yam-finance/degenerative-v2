@@ -4,7 +4,7 @@ import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, utils, constants } from 'ethers';
 import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString, getCollateralData } from '@/utils';
-import { IMap, ISynthInfo } from '@/types';
+import { ISynthInfo } from '@/types';
 
 sessionStorage.clear();
 
@@ -83,20 +83,19 @@ interface PriceHistoryResponse {
 }
 
 /** Get labels, reference price data and all market price data for this synth type. */
-export const getDailyPriceHistory = async (type: string, synthMetadata: Record<string, ISynthInfo>, chainId: number) => {
-  // TODO defaults to 30 days
+export const getDailyPriceHistory = async (group: string, synthMetadata: Record<string, ISynthInfo>, chainId: number) => {
+  // Defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 
   const relevantSynths = new Map(
     Object.entries(synthMetadata)
-      .filter(([name, synth]) => synth.type === type)
+      .filter(([name, synth]) => synth.group === group)
       .map(([name, synth]) => [synth.token.address, name])
   );
 
   const addressList = Array.from(relevantSynths.keys());
 
-  console.log('WTFJKLAJFKLAS');
-  // TODO grab paired data, not USD
+  // TODO Consider grabbing paired data, not USD
   const dailyPriceResponse: {
     tokenDayDatas: PriceHistoryResponse[];
   } = await request(UNISWAP_ENDPOINT[1], UNISWAP_DAILY_PRICE_QUERY, {
@@ -129,11 +128,8 @@ export const getDailyPriceHistory = async (type: string, synthMetadata: Record<s
   })();
 
   // Get reference index prices (USD) for each date
-  // TODO this should be done on API
   const referenceData = await (async () => {
-    const refPrices = await getReferencePriceHistory(type, chainId);
-    console.log('REF PRICES');
-    console.log(refPrices);
+    const refPrices = await getReferencePriceHistory(group, chainId);
 
     if (min && max) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
@@ -142,11 +138,8 @@ export const getDailyPriceHistory = async (type: string, synthMetadata: Record<s
     }
   })();
 
-  // TODO timezone not converting to UTC correctly
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
   // Map price data to date for each synth for easy access
-  const priceData: IMap<IMap<number>> = {};
+  const priceData: Record<string, Record<string, number>> = {};
   dailyPriceResponse.tokenDayDatas.forEach((dayData) => {
     // id is concatenated with a timestamp at end. Not necessary for us since we have the date
     const synthName = relevantSynths.get(dayData.id.split('-')[0]) ?? '';
@@ -157,7 +150,7 @@ export const getDailyPriceHistory = async (type: string, synthMetadata: Record<s
   });
 
   // Create object of arrays for reference prices and all synth prices
-  const res: IMap<number[]> = { Reference: referenceData };
+  const res: Record<string, number[]> = { Reference: referenceData };
   dateArray.forEach((date) => {
     Object.keys(priceData).forEach((synthName) => {
       if (!res[synthName]) res[synthName] = [];

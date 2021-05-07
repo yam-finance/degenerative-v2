@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { MarketContext, UserContext } from '@/contexts';
-import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { IMintedPosition, ISynthInWallet } from '@/types';
-import { getUsdPrice, roundDecimals } from '@/utils';
+import { getUsdPrice, roundDecimals, SynthGroups } from '@/utils';
 
 export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
@@ -15,18 +15,21 @@ export const Portfolio = () => {
   }, [synthsInWallet]);
 
   const MintedRow: React.FC<IMintedPosition> = (props) => {
-    const { imgLocation, collateral, type, cycle, year } = synthMetadata[props.name];
-    const { price: tokenPrice, globalUtilization, liquidationPoint } = synthMarketData[props.name];
+    const { collateral, group, cycle, year } = synthMetadata[props.name];
+    const { price, globalUtilization, liquidationPoint } = synthMarketData[props.name];
     const { name, tokenAmount, collateralAmount, utilization } = props;
+
+    // TODO get back to this!!
+    const imgLocation = `src/assets/images/${SynthGroups[group].image}.png`;
 
     const [collateralPrice, setCollateralPrice] = useState(0);
     (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
 
     return (
-      <TableRow to={`/synths/${type}/${cycle}${year}`}>
+      <TableRow to={`/synths/${group}/${cycle}${year}`}>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={imgLocation} alt={name} />
+            <img src={imgLocation} alt={name} className="margin-1" />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>
@@ -34,7 +37,7 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${roundDecimals(Number(tokenPrice) * tokenAmount, 2)}</div>
+          <div className="text-color-4">${roundDecimals(Number(price) * tokenAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
@@ -62,17 +65,17 @@ export const Portfolio = () => {
 
   const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
     const { name, tokenAmount } = props;
-    const { imgLocation, type, cycle, year } = synthMetadata[name];
-    const { price: tokenPrice, daysTillExpiry } = synthMarketData[name];
-    const link = `/synths/${type}/${cycle}${year}`;
+    const { imgLocation, group, cycle, year } = synthMetadata[name];
+    const { price, daysTillExpiry } = synthMarketData[name];
+    const link = `/synths/${group}/${cycle}${year}`;
 
-    const isExpired = daysTillExpiry <= 0;
+    const isExpired = daysTillExpiry < 0;
 
     return (
       <TableRow to={link}>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={imgLocation} alt={name} />
+            <img src={imgLocation} alt={name} className="margin-1" />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>
@@ -80,11 +83,11 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${roundDecimals(Number(tokenPrice) * tokenAmount, 2)}</div>
+          <div className="text-color-4">${roundDecimals(Number(price) * tokenAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${tokenPrice}</div>
+          <div className="text-color-4">${price}</div>
           <div className="height-8 width-32 w-embed w-script"></div>
         </div>
         <div className="expand">
@@ -103,7 +106,8 @@ export const Portfolio = () => {
   };
 
   return (
-    <>
+    <Page>
+      <Navbar />
       <MainDisplay>
         <MainHeading>Portfolio</MainHeading>
         <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
@@ -127,6 +131,6 @@ export const Portfolio = () => {
         {/* TODO Add pool positions */}
       </MainDisplay>
       <SideDisplay></SideDisplay>
-    </>
+    </Page>
   );
 };

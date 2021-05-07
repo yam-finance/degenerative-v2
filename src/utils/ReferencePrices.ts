@@ -1,6 +1,6 @@
 // Get reference price history for each synth type
 import axios from 'axios';
-import { SynthTypes, getUsdPriceHistory, getDateString } from '@/utils';
+import { SynthGroups, getUsdPriceHistory, getDateString } from '@/utils';
 import { fromUnixTime } from 'date-fns';
 
 /** Get reference price history and transform for use in charts. Returns array
@@ -10,12 +10,11 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   const fetchUgas = async (collateral: string, chainId: number) => {
     const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     const res = await axios.get('https://data.yam.finance/median-history');
-    console.log(res.data);
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
       const usdPriceCollateral = (collateralUsd.get(dateString) ?? 1) / 10 ** 9;
-      const scaledPrice = price / 1000; // TODO numbers don't work without dividing by 1000. Not sure why.
+      const scaledPrice = price / 1000; // Numbers don't work without dividing by 1000. Not sure why.
 
       return {
         timestamp: dateString,
@@ -27,6 +26,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   const fetchUstonks = async (collateral: string, chainId: number) => {
     const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     const res = await axios.get('https://data.yam.finance/ustonks/index-history');
+    console.log(res.data);
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(new Date(timestamp));
@@ -41,7 +41,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
 
   try {
     // Get collateral price in USD
-    const collateral = SynthTypes[type].collateral;
+    const collateral = SynthGroups[type].collateral;
 
     switch (type) {
       case 'uGas':

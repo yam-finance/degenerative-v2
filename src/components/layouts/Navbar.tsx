@@ -42,8 +42,8 @@ const Navbar = () => {
         <NavbarButton text="Support" icon="LifeBuoy" to="#" external />
         <div className="expand"></div>
         <div className="nav-divider margin-y-5"></div>
-        <NavbarButton text="YAM" icon="ExternalLink" to="#" external />
-        <NavbarButton text="UMA" icon="ExternalLink" to="#" external />
+        <NavbarButton text="YAM" icon="ExternalLink" to="https://yam.finance/" external />
+        <NavbarButton text="UMA" icon="ExternalLink" to="https://umaproject.org/" external />
         <div className="margin-left-8 padding-3 tablet-margin-left-0">
           <div className="w-layout-grid flex-row">
             <a href="https://twitter.com/YamFinance" className="margin-right-0 w-inline-block">
@@ -66,7 +66,8 @@ const Navbar = () => {
       <Link to="/" className="margin-left-6 flex-row-middle padding-left-3 padding-right-3 w-inline-block">
         <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
         <h5 className="margin-0 margin-right-2 expand">Degenerative</h5>
-        <LanguageSwitcher />
+        {/* TODO Figure out where to put this
+        <LanguageSwitcher /> */}
         <div className="pill">v 2.0</div>
       </Link>
       <div className="expand tablet-hide">

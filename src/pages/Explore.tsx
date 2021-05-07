@@ -1,14 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SearchForm } from '@/components';
-import { MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
-import { IMap } from '@/types';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
 import { MarketContext } from '@/contexts';
-import { SynthTypes, isEmpty, formatForDisplay } from '@/utils';
+import { SynthGroups, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
-import box from '@/assets/Box-01.png';
 
-interface ISynthTypeData {
+interface ISynthGroupData {
   aprMin: number;
   aprMax: number;
   totalLiquidity: number;
@@ -16,6 +14,7 @@ interface ISynthTypeData {
   totalTvl: number;
   totalVolume24h: number;
   numSynths: number;
+  image: string;
 }
 
 export const Explore = () => {
@@ -24,20 +23,19 @@ export const Explore = () => {
 
   const [searchTerm, setSearchTerm] = useState(query.get('search') ?? '');
   const [sidebarData, setSidebarData] = useState<string>('');
-  const [synthTypeData, setSynthTypeData] = useState<IMap<ISynthTypeData>>({});
+  const [synthGroupData, setSynthGroupData] = useState<Record<string, ISynthGroupData>>({});
 
   useEffect(() => {
-    const AggregateSynthTypeData = () => {
-      const aggregateData: IMap<ISynthTypeData> = {};
+    const AggregateSynthGroupData = () => {
+      const aggregateData: Record<string, ISynthGroupData> = {};
 
       Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
-          console.log(synthName);
-          const { type } = synthInfo;
+          const { group } = synthInfo;
           try {
             const marketData = synthMarketData[synthName];
-            const currentData = aggregateData[type] ?? {
+            const currentData = aggregateData[group] ?? {
               aprMin: Infinity,
               aprMax: 0,
               totalLiquidity: 0,
@@ -45,9 +43,10 @@ export const Explore = () => {
               totalTvl: 0,
               totalVolume24h: 0,
               numSynths: 0,
+              image: '',
             };
 
-            aggregateData[type] = {
+            aggregateData[group] = {
               aprMin: Math.min(currentData.aprMin, Number(marketData.apr)),
               aprMax: Math.max(currentData.aprMax, Number(marketData.apr)),
               totalLiquidity: currentData.totalLiquidity + Number(marketData.liquidity),
@@ -55,9 +54,10 @@ export const Explore = () => {
               totalTvl: currentData.totalTvl + Number(marketData.tvl),
               totalVolume24h: currentData.totalVolume24h + Number(marketData.volume24h),
               numSynths: currentData.numSynths + 1,
+              image: `/images/${SynthGroups[group].image}.png`,
             };
           } catch (err) {
-            aggregateData[type] = {
+            aggregateData[group] = {
               aprMin: 0,
               aprMax: 0,
               totalLiquidity: 0,
@@ -65,29 +65,28 @@ export const Explore = () => {
               totalTvl: 0,
               totalVolume24h: 0,
               numSynths: 1,
+              image: 'src/assets/images/Box-01.png',
             };
           }
         });
 
-      setSynthTypeData(aggregateData);
+      setSynthGroupData(aggregateData);
     };
 
-    console.log(synthMetadata);
-    console.log(synthMarketData);
-    if (!isEmpty(synthMetadata) && !isEmpty(synthMarketData)) AggregateSynthTypeData();
+    if (!isEmpty(synthMetadata) && !isEmpty(synthMarketData)) AggregateSynthGroupData();
   }, [synthMarketData, searchTerm]);
 
-  const SynthBlock: React.FC<{ type: string }> = ({ type }) => {
-    const description = SynthTypes[type].description;
-    const { aprMin, aprMax } = synthTypeData[type];
+  const SynthGroupBlock: React.FC<{ group: string }> = ({ group }) => {
+    const { description } = SynthGroups[group];
+    const { aprMin, aprMax, image } = synthGroupData[group];
 
     const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block';
 
     if (isEmpty(synthMarketData)) return <div className={style}>Loading...</div>;
     return (
-      <Link to={`/synths/${type}`} className={style} onMouseEnter={() => setSidebarData(type)}>
-        <img src={box} loading="lazy" alt="" className="width-16" />
-        <h5 className="margin-top-4">{type}</h5>
+      <Link to={`/synths/${group}`} className={style} onMouseEnter={() => setSidebarData(group)}>
+        <img src={image} loading="lazy" alt="" className="width-16" />
+        <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
         <div className="button button-small">
           {aprMin}-{aprMax}% APR
@@ -98,27 +97,25 @@ export const Explore = () => {
     );
   };
 
-  const SynthTableRow: React.FC<{ type: string }> = ({ type }) => {
-    const { aprMin, aprMax, totalLiquidity, totalMarketCap } = synthTypeData[type];
-    const description = SynthTypes[type].description;
+  const SynthGroupRow: React.FC<{ group: string }> = ({ group }) => {
+    const { aprMin, aprMax, totalLiquidity, totalMarketCap, image } = synthGroupData[group];
+    const { description } = SynthGroups[group];
 
     if (isEmpty(synthMarketData)) return <TableRow>Loading...</TableRow>;
     return (
-      <TableRow to={`/synths/${type}`} onMouseEnter={() => setSidebarData(type)}>
+      <TableRow to={`/synths/${group}`} onMouseEnter={() => setSidebarData(group)}>
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={box} loading="lazy" alt="" className="width-6" />
+            <img src={image} loading="lazy" className="margin-1" />
           </div>
           <div>
-            <div className="margin-right-1 text-color-4">{type}</div>
+            <div className="margin-right-1 text-color-4">{group}</div>
             <div className="text-xs opacity-50">{description}</div>
           </div>
         </div>
         <div></div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">
-            {aprMin}-{aprMax}%
-          </div>
+          <div className="text-color-4">{aprMin === aprMax ? `${aprMin}` : `${aprMin}-${aprMax}%`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{formatForDisplay(totalLiquidity)}</div>
@@ -134,26 +131,26 @@ export const Explore = () => {
     if (!sidebarData) return null;
     return (
       <>
-        <h3 className="margin-bottom-1">${formatForDisplay(synthTypeData[sidebarData].totalTvl)}</h3>
+        <h3 className="margin-bottom-1">${formatForDisplay(synthGroupData[sidebarData].totalTvl)}</h3>
         <div>Total Value Locked</div>
         <div className="margin-top-8">
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
               <div>Synth Trading Volume</div>
             </div>
-            <div className="weight-medium text-color-4">${formatForDisplay(synthTypeData[sidebarData].totalVolume24h)}</div>
+            <div className="weight-medium text-color-4">${formatForDisplay(synthGroupData[sidebarData].totalVolume24h)}</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
               <div>Synth Marketcap</div>
             </div>
-            <div className="weight-medium text-color-4">${formatForDisplay(synthTypeData[sidebarData].totalMarketCap)}</div>
+            <div className="weight-medium text-color-4">${formatForDisplay(synthGroupData[sidebarData].totalMarketCap)}</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
               <div>Total Synths</div>
             </div>
-            <div className="weight-medium text-color-4">{synthTypeData[sidebarData].numSynths}</div>
+            <div className="weight-medium text-color-4">{synthGroupData[sidebarData].numSynths}</div>
           </div>
         </div>
       </>
@@ -162,7 +159,8 @@ export const Explore = () => {
 
   // TODO add loading spinner
   return (
-    <>
+    <Page>
+      <Navbar />
       <MainDisplay>
         <MainHeading>Explore Synths</MainHeading>
         <div className="padding-x-8 flex-row margin-top-4 flex-wrap">
@@ -170,19 +168,19 @@ export const Explore = () => {
         </div>
         <div className="padding-x-8 flex-align-baseline"></div>
         <div className="grid-3-columns margin-x-8 margin-top-4">
-          {Object.keys(synthTypeData).map((type, index) => {
-            return <SynthBlock type={type} key={index} />;
+          {Object.keys(synthGroupData).map((group, index) => {
+            return <SynthGroupBlock group={group} key={index} />;
           })}
         </div>
         <Table headers={['Synth', 'APR', 'Liquidity', 'Market Cap']} headerClass={['width-1-2', '', '', '']}>
-          {Object.keys(synthTypeData).map((type, index) => {
-            return <SynthTableRow type={type} key={index} />;
+          {Object.keys(synthGroupData).map((group, index) => {
+            return <SynthGroupRow group={group} key={index} />;
           })}
         </Table>
       </MainDisplay>
       <SideDisplay>
         <Sidebar />
       </SideDisplay>
-    </>
+    </Page>
   );
 };

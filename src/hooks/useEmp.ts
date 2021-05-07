@@ -2,7 +2,7 @@ import { useContext, useCallback } from 'react';
 import { Signer, BigNumber } from 'ethers';
 
 import { EthereumContext } from '@/contexts/EthereumContext';
-import { Emp__factory, Unsigned, IEmpState, IUserPositions } from '@/types';
+import { Empv2__factory, Unsigned, IEmpState, IUserPositions } from '@/types';
 
 // Stateless hook for EMP contract helper functions
 export const useEmp = () => {
@@ -11,7 +11,7 @@ export const useEmp = () => {
   const mint = useCallback(
     async (empAddress: string, collateral: number, tokens: number) => {
       const [collateralAmount, tokenAmount] = [new Unsigned(collateral), new Unsigned(tokens)];
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
 
       try {
         console.log('COLLATERAL: ' + collateralAmount.rawValue);
@@ -20,7 +20,7 @@ export const useEmp = () => {
         const tx = await empContract.create(collateralAmount, tokenAmount, {
           gasLimit: gasLimit,
         });
-        const receipt = await tx.wait();
+        const receipt = tx.wait();
         return receipt;
         // TODO log transaction to analytics service
       } catch (err) {
@@ -34,7 +34,7 @@ export const useEmp = () => {
   const deposit = useCallback(
     async (empAddress: string, collateral: number) => {
       const collateralAmount = new Unsigned(collateral);
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.deposit(collateralAmount);
         const tx = await empContract.deposit(collateralAmount, {
@@ -52,7 +52,7 @@ export const useEmp = () => {
   const redeem = useCallback(
     async (empAddress: string, tokens: number) => {
       const tokenAmount = new Unsigned(tokens);
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.redeem(tokenAmount);
         const tx = await empContract.redeem(tokenAmount, {
@@ -67,14 +67,14 @@ export const useEmp = () => {
     [signer]
   );
 
-  /* TODO Repay is not implemented on old EMP contracts. Figure out wtf to do!
+  // TODO Repay is not implemented on old EMP contracts. Figure out wtf to do!
   const repay = useCallback(
     async (empAddress: string, tokens: number) => {
       const tokenAmount = new Unsigned(tokens);
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.repay(tokenAmount);
-        const tx = await empContract.redeem(tokenAmount, {
+        const tx = await empContract.repay(tokenAmount, {
           gasLimit: gasLimit,
         });
         return await tx.wait();
@@ -85,11 +85,10 @@ export const useEmp = () => {
     },
     [signer]
   );
-  */
 
   const settle = useCallback(
     async (empAddress: string) => {
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.settleExpired();
         const tx = await empContract.settleExpired({
@@ -108,7 +107,7 @@ export const useEmp = () => {
   const withdraw = useCallback(
     async (empAddress: string, collateral: number) => {
       const collateralAmount = new Unsigned(collateral);
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
 
       try {
         const gasLimit = await empContract.estimateGas.withdraw(collateralAmount);
@@ -127,7 +126,7 @@ export const useEmp = () => {
   const initWithdrawalRequest = useCallback(
     async (empAddress: string, collateral: number) => {
       const collateralAmount = new Unsigned(collateral);
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
 
       try {
         const gasLimit = await empContract.estimateGas.requestWithdrawal(collateralAmount);
@@ -145,7 +144,7 @@ export const useEmp = () => {
 
   const withdrawPassedRequest = useCallback(
     async (empAddress: string) => {
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
 
       try {
         const gasLimit = await empContract.estimateGas.withdrawPassedRequest();
@@ -163,7 +162,7 @@ export const useEmp = () => {
 
   const cancelWithdrawalRequest = useCallback(
     async (empAddress: string) => {
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
 
       try {
         const gasLimit = await empContract.estimateGas.cancelWithdrawal();
@@ -182,7 +181,7 @@ export const useEmp = () => {
   const getUserPosition = useCallback(
     async (empAddress: string) => {
       if (!account) return Promise.reject('Wallet not connected');
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
       try {
         const userPositions = await empContract.positions(account as string);
 
@@ -207,7 +206,7 @@ export const useEmp = () => {
       console.log('QUERYING');
       console.log(empAddress);
       console.log(signer);
-      const empContract = Emp__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
       try {
         const res = (
           await Promise.allSettled([
@@ -266,6 +265,7 @@ export const useEmp = () => {
   return {
     mint,
     deposit,
+    repay,
     redeem,
     settle,
     withdraw,

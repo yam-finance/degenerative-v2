@@ -10,8 +10,6 @@ export const useSynthActions = () => {
   const [empAddress, setEmpAddress] = useState('');
   const [collateralAddress, setCollateralAddress] = useState('');
   const [synthAddress, setSynthAddress] = useState('');
-
-  const [loading, setLoading] = useState(false);
   const [collateralApproval, setCollateralApproval] = useState(false);
   const [synthApproval, setSynthApproval] = useState(false);
 
@@ -46,7 +44,6 @@ export const useSynthActions = () => {
     }
   };
 
-  // TODO combine with synth approval?
   const onApproveCollateral = async () => {
     try {
       const tx = await erc20.approveSpender(collateralAddress, empAddress);
@@ -68,7 +65,8 @@ export const useSynthActions = () => {
   };
 
   const onMint = async (collateralAmount: number, tokenAmount: number) => {
-    if (collateralAmount > 0 && tokenAmount > 0) {
+    // Collateral can be 0 if adding to existing position
+    if (collateralAmount >= 0 && tokenAmount > 0) {
       try {
         const txReceipt = await emp.mint(empAddress, collateralAmount, tokenAmount);
         console.log(txReceipt.transactionHash);
@@ -106,6 +104,19 @@ export const useSynthActions = () => {
       }
     } else {
       console.error('Collateral amount or token amount is not greater than 0.');
+    }
+  };
+
+  const onRepay = async (tokenAmount: number) => {
+    if (tokenAmount > 0) {
+      try {
+        const txReceipt = await emp.repay(empAddress, tokenAmount);
+        console.log(txReceipt.transactionHash);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.error('Invalid collateral amount.');
     }
   };
 
@@ -180,6 +191,7 @@ export const useSynthActions = () => {
     synthApproval,
     onMint,
     onDeposit,
+    onRepay,
     onRedeem,
     onApproveCollateral,
     onApproveSynth,
@@ -192,6 +204,4 @@ export const useSynthActions = () => {
   };
 };
 
-export type ISynthState = typeof useSynthActions;
-
-export default useSynthActions;
+export type ISynthActions = ReturnType<typeof useSynthActions>;

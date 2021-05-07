@@ -5,7 +5,7 @@ import { fromUnixTime, differenceInMinutes } from 'date-fns';
 
 import { Icon } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
-import { useToken, useSynthActions } from '@/hooks';
+import { useToken, useSynthActions, ISynthActions } from '@/hooks';
 import { roundDecimals, isEmpty } from '@/utils';
 import clsx from 'clsx';
 
@@ -19,7 +19,7 @@ import clsx from 'clsx';
   - Redeem: Repays debt AND removes collateral to maintain same utilization.
   - Settle: Settles sponsor position AFTER expiry.
 */
-type MinterAction = 'MINT' | 'ADD_COLLATERAL' | 'REPAY_DEBT' | 'REDEEM' | 'WITHDRAW';
+type MinterAction = 'MINT' | 'ADD_COLLATERAL' | 'REPAY' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
 
 const initialMinterState = {
   loading: true,
@@ -31,22 +31,28 @@ const initialMinterState = {
   utilization: 0,
   globalUtilization: 0,
   liquidationPoint: 0,
+  tokenPrice: 0,
   minTokens: 0,
   maxCollateral: 0, // TODO replace with synthInWallet item
+  isExpired: false,
 
   pendingUtilization: 0,
   editCollateral: true,
   editTokens: true,
+
+  showWithdrawalModal: false,
+  modalWithdrawalAmount: 0,
 };
 
 type State = typeof initialMinterState;
-type Action = 'INIT_SPONSOR_POSITION' | 'UPDATE_SPONSOR_POSITION' | 'UPDATE_PENDING_UTILIZATION' | 'CHANGE_ACTION' | 'OPEN_INPUTS';
+type Action = 'INIT_SPONSOR_POSITION' | 'UPDATE_SPONSOR_POSITION' | 'UPDATE_PENDING_UTILIZATION' | 'CHANGE_ACTION' | 'OPEN_INPUTS' | 'TOGGLE_WITHDRAWAL_MODAL';
 
 const Reducer = (state: State, action: { type: Action; payload: any }) => {
   switch (action.type) {
     case 'INIT_SPONSOR_POSITION': {
       const initialized = action.payload;
       console.log(initialized);
+
       return {
         ...state,
         loading: false,
@@ -57,22 +63,25 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         utilization: initialized.utilization,
         globalUtilization: initialized.globalUtilization,
         liquidationPoint: initialized.liquidationPoint,
+        tokenPrice: initialized.tokenPrice,
         minTokens: initialized.minTokens,
         maxCollateral: initialized.maxCollateral,
+        isExpired: initialized.isExpired,
       };
     }
     case 'UPDATE_SPONSOR_POSITION': {
       const { pendingCollateral, pendingTokens } = action.payload;
+
       return {
         ...state,
         sponsorCollateral: pendingCollateral,
         sponsorTokens: pendingTokens,
-        utilization: pendingTokens / pendingCollateral,
+        utilization: calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice),
       };
     }
     case 'UPDATE_PENDING_UTILIZATION': {
       const { pendingCollateral, pendingTokens } = action.payload;
-      const util = pendingTokens / pendingCollateral;
+      const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
 
       return {
         ...state,
@@ -80,7 +89,6 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       };
     }
     case 'CHANGE_ACTION': {
-      console.log(action.payload);
       return {
         ...state,
         action: action.payload,
@@ -88,10 +96,20 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     }
     case 'OPEN_INPUTS': {
       const { editCollateral, editTokens } = action.payload;
+
       return {
         ...state,
         editCollateral: editCollateral,
         editTokens: editTokens,
+      };
+    }
+    case 'TOGGLE_WITHDRAWAL_MODAL': {
+      const { withdrawalAmount } = action.payload;
+
+      return {
+        ...state,
+        showWithdrawalModal: !state.showWithdrawalModal,
+        modalWithdrawalAmount: withdrawalAmount,
       };
     }
     default:
@@ -99,18 +117,20 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
   }
 };
 
+const calculateUtilization = (collateral: number, tokens: number, price: number) => (tokens * price) / collateral;
+
 interface MinterFormFields {
   pendingCollateral: number;
   pendingTokens: number;
 }
 
-export const Minter = () => {
+export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
   const { account } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, synthsInWallet, mintedPositions } = useContext(UserContext);
   const { synthMarketData, collateralData } = useContext(MarketContext);
 
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
-  const actions = useSynthActions();
+  //const actions = useSynthActions();
   const erc20 = useToken(); // TODO remove after getting from synthsInWallet
 
   const [formState, { number }] = useFormState<MinterFormFields>(
@@ -154,8 +174,9 @@ export const Minter = () => {
       } catch (err) {
         console.log(err);
       }
-      const empInfo = synthMarketData[currentSynth];
-      // TODO change mintedPositions to a record
+
+      const marketData = synthMarketData[currentSynth];
+
       const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
       const synthInWallet = synthsInWallet.find((balance) => balance.name == currentSynth);
 
@@ -186,10 +207,12 @@ export const Minter = () => {
           withdrawalRequestAmount: withdrawalRequestAmount,
           withdrawalRequestMinutesLeft: withdrawalRequestMinutesLeft,
           utilization: utilization,
-          globalUtilization: empInfo.globalUtilization,
-          liquidationPoint: empInfo.liquidationPoint,
-          minTokens: empInfo.minTokens,
+          globalUtilization: marketData.globalUtilization,
+          liquidationPoint: marketData.liquidationPoint,
+          tokenPrice: marketData.price,
+          minTokens: marketData.minTokens,
           maxCollateral: Number(utils.formatUnits(collateralBalance, collateralDecimals)),
+          isExpired: marketData.isExpired,
         },
       });
 
@@ -218,7 +241,7 @@ export const Minter = () => {
     const openTokenInput = (action: MinterAction) => {
       switch (action) {
         case 'MINT':
-        case 'REPAY_DEBT':
+        case 'REPAY':
         case 'REDEEM':
           return true;
         default:
@@ -265,8 +288,9 @@ export const Minter = () => {
   const setMaximum = (e: React.MouseEvent) => {
     e.preventDefault();
 
-    const newCollateral = state.maxCollateral;
-    const newTokens = state.maxCollateral * state.globalUtilization;
+    const newCollateral = state.maxCollateral + state.sponsorCollateral;
+    // Must divide by price because global utilization is scaled by price
+    const newTokens = newCollateral * (state.globalUtilization / state.tokenPrice);
     setFormInputs(newCollateral, newTokens);
   };
 
@@ -297,6 +321,7 @@ export const Minter = () => {
       </div>
     );
   };
+
   interface GaugeLabelProps {
     label: string;
     tooltip: string;
@@ -336,6 +361,7 @@ export const Minter = () => {
       height: `${utilization * 100}%`,
     };
 
+    // NOTE: Gauge does not line up correctly without subtracting 2
     const pendingDebtHeight = {
       height: `${pendingUtilization * 100}%`,
     };
@@ -383,7 +409,15 @@ export const Minter = () => {
   }
 
   const ActionButton: React.FC<ActionButtonProps> = ({ action, sponsorCollateral, sponsorTokens, pendingCollateral, pendingTokens }) => {
+    const [waiting, setWaiting] = useState(false);
+
     const baseStyle = clsx('button', 'width-full', 'text-small', 'w-button');
+
+    const callAction = async (action: Promise<void>) => {
+      setWaiting(true);
+      await action;
+      setWaiting(false);
+    };
 
     const CollateralApproveButton: React.FC = () => (
       <button
@@ -414,10 +448,14 @@ export const Minter = () => {
       const newCollateral = pendingCollateral - state.sponsorCollateral;
 
       const disableMinting =
-        newTokens <= 0 || newCollateral <= 0 || state.pendingUtilization > state.globalUtilization || state.pendingUtilization > state.liquidationPoint;
+        newTokens <= 0 || newCollateral < 0 || state.pendingUtilization > state.globalUtilization || state.pendingUtilization > state.liquidationPoint;
 
       return (
-        <button onClick={() => actions.onMint(newCollateral, newTokens)} className={clsx(baseStyle, disableMinting && 'disabled')} disabled={disableMinting}>
+        <button
+          onClick={() => callAction(actions.onMint(newCollateral, newTokens))}
+          className={clsx(baseStyle, disableMinting && 'disabled')}
+          disabled={disableMinting}
+        >
           {`Mint ${newTokens} new ${currentSynth} for ${newCollateral} ${currentCollateral}`}
         </button>
       );
@@ -430,7 +468,7 @@ export const Minter = () => {
 
       return (
         <button
-          onClick={() => actions.onDeposit(sponsorCollateral, pendingCollateral)}
+          onClick={() => callAction(actions.onDeposit(sponsorCollateral, pendingCollateral))}
           className={clsx(baseStyle, disabledAddCollateral && 'disabled')}
           disabled={disabledAddCollateral}
         >
@@ -439,7 +477,16 @@ export const Minter = () => {
       );
     };
 
-    // TODO Repay debt button
+    const RepayButton: React.FC = () => {
+      const repayTokens = sponsorTokens - pendingTokens;
+      const disableRepay = repayTokens <= 0 || repayTokens >= sponsorTokens;
+
+      return (
+        <button onClick={() => callAction(actions.onRepay(repayTokens))} className={clsx(baseStyle, disableRepay && 'disabled')} disabled={disableRepay}>
+          {`Repay ${repayTokens} ${currentSynth}`}
+        </button>
+      );
+    };
 
     const RedeemButton: React.FC = () => {
       const redeemableTokens = sponsorTokens - pendingTokens;
@@ -448,7 +495,11 @@ export const Minter = () => {
       const disableRedeem = redeemableTokens <= 0 || redeemableTokens >= sponsorTokens;
 
       return (
-        <button onClick={() => actions.onRedeem(redeemableTokens)} className={clsx(baseStyle, disableRedeem && 'disabled')} disabled={disableRedeem}>
+        <button
+          onClick={() => callAction(actions.onRedeem(redeemableTokens))}
+          className={clsx(baseStyle, disableRedeem && 'disabled')}
+          disabled={disableRedeem}
+        >
           {`Redeem ${redeemableTokens} ${currentSynth} and receive ${resultingCollateral} ${currentCollateral}`}
         </button>
       );
@@ -459,9 +510,10 @@ export const Minter = () => {
       const disableWithdrawal = withdrawalAmount <= 0 || state.withdrawalRequestMinutesLeft !== 0;
 
       if (state.pendingUtilization > state.globalUtilization && state.pendingUtilization < state.liquidationPoint) {
+        // Show Withdrawal Request modal
         return (
           <button
-            onClick={() => actions.onRequestWithdraw(withdrawalAmount)}
+            onClick={() => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { withdrawalAmount: withdrawalAmount } })}
             className={clsx(baseStyle, disableWithdrawal && 'disabled')}
             disabled={disableWithdrawal}
           >
@@ -471,7 +523,7 @@ export const Minter = () => {
       } else {
         return (
           <button
-            onClick={() => actions.onWithdraw(withdrawalAmount)}
+            onClick={() => callAction(actions.onWithdraw(withdrawalAmount))}
             className={clsx(baseStyle, disableWithdrawal && 'disabled')}
             disabled={disableWithdrawal}
           >
@@ -484,32 +536,52 @@ export const Minter = () => {
     const WithdrawRequestButton = () => {
       if (state.withdrawalRequestMinutesLeft > 0) {
         return (
-          <button onClick={() => actions.onCancelWithdraw()} className={baseStyle}>
+          <button onClick={() => callAction(actions.onCancelWithdraw())} className={baseStyle}>
             {`Cancel withdrawal request of ${state.withdrawalRequestAmount} ${currentCollateral}`}
           </button>
         );
       } else {
         return (
-          <button onClick={() => actions.onWithdrawPassedRequest()} className={baseStyle}>
+          <button onClick={() => callAction(actions.onWithdrawPassedRequest())} className={baseStyle}>
             {`Withdraw passed request of ${state.withdrawalRequestAmount} ${currentCollateral}`}
           </button>
         );
       }
     };
 
-    console.log(action);
+    const SettleButton = () => {
+      return (
+        <button
+          onClick={() => callAction(actions.onWithdrawPassedRequest())}
+          className={clsx(baseStyle, !state.isExpired && 'disabled')}
+          disabled={!state.isExpired}
+        >
+          {`Settle ${currentSynth} for ${currentCollateral}`}
+        </button>
+      );
+    };
+
+    if (waiting) {
+      return (
+        <button className={clsx(baseStyle, 'disabled')} disabled={true}>
+          Waiting on transaction
+        </button>
+      );
+    }
+
     switch (action) {
       case 'MINT':
         return !actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />;
       case 'ADD_COLLATERAL':
         return !actions.collateralApproval ? <CollateralApproveButton /> : <AddCollateralButton />;
+      case 'REPAY':
+        return !actions.synthApproval ? <TokenApproveButton /> : <RepayButton />;
       case 'REDEEM':
         return !actions.synthApproval ? <TokenApproveButton /> : <RedeemButton />;
       case 'WITHDRAW':
-        // TODO Check if withdrawalAmount > 0
-        // if so, show WithdrawPassedRequest / CancelWithdraw button and display time till withdrawal
-        // else, show Withdraw / RequestWithdraw button
         return state.withdrawalRequestAmount > 0 ? <WithdrawRequestButton /> : <WithdrawButton />;
+      case 'SETTLE':
+        return <SettleButton />;
       default:
         return null;
     }
@@ -525,20 +597,20 @@ export const Minter = () => {
 
     const styles = 'button-secondary button-tiny glass margin-1 w-button';
 
-    // TODO replace with class
+    // TODO replace with a css class
     const disabledButton = {
       opacity: 0.1,
     };
 
-    const ActionDescription: React.FC<MinterAction> = (props) => {
-      switch (props) {
+    const ActionDescription: React.FC<{ action: MinterAction }> = ({ action }) => {
+      switch (action) {
         case 'MINT': {
-          return <p> Create a new position or create new synths from an existing position.</p>;
+          return <div> Create a new position or create new synths from an existing position.</div>;
         }
         case 'ADD_COLLATERAL': {
           return <div>Adds collateral to position, reducing utilization.</div>;
         }
-        case 'REPAY_DEBT': {
+        case 'REPAY': {
           return <div>Removes synths from position. Must have synths in wallet to do so.</div>;
         }
         case 'WITHDRAW': {
@@ -570,10 +642,10 @@ export const Minter = () => {
           <button
             style={noPosition ? disabledButton : {}}
             disabled={noPosition}
-            className={clsx(styles, currentAction === 'REPAY_DEBT' && 'selected')}
-            onClick={() => changeAction('REPAY_DEBT')}
+            className={clsx(styles, currentAction === 'REPAY' && 'selected')}
+            onClick={() => changeAction('REPAY')}
           >
-            Repay Debt
+            Repay Synth
           </button>
           <button
             style={noPosition ? disabledButton : {}}
@@ -591,12 +663,21 @@ export const Minter = () => {
           >
             Redeem Synth
           </button>
+          <button
+            style={noPosition || !state.isExpired ? disabledButton : {}}
+            disabled={noPosition || !state.isExpired}
+            className={clsx(styles, currentAction === 'SETTLE' && 'selected')}
+            onClick={() => changeAction('SETTLE')}
+          >
+            Settle
+          </button>
         </div>
-        <ActionDescription {...currentAction} />
+        {/* <ActionDescription action={currentAction} /> */}
       </>
     );
   };
 
+  // TODO Finish this
   const TransactionDetails: React.FC = () => {
     switch (state.action) {
       case 'WITHDRAW': {
@@ -611,6 +692,53 @@ export const Minter = () => {
         return null;
       }
     }
+  };
+
+  const WithdrawalConfirmationModal: React.FC = () => {
+    const withdrawalPeriod = synthMarketData[currentSynth].withdrawalPeriod;
+
+    const closeModal = () => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { withdrawalAmount: 0 } });
+
+    return (
+      <div className="modal">
+        <div className="modal-bg w-inline-block" onClick={closeModal}></div>
+        <div className="padding-6 background-color-3 radius-large box-shadow-large width-full max-width-xl">
+          <div className="modal-section">
+            <div>
+              <h3 className="text-color-6 margin-0">Your collateral will be above GCR ratio!</h3>
+              <p className="margin-top-4">
+                You will need to wait for a withdrawal period of <strong className="text-color-4">{withdrawalPeriod} minutes</strong> before you can withdraw
+                your {currentCollateral}.
+                <br />
+                <br />
+                During that time your collateral could be <strong className="text-color-4">liquidated</strong> if your utilization exceeds the liquidation point
+                of <strong className="text-color-4">{state.liquidationPoint * 100}%.</strong>
+                <br />
+                <br />
+                {/* TODO Add link to liquidation docs */}
+                <a href="#" className="underline">
+                  Learn more about liquidation risks.
+                </a>
+              </p>
+            </div>
+            <div className="margin-top-6 padding-top-6 border-top-2px flex-space-between flex-align-baseline portrait-flex-column">
+              <p>
+                <span>Request permitted after {withdrawalPeriod} minutes</span>
+              </p>
+              <button
+                onClick={async () => {
+                  await actions.onRequestWithdraw(state.modalWithdrawalAmount);
+                  closeModal();
+                }}
+                className="button w-button"
+              >
+                Request withdrawal
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // TODO fix loader, center and make spin
@@ -628,7 +756,7 @@ export const Minter = () => {
         <div className="margin-0 w-form">
           <form className="max-width-small flex-column background-color-2 padding-8 radius-xl box-shadow-large z-10 padding-y-12 landscape-padding-2">
             <h3 className="margin-0 text-align-center">{currentSynth}</h3>
-            <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20">Tweak your position settings</p>
+            <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20" />
             <div className="flex-row">
               <div className="expand relative padding-right-2">
                 <GaugeLabel label="Global Utilization" tooltip="TODO" className="gcr-legend" height={state.globalUtilization} />
@@ -677,10 +805,10 @@ export const Minter = () => {
                     top: `${state.pendingUtilization < 1 ? (1 - state.pendingUtilization) * 100 : 0}%`,
                   }}
                 >
-                  <h6 className="text-align-center margin-bottom-0">Debt</h6>
+                  <h6 className="text-align-center margin-bottom-0">Synth</h6>
                   {state.pendingUtilization >= 0 && (
                     <>
-                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{state.pendingUtilization * 100}%</h4>
+                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{roundDecimals(state.pendingUtilization * 100, 2)}%</h4>
                       <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
                     </>
                   )}
@@ -757,7 +885,6 @@ export const Minter = () => {
                   <br />
                 </p>
               ) : (
-                // TODO add TX detail component
                 <TransactionDetails />
               )}
             </div>
@@ -774,6 +901,7 @@ export const Minter = () => {
           </div>
         </div>
       </div>
+      {state.showWithdrawalModal && <WithdrawalConfirmationModal />}
     </>
   );
 };

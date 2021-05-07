@@ -1,7 +1,7 @@
 import Collateral from '@/assets/collateral.json';
-import Types from '@/assets/types.json'; // TODO rename to groups
+import Groups from '@/assets/groups.json';
 import Assets from '@/assets/assets.json';
-import { ICollateral, ISynthInfo, ISynthType, IToken } from '@/types';
+import { ICollateral, ISynthInfo, ISynthGroup } from '@/types';
 
 const ChainMap: Record<number, string> = {
   1: 'mainnet',
@@ -11,7 +11,7 @@ const ChainMap: Record<number, string> = {
 
 //export const SynthMap: IMap<ISynthInfo> = Synths;
 export const CollateralMap: any = Collateral;
-export const SynthTypes: Record<string, ISynthType> = Types; // TODO make this map of all copy for synth types
+export const SynthGroups: Record<string, ISynthGroup> = Groups;
 
 export const getSynthMetadata = (chainId: number) => {
   const chain = ChainMap[chainId];
@@ -21,13 +21,15 @@ export const getSynthMetadata = (chainId: number) => {
   const networkAssets = assets[chain];
 
   for (const group in networkAssets) {
+    const image = SynthGroups[group].image ?? 'Box-01';
+
     networkAssets[group].forEach((synth: any) => {
       const name = `${group}-${synth.cycle}${synth.year}`;
       // Add in synth type information to object
       synthInfo[name] = {
         ...synth,
-        imgLocation: 'src/assets/Box-01.png', // TODO add image locations to json
-        type: group,
+        imgLocation: `src/assets/images/${image}.png`, // TODO add image locations to json
+        group: group,
       };
     });
   }

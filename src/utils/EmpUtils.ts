@@ -1,5 +1,5 @@
 import { BigNumber, providers, utils } from 'ethers';
-import { ISynthInfo, Emp__factory } from '@/types';
+import { ISynthInfo, Empv2__factory } from '@/types';
 import { getCollateralData, roundDecimals } from '@/utils';
 
 export const EthNodeProvider = new providers.JsonRpcProvider('https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud');
@@ -13,15 +13,25 @@ export const getEmpState = async (synth: ISynthInfo, chainId: number, provider =
   const collateralDecimals = collateralData[collateralName].decimals;
 
   try {
-    const empContract = Emp__factory.connect(empAddress, provider);
-    const [cumulativeFeeMultiplier, totalCollateral, totalSupply, expirationTimestamp, minimumTokens, collateralRequirement] = await Promise.all([
+    const empContract = Empv2__factory.connect(empAddress, provider);
+    const [
+      cumulativeFeeMultiplier,
+      totalCollateral,
+      totalSupply,
+      minimumTokens,
+      collateralRequirement,
+      withdrawalPeriod, // Given as seconds
+      expirationTimestamp,
+      currentTime,
+    ] = await Promise.all([
       empContract.cumulativeFeeMultiplier(),
       empContract.rawTotalPositionCollateral(),
       empContract.totalTokensOutstanding(),
-      empContract.expirationTimestamp(),
       empContract.minSponsorTokens(),
       empContract.collateralRequirement(),
-      // TODO get liquidation ratio
+      empContract.withdrawalLiveness(),
+      empContract.expirationTimestamp(),
+      empContract.getCurrentTime(),
     ]);
 
     const feeMultiplier = Number(utils.formatEther(cumulativeFeeMultiplier));
@@ -40,9 +50,11 @@ export const getEmpState = async (synth: ISynthInfo, chainId: number, provider =
       tvl: totalCollateral,
       totalSupply,
       expirationTimestamp,
+      currentTime,
       rawGlobalUtilization: globalUtilRounded, // NOT scaled by price of synth
       minTokens,
       liquidationPoint,
+      withdrawalPeriod: withdrawalPeriod.toNumber(),
     };
   } catch (err) {
     return Promise.reject('Failed to retrieve EMP information.');
