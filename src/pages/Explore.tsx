@@ -76,7 +76,7 @@ export const Explore = () => {
     if (!isEmpty(synthMetadata) && !isEmpty(synthMarketData)) AggregateSynthGroupData();
   }, [synthMarketData, searchTerm]);
 
-  const SynthBlock: React.FC<{ group: string }> = ({ group }) => {
+  const SynthGroupBlock: React.FC<{ group: string }> = ({ group }) => {
     const { description } = SynthGroups[group];
     const { aprMin, aprMax, image } = synthGroupData[group];
 
@@ -97,7 +97,7 @@ export const Explore = () => {
     );
   };
 
-  const SynthTableRow: React.FC<{ group: string }> = ({ group }) => {
+  const SynthGroupRow: React.FC<{ group: string }> = ({ group }) => {
     const { aprMin, aprMax, totalLiquidity, totalMarketCap, image } = synthGroupData[group];
     const { description } = SynthGroups[group];
 
@@ -115,9 +115,7 @@ export const Explore = () => {
         </div>
         <div></div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">
-            {aprMin}-{aprMax}%
-          </div>
+          <div className="text-color-4">{aprMin === aprMax ? `${aprMin}` : `${aprMin}-${aprMax}%`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{formatForDisplay(totalLiquidity)}</div>
@@ -171,12 +169,12 @@ export const Explore = () => {
         <div className="padding-x-8 flex-align-baseline"></div>
         <div className="grid-3-columns margin-x-8 margin-top-4">
           {Object.keys(synthGroupData).map((group, index) => {
-            return <SynthBlock group={group} key={index} />;
+            return <SynthGroupBlock group={group} key={index} />;
           })}
         </div>
         <Table headers={['Synth', 'APR', 'Liquidity', 'Market Cap']} headerClass={['width-1-2', '', '', '']}>
           {Object.keys(synthGroupData).map((group, index) => {
-            return <SynthTableRow group={group} key={index} />;
+            return <SynthGroupRow group={group} key={index} />;
           })}
         </Table>
       </MainDisplay>
