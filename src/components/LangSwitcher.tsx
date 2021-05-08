@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-function LanguageSwitcher() {
+export const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
 
   return (
@@ -14,6 +14,4 @@ function LanguageSwitcher() {
       </select>
     </div>
   );
-}
-
-export default LanguageSwitcher;
+};

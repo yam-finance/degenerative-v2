@@ -10,7 +10,7 @@ import discord from '@/assets/discord.svg';
 // TODO change user's account image
 import accountImage from '@/assets/ellipse.png';
 
-const Navbar = () => {
+export const Navbar = () => {
   const { account, disconnectWallet } = useContext(EthereumContext);
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
   const [openWalletMenu, setWalletMenu] = useState(false);
@@ -73,24 +73,24 @@ const Navbar = () => {
       <div className="expand tablet-hide">
         <Navigation />
       </div>
-      <div className="wallet">
-        <img src={accountImage} loading="lazy" alt="" className="avatar margin-right-2" />
-        <div className="expand relative">
-          <div className="text-xs">Metamask</div>
-          <div className="text-color-4">{accountDisplay}</div>
-        </div>
-        <div className="margin-left-6 tablet-hide relative w-dropdown">
-          <div
-            className="icon-button w-dropdown-toggle"
-            onClick={(e) => {
-              e.preventDefault();
-              toggleDropdown();
-            }}
-          >
-            <Icon name="ChevronDown" className="icon opacity-100" />
+      {account ? (
+        <div className="wallet">
+          <img src={accountImage} loading="lazy" alt="" className="avatar margin-right-2" />
+          <div className="expand relative">
+            <div className="text-xs">Metamask</div>
+            <div className="text-color-4">{accountDisplay}</div>
           </div>
-          <Dropdown className="dropdown-list top-right box-shadow-medium radius-large w-dropdown-list" openDropdown={openWalletMenu}>
-            {account ? (
+          <div className="margin-left-6 tablet-hide relative w-dropdown">
+            <div
+              className="icon-button w-dropdown-toggle"
+              onClick={(e) => {
+                e.preventDefault();
+                toggleDropdown();
+              }}
+            >
+              <Icon name="ChevronDown" className="icon opacity-100" />
+            </div>
+            <Dropdown className="dropdown-list top-right box-shadow-medium radius-large w-dropdown-list" openDropdown={openWalletMenu}>
               <div
                 onClick={(e) => {
                   e.preventDefault();
@@ -100,29 +100,27 @@ const Navbar = () => {
               >
                 Disconnect
               </div>
-            ) : (
-              <ConnectWallet className={'dropdown-link w-dropdown-link'} />
-            )}
-          </Dropdown>
-        </div>
-        <div className="margin-left-6 hide tablet-block relative w-dropdown">
-          <div
-            className="icon-button front w-dropdown-toggle"
-            onClick={(e) => {
-              e.preventDefault();
-              toggleMenu();
-            }}
-          >
-            <Icon name="Menu" className="icon opacity-100" />
+            </Dropdown>
           </div>
-          <Dropdown className="menu background-color-1 border-1px blur sheen w-dropdown-list" openDropdown={openMenu}>
-            <Navigation />
-          </Dropdown>
+          <div className="margin-left-6 hide tablet-block relative w-dropdown">
+            <div
+              className="icon-button front w-dropdown-toggle"
+              onClick={(e) => {
+                e.preventDefault();
+                toggleMenu();
+              }}
+            >
+              <Icon name="Menu" className="icon opacity-100" />
+            </div>
+            <Dropdown className="menu background-color-1 border-1px blur sheen w-dropdown-list" openDropdown={openMenu}>
+              <Navigation />
+            </Dropdown>
+          </div>
+          <div className="overlay blur radius-full"></div>
         </div>
-        <div className="overlay blur radius-full"></div>
-      </div>
+      ) : (
+        <ConnectWallet className={'button margin-left-8 margin-right-4 text-align-center margin-top-8 w-button'} />
+      )}
     </div>
   );
 };
-
-export default Navbar;

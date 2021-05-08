@@ -29,7 +29,6 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
     // TODO endpoint for choosing cycle is broken
     // TODO !!!!!!!!!!!!
     const res = await axios.get('http://data.yam.finance/ustonks/index-history-daily');
-    console.log(res.data);
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
