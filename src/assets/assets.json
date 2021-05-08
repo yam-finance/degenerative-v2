@@ -155,6 +155,44 @@
         },
         "expired": null
       }
+    ],
+    "uPUNK-ETH": [
+      {
+        "name": "May",
+        "cycle": "0510",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x2dd7cdfe776035237abbe246603c1a438dc57efe",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0x5d05A239e4de895d55bcf91fdE4dF4fC1B5961E7",
+          "new": true
+        },
+        "pool": {
+          "address": "0x0000000000000000000000000000000000000000"
+        },
+        "expired": null
+      },
+      {
+        "name": "May",
+        "cycle": "0511",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x80a321a53be4164bdc740a4933af37b6a8ad0707",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0x44094C174091AB2b41be0Eae0604E04c18a1fb1B",
+          "new": true
+        },
+        "pool": {
+          "address": "0x0000000000000000000000000000000000000000"
+        },
+        "expired": null
+      }
     ]
   }
 }
