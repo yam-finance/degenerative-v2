@@ -25,11 +25,14 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
 
   const fetchUstonks = async (collateral: string, chainId: number) => {
     const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
+    // TODO !!!!!!!!!!!!
+    // TODO endpoint for choosing cycle is broken
+    // TODO !!!!!!!!!!!!
     const res = await axios.get('http://data.yam.finance/ustonks/index-history-daily');
     console.log(res.data);
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
-      const dateString = getDateString(new Date(timestamp));
+      const dateString = getDateString(fromUnixTime(timestamp));
       const usdPriceCollateral = collateralUsd.get(dateString) ?? 1;
 
       return {
