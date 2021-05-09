@@ -178,7 +178,7 @@ export const Minter: React.FC = () => {
                 </div>
                 <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
                   <label className="opacity-60 weight-medium">Deposit Collateral</label>
-                  <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny white w-button">
+                  <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
                     Max {utils.formatEther(maxCollateral.toString())}
                   </button>
                 </div>
