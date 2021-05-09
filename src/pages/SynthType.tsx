@@ -81,22 +81,56 @@ export const SynthType: React.FC = () => {
     if (!historicPriceData) return null;
 
     console.log(historicPriceData);
-    const data = {
-      labels: historicPriceData.labels,
-      datasets: Object.entries(historicPriceData.synthPrices)
-        .filter(([name, prices]) => {
-          return name === synthInFocus || name === 'Reference';
-        }) // TODO
-        .map(([name, prices]) => ({
-          label: name,
-          data: prices,
-          borderColor: name === 'Reference' ? '#fff' : '#FF0099',
-          borderWidth: 1,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-          pointHoverBackgroundColor: '#FF0099',
-          tension: 0.1,
-        })),
+    const data = (canvas) => {
+      var ctx = document.getElementById('gas').getContext('2d');
+      
+      var gradientFill = ctx.createLinearGradient(0, 0, 0, 300);
+      gradientFill.addColorStop(0, "rgba(255, 255, 255, 0.2)");
+      gradientFill.addColorStop(1, "rgba(255, 255, 255, 0)");
+      
+      Chart.defaults.LineWithLine = Chart.defaults.line;
+      Chart.controllers.LineWithLine = Chart.controllers.line.extend({
+        draw: function(ease) {
+          Chart.controllers.line.prototype.draw.call(this, ease);
+          
+          if (this.chart.tooltip._active && this.chart.tooltip._active.length) {
+            var activePoint = this.chart.tooltip._active[0],
+              ctx = this.chart.ctx,
+              x = activePoint.tooltipPosition().x,
+              topY = this.chart.legend.bottom,
+              bottomY = this.chart.chartArea.bottom;
+            
+            // draw line
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x, topY);
+            ctx.lineTo(x, bottomY);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+      });
+      
+      return {
+        labels: historicPriceData.labels,
+        datasets: Object.entries(historicPriceData.synthPrices)
+          .filter(([name, prices]) => {
+            return name === synthInFocus || name === 'Reference';
+          }) // TODO
+          .map(([name, prices]) => ({
+            label: name,
+            data: prices,
+            backgroundColor: name === 'Reference' ? gradientFill : 'transparent',
+            borderColor: name === 'Reference' ? '#fff' : '#FF0099',
+            borderWidth: 1,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointHoverBackgroundColor: '#FF0099',
+            tension: 0.1,
+          })),
+      }
     };
 
     console.log(data);
@@ -157,8 +191,8 @@ export const SynthType: React.FC = () => {
     const legend = {
       display: false,
     };
-
-    return <Line data={data} options={options} legend={legend} />;
+    
+    return <Line data={data} style={{width:'100%',height:'340px'}} options={options} legend={legend} />;
   };
 
   const SynthGroupRow: React.FC<ISynthTypeItem> = (props) => {
