@@ -11,7 +11,7 @@ import discord from '@/assets/discord.svg';
 import accountImage from '@/assets/ellipse.png';
 
 const Navbar = () => {
-  const { account, disconnectWallet } = useContext(EthereumContext);
+  const { account, disconnectWallet, chainId } = useContext(EthereumContext);
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
   const [openWalletMenu, setWalletMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
@@ -27,8 +27,17 @@ const Navbar = () => {
 
   const toggleDropdown = () => setWalletMenu(!openWalletMenu);
   const toggleMenu = () => setOpenMenu(!openMenu);
-
-  const Navigation: React.FC = () => {
+  
+  let message = "";
+  let messageColor = "";
+  if (chainId != 1) {
+    message = "Wrong network"
+    messageColor = "red"
+  } else {
+    message = "Mainnet"
+  }
+  
+  const Navigation: React.FC = () => {    
     return (
       <div className="flex-column expand padding-right-3 tablet-padding-x-4 tablet-padding-y-8 min-height-full">
         <SearchForm className="margin-left-8 margin-top-6 tablet-margin-0 w-form" />
@@ -52,9 +61,6 @@ const Navbar = () => {
             <a href="https://discord.com/invite/fbHX7NRa52" className="margin-right-0 w-inline-block">
               <img src={discord} loading="lazy" alt="Discord logo" className="icon discord in-button" />
             </a>
-            <a href="#" className="margin-right-0 w-inline-block">
-              <Icon name="Mail" className="icon in-button" />
-            </a>
           </div>
         </div>
       </div>
@@ -75,7 +81,10 @@ const Navbar = () => {
       <div className="wallet">
         <img src={accountImage} loading="lazy" alt="" className="avatar margin-right-2" />
         <div className="expand relative">
-          <div className="text-xs">Metamask</div>
+          <div className="flex-align-center">
+            <div className={`height-4 pill ${messageColor}`}></div>
+            <div className="text-xs margin-left-1">{message}</div>
+          </div>
           <div className="text-color-4">{accountDisplay}</div>
         </div>
         <div className="margin-left-6 tablet-hide relative w-dropdown">
