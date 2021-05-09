@@ -9,7 +9,7 @@ import './degenerative.css';
 import './normalize.css';
 
 import { Landing, Synth, Explore, Portfolio, SynthType, NotFound } from '@/pages';
-import { Navbar } from '@/components';
+import { Navbar, Background } from '@/components';
 
 const App: React.FC = () => {
   const { i18n } = useTranslation();
@@ -37,6 +37,7 @@ const App: React.FC = () => {
           </Switch>
         </FlexRow>
       </ContextProviders>
+      <Background />
     </Router>
   );
 };

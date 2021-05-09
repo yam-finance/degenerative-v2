@@ -1,4 +1,5 @@
 export * from './ActionCard';
+export * from './Background.tsx';
 export * from './Breadcrumbs';
 export * from './ConnectWallet';
 export * from './Dropdown';
