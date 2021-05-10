@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import { SearchForm, NavbarButton, Icon, Dropdown, ConnectWallet, LanguageSwitcher } from '@/components';
 import { EthereumContext } from '@/contexts';
 // import { useTranslation } from 'react-i18next';
+import { picasso } from '@vechain/picasso';
 
 import zombieHead from '@/assets/zombie_head_large.png';
 import discord from '@/assets/discord.svg';
-// TODO change user's account image
-import accountImage from '@/assets/ellipse.png';
 
 export const Navbar = () => {
   const { account, disconnectWallet } = useContext(EthereumContext);
@@ -24,7 +23,7 @@ export const Navbar = () => {
     }
   }, [account]);
 
-  const toggleDropdown = () => setWalletMenu(!openWalletMenu);
+  const toggleDisconnectMenu = () => setWalletMenu(!openWalletMenu);
   const toggleMenu = () => setOpenMenu(!openMenu);
 
   const Navigation: React.FC = () => {
@@ -64,17 +63,17 @@ export const Navbar = () => {
     <div className="flex-column padding-y-8 margin-right-3 sticky-top-0 max-height-viewport-full overflow-auto tablet-absolute-top tablet-padding-y-2">
       <Link to="/" className="margin-left-6 flex-row-middle padding-left-3 padding-right-3 w-inline-block">
         <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
-        <h5 className="margin-0 margin-right-2 expand">Degenerative</h5>
+        <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
         {/* TODO Figure out where to put this
-        <LanguageSwitcher /> */}
-        <div className="pill">v 2.0</div>
+        <LanguageSwitcher /> 
+        <div className="pill">v 2.0</div>*/}
       </Link>
       <div className="expand tablet-hide">
         <Navigation />
       </div>
       {account ? (
         <div className="wallet">
-          <img src={accountImage} loading="lazy" alt="" className="avatar margin-right-2" />
+          <img src={`data:image/svg+xml;utf8,${picasso(account)}`} className="avatar margin-right-2" />
           <div className="expand relative">
             <div className="text-xs">Metamask</div>
             <div className="text-color-4">{accountDisplay}</div>
@@ -84,7 +83,7 @@ export const Navbar = () => {
               className="icon-button w-dropdown-toggle"
               onClick={(e) => {
                 e.preventDefault();
-                toggleDropdown();
+                toggleDisconnectMenu();
               }}
             >
               <Icon name="ChevronDown" className="icon opacity-100" />

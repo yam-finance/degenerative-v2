@@ -56,7 +56,6 @@ export const MarketProvider: React.FC = ({ children }) => {
             const daysTillExpiry = Math.round((expiration.getTime() - dateToday.getTime()) / (3600 * 24));
             const isExpired = dateToday >= expiration;
 
-            console.log(name);
             const liquidity = pool.reserveUSD ?? 0;
 
             let priceUsd;
@@ -97,14 +96,14 @@ export const MarketProvider: React.FC = ({ children }) => {
 
             // TODO is this necessary?
             data[name] = {
-              price: 0,
+              price: 1,
               priceUsd: 0,
               collateralPriceUsd: 0,
               liquidity: 0,
-              totalSupply: 0,
-              tvl: 0,
-              marketCap: 0,
-              volume24h: 0, // TODO need to get from subgraph
+              totalSupply: 1,
+              tvl: 1,
+              marketCap: 1,
+              volume24h: 1, // TODO need to get from subgraph
               globalUtilization: 0.1,
               minTokens: 1,
               liquidationPoint: 0.01,

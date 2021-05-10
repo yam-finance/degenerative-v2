@@ -1,6 +1,6 @@
 // Get reference price history for each synth type
 import axios from 'axios';
-import { SynthGroups, getUsdPriceHistory, getDateString } from '@/utils';
+import { SynthGroups, getUsdPriceHistory, getDateString, roundDecimals } from '@/utils';
 import { fromUnixTime } from 'date-fns';
 
 /** Get reference price history and transform for use in charts. Returns array
@@ -18,7 +18,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
 
       return {
         timestamp: dateString,
-        price: Math.round(scaledPrice * usdPriceCollateral * 100) / 100,
+        price: roundDecimals(scaledPrice * usdPriceCollateral, 2),
       };
     });
   };
@@ -26,9 +26,11 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   const fetchUstonks = async (collateral: string, chainId: number) => {
     const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     // TODO !!!!!!!!!!!!
-    // TODO endpoint for choosing cycle is broken
+    // TODO endpoint hardcoded to jun21 for now
     // TODO !!!!!!!!!!!!
-    const res = await axios.get('http://data.yam.finance/ustonks/index-history-daily');
+    const res = await axios.get('http://data.yam.finance/ustonks/index-history-daily/jun21');
+
+    console.log(res.data);
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
@@ -36,7 +38,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
 
       return {
         timestamp: dateString,
-        price: Math.round(price * usdPriceCollateral * 100) / 100,
+        price: roundDecimals(price * usdPriceCollateral, 2),
       };
     });
   };

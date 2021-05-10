@@ -46,9 +46,9 @@ export const SynthGroup: React.FC = () => {
           if (filterSynths === 'All') {
             return true;
           } else if (filterSynths === 'Live') {
-            return synthMarketData[synthName].daysTillExpiry > 0;
+            return !synthMarketData[synthName].isExpired;
           } else {
-            return synthMarketData[synthName].daysTillExpiry <= 0;
+            return synthMarketData[synthName].isExpired;
           }
         })
         .forEach(([synthName, synthInfo]) => {
@@ -71,6 +71,7 @@ export const SynthGroup: React.FC = () => {
     if (!isEmpty(synthMarketData)) initSynthGroups();
   }, [synthMarketData, filterSynths]);
 
+  // TODO account for different data per synth
   useEffect(() => {
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
 
@@ -209,6 +210,13 @@ export const SynthGroup: React.FC = () => {
   };
 
   const ChartSelector: React.FC = () => {
+    if (isEmpty(synthGroup)) {
+      return (
+        <div className="tabs">
+          <div className="tab">No synths available</div>
+        </div>
+      );
+    }
     return (
       <div className="tabs portrait-margin-top-1">
         {Object.keys(synthGroup).map((synthName, index) => {

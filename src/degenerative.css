@@ -1840,7 +1840,7 @@ textarea.w-select {
   display: none !important;
 }
 
- {
+.w-layout-grid {
   display: -ms-grid;
   display: grid;
   grid-auto-columns: 1fr;

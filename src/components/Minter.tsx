@@ -3,7 +3,7 @@ import { useFormState } from 'react-use-form-state';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 
-import { Dropdown, Icon } from '@/components';
+import { Dropdown, Icon, Loader } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, useSynthActions, ISynthActions } from '@/hooks';
 import { roundDecimals, isEmpty } from '@/utils';
@@ -131,7 +131,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
   //const actions = useSynthActions();
-  const erc20 = useToken(); // TODO remove after getting from synthsInWallet
+  const erc20 = useToken();
 
   const [formState, { number }] = useFormState<MinterFormFields>(
     {
@@ -176,12 +176,8 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       }
 
       const marketData = synthMarketData[currentSynth];
-
       const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
-      const synthInWallet = synthsInWallet.find((balance) => balance.name == currentSynth);
-
       const utilization = Number(sponsorPosition?.utilization) ?? 0;
-
       const sponsorCollateral = Number(sponsorPosition?.collateralAmount ?? 0);
       const sponsorTokens = Number(sponsorPosition?.tokenAmount ?? 0);
 
@@ -292,34 +288,6 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     // Must divide by price because global utilization is scaled by price
     const newTokens = newCollateral * (state.globalUtilization / state.tokenPrice);
     setFormInputs(newCollateral, newTokens);
-  };
-
-  // TODO THIS IS A TEMPORARY STOPGAP. Wrap eth must be added to collateral window option
-  const WrapEthButton: React.FC = () => {
-    const [ethAmount, setEthAmount] = useState(0);
-
-    return (
-      <div>
-        <input
-          type="number"
-          className="form-input border-bottom-none w-input"
-          value={ethAmount}
-          onChange={(e) => {
-            e.preventDefault();
-            setEthAmount(Number(e.target.value));
-          }}
-        />
-        <button
-          className="button w-button"
-          onClick={(e) => {
-            e.preventDefault();
-            actions.onWrapEth(ethAmount);
-          }}
-        >
-          Wrap Eth
-        </button>
-      </div>
-    );
   };
 
   interface GaugeLabelProps {
@@ -749,17 +717,12 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     );
   };
 
-  // TODO fix loader, center and make spin
+  // TODO vertically center spinner
   if (state.loading) {
-    return (
-      <div className="flex-align-center flex-justify-center">
-        <Icon name="Loader" className="spin" />
-      </div>
-    );
+    return <Loader className="flex-align-center flex-justify-center padding-top-48" />;
   }
   return (
     <>
-      <WrapEthButton />
       <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
         <div className="margin-0 w-form">
           <form className="max-width-small flex-column background-color-2 padding-8 radius-xl box-shadow-large z-10 padding-y-12 landscape-padding-2">
@@ -834,7 +797,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
                   <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">
                     {formState.values.pendingTokens} {currentSynth}
                   </h5>
-                  <div className="height-9 flex-align-end">
+                  <div className="height-auto flex-align-end">
                     <input
                       {...number('pendingTokens')}
                       type="number"

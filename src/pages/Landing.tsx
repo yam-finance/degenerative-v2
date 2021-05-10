@@ -32,8 +32,7 @@ export const Landing: React.FC = () => {
         <div className="container-1280 flex-row-middle padding-y-2 portrait-padding-x-2 w-container">
           <a href="#" className="margin-left-6 flex-row-middle w-inline-block">
             <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
-            <h5 className="margin-0 margin-right-2 expand">Degenerative</h5>
-            <div className="pill">v 2.0</div>
+            <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
           </a>
           <nav role="navigation" className="margin-left-auto flex-align-center landscape-padding-2 landscape-background-color-2 w-nav-menu">
             <a href="#" target="_blank" className="text-color-4 landscape-text-align-center landscape-block w-nav-link">
@@ -45,7 +44,7 @@ export const Landing: React.FC = () => {
           </nav>
           {/* TODO make into responsive navbar component */}
           <div className="margin-left-auto landscaape-background-color-2 w-nav-button">
-            <div className="w-icon-nav-menu"></div>
+            <div className="w-icon-nav-menu" />
           </div>
         </div>
       </div>
@@ -117,7 +116,7 @@ export const Landing: React.FC = () => {
           </a> */}
 
           <h1 className="text-align-center text-5xl">Trade, hedge, &amp; earn on all flavors of synths</h1>
-          <p className="text-large text-color-4 text-align-center">Yam Synthetics is your one-stop shop for every synth on the market</p>
+          <p className="text-large text-color-4 text-align-center">Yam Synths is your one-stop shop for every synth on the market</p>
           <div className="flex-space-between flex-align-baseline margin-top-12">
             <h4>Explore Yam Synths</h4>
             <Link to="/synths" className="text-color-5">
@@ -130,6 +129,7 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
+      {/*
       <div className="contains-rings">
         <div className="margin-y-48 relative flex-column-centered container-1140 w-container">
           <h2 className="text-align-center text-4xl z-10">
@@ -149,10 +149,11 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
+      */}
       <div className="section-in-base">
         <div className="margin-y-48 radius-xl background-color-4 padding-12 box-shadow-large sheen margin-y-0 relative container-1140 w-container">
           <h2 className="width-1-2 margin-bottom-8">
-            Yam Synthetics brings you new <span className="text-color-1">opportunities</span>
+            Yam Synths brings you new <span className="text-color-1">opportunities</span>
           </h2>
           <div className="flex-align-center margin-top-4">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
@@ -258,7 +259,7 @@ export const Landing: React.FC = () => {
             <div>
               <h6 className="margin-top-4">Information</h6>
               <a href="#" className="block margin-bottom-2">
-                About Taro
+                About Yam Synths
               </a>
               <a href="#" className="block margin-bottom-2">
                 Blog
@@ -271,12 +272,11 @@ export const Landing: React.FC = () => {
               </a>
             </div>
             <a href="#" className="flex-align-center w-inline-block">
-              <img src={zombieHead} loading="lazy" alt="Yam Synthetics" className="degen margin-right-2" />
-              <h5 className="margin-0 margin-right-2 expand">Degenerative</h5>
-              <div className="pill">v 2.0</div>
+              <img src={zombieHead} loading="lazy" alt="Yam Synths" className="degen margin-right-2" />
+              <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
             </a>
             <p className="text-align-right margin-top-4 text-small landscape-text-align-left">
-              © 2020 Yam Synthetics. All rights reserved.
+              © 2020 Yam Synths. All rights reserved.
               <br />
             </p>
           </div>

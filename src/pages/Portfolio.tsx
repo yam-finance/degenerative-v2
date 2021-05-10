@@ -20,7 +20,7 @@ export const Portfolio = () => {
     const { name, tokenAmount, collateralAmount, utilization } = props;
 
     // TODO get back to this!!
-    const imgLocation = `src/assets/images/${SynthGroups[group].image}.png`;
+    const imgLocation = `/images/${SynthGroups[group].image}.png`;
 
     const [collateralPrice, setCollateralPrice] = useState(0);
     (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
