@@ -56,7 +56,8 @@ export const MarketProvider: React.FC = ({ children }) => {
             const daysTillExpiry = Math.round((expiration.getTime() - dateToday.getTime()) / (3600 * 24));
             const isExpired = dateToday >= expiration;
 
-            const liquidity = pool.reserveUSD;
+            console.log(name);
+            const liquidity = pool.reserveUSD ?? 0;
 
             let priceUsd;
             let pricePerCollateral;

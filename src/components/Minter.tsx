@@ -3,7 +3,7 @@ import { useFormState } from 'react-use-form-state';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 
-import { Icon } from '@/components';
+import { Dropdown, Icon } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, useSynthActions, ISynthActions } from '@/hooks';
 import { roundDecimals, isEmpty } from '@/utils';
@@ -330,19 +330,27 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     emphasized?: boolean;
   }
   const GaugeLabel: React.FC<GaugeLabelProps> = ({ label, tooltip, className, height, emphasized }) => {
+    const [showTooltip, setShowTooltip] = useState(false);
+
     const labelHeight = {
       bottom: `${height * 100}%`,
     };
 
+    const toggleDropdown = () => setShowTooltip(!showTooltip);
+
     return (
       <div className={className} style={labelHeight}>
         <div className="margin-0 w-dropdown">
-          <div className="padding-0 width-4 height-4 flex-align-center flex-justify-center w-dropdown-toggle">
+          <div
+            className="padding-0 width-4 height-4 flex-align-center flex-justify-center w-dropdown-toggle"
+            onMouseEnter={toggleDropdown}
+            onMouseLeave={toggleDropdown}
+          >
             <Icon name="Info" className="icon medium" />
           </div>
-          <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
+          <Dropdown className="dropdown-list radius-large box-shadow-medium w-dropdown-list" openDropdown={showTooltip}>
             <div className="width-32 text-xs">{tooltip}</div>
-          </nav>
+          </Dropdown>
         </div>
         <div className={`margin-left-1 text-xs ${emphasized && 'text-color-4'}`}>{label}</div>
       </div>
@@ -759,8 +767,19 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
             <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20" />
             <div className="flex-row">
               <div className="expand relative padding-right-2">
-                <GaugeLabel label="Global Utilization" tooltip="TODO" className="gcr-legend" height={state.globalUtilization} />
-                <GaugeLabel label="Liquidation" tooltip="TODO" className="liquidation-legend" height={state.liquidationPoint} emphasized />
+                <GaugeLabel
+                  label="Global Utilization"
+                  tooltip="Average utilization of all sponsor positions."
+                  className="gcr-legend"
+                  height={state.globalUtilization}
+                />
+                <GaugeLabel
+                  label="Liquidation"
+                  tooltip="Position is at risk of liquidation at this point."
+                  className="liquidation-legend"
+                  height={state.liquidationPoint}
+                  emphasized
+                />
                 <div className="background-color-5 padding-2 radius-large z-10 width-32 collat">
                   <h6 className="text-align-center margin-bottom-0">Collateral</h6>
                   <div className="width-full flex-justify-center margin-top-1 w-dropdown">
@@ -808,7 +827,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
                   <h6 className="text-align-center margin-bottom-0">Synth</h6>
                   {state.pendingUtilization >= 0 && (
                     <>
-                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{roundDecimals(state.pendingUtilization * 100, 2)}%</h4>
+                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{state.pendingUtilization.toFixed(2)}%</h4>
                       <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
                     </>
                   )}

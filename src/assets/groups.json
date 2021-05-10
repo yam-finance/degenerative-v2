@@ -22,5 +22,11 @@
     "collateral": "YAM",
     "image": "yield_dollar",
     "creator": "Yam"
+  },
+  "uPUNK-ETH": {
+    "description": "Speculate on the value of Cryptopunks",
+    "collateral": "WETH",
+    "image": "cryptopunk",
+    "creator": "UMA"
   }
 }

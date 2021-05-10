@@ -88,10 +88,7 @@ export const Explore = () => {
         <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
-        <div className="button button-small">
-          {aprMin}-{aprMax}% APR
-        </div>{' '}
-        {/* TODO */}
+        <div className="button button-small">{aprMin === aprMax ? `${aprMax}% APR` : `${aprMin}-${aprMax}% APR`}</div> {/* TODO */}
         <div className="pill absolute-top-right margin-4">New</div>
       </Link>
     );
@@ -115,7 +112,7 @@ export const Explore = () => {
         </div>
         <div></div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{aprMin === aprMax ? `${aprMin}` : `${aprMin}-${aprMax}%`}</div>
+          <div className="text-color-4">{aprMin === aprMax ? `${aprMax}%` : `${aprMin}-${aprMax}%`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{formatForDisplay(totalLiquidity)}</div>
@@ -128,7 +125,7 @@ export const Explore = () => {
   };
 
   const Sidebar: React.FC = () => {
-    if (!sidebarData) return null;
+    if (!synthGroupData[sidebarData]) return null;
     return (
       <>
         <h3 className="margin-bottom-1">${formatForDisplay(synthGroupData[sidebarData].totalTvl)}</h3>
@@ -136,13 +133,13 @@ export const Explore = () => {
         <div className="margin-top-8">
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
-              <div>Synth Trading Volume</div>
+              <div>Trading Volume</div>
             </div>
             <div className="weight-medium text-color-4">${formatForDisplay(synthGroupData[sidebarData].totalVolume24h)}</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
-              <div>Synth Marketcap</div>
+              <div>Marketcap</div>
             </div>
             <div className="weight-medium text-color-4">${formatForDisplay(synthGroupData[sidebarData].totalMarketCap)}</div>
           </div>

@@ -1,13 +1,20 @@
-/** 
- * @dev Example implementation: <Tooltip position="top" tooltipStyle="center" tooltipText="TVL" /> 
+/**
+ * @dev Example implementation: <Tooltip position="top" tooltipStyle="center" tooltipText="TVL" />
  * @notice Hover state has to be handled on the component where this is implemented.
  */
 
 import React from 'react';
 
-export const Tooltip = (props: any) => {
+interface TooltipProps {
+  position?: 'top';
+  tooltipText: string;
+  tooltipStyle?: 'center' | 'right';
+  className?: string;
+}
+
+export const Tooltip: React.FC<TooltipProps> = (props: TooltipProps) => {
   return (
-    <div className={`svg-container ${props.position == 'top' ? 'svg-pos-top' : 'svg-pos-bottom'}`}>
+    <div className={`svg-container ${props.position == 'top' ? 'svg-pos-top' : 'svg-pos-bottom'} ${props.className}`}>
       <div className="svg-text">
         {props.tooltipText}
         <svg
@@ -20,8 +27,6 @@ export const Tooltip = (props: any) => {
           <polygon className="tooltip-polygon" points="0,0 127.5,127.5 255,0" />
         </svg>
       </div>
-    </div >
+    </div>
   );
 };
-
-export default Tooltip;
