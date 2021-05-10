@@ -6,6 +6,7 @@ import { UserContext, MarketContext } from '@/contexts';
 import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
 import { SynthInfo, SynthTypes, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 import { IMap } from '@/types';
+import chartLoader from '@/assets/chart-loader.svg';
 
 interface SynthParams {
   type: string;
@@ -191,7 +192,7 @@ export const SynthType: React.FC = () => {
     const legend = {
       display: false,
     };
-    
+    // if data not available <img style={{height: '300px', objectFit: 'cover'}} className="width-full pulse" src={chartLoader}/>
     return <Line data={data} style={{width:'100%',height:'340px'}} options={options} legend={legend} />;
   };
 
@@ -268,7 +269,9 @@ export const SynthType: React.FC = () => {
         <div className="padding-x-8 padding-y-1 flex-row portrait-flex-column portrait-flex-align-start">
           <ChartSelector />
         </div>
-        <div className="width-full margin-y-2 w-embed w-script">{historicPriceData && <Chart />}</div>
+        <div style={{height: '300px'}}>
+          <div className="width-full margin-y-2 w-embed w-script">{historicPriceData && <Chart />}</div>
+        </div>
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <TableFilter />
         <Table headers={['Maturity', 'APY', 'Your Balance', 'Liquidity', 'Price']}>
