@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { SearchForm, NavbarButton, Icon, Dropdown, ConnectWallet, LanguageSwitcher } from '@/components';
 import { EthereumContext } from '@/contexts';
 // import { useTranslation } from 'react-i18next';
-import { picasso } from '@vechain/picasso';
+import { picasso } from '@/utils';
 
 import zombieHead from '@/assets/zombie_head_large.png';
 import discord from '@/assets/discord.svg';

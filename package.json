@@ -13,6 +13,7 @@
   "dependencies": {
     "@reactchartjs/react-chart.js": "^1.0.0-rc.3",
     "@rollup/plugin-eslint": "^8.0.1",
+    "@types/mersenne-twister": "^1.1.2",
     "@uniswap/sdk": "^3.0.3",
     "@vechain/picasso": "^2.1.1",
     "@web3-react/core": "^6.1.9",
@@ -27,6 +28,7 @@
     "graphql-request": "^3.4.0",
     "i18next": "^20.2.1",
     "i18next-browser-languagedetector": "^6.1.0",
+    "mersenne-twister": "^1.1.0",
     "numeral": "^2.0.6",
     "react": "^17.0.0",
     "react-chartjs-2": "^2.11.1",
