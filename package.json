@@ -33,6 +33,7 @@
     "react-i18next": "^11.8.13",
     "react-query": "^3.13.0",
     "react-router-dom": "^5.2.0",
+    "react-transition-group": "^4.4.1",
     "ts-generator": "^0.1.1",
     "use-async-effect": "^2.2.2",
     "use-react-router-breadcrumbs": "^2.0.0"

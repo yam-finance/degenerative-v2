@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { SearchForm, NavbarButton, Icon, Dropdown } from '@/components';
 import LanguageSwitcher from '@/components/LangSwitcher';
 import { EthereumContext } from '@/contexts';
+import { CSSTransition } from 'react-transition-group';
 // import { useTranslation } from 'react-i18next';
 
 import zombieHead from '@/assets/zombie_head_large.png';
@@ -103,7 +104,7 @@ const Navbar = () => {
                 e.preventDefault();
                 disconnectWallet();
               }}
-              className="dropdown-link w-dropdown-link"
+              className="dropdown-link w-dropdown-link background-color-transparent"
             >
               Disconnect
             </button>
@@ -119,9 +120,13 @@ const Navbar = () => {
           >
             <Icon name="Menu" className="icon opacity-100" />
           </div>
-          <Dropdown className="menu background-color-1 border-1px blur sheen w-dropdown-list" openDropdown={openMenu}>
-            <Navigation />
-          </Dropdown>
+          <CSSTransition in={openMenu} timeout={500} classNames="popup">
+    
+            <Dropdown className="menu background-color-1 border-1px blur sheen w-dropdown-list" openDropdown={openMenu}>
+                              <Navigation />
+              
+            </Dropdown>
+          </CSSTransition>
         </div>
         <div className="overlay blur radius-full"></div>
       </div>
