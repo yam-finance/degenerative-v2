@@ -28,7 +28,7 @@ export const getSynthMetadata = (chainId: number) => {
       // Add in synth type information to object
       synthInfo[name] = {
         ...synth,
-        imgLocation: `src/assets/images/${image}.png`, // TODO add image locations to json
+        imgLocation: `/images/${image}.png`, // TODO add image locations to json
         group: group,
       };
     });

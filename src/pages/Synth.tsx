@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
-
-import { useSynthActions } from '@/hooks/useSynthActions';
-import { UserContext, MarketContext } from '@/contexts';
-import { Page, Navbar, Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
+
+import { useSynthActions, useToken } from '@/hooks';
+import { UserContext, MarketContext, EthereumContext } from '@/contexts';
+import { Page, Navbar, Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { ISynthInfo, ISynthMarketData } from '@/types';
+import { utils } from 'ethers';
 import { isEmpty } from '@/utils';
 import numeral from 'numeral';
 
@@ -19,8 +20,9 @@ export const Synth: React.FC = () => {
   const { group, cycleYear, action } = useParams<SynthParams>();
   const { currentSynth, currentCollateral, setSynth, mintedPositions } = useContext(UserContext);
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
+  const { signer } = useContext(EthereumContext);
 
-  const [{ cycle, year }, setSynthInfo] = useState({} as ISynthInfo);
+  const [{ cycle, year, collateral }, setSynthInfo] = useState({} as ISynthInfo);
   const [{ isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization, liquidationPoint }, setMarketData] = useState({} as ISynthMarketData);
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
   const [withdrawalMinutesLeft, setWithdrawalMinutesLeft] = useState(0);
@@ -144,6 +146,67 @@ export const Synth: React.FC = () => {
     );
   };
 
+  const WrapEthDialog: React.FC = () => {
+    const [maxEth, setMaxEth] = useState(0);
+    const [ethAmount, setEthAmount] = useState(0);
+
+    useEffect(() => {
+      const getEthBalance = async () => {
+        if (signer) {
+          const ethBalance = await signer.getBalance();
+          console.log('ETH BALANCE');
+          console.log(utils.formatEther(ethBalance));
+          setMaxEth(Number(utils.formatEther(ethBalance)));
+        }
+      };
+      getEthBalance();
+    }, [signer]);
+
+    const setMaximum = (e: React.MouseEvent) => {
+      e.preventDefault();
+      setEthAmount(maxEth);
+    };
+
+    return (
+      <div className="width-full padding-2 radius-large background-color-2 margin-bottom-6 text-color-4">
+        <div className="flex-align-center margin-bottom-2 flex-space-between">
+          <div className="text-xs opacity-50">Wrap ETH</div>
+          <Icon name="AlertOctagon" className="icon medium blue" />
+        </div>
+        <div className="flex-row">
+          <div className="width-2 radius-full background-color-white margin-right-2 blue"></div>
+          <div>
+            <div className="flex-row">
+              <input
+                type="number"
+                className="form-input small margin-bottom-1 w-input"
+                value={ethAmount}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setEthAmount(Number(e.target.value));
+                }}
+              />
+              <button className="button-secondary button-tiny margin-right-1 white w-button" onClick={(e) => setMaximum(e)}>
+                Max
+              </button>
+            </div>
+            <div className="flex-row margin-top-2">
+              <button
+                className="button-secondary button-tiny margin-right-1 white w-button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  actions.onWrapEth(ethAmount);
+                }}
+              >
+                Wrap
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (!currentSynth) return null;
   return (
     <Page>
@@ -155,6 +218,7 @@ export const Synth: React.FC = () => {
         <Action />
       </MainDisplay>
       <SideDisplay>
+        {collateral === 'WETH' && <WrapEthDialog />}
         {withdrawalAmount > 0 && <WithdrawalRequestDialog />}
         <SettleDialog />
         <div>

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SearchForm } from '@/components';
-import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow } from '@/components';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow, Loader } from '@/components';
 import { MarketContext } from '@/contexts';
 import { SynthGroups, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
@@ -98,7 +98,6 @@ export const Explore = () => {
     const { aprMin, aprMax, totalLiquidity, totalMarketCap, image } = synthGroupData[group];
     const { description } = SynthGroups[group];
 
-    if (isEmpty(synthMarketData)) return <TableRow>Loading...</TableRow>;
     return (
       <TableRow to={`/synths/${group}`} onMouseEnter={() => setSidebarData(group)}>
         <div className="flex-align-center portrait-width-full width-1-2">
@@ -163,17 +162,23 @@ export const Explore = () => {
         <div className="padding-x-8 flex-row margin-top-4 flex-wrap">
           <SearchForm setSearch={setSearchTerm} className="margin-0 margin-right-2 expand portrait-width-full portrait-margin-bottom-2 w-form" />
         </div>
-        <div className="padding-x-8 flex-align-baseline"></div>
-        <div className="grid-3-columns margin-x-8 margin-top-4">
-          {Object.keys(synthGroupData).map((group, index) => {
-            return <SynthGroupBlock group={group} key={index} />;
-          })}
-        </div>
-        <Table headers={['Synth', 'APR', 'Liquidity', 'Market Cap']} headerClass={['width-1-2', '', '', '']}>
-          {Object.keys(synthGroupData).map((group, index) => {
-            return <SynthGroupRow group={group} key={index} />;
-          })}
-        </Table>
+        <div className="padding-x-8 flex-align-baseline" />
+        {isEmpty(synthMarketData) ? (
+          <Loader className="flex-align-center flex-justify-center padding-top-48" />
+        ) : (
+          <>
+            <div className="grid-3-columns margin-x-8 margin-top-4">
+              {Object.keys(synthGroupData).map((group, index) => {
+                return <SynthGroupBlock group={group} key={index} />;
+              })}
+            </div>
+            <Table headers={['Synth', 'APR', 'Liquidity', 'Market Cap']} headerClass={['width-1-2', '', '', '']}>
+              {Object.keys(synthGroupData).map((group, index) => {
+                return <SynthGroupRow group={group} key={index} />;
+              })}
+            </Table>
+          </>
+        )}
       </MainDisplay>
       <SideDisplay>
         <Sidebar />
