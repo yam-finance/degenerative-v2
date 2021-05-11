@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { Icon } from '@/components';
 import { SynthGroups } from '@/utils';
-import zombieHead from '@/assets/zombie_head_large.png';
+import yamIcon from '@/assets/yamIcon.png';
 import ethIcon from '@/assets/ethIcon.png';
 import mintLp from '@/assets/mintLp.png';
 import hold from '@/assets/hold.png';
@@ -20,7 +20,6 @@ export const Landing: React.FC = () => {
         <img src={`/images/${image}.png`} className="width-32" />
         <h4 className="margin-top-8">{name}</h4>
         <p className="text-small opacity-60">{description}</p>
-        <div className="button">Earn {apr}% APY</div>
         <div className="pill absolute-top-right margin-4">New</div>
       </Link>
     );
@@ -31,7 +30,7 @@ export const Landing: React.FC = () => {
       <div data-collapse="small" data-animation="default" data-duration="400" role="banner" className="background-color-transparent w-nav">
         <div className="container-1280 flex-row-middle padding-y-2 portrait-padding-x-2 w-container">
           <a href="#" className="margin-left-6 flex-row-middle w-inline-block">
-            <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
+            <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
             <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
           </a>
           <nav role="navigation" className="margin-left-auto flex-align-center landscape-padding-2 landscape-background-color-2 w-nav-menu">
@@ -124,8 +123,10 @@ export const Landing: React.FC = () => {
             </Link>
           </div>
           <div className="grid-3-columns">
-            <SynthBlock name="uGas-JUN21" image="ugas" url="/synths/uGas/JUN21" description={SynthGroups['uGas'].description} apr={50} />
-            <SynthBlock name="uSTONKS-APR21" image="ustonks" url="/synths/uStonks/APR21" description={SynthGroups['uStonks'].description} apr={50} />
+            {/* TODO Finalize names, punctuation, links, etc */}
+            <SynthBlock name="uPUNKS" image="cryptopunk" url="/synths/uPUNK-ETH" description={SynthGroups['uPUNK-ETH'].description} apr={50} />
+            <SynthBlock name="uGAS" image="ugas" url="/synths/uGas" description={SynthGroups['uGas'].description} apr={50} />
+            <SynthBlock name="uSTONKS" image="ustonks" url="/synths/uStonks" description={SynthGroups['uStonks'].description} apr={50} />
           </div>
         </div>
       </div>
@@ -272,7 +273,7 @@ export const Landing: React.FC = () => {
               </a>
             </div>
             <a href="#" className="flex-align-center w-inline-block">
-              <img src={zombieHead} loading="lazy" alt="Yam Synths" className="degen margin-right-2" />
+              <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
               <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
             </a>
             <p className="text-align-right margin-top-4 text-small landscape-text-align-left">

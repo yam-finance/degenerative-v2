@@ -23,7 +23,9 @@ export const Synth: React.FC = () => {
   const { signer } = useContext(EthereumContext);
 
   const [{ cycle, year, collateral }, setSynthInfo] = useState({} as ISynthInfo);
-  const [{ isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization, liquidationPoint }, setMarketData] = useState({} as ISynthMarketData);
+  const [{ isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization, liquidationPoint, minTokens }, setMarketData] = useState(
+    {} as ISynthMarketData
+  );
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
   const [withdrawalMinutesLeft, setWithdrawalMinutesLeft] = useState(0);
 
@@ -236,7 +238,7 @@ export const Synth: React.FC = () => {
           </div>
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
-              <div>Global Utilization</div>
+              <div>Global utilization</div>
             </div>
             <div className="weight-medium text-color-4">{globalUtilization * 100}%</div>
           </div>
@@ -245,6 +247,14 @@ export const Synth: React.FC = () => {
               <div>Liquidation</div>
             </div>
             <div className="weight-medium text-color-4">{liquidationPoint * 100}%</div>
+          </div>
+          <div className="flex-align-baseline margin-bottom-2">
+            <div className="expand flex-align-center">
+              <div>Minimum position</div>
+            </div>
+            <div className="weight-medium text-color-4">
+              {minTokens} {currentSynth}
+            </div>
           </div>
         </div>
       </SideDisplay>

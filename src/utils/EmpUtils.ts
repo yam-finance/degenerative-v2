@@ -10,7 +10,7 @@ export const getEmpState = async (synth: ISynthInfo, chainId: number, provider =
   const synthDecimals = synth.token.decimals ?? 18;
   const collateralName = synth.collateral;
   const collateralData = getCollateralData(chainId);
-  const collateralDecimals = collateralData[collateralName].decimals;
+  const collateralDecimals = collateralData[collateralName].decimals; // TODO this might always be equal to synth decimals
 
   try {
     const empContract = Empv2__factory.connect(empAddress, provider);
@@ -41,9 +41,13 @@ export const getEmpState = async (synth: ISynthInfo, chainId: number, provider =
     const totalSupplyNorm = Number(utils.formatUnits(totalSupply, synthDecimals));
 
     const globalUtil = totalSupplyNorm / (totalCollateralNorm * feeMultiplier);
-    const globalUtilRounded = roundDecimals(globalUtil, 2);
+    const globalUtilRounded = roundDecimals(globalUtil, 4);
+    console.log(synth.group);
+    console.log(totalSupplyNorm);
+    console.log(totalCollateralNorm);
+    console.log(globalUtil);
 
-    const minTokens = Number(utils.formatEther(minimumTokens));
+    const minTokens = Number(utils.formatUnits(minimumTokens, collateralDecimals));
     const liquidationPoint = 1 / Number(utils.formatEther(collateralRequirement));
 
     return {

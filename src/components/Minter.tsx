@@ -573,11 +573,6 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
     const styles = 'button-secondary button-tiny glass margin-1 w-button';
 
-    // TODO replace with a css class
-    const disabledButton = {
-      opacity: 0.1,
-    };
-
     const ActionDescription: React.FC<{ action: MinterAction }> = ({ action }) => {
       switch (action) {
         case 'MINT': {
@@ -608,41 +603,36 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
             Mint Synth
           </button>
           <button
-            style={noPosition ? disabledButton : {}}
             disabled={noPosition}
-            className={clsx(styles, currentAction === 'ADD_COLLATERAL' && 'selected')}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'ADD_COLLATERAL' && 'selected')}
             onClick={() => changeAction('ADD_COLLATERAL')}
           >
             Add Collateral
           </button>
           <button
-            style={noPosition ? disabledButton : {}}
             disabled={noPosition}
-            className={clsx(styles, currentAction === 'REPAY' && 'selected')}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'REPAY' && 'selected')}
             onClick={() => changeAction('REPAY')}
           >
             Repay Synth
           </button>
           <button
-            style={noPosition ? disabledButton : {}}
             disabled={noPosition}
-            className={clsx(styles, currentAction === 'WITHDRAW' && 'selected')}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'WITHDRAW' && 'selected')}
             onClick={() => changeAction('WITHDRAW')}
           >
             Withdraw Collateral
           </button>
           <button
-            style={noPosition ? disabledButton : {}}
             disabled={noPosition}
-            className={clsx(styles, currentAction === 'REDEEM' && 'selected')}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'REDEEM' && 'selected')}
             onClick={() => changeAction('REDEEM')}
           >
             Redeem Synth
           </button>
           <button
-            style={noPosition || !state.isExpired ? disabledButton : {}}
             disabled={noPosition || !state.isExpired}
-            className={clsx(styles, currentAction === 'SETTLE' && 'selected')}
+            className={clsx(styles, (noPosition || !state.isExpired) && 'opacity-10', currentAction === 'SETTLE' && 'selected')}
             onClick={() => changeAction('SETTLE')}
           >
             Settle

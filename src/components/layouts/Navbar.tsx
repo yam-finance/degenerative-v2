@@ -5,7 +5,7 @@ import { EthereumContext } from '@/contexts';
 // import { useTranslation } from 'react-i18next';
 import { picasso } from '@/utils';
 
-import zombieHead from '@/assets/zombie_head_large.png';
+import yamIcon from '@/assets/yamIcon.png';
 import discord from '@/assets/discord.svg';
 
 export const Navbar = () => {
@@ -62,7 +62,7 @@ export const Navbar = () => {
   return (
     <div className="flex-column padding-y-8 margin-right-3 sticky-top-0 max-height-viewport-full overflow-auto tablet-absolute-top tablet-padding-y-2">
       <Link to="/" className="margin-left-6 flex-row-middle padding-left-3 padding-right-3 w-inline-block">
-        <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
+        <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
         <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
         {/* TODO Figure out where to put this
         <LanguageSwitcher /> 
