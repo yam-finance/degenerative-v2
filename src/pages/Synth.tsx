@@ -146,7 +146,7 @@ export const Synth: React.FC = () => {
     );
   };
 
-  const WrapEthButton: React.FC = () => {
+  const WrapEthDialog: React.FC = () => {
     const [maxEth, setMaxEth] = useState(0);
     const [ethAmount, setEthAmount] = useState(0);
 
@@ -218,7 +218,7 @@ export const Synth: React.FC = () => {
         <Action />
       </MainDisplay>
       <SideDisplay>
-        {collateral === 'WETH' && <WrapEthButton />}
+        {collateral === 'WETH' && <WrapEthDialog />}
         {withdrawalAmount > 0 && <WithdrawalRequestDialog />}
         <SettleDialog />
         <div>
