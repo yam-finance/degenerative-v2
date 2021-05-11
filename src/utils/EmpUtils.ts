@@ -42,10 +42,6 @@ export const getEmpState = async (synth: ISynthInfo, chainId: number, provider =
 
     const globalUtil = totalSupplyNorm / (totalCollateralNorm * feeMultiplier);
     const globalUtilRounded = roundDecimals(globalUtil, 4);
-    console.log(synth.group);
-    console.log(totalSupplyNorm);
-    console.log(totalCollateralNorm);
-    console.log(globalUtil);
 
     const minTokens = Number(utils.formatUnits(minimumTokens, collateralDecimals));
     const liquidationPoint = 1 / Number(utils.formatEther(collateralRequirement));

@@ -527,11 +527,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
     const SettleButton = () => {
       return (
-        <button
-          onClick={() => callAction(actions.onWithdrawPassedRequest())}
-          className={clsx(baseStyle, !state.isExpired && 'disabled')}
-          disabled={!state.isExpired}
-        >
+        <button onClick={() => callAction(actions.onSettle())} className={clsx(baseStyle, !state.isExpired && 'disabled')} disabled={!state.isExpired}>
           {`Settle ${currentSynth} for ${currentCollateral}`}
         </button>
       );
@@ -557,7 +553,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       case 'WITHDRAW':
         return state.withdrawalRequestAmount > 0 ? <WithdrawRequestButton /> : <WithdrawButton />;
       case 'SETTLE':
-        return <SettleButton />;
+        return !actions.synthApproval ? <TokenApproveButton /> : <SettleButton />;
       default:
         return null;
     }

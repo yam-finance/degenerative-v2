@@ -82,6 +82,21 @@ interface PriceHistoryResponse {
   priceUSD: string;
 }
 
+/** Get labels, reference price data and all market price data for this synth type.
+ *  Only fetches data from mainnet. This is intentional.
+ */
+export const getDailyPriceHistory_new = async (synth: ISynthInfo) => {
+  // Defaults to 30 days
+  const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
+
+  const dailyPriceResponse: {
+    tokenDayDatas: PriceHistoryResponse[];
+  } = await request(UNISWAP_ENDPOINT[1], UNISWAP_DAILY_PRICE_QUERY, {
+    tokenAddresses: [synth.token.address],
+    startingTime: startingTime,
+  });
+};
+
 /** Get labels, reference price data and all market price data for this synth type. */
 // TODO Need to pass in entire synth object to be able to handle differences between synths in the same group
 export const getDailyPriceHistory = async (group: string, synthMetadata: Record<string, ISynthInfo>, chainId: number) => {
@@ -133,11 +148,18 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
     const refPrices = await getReferencePriceHistory(group, chainId);
 
     if (min && max) {
+      console.log(min);
+      console.log(max);
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
       const maxIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(max));
+      console.log(minIndex);
+      console.log(maxIndex);
+      console.log(refPrices.slice(0, maxIndex));
       return refPrices.slice(minIndex, maxIndex).map((ref: any) => ref.price);
     }
   })();
+
+  console.log(referenceData);
 
   // Map price data to date for each synth for easy access
   const priceData: Record<string, Record<string, number>> = {};
