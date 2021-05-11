@@ -117,7 +117,7 @@ export const Navbar = () => {
           <div className="overlay blur radius-full"></div>
         </div>
       ) : (
-        <ConnectWallet className={'button margin-left-8 margin-right-4 text-align-center margin-top-8 w-button'} />
+        <ConnectWallet className={'button connect margin-left-8 margin-right-4 text-align-center w-button'} />
       )}
     </div>
   );
