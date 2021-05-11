@@ -1,3 +1,10 @@
+/* Loader */
+.loader-padding {
+  display: block;
+  padding-top: 25%;
+  padding-bottom: 25%;
+  height: 100%;
+}
 /* Breadcrumb margin */
 .breadcrumb-margin {
   margin-top: 2.5rem;
