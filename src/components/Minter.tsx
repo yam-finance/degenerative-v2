@@ -711,7 +711,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     <>
       <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
         <div className="margin-0 w-form">
-          <form className="max-width-small flex-column background-color-2 padding-8 radius-xl box-shadow-large z-10 padding-y-12 landscape-padding-2">
+          <form className="max-width-small portrait-max-width-full flex-column background-color-2 padding-8 radius-xl box-shadow-large z-1 padding-y-12 landscape-padding-2">
             <h3 className="margin-0 text-align-center">{currentSynth}</h3>
             <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20" />
             <div className="flex-row">
@@ -802,7 +802,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
             <UtilizationMarker utilization={state.utilization} />
           </form>
         </div>
-        <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
+        <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
           <div className="flex-justify-end padding-2 landscape-padding-top-4">
             <div className="margin-0 w-dropdown">
               <div className="padding-0 w-dropdown-toggle">
