@@ -3392,6 +3392,10 @@ select {
   transform: rotate(-45deg);
 }
 
+.pulse {
+  animation: pulse 1s linear infinite;
+}
+
 @keyframes pulse {
   0% {
     opacity: 1
@@ -3408,4 +3412,12 @@ select {
 
 .menu {
   transition: opacity 0.5s ease-out;
+}
+
+.chart-loader {
+  height: 100%;
+  width: 100%;
+  top: 0;
+  position: absolute;
+  object-fit: cover;
 }
