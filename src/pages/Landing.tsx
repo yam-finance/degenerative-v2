@@ -11,7 +11,15 @@ import short from '@/assets/short.png';
 import redeem from '@/assets/redeem.png';
 
 export const Landing: React.FC = () => {
-  const SynthBlock: React.FC<{ name: string; image: string; url: string; description: string; apr: number }> = ({ name, image, url, description, apr }) => {
+  interface SynthBlockProps {
+    name: string;
+    image: string;
+    url: string;
+    description: string;
+    apr: number;
+  }
+
+  const SynthBlock: React.FC<SynthBlockProps> = ({ name, image, url, description, apr }) => {
     return (
       <Link
         to={url}
@@ -229,10 +237,10 @@ export const Landing: React.FC = () => {
       </div>
       <div className="section-in-base aura-bg z-2">
         <div className="container-1140 w-container">
+          <h4>
+            <strong className="line-height-1-625 flex-align-center flex-justify-center padding-bottom-2">Built with love by YAM 🍠 </strong>
+          </h4>
           <div className="w-layout-grid grid-2">
-            <h4>
-              <strong className="line-height-1-625">Built with love by YAM 🍠 </strong>
-            </h4>
             <div>
               <h6 className="margin-top-4">Help</h6>
               <a href="#" className="block margin-bottom-2">
@@ -277,12 +285,12 @@ export const Landing: React.FC = () => {
               <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
             </a>
             <p className="text-align-right margin-top-4 text-small landscape-text-align-left">
-              © 2020 Yam Synths. All rights reserved.
+              © 2021 Yam Synths. All rights reserved.
               <br />
             </p>
           </div>
         </div>
       </div>
-      </>
+    </>
   );
 };

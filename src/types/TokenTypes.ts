@@ -29,6 +29,7 @@ export interface ISynthInfo {
 export interface ISynthGroup {
   description: string;
   collateral: string;
+  paired: string;
   image: string;
   creator: string;
 }

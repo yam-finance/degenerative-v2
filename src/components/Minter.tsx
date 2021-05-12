@@ -703,7 +703,6 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     );
   };
 
-  // TODO vertically center spinner
   if (state.loading) {
     return <Loader className="flex-align-center flex-justify-center padding-top-48" />;
   }

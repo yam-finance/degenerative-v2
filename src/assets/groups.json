@@ -8,24 +8,28 @@
   "uStonks": {
     "description": "Track the top ten stocks chosen by the Wall Street Bets community",
     "collateral": "USDC",
+    "paired": "USDC",
     "image": "ustonks",
     "creator": "UMA"
   },
   "uVolBtc": {
     "description": "Speculate on the volatility of BTC",
     "collateral": "USDC",
+    "paired": "USDC",
     "image": "btc_corn",
     "creator": "UMA"
   },
   "yamDollar": {
     "description": "Mint a stablecoin synth using your YAM tokens",
     "collateral": "YAM",
+    "paired": "USDC",
     "image": "yield_dollar",
     "creator": "Yam"
   },
   "uPUNK-ETH": {
     "description": "Speculate on the value of Cryptopunks",
     "collateral": "WETH",
+    "paired": "WETH",
     "image": "cryptopunk",
     "creator": "UMA"
   }
