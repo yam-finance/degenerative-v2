@@ -9,7 +9,7 @@ import yamIcon from '@/assets/yamIcon.png';
 import discord from '@/assets/discord.svg';
 
 export const Navbar = () => {
-  const { account, disconnectWallet } = useContext(EthereumContext);
+  const { account, disconnectWallet, chainId } = useContext(EthereumContext);
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
   const [openWalletMenu, setWalletMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
@@ -25,7 +25,16 @@ export const Navbar = () => {
 
   const toggleDisconnectMenu = () => setWalletMenu(!openWalletMenu);
   const toggleMenu = () => setOpenMenu(!openMenu);
-
+  
+  let message = "";
+  let messageColor = "";
+  if (chainId != 1) {
+    message = "Wrong network";
+    messageColor = "red";
+  } else {
+    message = "Mainnet"
+  }
+  
   const Navigation: React.FC = () => {
     return (
       <div className="flex-column expand padding-right-3 tablet-padding-x-4 tablet-padding-y-8 min-height-full">
@@ -37,7 +46,7 @@ export const Navbar = () => {
         <NavbarButton text="Tutorial" icon="FileText" to="#" external />
         <NavbarButton text="Docs" icon="Book" to="#" external />
         <NavbarButton text="FAQs" icon="HelpCircle" to="#" external />
-        <NavbarButton text="Support" icon="LifeBuoy" to="#" external />
+        <NavbarButton text="Support" icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
         <div className="expand"></div>
         <div className="nav-divider margin-y-5"></div>
         <NavbarButton text="YAM" icon="ExternalLink" to="https://yam.finance/" external />
@@ -49,9 +58,6 @@ export const Navbar = () => {
             </a>
             <a href="https://discord.com/invite/fbHX7NRa52" className="margin-right-0 w-inline-block">
               <img src={discord} loading="lazy" alt="Discord logo" className="icon discord in-button" />
-            </a>
-            <a href="#" className="margin-right-0 w-inline-block">
-              <Icon name="Mail" className="icon in-button" />
             </a>
           </div>
         </div>
@@ -75,7 +81,10 @@ export const Navbar = () => {
         <div className="wallet">
           <img src={`data:image/svg+xml;utf8,${picasso(account)}`} className="avatar margin-right-2" />
           <div className="expand relative">
-            <div className="text-xs">Metamask</div>
+            <div className="flex-align-center">
+              <div className={`height-4 pill ${messageColor}`}></div>
+              <div className="text-xs margin-left-1">{message}</div>
+            </div>
             <div className="text-color-4">{accountDisplay}</div>
           </div>
           <div className="margin-left-6 tablet-hide relative w-dropdown">

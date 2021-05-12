@@ -26,7 +26,7 @@ export const Landing: React.FC = () => {
   };
 
   return (
-    <body>
+    <>
       <div data-collapse="small" data-animation="default" data-duration="400" role="banner" className="background-color-transparent w-nav">
         <div className="container-1280 flex-row-middle padding-y-2 portrait-padding-x-2 w-container">
           <a href="#" className="margin-left-6 flex-row-middle w-inline-block">
@@ -283,6 +283,6 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
-    </body>
+      </>
   );
 };
