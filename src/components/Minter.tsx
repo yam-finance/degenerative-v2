@@ -803,10 +803,10 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           </form>
         </div>
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
-          <div className="flex-justify-end padding-2 landscape-padding-top-4">
+          <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4">
             <div className="margin-0 w-dropdown">
               <div className="padding-0 w-dropdown-toggle">
-                <Icon name="Info" className="icon opacity-100" />
+                <Icon name="Settings" className="icon opacity-100" />
               </div>
               <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
                 <a href="#" className="text-small break-no-wrap">
@@ -816,7 +816,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
               </nav>
             </div>
           </div>
-          <div className="padding-8 padding-top-0 flex-column expand">
+          <div className="padding-8 padding-top-0 tablet-padding-top-0 landscape-padding-top-0 portrait-padding-top-0 flex-column expand">
             <div>
               <h6 className="margin-bottom-0">Actions</h6>
               <div className="divider margin-y-2"></div>
