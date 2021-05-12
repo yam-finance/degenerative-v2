@@ -57,6 +57,8 @@ export const MarketProvider: React.FC = ({ children }) => {
             const isExpired = dateToday >= expiration;
             const liquidity = pool.reserveUSD ?? 0;
 
+            // TODO THIS IS WRONG
+            // TODO This is not price per collateral, this is price per other asset in pool. Must capture this data
             let priceUsd;
             let pricePerCollateral;
             if (synth.collateral === pool.token0.symbol) {

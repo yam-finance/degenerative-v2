@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { MarketContext, UserContext } from '@/contexts';
 import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow, Loader } from '@/components';
-import { IMintedPosition, ISynthInWallet } from '@/types';
+import { IMintedPosition, ISynthInWallet, ISynthMarketData } from '@/types';
 import { getUsdPrice, roundDecimals, isEmpty } from '@/utils';
 
 export const Portfolio = () => {
@@ -35,7 +35,7 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${roundDecimals(Number(price) * tokenAmount, 2)}</div>
+          <div className="text-color-4">{roundDecimals(price * tokenAmount, 2)}</div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
