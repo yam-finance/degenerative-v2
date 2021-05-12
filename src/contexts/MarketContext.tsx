@@ -60,22 +60,22 @@ export const MarketProvider: React.FC = ({ children }) => {
             // TODO THIS IS WRONG
             // TODO This is not price per collateral, this is price per other asset in pool. Must capture this data
             let priceUsd;
-            let pricePerCollateral;
+            let pricePerPaired;
             if (synth.collateral === pool.token0.symbol) {
               priceUsd = pool.token0Price * collateralPriceUsd;
-              pricePerCollateral = pool.token0Price;
+              pricePerPaired = pool.token0Price;
             } else {
               priceUsd = pool.token1Price * collateralPriceUsd;
-              pricePerCollateral = pool.token1Price;
+              pricePerPaired = pool.token1Price;
             }
 
-            const globalUtilization = rawGlobalUtilization * pricePerCollateral;
+            const globalUtilization = rawGlobalUtilization * pricePerPaired;
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, collateral.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, collateral.decimals));
             const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
 
             data[name] = {
-              price: roundDecimals(Number(pricePerCollateral), 4),
+              price: roundDecimals(Number(pricePerPaired), 4),
               priceUsd: roundDecimals(priceUsd, 2),
               collateralPriceUsd: roundDecimals(collateralPriceUsd, 2),
               liquidity: Math.trunc(liquidity),
