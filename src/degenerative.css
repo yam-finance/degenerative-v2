@@ -4922,7 +4922,7 @@ a:hover {
 
 .nub.background-color-debt.left {
   left: -4px;
-  right: auto;
+  top: 40px;
 }
 
 .background-color-debt {
@@ -4940,14 +4940,13 @@ a:hover {
 
 .background-color-debt.padding-2.radius-large.z-10.width-32.debts {
   top: 50%;
-  height: 140px;
-  margin-top: -70px;
+  margin-top: -40px;
 }
 
 .background-color-debt.padding-2.radius-large.z-10.width-32.debts.disabled {
   top: 100%;
   height: auto;
-  margin-top: -45px;
+  margin-top: -40px;
   opacity: 0.1;
 }
 
