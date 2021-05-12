@@ -158,7 +158,7 @@ export const SynthGroup: React.FC = () => {
       display: false,
     };
 
-    return <Line data={data} style={{width:'100%',height:'100%'}} options={options} legend={legend} />;
+    return <Line data={data} height={380} options={options} legend={legend} />;
   };
 
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
@@ -243,7 +243,7 @@ export const SynthGroup: React.FC = () => {
         </div>
         <div style={{width:'100%',height:'400px'}} className="relative width-full margin-y-2 w-embed w-script">
           {historicPriceData && <Chart />}
-          <img className="chart-loader pulse" src="/src/assets/chart-loader.svg" historicPriceData={false}>
+          <img className="chart-loader pulse" src="/src/assets/chart-loader.svg">
           </img>
         </div>
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
