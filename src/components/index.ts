@@ -15,3 +15,4 @@ export * from './layouts/MainDisplay';
 export * from './layouts/Navbar';
 export * from './layouts/Page';
 export * from './layouts/SideDisplay';
+export * from './Background.tsx';

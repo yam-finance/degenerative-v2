@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Background } from '@/components';
 
 import ContextProviders from '@/contexts';
 import './degenerative.css';
@@ -30,6 +31,7 @@ const App: React.FC = () => {
           <Route component={NotFound} />
         </Switch>
       </ContextProviders>
+      <Background />
     </Router>
   );
 };
