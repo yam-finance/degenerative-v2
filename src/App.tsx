@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Background } from '@/components';
 
 import ContextProviders from '@/contexts';
-import './degenerative.css';
+import './purged/degenerative.css';
 //import './degenerative.original.css';
 //import './webflow.css';
 import './normalize.css';
