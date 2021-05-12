@@ -49,7 +49,7 @@ const Navbar = () => {
         <NavbarButton text="Tutorial" icon="FileText" to="#" external />
         <NavbarButton text="Docs" icon="Book" to="#" external />
         <NavbarButton text="FAQs" icon="HelpCircle" to="#" external />
-        <NavbarButton text="Support" icon="LifeBuoy" to="#" external />
+        <NavbarButton text="Support" icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
         <div className="expand"></div>
         <div className="nav-divider margin-y-5"></div>
         <NavbarButton text="YAM" icon="ExternalLink" to="#" external />
