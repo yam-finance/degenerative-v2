@@ -54,7 +54,7 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand flex-align-baseline">
-          <Link to={`${link}/manage`} className="button-secondary button-tiny white">
+          <Link to={`${link}/manage`} className="button button-small">
             Manage
           </Link>
         </div>
@@ -93,7 +93,7 @@ export const Portfolio = () => {
           <div className={`pill ${isExpired ? 'red' : 'green'}`}>{isExpired ? 'EXPIRED' : 'LIVE'}</div>
         </div>
         <div className="expand flex-align-baseline">
-          <Link to={`${link}/manage`} className="button-secondary button-tiny white">
+          <Link to={`${link}/manage`} className="button button-small">
             Manage
           </Link>
         </div>
@@ -110,15 +110,6 @@ export const Portfolio = () => {
           <Loader className="flex-align-center flex-justify-center padding-top-48" />
         ) : (
           <>
-            <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
-              {mintedPositions.length > 0 ? (
-                mintedPositions.map((minted, index) => {
-                  return <MintedRow {...minted} key={index} />;
-                })
-              ) : (
-                <TableRow>You do not have any synths minted</TableRow>
-              )}
-            </Table>
             <Table title="Synths In Wallet" headers={['Token', 'Balance', 'Price', 'Status', 'Actions']}>
               {synthsInWallet && synthsInWallet.length > 0 ? (
                 synthsInWallet.map((inWallet, index) => {
@@ -126,6 +117,15 @@ export const Portfolio = () => {
                 })
               ) : (
                 <TableRow>You do not have any synths in your wallet</TableRow>
+              )}
+            </Table>
+            <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
+              {mintedPositions.length > 0 ? (
+                mintedPositions.map((minted, index) => {
+                  return <MintedRow {...minted} key={index} />;
+                })
+              ) : (
+                <TableRow>You do not have any synths minted</TableRow>
               )}
             </Table>
           </>

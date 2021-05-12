@@ -748,7 +748,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
                   />
                   <button
                     onClick={(e) => setMaximum(e)}
-                    className={`button-secondary button-tiny white width-full ${!state.editCollateral && 'disabled'}`}
+                    className={`button-secondary button-tiny width-full ${!state.editCollateral && 'disabled'}`}
                     disabled={!state.editCollateral}
                   >
                     Max {state.maxCollateral.toFixed(2)}
