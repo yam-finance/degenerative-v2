@@ -4,7 +4,7 @@ import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, utils, constants } from 'ethers';
 import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString, getCollateralData } from '@/utils';
-import { ISynthInfo } from '@/types';
+import { ISynth, IToken } from '@/types';
 
 sessionStorage.clear();
 
@@ -25,6 +25,21 @@ export const getUsdPrice = async (tokenAddress: string) => {
 };
 */
 
+// Get price of token in terms of Ether from Coingecko
+// TODO should probably replace with on-chain data
+export const getPairPriceEth = async (token: IToken) => {
+  const token1Address = token.address;
+
+  try {
+    const res = await axios.get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${token1Address}&vs_currencies=eth`);
+    const price = Number(res.data[token1Address]['eth']);
+    return Promise.resolve(price);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
+
+// Get USD price from Coingecko
 export const getUsdPrice = async (cgId: string) => {
   const cached = sessionStorage.getItem(cgId);
   if (cached) return Promise.resolve(Number(cached));
@@ -42,9 +57,6 @@ export const getUsdPrice = async (cgId: string) => {
 // Get USD price history of token from Coingecko
 export const getUsdPriceHistory = async (tokenName: string, chainId: number) => {
   const collateral = getCollateralData(chainId);
-  console.log('collateral');
-  console.log(chainId);
-  console.log(collateral);
   const cgId = collateral[tokenName].coingeckoId;
 
   try {
@@ -85,7 +97,9 @@ interface PriceHistoryResponse {
 /** Get labels, reference price data and all market price data for this synth type.
  *  Only fetches data from mainnet. This is intentional.
  */
-export const getDailyPriceHistory_new = async (synth: ISynthInfo) => {
+// TODO this will grab data for individual synth
+// TODO data will NOT be paired to USD
+export const getDailyPriceHistory_new = async (synth: ISynth) => {
   // Defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 
@@ -99,7 +113,7 @@ export const getDailyPriceHistory_new = async (synth: ISynthInfo) => {
 
 /** Get labels, reference price data and all market price data for this synth type. */
 // TODO Need to pass in entire synth object to be able to handle differences between synths in the same group
-export const getDailyPriceHistory = async (group: string, synthMetadata: Record<string, ISynthInfo>, chainId: number) => {
+export const getDailyPriceHistory = async (group: string, synthMetadata: Record<string, ISynth>, chainId: number) => {
   // Defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 

@@ -3,24 +3,18 @@ export interface IContract {
 }
 
 export interface IToken extends IContract {
-  name?: string;
-  decimals?: number;
-  symbol?: string;
-  //coingeckoId?: string;
-  //balance: BigNumber;
-  //priceUsd: number;
-}
-
-export interface ICollateral extends IToken {
+  name: string;
+  decimals: number;
+  symbol: string;
   coingeckoId: string;
 }
 
-export interface ISynthInfo {
+export interface ISynth {
   imgLocation: string;
   group: string;
   cycle: string;
   year: string;
-  collateral: string; // TODO remove, get collateral through type
+  collateral: string; // TODO remove, get collateral through group
   token: IToken;
   emp: IContract;
   pool: IContract;

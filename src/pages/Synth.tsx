@@ -5,7 +5,7 @@ import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import { useSynthActions, useToken } from '@/hooks';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { Page, Navbar, Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
-import { ISynthInfo, ISynthMarketData } from '@/types';
+import { ISynth, ISynthMarketData } from '@/types';
 import { utils } from 'ethers';
 import { isEmpty } from '@/utils';
 import numeral from 'numeral';
@@ -22,7 +22,7 @@ export const Synth: React.FC = () => {
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
   const { signer } = useContext(EthereumContext);
 
-  const [{ cycle, year, collateral }, setSynthInfo] = useState({} as ISynthInfo);
+  const [{ cycle, year, collateral }, setSynthInfo] = useState({} as ISynth);
   const [{ isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization, liquidationPoint, minTokens }, setMarketData] = useState(
     {} as ISynthMarketData
   );
@@ -188,13 +188,13 @@ export const Synth: React.FC = () => {
                   setEthAmount(Number(e.target.value));
                 }}
               />
-              <button className="button-secondary button-tiny margin-right-1 white w-button" onClick={(e) => setMaximum(e)}>
+              <button className="button-secondary button-tiny margin-right-1" onClick={(e) => setMaximum(e)}>
                 Max
               </button>
             </div>
             <div className="flex-row margin-top-2">
               <button
-                className="button-secondary button-tiny margin-right-1 white w-button"
+                className="button-secondary button-tiny margin-right-1"
                 onClick={(e) => {
                   e.preventDefault();
                   actions.onWrapEth(ethAmount);

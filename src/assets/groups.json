@@ -2,6 +2,7 @@
   "uGas": {
     "description": "Speculate or hedge on Ethereum gas prices",
     "collateral": "WETH",
+    "paired": "WETH",
     "image": "ugas",
     "creator": "UMA"
   },
@@ -26,7 +27,7 @@
     "image": "yield_dollar",
     "creator": "Yam"
   },
-  "uPUNK-ETH": {
+  "uPUNKS": {
     "description": "Speculate on the value of Cryptopunks",
     "collateral": "WETH",
     "paired": "WETH",

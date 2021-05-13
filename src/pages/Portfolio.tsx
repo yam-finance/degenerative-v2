@@ -24,7 +24,7 @@ export const Portfolio = () => {
     (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
 
     return (
-      <TableRow to={link}>
+      <TableRow>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={imgLocation} alt={name} className="margin-1" />
@@ -35,7 +35,9 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">{roundDecimals(price * tokenAmount, 2)}</div>
+          <div className="text-color-4">
+            {roundDecimals(price * tokenAmount, 2)} {collateral}
+          </div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
@@ -64,14 +66,14 @@ export const Portfolio = () => {
 
   const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
     const { name, tokenAmount } = props;
-    const { imgLocation, group, cycle, year } = synthMetadata[name];
+    const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
     const { price, daysTillExpiry } = synthMarketData[name];
     const link = `/synths/${group}/${cycle}${year}`;
 
     const isExpired = daysTillExpiry < 0;
 
     return (
-      <TableRow to={link}>
+      <TableRow>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={imgLocation} alt={name} className="margin-1" />
@@ -82,7 +84,9 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${roundDecimals(Number(price) * tokenAmount, 2)}</div>
+          <div className="text-color-4">
+            {roundDecimals(Number(price) * tokenAmount, 2)} {collateral}
+          </div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">

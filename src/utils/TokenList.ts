@@ -1,7 +1,7 @@
+import Assets from '@/assets/assets.json';
 import Collateral from '@/assets/collateral.json';
 import Groups from '@/assets/groups.json';
-import Assets from '@/assets/assets.json';
-import { ICollateral, ISynthInfo, ISynthGroup } from '@/types';
+import { IToken, ISynth, ISynthGroup } from '@/types';
 
 const ChainMap: Record<number, string> = {
   1: 'mainnet',
@@ -9,7 +9,7 @@ const ChainMap: Record<number, string> = {
   1337: 'mainnet',
 };
 
-//export const SynthMap: IMap<ISynthInfo> = Synths;
+//export const SynthMap: IMap<ISynth> = Synths;
 export const CollateralMap: any = Collateral;
 export const SynthGroups: Record<string, ISynthGroup> = Groups;
 
@@ -17,7 +17,7 @@ export const getSynthMetadata = (chainId: number) => {
   const chain = ChainMap[chainId];
   const assets: any = Assets;
 
-  const synthInfo: Record<string, ISynthInfo> = {};
+  const synthInfo: Record<string, ISynth> = {};
   const networkAssets = assets[chain];
 
   for (const group in networkAssets) {
@@ -37,4 +37,4 @@ export const getSynthMetadata = (chainId: number) => {
   return synthInfo;
 };
 
-export const getCollateralData = (chainId: number): Record<string, ICollateral> => CollateralMap[ChainMap[chainId]];
+export const getCollateralData = (chainId: number): Record<string, IToken> => CollateralMap[ChainMap[chainId]];
