@@ -132,7 +132,7 @@ export const Landing: React.FC = () => {
           </div>
           <div className="grid-3-columns">
             {/* TODO Finalize names, punctuation, links, etc */}
-            <SynthBlock name="uPUNKS" image="cryptopunk" url="/synths/uPUNK-ETH" description={SynthGroups['uPUNK-ETH'].description} apr={50} />
+            <SynthBlock name="uPUNKS" image="cryptopunk" url="/synths/uPUNKS" description={SynthGroups['uPUNKS'].description} apr={50} />
             <SynthBlock name="uGAS" image="ugas" url="/synths/uGas" description={SynthGroups['uGas'].description} apr={50} />
             <SynthBlock name="uSTONKS" image="ustonks" url="/synths/uStonks" description={SynthGroups['uStonks'].description} apr={50} />
           </div>
