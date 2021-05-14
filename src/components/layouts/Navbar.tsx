@@ -49,7 +49,7 @@ export const Navbar = () => {
         <NavbarButton text="Support" icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
         <div className="expand"></div>
         <div className="nav-divider margin-y-5"></div>
-        <div className="hidden tablet-block landscape-block portrait-block">
+        <div className="hide tablet-block landscape-block portrait-block">
           <a href="#"
             onClick={(e) => {
               e.preventDefault();
