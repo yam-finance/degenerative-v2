@@ -170,7 +170,7 @@ export const SynthGroup: React.FC = () => {
       <Link to={`/synths/${group}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
         <div className="expand">
           <div className="margin-right-1 text-color-4">{name}</div>
-          <div className="text-xs">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
+          <div className="text-xs opacity-50">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{apy}%</div>
