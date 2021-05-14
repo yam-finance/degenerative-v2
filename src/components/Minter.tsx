@@ -407,7 +407,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       </button>
     );
 
-    const TokenApproveButton: React.FC = () => (
+    const SynthApproveButton: React.FC = () => (
       <button
         onClick={async (e) => {
           e.preventDefault();
@@ -547,13 +547,13 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       case 'ADD_COLLATERAL':
         return !actions.collateralApproval ? <CollateralApproveButton /> : <AddCollateralButton />;
       case 'REPAY':
-        return !actions.synthApproval ? <TokenApproveButton /> : <RepayButton />;
+        return !actions.synthApproval ? <SynthApproveButton /> : <RepayButton />;
       case 'REDEEM':
-        return !actions.synthApproval ? <TokenApproveButton /> : <RedeemButton />;
+        return !actions.synthApproval ? <SynthApproveButton /> : <RedeemButton />;
       case 'WITHDRAW':
         return state.withdrawalRequestAmount > 0 ? <WithdrawRequestButton /> : <WithdrawButton />;
       case 'SETTLE':
-        return !actions.synthApproval ? <TokenApproveButton /> : <SettleButton />;
+        return !actions.synthApproval ? <SynthApproveButton /> : <SettleButton />;
       default:
         return null;
     }
@@ -703,7 +703,6 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     );
   };
 
-  // TODO vertically center spinner
   if (state.loading) {
     return <Loader className="flex-align-center flex-justify-center padding-top-48" />;
   }

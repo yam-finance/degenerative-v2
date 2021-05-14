@@ -25,16 +25,7 @@ export const Navbar = () => {
 
   const toggleDisconnectMenu = () => setWalletMenu(!openWalletMenu);
   const toggleMenu = () => setOpenMenu(!openMenu);
-  
-  let message = "";
-  let messageColor = "";
-  if (chainId != 1) {
-    message = "Wrong network";
-    messageColor = "red";
-  } else {
-    message = "Mainnet"
-  }
-  
+
   const Navigation: React.FC = () => {
     return (
       <div className="flex-column expand padding-right-3 tablet-padding-x-4 tablet-padding-y-8 min-height-full">
@@ -93,8 +84,8 @@ export const Navbar = () => {
           <img src={`data:image/svg+xml;utf8,${picasso(account)}`} className="avatar margin-right-2" />
           <div className="expand relative">
             <div className="flex-align-center">
-              <div className={`height-4 pill ${messageColor}`}></div>
-              <div className="text-xs margin-left-1">{message}</div>
+              <div className={`height-4 pill ${chainId !== 1 && 'red'}`}></div>
+              <div className="text-xs margin-left-1">{chainId === 1 ? 'Mainnet' : chainId === 42 ? 'Kovan' : 'Wrong network'}</div>
             </div>
             <div className="text-color-4">{accountDisplay}</div>
           </div>

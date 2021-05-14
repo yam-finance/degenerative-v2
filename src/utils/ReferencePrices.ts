@@ -52,6 +52,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
         return await fetchUgas(collateral, chainId);
       case 'uStonks':
         return await fetchUstonks(collateral, chainId);
+      case 'uPUNK':
       default:
         return Promise.reject('Type not recognized');
     }

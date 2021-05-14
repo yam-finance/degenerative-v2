@@ -102,7 +102,7 @@ export const Explore = () => {
       <TableRow to={`/synths/${group}`} onMouseEnter={() => setSidebarData(group)}>
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={image} loading="lazy" className="margin-1" />
+            <img src={image} loading="lazy" className="margin-2" />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{group}</div>
