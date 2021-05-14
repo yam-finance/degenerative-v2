@@ -41,11 +41,14 @@ export const Navbar = () => {
         <div className="expand"></div>
         <div className="nav-divider margin-y-5"></div>
         <div className="hide tablet-block landscape-block portrait-block">
-          <a href="#"
+          <a
+            href="#"
             onClick={(e) => {
               e.preventDefault();
               disconnectWallet();
-            }} className="nav-link width-full">
+            }}
+            className="nav-link width-full"
+          >
             <Icon name="LogOut" className="icon margin-right-3" />
             <div>Disconnect Wallet</div>
           </a>
@@ -55,10 +58,20 @@ export const Navbar = () => {
         <NavbarButton text="UMA" icon="ExternalLink" to="https://umaproject.org/" external />
         <div className="margin-left-8 padding-3 tablet-margin-left-0">
           <div className="w-layout-grid flex-row">
-            <a href="https://twitter.com/YamFinance" target="_blank" className="margin-right-0 w-inline-block">
+            <a
+              href="https://twitter.com/YamFinance"
+              target="_blank"
+              rel="noreferrer"
+              className="margin-right-0 w-inline-block"
+            >
               <Icon name="Twitter" className="icon in-button" />
             </a>
-            <a href="https://discord.com/invite/fbHX7NRa52" target="_blank" className="margin-right-0 w-inline-block">
+            <a
+              href="https://discord.com/invite/fbHX7NRa52"
+              target="_blank"
+              rel="noreferrer"
+              className="margin-right-0 w-inline-block"
+            >
               <img src={discord} loading="lazy" alt="Discord logo" className="icon discord in-button" />
             </a>
           </div>
@@ -85,7 +98,9 @@ export const Navbar = () => {
           <div className="expand relative">
             <div className="flex-align-center">
               <div className={`height-4 pill ${chainId !== 1 && 'red'}`}></div>
-              <div className="text-xs margin-left-1">{chainId === 1 ? 'Mainnet' : chainId === 42 ? 'Kovan' : 'Wrong network'}</div>
+              <div className="text-xs margin-left-1">
+                {chainId === 1 ? 'Mainnet' : chainId === 42 ? 'Kovan' : 'Wrong network'}
+              </div>
             </div>
             <div className="text-color-4">{accountDisplay}</div>
           </div>
@@ -99,7 +114,10 @@ export const Navbar = () => {
             >
               <Icon name="ChevronDown" className="icon opacity-100" />
             </div>
-            <Dropdown className="dropdown-list top-right box-shadow-medium radius-large w-dropdown-list" openDropdown={openWalletMenu}>
+            <Dropdown
+              className="dropdown-list top-right box-shadow-medium radius-large w-dropdown-list"
+              openDropdown={openWalletMenu}
+            >
               <div
                 onClick={(e) => {
                   e.preventDefault();
