@@ -729,6 +729,10 @@ a:hover {
   margin-top: -64px;
 }
 
+.width-56 {
+  width: 14rem;
+}
+
 .width-64 {
   width: 16rem;
 }
@@ -3423,65 +3427,6 @@ select {
   100% {
     transform: translatey(0px) rotate(0deg);
   }
-}
-
-.circle-1 {
-  position: fixed;
-  width: 492px;
-  height: 492px;
-  left: -213px;
-  top: -221px;
-  z-index: 1;
-  border-radius: 10000px;
-  background: rgba(88, 141, 218, 0.7);
-  filter: blur(60px);
-}
-
-.circle-2 {
-  position: fixed;
-  width: 274.31px;
-  height: 381.79px;
-  left: 40.6px;
-  top: 0px;
-  border-radius: 10000px;
-  background: rgba(235, 110, 173, 0.7);
-  filter: blur(100px);
-  transform: rotate(45deg);
-}
-
-.circle-3 {
-  position: fixed;
-  width: 492px;
-  height: 492px;
-  right: 200px;
-  bottom: -200px;
-  border-radius: 10000px;
-  background: #588DDA;
-  filter: blur(100px);
-}
-
-.circle-4 {
-  position: fixed;
-  width: 492px;
-  height: 492px;
-  right: -200px;
-  bottom: 200px;
-  border-radius: 10000px;
-  background: #588DDA;
-  filter: blur(100px);
-}
-
-.circle-5 {
-  position: fixed;
-  width: 492.94px;
-  height: 805.62px;
-  bottom: -100px;
-  right: 0;
-  z-index: 1;
-  border-radius: 10000px;
-  background: linear-gradient(180deg, rgba(66, 0, 255, 0.7) 0%, rgba(235, 110, 173, 0.7) 51.56%);
-  filter: blur(140px);
-  transform: rotate(-45deg);
 }
 
 .pulse {
