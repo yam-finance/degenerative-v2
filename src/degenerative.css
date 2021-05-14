@@ -14,7 +14,11 @@
 
 body {
   min-height: 100vh;
-  background-color: #2c3386;
+  background-image: url("/src/assets/blurry-bg.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
   font-family: 'Open Sauce', sans-serif;
   color: hsla(0, 0%, 100%, 0.7);
   font-size: 100%;
@@ -8586,7 +8590,9 @@ a:hover {
   .nav-link {
     padding-left: 0.75rem;
     border-top-left-radius: 1000px;
+    border-top-right-radius: 1000px;
     border-bottom-left-radius: 1000px;
+    border-bottom-right-radius: 1000px;
     color: hsla(0, 0%, 100%, 0.8);
   }
 
