@@ -2462,7 +2462,9 @@ a:hover {
   .nav-link {
     padding-left: 0.75rem;
     border-top-left-radius: 1000px;
+    border-top-right-radius: 1000px;
     border-bottom-left-radius: 1000px;
+    border-bottom-right-radius: 1000px;
     color: hsla(0, 0%, 100%, 0.8);
   }
 
@@ -2788,6 +2790,10 @@ a:hover {
     margin-bottom: 8rem;
   }
 
+  .landscape-margin-0 {
+    margin: 0px;
+  }
+
   .landscape-margin-top-0 {
     margin-top: 0px;
   }
@@ -3018,6 +3024,10 @@ a:hover {
     padding-top: 0rem;
   }
 
+  .portrait-block {
+    display: block;
+  }
+
   .flex-row.min-height-viewport-full.tablet-flex-column {
     padding-top: 50px;
   }
@@ -3132,6 +3142,10 @@ a:hover {
   .margin-y-48 {
     margin-top: 6rem;
     margin-bottom: 6rem;
+  }
+
+  .portrait-margin-0 {
+    margin: 0px;
   }
 
   .portrait-margin-top-0 {

@@ -8590,7 +8590,9 @@ a:hover {
   .nav-link {
     padding-left: 0.75rem;
     border-top-left-radius: 1000px;
+    border-top-right-radius: 1000px;
     border-bottom-left-radius: 1000px;
+    border-bottom-right-radius: 1000px;
     color: hsla(0, 0%, 100%, 0.8);
   }
 

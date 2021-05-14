@@ -38,7 +38,7 @@ export const Navbar = () => {
   const Navigation: React.FC = () => {
     return (
       <div className="flex-column expand padding-right-3 tablet-padding-x-4 tablet-padding-y-8 min-height-full">
-        <div className="margin-left-8 margin-top-10 tablet-margin-0 width-56"></div>
+        <div className="margin-left-8 margin-top-10 tablet-margin-0 width-56 portrait-margin-0 landscape-margin-0"></div>
         <NavbarButton text="Explore Synths" icon="Globe" to="/synths" />
         <NavbarButton text="Portfolio" icon="User" to="/portfolio" />
         <div className="nav-divider margin-y-5"></div>
@@ -49,6 +49,17 @@ export const Navbar = () => {
         <NavbarButton text="Support" icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
         <div className="expand"></div>
         <div className="nav-divider margin-y-5"></div>
+        <div className="hidden tablet-block landscape-block portrait-block">
+          <a href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              disconnectWallet();
+            }} class="nav-link width-full">
+            <Icon name="LogOut" className="icon margin-right-3" />
+            <div>Disconnect Wallet</div>
+          </a>
+          <div className="nav-divider margin-y-5"></div>
+        </div>
         <NavbarButton text="YAM" icon="ExternalLink" to="https://yam.finance/" external />
         <NavbarButton text="UMA" icon="ExternalLink" to="https://umaproject.org/" external />
         <div className="margin-left-8 padding-3 tablet-margin-left-0">
