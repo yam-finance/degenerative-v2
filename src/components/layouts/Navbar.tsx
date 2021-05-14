@@ -54,7 +54,7 @@ export const Navbar = () => {
             onClick={(e) => {
               e.preventDefault();
               disconnectWallet();
-            }} class="nav-link width-full">
+            }} className="nav-link width-full">
             <Icon name="LogOut" className="icon margin-right-3" />
             <div>Disconnect Wallet</div>
           </a>
