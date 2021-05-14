@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link, Redirect, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader } from '@/components';
 import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 
 interface SynthParams {
@@ -241,9 +241,11 @@ export const SynthGroup: React.FC = () => {
         <div className="padding-x-8 padding-y-1 flex-row portrait-flex-column portrait-flex-align-start">
           <ChartSelector />
         </div>
+
         <div style={{ width: '100%', height: '400px' }} className="relative width-full margin-y-2 w-embed w-script">
           {historicPriceData ? <Chart /> : <img className="chart-loader pulse" src="/src/assets/chart-loader.svg" />}
         </div>
+
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <TableFilter />
         <Table headers={['Maturity', 'APY', 'Your Balance', 'Liquidity', 'Price']}>
