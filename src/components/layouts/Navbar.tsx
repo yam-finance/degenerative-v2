@@ -64,10 +64,10 @@ export const Navbar = () => {
         <NavbarButton text="UMA" icon="ExternalLink" to="https://umaproject.org/" external />
         <div className="margin-left-8 padding-3 tablet-margin-left-0">
           <div className="w-layout-grid flex-row">
-            <a href="https://twitter.com/YamFinance" className="margin-right-0 w-inline-block">
+            <a href="https://twitter.com/YamFinance" target="_blank" className="margin-right-0 w-inline-block">
               <Icon name="Twitter" className="icon in-button" />
             </a>
-            <a href="https://discord.com/invite/fbHX7NRa52" className="margin-right-0 w-inline-block">
+            <a href="https://discord.com/invite/fbHX7NRa52" target="_blank" className="margin-right-0 w-inline-block">
               <img src={discord} loading="lazy" alt="Discord logo" className="icon discord in-button" />
             </a>
           </div>
