@@ -45,7 +45,13 @@ const initialMinterState = {
 };
 
 type State = typeof initialMinterState;
-type Action = 'INIT_SPONSOR_POSITION' | 'UPDATE_SPONSOR_POSITION' | 'UPDATE_PENDING_UTILIZATION' | 'CHANGE_ACTION' | 'OPEN_INPUTS' | 'TOGGLE_WITHDRAWAL_MODAL';
+type Action =
+  | 'INIT_SPONSOR_POSITION'
+  | 'UPDATE_SPONSOR_POSITION'
+  | 'UPDATE_PENDING_UTILIZATION'
+  | 'CHANGE_ACTION'
+  | 'OPEN_INPUTS'
+  | 'TOGGLE_WITHDRAWAL_MODAL';
 
 const Reducer = (state: State, action: { type: Action; payload: any }) => {
   switch (action.type) {
@@ -141,15 +147,15 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     {
       onChange: (e, stateValues, nextStateValues) => {
         const { pendingCollateral, pendingTokens } = nextStateValues;
-        const tokens = Number(pendingTokens);
+        const tokens = roundDecimals(Number(pendingTokens), 4);
 
         // Special case for redeem. Must maintain utilization.
         let collateral: number;
         if (state.action === 'REDEEM') {
-          collateral = tokens / state.utilization;
+          collateral = roundDecimals(tokens / state.utilization, 4);
           formState.setField('pendingCollateral', collateral);
         } else {
-          collateral = Number(pendingCollateral);
+          collateral = roundDecimals(Number(pendingCollateral), 4);
         }
 
         dispatch({
@@ -384,7 +390,13 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     pendingTokens: number;
   }
 
-  const ActionButton: React.FC<ActionButtonProps> = ({ action, sponsorCollateral, sponsorTokens, pendingCollateral, pendingTokens }) => {
+  const ActionButton: React.FC<ActionButtonProps> = ({
+    action,
+    sponsorCollateral,
+    sponsorTokens,
+    pendingCollateral,
+    pendingTokens,
+  }) => {
     const [waiting, setWaiting] = useState(false);
 
     const baseStyle = clsx('button', 'width-full', 'text-small', 'w-button');
@@ -424,7 +436,10 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       const newCollateral = pendingCollateral - state.sponsorCollateral;
 
       const disableMinting =
-        newTokens <= 0 || newCollateral < 0 || state.pendingUtilization > state.globalUtilization || state.pendingUtilization > state.liquidationPoint;
+        newTokens <= 0 ||
+        newCollateral < 0 ||
+        state.pendingUtilization > state.globalUtilization ||
+        state.pendingUtilization > state.liquidationPoint;
 
       return (
         <button
@@ -458,7 +473,11 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       const disableRepay = repayTokens <= 0 || repayTokens >= sponsorTokens;
 
       return (
-        <button onClick={() => callAction(actions.onRepay(repayTokens))} className={clsx(baseStyle, disableRepay && 'disabled')} disabled={disableRepay}>
+        <button
+          onClick={() => callAction(actions.onRepay(repayTokens))}
+          className={clsx(baseStyle, disableRepay && 'disabled')}
+          disabled={disableRepay}
+        >
           {`Repay ${repayTokens} ${currentSynth}`}
         </button>
       );
@@ -489,7 +508,9 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
         // Show Withdrawal Request modal
         return (
           <button
-            onClick={() => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { withdrawalAmount: withdrawalAmount } })}
+            onClick={() =>
+              dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { withdrawalAmount: withdrawalAmount } })
+            }
             className={clsx(baseStyle, disableWithdrawal && 'disabled')}
             disabled={disableWithdrawal}
           >
@@ -527,7 +548,11 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
     const SettleButton = () => {
       return (
-        <button onClick={() => callAction(actions.onSettle())} className={clsx(baseStyle, !state.isExpired && 'disabled')} disabled={!state.isExpired}>
+        <button
+          onClick={() => callAction(actions.onSettle())}
+          className={clsx(baseStyle, !state.isExpired && 'disabled')}
+          disabled={!state.isExpired}
+        >
           {`Settle ${currentSynth} for ${currentCollateral}`}
         </button>
       );
@@ -559,7 +584,10 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     }
   };
 
-  const ActionSelector: React.FC<{ currentAction: MinterAction; noPosition: boolean }> = ({ currentAction, noPosition }) => {
+  const ActionSelector: React.FC<{ currentAction: MinterAction; noPosition: boolean }> = ({
+    currentAction,
+    noPosition,
+  }) => {
     const changeAction = (action: MinterAction) => {
       dispatch({
         type: 'CHANGE_ACTION',
@@ -581,7 +609,12 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           return <div>Removes synths from position. Must have synths in wallet to do so.</div>;
         }
         case 'WITHDRAW': {
-          return <div>Removes collateral from position, increasing utilization. Withdrawals below global utilization must be requested.</div>;
+          return (
+            <div>
+              Removes collateral from position, increasing utilization. Withdrawals below global utilization must be
+              requested.
+            </div>
+          );
         }
         case 'REDEEM': {
           return <div>Repays debt and redeems equivalent collateral to maintain same utilization</div>;
@@ -628,7 +661,11 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           </button>
           <button
             disabled={noPosition || !state.isExpired}
-            className={clsx(styles, (noPosition || !state.isExpired) && 'opacity-10', currentAction === 'SETTLE' && 'selected')}
+            className={clsx(
+              styles,
+              (noPosition || !state.isExpired) && 'opacity-10',
+              currentAction === 'SETTLE' && 'selected'
+            )}
             onClick={() => changeAction('SETTLE')}
           >
             Settle
@@ -648,7 +685,6 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
         } else {
           return <p>Withdraw</p>;
         }
-        break;
       }
       default: {
         return null;
@@ -669,12 +705,14 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
             <div>
               <h3 className="text-color-6 margin-0">Your collateral will be above GCR ratio!</h3>
               <p className="margin-top-4">
-                You will need to wait for a withdrawal period of <strong className="text-color-4">{withdrawalPeriod} minutes</strong> before you can withdraw
-                your {currentCollateral}.
+                You will need to wait for a withdrawal period of{' '}
+                <strong className="text-color-4">{withdrawalPeriod} minutes</strong> before you can withdraw your{' '}
+                {currentCollateral}.
                 <br />
                 <br />
-                During that time your collateral could be <strong className="text-color-4">liquidated</strong> if your utilization exceeds the liquidation point
-                of <strong className="text-color-4">{state.liquidationPoint * 100}%.</strong>
+                During that time your collateral could be <strong className="text-color-4">liquidated</strong> if your
+                utilization exceeds the liquidation point of{' '}
+                <strong className="text-color-4">{state.liquidationPoint * 100}%.</strong>
                 <br />
                 <br />
                 {/* TODO Add link to liquidation docs */}
@@ -766,7 +804,9 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
               <div className="expand padding-left-2">
                 <div
                   className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${
-                    Number(formState.values.pendingTokens) === 0 && Number(formState.values.pendingCollateral) === 0 && 'disabled'
+                    Number(formState.values.pendingTokens) === 0 &&
+                    Number(formState.values.pendingCollateral) === 0 &&
+                    'disabled'
                   }`}
                   style={{
                     top: `${state.pendingUtilization < 1 ? (1 - state.pendingUtilization) * 100 : 0}%`,
@@ -775,19 +815,21 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
                   <h6 className="text-align-center margin-bottom-0">Synth</h6>
                   {state.pendingUtilization >= 0 && (
                     <>
-                      <h4 className="text-align-center margin-top-2 margin-bottom-0">{state.pendingUtilization.toFixed(2)}%</h4>
+                      <h4 className="text-align-center margin-top-2 margin-bottom-0">
+                        {state.pendingUtilization.toFixed(2)}%
+                      </h4>
                       <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
                     </>
                   )}
                   <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">
-                    {formState.values.pendingTokens} {currentSynth}
+                    {roundDecimals(Number(formState.values.pendingTokens), 4)} {currentSynth}
                   </h5>
                   <div className="height-auto flex-align-end">
                     <input
                       {...number('pendingTokens')}
                       type="number"
                       className="form-input small margin-bottom-1 w-input"
-                      maxLength={256}
+                      maxLength={10}
                       min="0"
                       placeholder="0"
                       required
@@ -802,20 +844,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           </form>
         </div>
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
-          <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4">
-            <div className="margin-0 w-dropdown">
-              <div className="padding-0 w-dropdown-toggle">
-                <Icon name="Settings" className="icon opacity-100" />
-              </div>
-              <nav className="dropdown-list radius-large box-shadow-medium w-dropdown-list">
-                <a href="#" className="text-small break-no-wrap">
-                  Advanced Features
-                </a>
-                <p className="text-xs opacity-50 margin-0">Coming soon</p>
-              </nav>
-            </div>
-          </div>
-          <div className="padding-8 padding-top-0 tablet-padding-top-0 landscape-padding-top-0 portrait-padding-top-0 flex-column expand">
+          <div className="padding-8 padding-top-4 tablet-padding-top-0 landscape-padding-top-0 portrait-padding-top-0 flex-column expand">
             <div>
               <h6 className="margin-bottom-0">Actions</h6>
               <div className="divider margin-y-2"></div>

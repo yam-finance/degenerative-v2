@@ -23,9 +23,10 @@ export const Synth: React.FC = () => {
   const { signer } = useContext(EthereumContext);
 
   const [{ cycle, year, collateral }, setSynthInfo] = useState({} as ISynth);
-  const [{ isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization, liquidationPoint, minTokens }, setMarketData] = useState(
-    {} as ISynthMarketData
-  );
+  const [
+    { isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization, liquidationPoint, minTokens },
+    setMarketData,
+  ] = useState({} as ISynthMarketData);
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
   const [withdrawalMinutesLeft, setWithdrawalMinutesLeft] = useState(0);
 
@@ -100,7 +101,8 @@ export const Synth: React.FC = () => {
           {withdrawalMinutesLeft > 0 ? (
             <div>
               <div className="text-small">
-                {withdrawalAmount} {currentCollateral} pending. Available for withdrawal in {withdrawalMinutesLeft} mins.
+                {withdrawalAmount} {currentCollateral} pending. Available for withdrawal in {withdrawalMinutesLeft}{' '}
+                mins.
               </div>
               <div className="flex-row margin-top-2">
                 <a
@@ -109,7 +111,10 @@ export const Synth: React.FC = () => {
                 >
                   Learn more
                 </a>
-                <button onClick={async () => await actions.onCancelWithdraw()} className="button-secondary button-tiny white w-button">
+                <button
+                  onClick={async () => await actions.onCancelWithdraw()}
+                  className="button-secondary button-tiny white w-button"
+                >
                   Cancel Withdrawal
                 </button>
               </div>
@@ -120,7 +125,10 @@ export const Synth: React.FC = () => {
                 {withdrawalAmount} {currentCollateral} available for withdrawal.
               </div>
               <div className="flex-row margin-top-2">
-                <button onClick={async () => await actions.onWithdrawPassedRequest()} className="button-secondary button-tiny margin-right-1 white w-button">
+                <button
+                  onClick={async () => await actions.onWithdrawPassedRequest()}
+                  className="button-secondary button-tiny margin-right-1 white w-button"
+                >
                   Withdraw
                 </button>
               </div>
@@ -141,7 +149,9 @@ export const Synth: React.FC = () => {
         <div className="flex-row">
           <div className="width-2 radius-full background-color-white margin-right-2 blue" />
           <div className="text-small">
-            <strong>{isExpired ? `${currentSynth} has expired.` : `${currentSynth} will expire in ${daysTillExpiry} days.`}</strong>
+            <strong>
+              {isExpired ? `${currentSynth} has expired.` : `${currentSynth} will expire in ${daysTillExpiry} days.`}
+            </strong>
           </div>
         </div>
       </div>
