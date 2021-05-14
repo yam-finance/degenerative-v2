@@ -303,6 +303,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     height: number;
     emphasized?: boolean;
   }
+
   const GaugeLabel: React.FC<GaugeLabelProps> = ({ label, tooltip, className, height, emphasized }) => {
     const [showTooltip, setShowTooltip] = useState(false);
 
@@ -770,14 +771,16 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
                   <h6 className="text-align-center margin-bottom-0">Collateral</h6>
                   <div className="width-full flex-justify-center margin-top-1 w-dropdown">
                     <div className="padding-0 flex-align-center">
-                      <a className="weight-bold">{currentCollateral}</a>
+                      <a className="weight-bold">
+                        {roundDecimals(Number(formState.values.pendingCollateral), 4)} {currentCollateral}
+                      </a>
                     </div>
                   </div>
                   <input
                     {...number('pendingCollateral')}
                     type="number"
                     className="form-input small margin-bottom-1 w-input"
-                    maxLength={256}
+                    maxLength={10}
                     min={0}
                     placeholder="0"
                     required

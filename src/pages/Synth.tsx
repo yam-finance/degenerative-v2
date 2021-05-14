@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
+import { useFormState } from 'react-use-form-state';
 
 import { useSynthActions, useToken } from '@/hooks';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
@@ -160,7 +161,8 @@ export const Synth: React.FC = () => {
 
   const WrapEthDialog: React.FC = () => {
     const [maxEth, setMaxEth] = useState(0);
-    const [ethAmount, setEthAmount] = useState(0);
+    const [formState, { number }] = useFormState<{ ethAmount: number }>({ ethAmount: 0 });
+    //const [ethAmount, setEthAmount] = useState(0);
 
     useEffect(() => {
       const getEthBalance = async () => {
@@ -174,10 +176,10 @@ export const Synth: React.FC = () => {
       getEthBalance();
     }, [signer]);
 
-    const setMaximum = (e: React.MouseEvent) => {
-      e.preventDefault();
-      setEthAmount(maxEth);
-    };
+    //const setMaximum = (e: React.MouseEvent) => {
+    //  e.preventDefault();
+    //  setEthAmount(maxEth);
+    //};
 
     return (
       <div className="width-full padding-2 radius-large background-color-2 margin-bottom-6 text-color-4">
@@ -186,9 +188,10 @@ export const Synth: React.FC = () => {
           <Icon name="AlertOctagon" className="icon medium blue" />
         </div>
         <div className="flex-row">
-          <div className="width-2 radius-full background-color-white margin-right-2 blue"></div>
+          <div className="width-2 radius-full background-color-white margin-right-2 blue" />
           <div>
             <div className="flex-row">
+              {/*
               <input
                 type="number"
                 className="form-input small margin-bottom-1 w-input"
@@ -197,8 +200,23 @@ export const Synth: React.FC = () => {
                   e.preventDefault();
                   setEthAmount(Number(e.target.value));
                 }}
+              /> */}
+              <input
+                {...number('ethAmount')}
+                type="number"
+                className="form-input small margin-bottom-1 w-input"
+                maxLength={10}
+                min={0}
+                placeholder="0"
+                required
               />
-              <button className="button-secondary button-tiny margin-right-1" onClick={(e) => setMaximum(e)}>
+              <button
+                className="button-secondary button-tiny margin-right-1"
+                onClick={(e) => {
+                  e.preventDefault();
+                  formState.setField('ethAmount', maxEth);
+                }}
+              >
                 Max
               </button>
             </div>
@@ -207,7 +225,7 @@ export const Synth: React.FC = () => {
                 className="button-secondary button-tiny margin-right-1"
                 onClick={(e) => {
                   e.preventDefault();
-                  actions.onWrapEth(ethAmount);
+                  actions.onWrapEth(Number(formState.values.ethAmount));
                 }}
               >
                 Wrap
@@ -232,41 +250,45 @@ export const Synth: React.FC = () => {
       <SideDisplay>
         {collateral === 'WETH' && <WrapEthDialog />}
         {withdrawalAmount > 0 && <WithdrawalRequestDialog />}
-        <SettleDialog />
-        <div>
-          <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
-              <div>{currentSynth} price</div>
+        {!isEmpty(synthMarketData) && (
+          <>
+            <SettleDialog />
+            <div>
+              <div className="flex-align-baseline margin-bottom-2">
+                <div className="expand flex-align-center">
+                  <div>{currentSynth} price</div>
+                </div>
+                <div className="weight-medium text-color-4">${numeral(priceUsd).format('0,0')}</div>
+              </div>
+              <div className="flex-align-baseline margin-bottom-2">
+                <div className="expand flex-align-center">
+                  <div>{currentCollateral} price</div>
+                </div>
+                <div className="weight-medium text-color-4">${numeral(collateralPriceUsd).format('0,0')}</div>
+              </div>
+              <div className="flex-align-baseline margin-bottom-2">
+                <div className="expand flex-align-center">
+                  <div>Global utilization</div>
+                </div>
+                <div className="weight-medium text-color-4">{globalUtilization * 100}%</div>
+              </div>
+              <div className="flex-align-baseline margin-bottom-2">
+                <div className="expand flex-align-center">
+                  <div>Liquidation</div>
+                </div>
+                <div className="weight-medium text-color-4">{liquidationPoint * 100}%</div>
+              </div>
+              <div className="flex-align-baseline margin-bottom-2">
+                <div className="expand flex-align-center">
+                  <div>Minimum position</div>
+                </div>
+                <div className="weight-medium text-color-4">
+                  {minTokens} {currentSynth}
+                </div>
+              </div>
             </div>
-            <div className="weight-medium text-color-4">${numeral(priceUsd).format('0,0')}</div>
-          </div>
-          <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
-              <div>{currentCollateral} price</div>
-            </div>
-            <div className="weight-medium text-color-4">${numeral(collateralPriceUsd).format('0,0')}</div>
-          </div>
-          <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
-              <div>Global utilization</div>
-            </div>
-            <div className="weight-medium text-color-4">{globalUtilization * 100}%</div>
-          </div>
-          <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
-              <div>Liquidation</div>
-            </div>
-            <div className="weight-medium text-color-4">{liquidationPoint * 100}%</div>
-          </div>
-          <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
-              <div>Minimum position</div>
-            </div>
-            <div className="weight-medium text-color-4">
-              {minTokens} {currentSynth}
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </SideDisplay>
     </Page>
   );
