@@ -652,6 +652,10 @@ a:hover {
   padding-bottom: 3rem;
 }
 
+.width-1 {
+  width: 0.25rem;
+}
+
 .width-2 {
   width: 0.5rem;
   -webkit-box-flex: 0;
@@ -1957,11 +1961,6 @@ a:hover {
 
 .bobacon._2 {
   width: 88px;
-}
-
-.grid-2 {
-  -ms-grid-columns: 1fr 1fr 1fr 1fr 1fr;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 }
 
 .text-align-right {
