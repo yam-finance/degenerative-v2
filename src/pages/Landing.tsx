@@ -237,11 +237,13 @@ export const Landing: React.FC = () => {
       </div>
       <div className="section-in-base aura-bg z-2">
         <div className="container-1140 w-container">
-          <h4>
-            <strong className="line-height-1-625 flex-align-center flex-justify-center padding-bottom-2">Built with love by YAM 🍠 </strong>
-          </h4>
-          <div className="w-layout-grid grid-2">
-            <div>
+          <div className="flex-row flex-wrap">
+            <div className="width-1-2 tablet-width-full">
+              <h4>
+                <strong className="line-height-1-625">Built with love by YAM 🍠 </strong>
+              </h4>
+            </div>
+            <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
               <h6 className="margin-top-4">Help</h6>
               <a href="#" className="block margin-bottom-2">
                 Tutorials
@@ -253,7 +255,7 @@ export const Landing: React.FC = () => {
                 FAQs
               </a>
             </div>
-            <div>
+            <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
               <h6 className="margin-top-4">Community</h6>
               <a href="#" className="block margin-bottom-2">
                 Twitter
@@ -265,7 +267,7 @@ export const Landing: React.FC = () => {
                 Telegram
               </a>
             </div>
-            <div>
+            <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
               <h6 className="margin-top-4">Information</h6>
               <a href="#" className="block margin-bottom-2">
                 About Yam Synths
@@ -280,17 +282,18 @@ export const Landing: React.FC = () => {
                 Visit Yam
               </a>
             </div>
-            <a href="#" className="flex-align-center w-inline-block">
-              <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
-              <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
-            </a>
-            <p className="text-align-right margin-top-4 text-small landscape-text-align-left">
-              © 2021 Yam Synths. All rights reserved.
-              <br />
-            </p>
+            <div className="flex-space-between width-full margin-top-8 tablet-block landscape-block portrait-block">
+              <a href="#" className="flex-align-center w-inline-block">
+                <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
+                <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
+              </a>
+              <p className="margin-top-4 tablet-margin-top-8 landscape-margin-top-8 portrait-margin-top-8 text-small">
+                © 2020 Yam Synths. All rights reserved.
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </>
+      </>
   );
 };
