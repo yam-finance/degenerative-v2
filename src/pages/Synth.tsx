@@ -162,7 +162,6 @@ export const Synth: React.FC = () => {
   const WrapEthDialog: React.FC = () => {
     const [maxEth, setMaxEth] = useState(0);
     const [formState, { number }] = useFormState<{ ethAmount: number }>({ ethAmount: 0 });
-    //const [ethAmount, setEthAmount] = useState(0);
 
     useEffect(() => {
       const getEthBalance = async () => {
@@ -176,11 +175,6 @@ export const Synth: React.FC = () => {
       getEthBalance();
     }, [signer]);
 
-    //const setMaximum = (e: React.MouseEvent) => {
-    //  e.preventDefault();
-    //  setEthAmount(maxEth);
-    //};
-
     return (
       <div className="width-full padding-2 radius-large background-color-2 margin-bottom-6 text-color-4">
         <div className="flex-align-center margin-bottom-2 flex-space-between">
@@ -191,16 +185,6 @@ export const Synth: React.FC = () => {
           <div className="width-2 radius-full background-color-white margin-right-2 blue" />
           <div>
             <div className="flex-row">
-              {/*
-              <input
-                type="number"
-                className="form-input small margin-bottom-1 w-input"
-                value={ethAmount}
-                onChange={(e) => {
-                  e.preventDefault();
-                  setEthAmount(Number(e.target.value));
-                }}
-              /> */}
               <input
                 {...number('ethAmount')}
                 type="number"
