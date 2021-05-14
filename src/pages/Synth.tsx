@@ -235,31 +235,31 @@ export const Synth: React.FC = () => {
         <SettleDialog />
         <div>
           <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
+            <div className="expand flex-align-center text-small">
               <div>{currentSynth} price</div>
             </div>
             <div className="weight-medium text-color-4">${numeral(priceUsd).format('0,0')}</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
+            <div className="expand flex-align-center text-small">
               <div>{currentCollateral} price</div>
             </div>
             <div className="weight-medium text-color-4">${numeral(collateralPriceUsd).format('0,0')}</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
+            <div className="expand flex-align-center text-small">
               <div>Global utilization</div>
             </div>
             <div className="weight-medium text-color-4">{globalUtilization * 100}%</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
+            <div className="expand flex-align-center text-small">
               <div>Liquidation</div>
             </div>
             <div className="weight-medium text-color-4">{liquidationPoint * 100}%</div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
-            <div className="expand flex-align-center">
+            <div className="expand flex-align-center text-small">
               <div>Minimum position</div>
             </div>
             <div className="weight-medium text-color-4">

@@ -3781,7 +3781,7 @@ a:hover {
 }
 
 .button-secondary.button-tiny.selected {
-  box-shadow: 0 0 0 4px rgba(122, 74, 226, 0.5);
+  box-shadow: 0 0 0 4px #FF6AF4;
 }
 
 .button-secondary.button-tiny.glass {

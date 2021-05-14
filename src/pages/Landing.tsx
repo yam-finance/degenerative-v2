@@ -55,7 +55,7 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="section-in-base landscape-padding-top-0">
+      <div className="section-in-base padding-top-0">
         <div className="container-1140 landscape-overflow-hidden w-container">
           {/* TODO Not doing yield party on launch
           <a href="/yield-party" className="block w-inline-block">
@@ -122,9 +122,9 @@ export const Landing: React.FC = () => {
             </div>
           </a> */}
 
-          <h1 className="text-align-center text-5xl">Trade, hedge, &amp; earn on all flavors of synths</h1>
-          <p className="text-large text-color-4 text-align-center">Yam Synths is your one-stop shop for every synth on the market</p>
-          <div className="flex-space-between flex-align-baseline margin-top-12">
+          <h1 className="text-align-center margin-bottom-4 text-5xl">Trade, hedge, & earn with Yam Synths</h1>
+          <p className="text-large text-color-4 text-align-center">Yam Synths is your portal to the powerful world of synthetic derivatives</p>
+          <div className="flex-space-between flex-align-baseline margin-top-16">
             <h4>Explore Yam Synths</h4>
             <Link to="/synths" className="text-color-5">
               View all
@@ -162,25 +162,25 @@ export const Landing: React.FC = () => {
       <div className="section-in-base">
         <div className="margin-y-48 radius-xl background-color-4 padding-12 box-shadow-large sheen margin-y-0 relative container-1140 w-container">
           <h2 className="width-1-2 margin-bottom-8">
-            Yam Synths brings you new <span className="text-color-1">opportunities</span>
+            Yam Synths enable <span className="text-color-1">powerful investment strategies</span>
           </h2>
           <div className="flex-align-center margin-top-4">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
-            <p className="text-color-4 margin-0 text-medium">Interact with up to 48 synths</p>
+            <p className="text-color-4 margin-0 text-medium">Access to new synths that push the bounds of DeFi</p>
           </div>
           <div className="flex-align-center margin-top-4">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
-            <p className="text-color-4 margin-0 text-medium">Interact with up to 48 synths</p>
+            <p className="text-color-4 margin-0 text-medium">Execute innovative trading and hedging strategies</p>
           </div>
           <div className="flex-align-center margin-top-4">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
-            <p className="text-color-4 margin-0 text-medium">Interact with up to 48 synths</p>
+            <p className="text-color-4 margin-0 text-medium">Grow along with the expanding world of Yam Synths</p>
           </div>
           <Link to="/synths" className="button-secondary absolute-bottom-right margin-12 w-button">
             Explore Synths

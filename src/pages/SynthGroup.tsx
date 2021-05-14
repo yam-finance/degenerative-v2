@@ -131,6 +131,7 @@ export const SynthGroup: React.FC = () => {
             ticks: {
               beginAtZero: false,
               display: true,
+              fontColor: "rgba(255,255,255,0.5)"
             },
             gridLines: {
               drawBorder: false,
@@ -158,7 +159,7 @@ export const SynthGroup: React.FC = () => {
       display: false,
     };
 
-    return <Line data={data} height={380} options={options} legend={legend} />;
+    return <Line data={data} height={300} options={options} legend={legend} />;
   };
 
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
@@ -241,7 +242,7 @@ export const SynthGroup: React.FC = () => {
         <div className="padding-x-8 padding-y-1 flex-row portrait-flex-column portrait-flex-align-start">
           <ChartSelector />
         </div>
-        <div style={{ width: '100%', height: '400px' }} className="relative width-full margin-y-2 w-embed w-script">
+        <div style={{ width: '100%', height: '300px' }} className="relative width-full margin-y-2 w-embed w-script">
           {historicPriceData ? <Chart /> : <img className="chart-loader pulse" src="/src/assets/chart-loader.svg" />}
         </div>
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
