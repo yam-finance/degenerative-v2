@@ -11,13 +11,12 @@
           "decimals": 18
         },
         "emp": {
-          "address": "0x516f595978d87b67401dab7afd8555c3d28a3af4",
-          "new": false
+          "address": "0x516f595978d87b67401dab7afd8555c3d28a3af4"
         },
         "pool": {
-          "address": "0x25fb29d865c1356f9e95d621f21366d3a5db6bb0"
-        },
-        "expired": null
+          "address": "0x25fb29d865c1356f9e95d621f21366d3a5db6bb0",
+          "location": "uni"
+        }
       },
       {
         "name": "February",
@@ -29,13 +28,12 @@
           "decimals": 18
         },
         "emp": {
-          "address": "0xeaa081a9fad4607cdf046fea7d4bf3dfef533282",
-          "new": false
+          "address": "0xeaa081a9fad4607cdf046fea7d4bf3dfef533282"
         },
         "pool": {
-          "address": "0x4a8a2ea3718964ed0551a3191c30e49ea38a5ade"
-        },
-        "expired": null
+          "address": "0x4a8a2ea3718964ed0551a3191c30e49ea38a5ade",
+          "location": "uni"
+        }
       },
       {
         "name": "March",
@@ -47,13 +45,12 @@
           "decimals": 18
         },
         "emp": {
-          "address": "0xfa3aa7ee08399a4ce0b4921c85ab7d645ccac669",
-          "new": false
+          "address": "0xfa3aa7ee08399a4ce0b4921c85ab7d645ccac669"
         },
         "pool": {
-          "address": "0x683ea972ffa19b7bad6d6be0440e0a8465dba71c"
-        },
-        "expired": null
+          "address": "0x683ea972ffa19b7bad6d6be0440e0a8465dba71c",
+          "location": "uni"
+        }
       },
       {
         "name": "June",
@@ -65,13 +62,12 @@
           "decimals": 18
         },
         "emp": {
-          "address": "0x4e8d60a785c2636a63c5bd47c7050d21266c8b43",
-          "new": true
+          "address": "0x4e8d60a785c2636a63c5bd47c7050d21266c8b43"
         },
         "pool": {
-          "address": "0x2b5dfb7874f685bea30b7d8426c9643a4bcf5873"
-        },
-        "expired": null
+          "address": "0x2b5dfb7874f685bea30b7d8426c9643a4bcf5873",
+          "location": "uni"
+        }
       }
     ],
     "uStonks": [
@@ -85,13 +81,12 @@
           "decimals": 6
         },
         "emp": {
-          "address": "0x4f1424cef6ace40c0ae4fc64d74b734f1eaf153c",
-          "new": true
+          "address": "0x4f1424cef6ace40c0ae4fc64d74b734f1eaf153c"
         },
         "pool": {
-          "address": "0xedf187890af846bd59f560827ebd2091c49b75df"
-        },
-        "expired": null
+          "address": "0xedf187890af846bd59f560827ebd2091c49b75df",
+          "location": "uni"
+        }
       },
       {
         "name": "June",
@@ -103,13 +98,31 @@
           "decimals": 6
         },
         "emp": {
-          "address": "0xb1a3e5a8d642534840bfc50c6417f9566e716cc7",
-          "new": true
+          "address": "0xb1a3e5a8d642534840bfc50c6417f9566e716cc7"
         },
         "pool": {
-          "address": "0x360acfeb5c1548bad3583c559a646d803077236d"
+          "address": "0x360acfeb5c1548bad3583c559a646d803077236d",
+          "location": "uni"
+        }
+      }
+    ],
+    "uPUNKS": [
+      {
+        "name": "September",
+        "cycle": "09",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x86140A763077155964754968B6F6e243fE809cBe",
+          "decimals": 18
         },
-        "expired": null
+        "emp": {
+          "address": "0xF8eF02C10C473CA5E48b10c62ba4d46115dd2288"
+        },
+        "pool": {
+          "address": "0x6e01db46b183593374a49c0025e42c4bb7ee3ffa",
+          "location": "sushi"
+        }
       }
     ]
   },
@@ -125,13 +138,12 @@
           "decimals": 18
         },
         "emp": {
-          "address": "0x8E632ee4f46C7DC444a0fA19c8af65f6FC030458",
-          "new": true
+          "address": "0x8E632ee4f46C7DC444a0fA19c8af65f6FC030458"
         },
         "pool": {
-          "address": "0x8cf2123ec57bbd05709cbde9024d90d3ab46d4c7"
-        },
-        "expired": null
+          "address": "0x8cf2123ec57bbd05709cbde9024d90d3ab46d4c7",
+          "location": "uni"
+        }
       }
     ],
     "uVolBtc": [
@@ -145,13 +157,12 @@
           "decimals": 6
         },
         "emp": {
-          "address": "0x7BD3e1A41EA086206423Ec5cDF04fccb264a7D01",
-          "new": true
+          "address": "0x7BD3e1A41EA086206423Ec5cDF04fccb264a7D01"
         },
         "pool": {
-          "address": "0xb4556914684e50F3d4491d7C8d338304e7e40387"
-        },
-        "expired": null
+          "address": "0xb4556914684e50F3d4491d7C8d338304e7e40387",
+          "location": "uni"
+        }
       }
     ],
     "yamDollar": [
@@ -165,13 +176,12 @@
           "decimals": 6
         },
         "emp": {
-          "address": "0x188f136F7b92268A596F7b3EDDfc2B527D010F3e",
-          "new": true
+          "address": "0x188f136F7b92268A596F7b3EDDfc2B527D010F3e"
         },
         "pool": {
-          "address": "0xa56b0c3cc9cc98873f07587f9b2ecdcfa33ad629"
-        },
-        "expired": null
+          "address": "0xa56b0c3cc9cc98873f07587f9b2ecdcfa33ad629",
+          "location": "uni"
+        }
       }
     ],
     "uPUNKS": [
@@ -185,13 +195,12 @@
           "decimals": 18
         },
         "emp": {
-          "address": "0x5d05A239e4de895d55bcf91fdE4dF4fC1B5961E7",
-          "new": true
+          "address": "0x5d05A239e4de895d55bcf91fdE4dF4fC1B5961E7"
         },
         "pool": {
-          "address": "0x6bf5c7afad3a0edf9ba5c90ba4e83ab82d547769"
-        },
-        "expired": null
+          "address": "0x6bf5c7afad3a0edf9ba5c90ba4e83ab82d547769",
+          "location": "uni"
+        }
       },
       {
         "name": "May",
@@ -203,13 +212,12 @@
           "decimals": 18
         },
         "emp": {
-          "address": "0x44094C174091AB2b41be0Eae0604E04c18a1fb1B",
-          "new": true
+          "address": "0x44094C174091AB2b41be0Eae0604E04c18a1fb1B"
         },
         "pool": {
-          "address": "0x0000000000000000000000000000000000000000"
-        },
-        "expired": null
+          "address": "0x0000000000000000000000000000000000000000",
+          "location": "uni"
+        }
       }
     ]
   }

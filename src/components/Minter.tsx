@@ -433,8 +433,8 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     );
 
     const MintButton: React.FC = () => {
-      const newTokens = pendingTokens - state.sponsorTokens;
-      const newCollateral = pendingCollateral - state.sponsorCollateral;
+      const newTokens = pendingTokens - sponsorTokens;
+      const newCollateral = pendingCollateral - sponsorCollateral;
 
       const disableMinting =
         newTokens <= 0 ||

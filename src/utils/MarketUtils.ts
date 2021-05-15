@@ -3,8 +3,16 @@ import axios from 'axios';
 import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, utils, constants } from 'ethers';
-import { UNISWAP_ENDPOINT, UNISWAP_MARKET_DATA_QUERY, UNISWAP_DAILY_PRICE_QUERY, getReferencePriceHistory, getDateString, getCollateralData } from '@/utils';
-import { ISynth, IToken } from '@/types';
+import {
+  UNISWAP_ENDPOINT,
+  SUSHISWAP_ENDPOINT,
+  UNISWAP_MARKET_DATA_QUERY,
+  UNISWAP_DAILY_PRICE_QUERY,
+  getReferencePriceHistory,
+  getDateString,
+  getCollateralData,
+} from '@/utils';
+import { ISynth, IToken, ILiquidityPool } from '@/types';
 
 sessionStorage.clear();
 
@@ -31,7 +39,9 @@ export const getPairPriceEth = async (token: IToken) => {
   const token1Address = token.address;
 
   try {
-    const res = await axios.get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${token1Address}&vs_currencies=eth`);
+    const res = await axios.get(
+      `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${token1Address}&vs_currencies=eth`
+    );
     const price = Number(res.data[token1Address]['eth']);
     return Promise.resolve(price);
   } catch (err) {
@@ -60,7 +70,9 @@ export const getUsdPriceHistory = async (tokenName: string, chainId: number) => 
   const cgId = collateral[tokenName].coingeckoId;
 
   try {
-    const res = await axios.get(`https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`);
+    const res = await axios.get(
+      `https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`
+    );
     const prices = res.data.prices;
     const priceHistory = prices.map(([timestamp, price]: number[]) => {
       const newTimestamp = timestamp.toString().substring(0, timestamp.toString().length - 3);
@@ -75,9 +87,10 @@ export const getUsdPriceHistory = async (tokenName: string, chainId: number) => 
 };
 
 // Get Uniswap pool data
-export const getPoolData = async (poolAddress: string, chainId: number) => {
+export const getPoolData = async (pool: ILiquidityPool) => {
+  const endpoint = pool.location === 'uni' ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
   try {
-    const data = await request(UNISWAP_ENDPOINT[chainId], UNISWAP_MARKET_DATA_QUERY, { poolAddress: poolAddress });
+    const data = await request(endpoint, UNISWAP_MARKET_DATA_QUERY, { poolAddress: pool.address });
     return data.pair;
   } catch (err) {
     console.log(err);
@@ -105,7 +118,7 @@ export const getDailyPriceHistory_new = async (synth: ISynth) => {
 
   const dailyPriceResponse: {
     tokenDayDatas: PriceHistoryResponse[];
-  } = await request(UNISWAP_ENDPOINT[1], UNISWAP_DAILY_PRICE_QUERY, {
+  } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
     tokenAddresses: [synth.token.address],
     startingTime: startingTime,
   });
@@ -128,7 +141,7 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
   // TODO Consider grabbing paired data, not USD
   const dailyPriceResponse: {
     tokenDayDatas: PriceHistoryResponse[];
-  } = await request(UNISWAP_ENDPOINT[1], UNISWAP_DAILY_PRICE_QUERY, {
+  } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
     tokenAddresses: addressList,
     startingTime: startingTime,
   });
