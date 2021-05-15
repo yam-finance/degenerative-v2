@@ -1,13 +1,23 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { EthereumContext } from '@/contexts';
-import { ISynthMarketData, ISynthInfo, ICollateral } from '@/types';
-import { getSynthMetadata, getUsdPrice, getApr, getPoolData, getEmpState, roundDecimals, getCollateralData } from '@/utils';
+import { ISynthMarketData, ISynth, IToken } from '@/types';
+import {
+  getSynthMetadata,
+  getPairPriceEth,
+  getUsdPrice,
+  getApr,
+  getPoolData,
+  getEmpState,
+  roundDecimals,
+  getCollateralData,
+  SynthGroups,
+} from '@/utils';
 import { utils } from 'ethers';
 
 const initialState = {
   synthMarketData: {} as Record<string, ISynthMarketData>,
-  synthMetadata: {} as Record<string, ISynthInfo>,
-  collateralData: {} as Record<string, ICollateral>,
+  synthMetadata: {} as Record<string, ISynth>,
+  collateralData: {} as Record<string, IToken>,
   loading: false,
 };
 
@@ -23,19 +33,26 @@ export const MarketProvider: React.FC = ({ children }) => {
   const { chainId, provider } = useContext(EthereumContext);
 
   useEffect(() => {
-    const initializeMarketData = async (synthMetadata: Record<string, ISynthInfo>, collateralData: Record<string, ICollateral>) => {
+    const initializeMarketData = async (
+      synthMetadata: Record<string, ISynth>,
+      collateralData: Record<string, IToken>
+    ) => {
       const data: typeof synthMarketData = {};
 
       try {
         const requests = Object.entries(synthMetadata).map(([name, synth]) => {
+          const pairedToken = SynthGroups[synth.group].paired;
+          const paired = collateralData[pairedToken];
           const collateral = collateralData[synth.collateral];
+
           return Promise.all([
             name,
             synth,
             collateral,
+            paired,
             getEmpState(synth, chainId, provider),
             getUsdPrice(collateral.coingeckoId ?? ''),
-            getPoolData(synth.pool.address, chainId),
+            getPoolData(synth.pool),
           ]);
         });
         const resolved = await Promise.all(requests);
@@ -45,7 +62,17 @@ export const MarketProvider: React.FC = ({ children }) => {
             name,
             synth,
             collateral,
-            { tvl, totalSupply, expirationTimestamp, currentTime, rawGlobalUtilization, minTokens, liquidationPoint, withdrawalPeriod },
+            paired,
+            {
+              tvl,
+              totalSupply,
+              expirationTimestamp,
+              currentTime,
+              rawGlobalUtilization,
+              minTokens,
+              liquidationPoint,
+              withdrawalPeriod,
+            },
             collateralPriceUsd,
             pool,
           ] = synthData;
@@ -55,30 +82,29 @@ export const MarketProvider: React.FC = ({ children }) => {
             const expiration = new Date(expirationTimestamp.toNumber());
             const daysTillExpiry = Math.round((expiration.getTime() - dateToday.getTime()) / (3600 * 24));
             const isExpired = dateToday >= expiration;
-
             const liquidity = pool.reserveUSD ?? 0;
 
             let priceUsd;
-            let pricePerCollateral;
+            let pricePerPaired;
             if (synth.collateral === pool.token0.symbol) {
               priceUsd = pool.token0Price * collateralPriceUsd;
-              pricePerCollateral = pool.token0Price;
+              pricePerPaired = pool.token0Price;
             } else {
               priceUsd = pool.token1Price * collateralPriceUsd;
-              pricePerCollateral = pool.token1Price;
+              pricePerPaired = pool.token1Price;
             }
 
-            const globalUtilization = rawGlobalUtilization * pricePerCollateral;
-            const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, collateral.decimals));
-            const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, collateral.decimals));
+            const globalUtilization = rawGlobalUtilization * pricePerPaired;
+            const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, paired.decimals));
+            const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, paired.decimals));
             const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
 
             data[name] = {
-              price: roundDecimals(Number(pricePerCollateral), 4),
+              price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
               priceUsd: roundDecimals(priceUsd, 2),
               collateralPriceUsd: roundDecimals(collateralPriceUsd, 2),
               liquidity: Math.trunc(liquidity),
-              totalSupply: roundDecimals(Number(utils.formatUnits(totalSupply, collateral.decimals)), 2),
+              totalSupply: roundDecimals(Number(utils.formatUnits(totalSupply, paired.decimals)), 2),
               tvl: tvlUsd,
               marketCap: Math.trunc(marketCap),
               volume24h: 0, // TODO need to get from subgraph

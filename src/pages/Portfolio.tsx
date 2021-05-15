@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { MarketContext, UserContext } from '@/contexts';
 import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow, Loader } from '@/components';
-import { IMintedPosition, ISynthInWallet } from '@/types';
+import { IMintedPosition, ISynthInWallet, ISynthMarketData } from '@/types';
 import { getUsdPrice, roundDecimals, isEmpty } from '@/utils';
 
 export const Portfolio = () => {
@@ -24,7 +24,7 @@ export const Portfolio = () => {
     (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
 
     return (
-      <TableRow to={link}>
+      <TableRow>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={imgLocation} alt={name} className="margin-1" />
@@ -35,7 +35,9 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${roundDecimals(Number(price) * tokenAmount, 2)}</div>
+          <div className="text-color-4">
+            {roundDecimals(price * tokenAmount, 2)} {collateral}
+          </div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
@@ -54,7 +56,7 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand flex-align-baseline">
-          <Link to={`${link}/manage`} className="button-secondary button-tiny white">
+          <Link to={`${link}/manage`} className="button button-small">
             Manage
           </Link>
         </div>
@@ -64,14 +66,14 @@ export const Portfolio = () => {
 
   const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
     const { name, tokenAmount } = props;
-    const { imgLocation, group, cycle, year } = synthMetadata[name];
+    const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
     const { price, daysTillExpiry } = synthMarketData[name];
     const link = `/synths/${group}/${cycle}${year}`;
 
     const isExpired = daysTillExpiry < 0;
 
     return (
-      <TableRow to={link}>
+      <TableRow>
         <div className="flex-align-center expand">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={imgLocation} alt={name} className="margin-1" />
@@ -82,7 +84,9 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${roundDecimals(Number(price) * tokenAmount, 2)}</div>
+          <div className="text-color-4">
+            {roundDecimals(Number(price) * tokenAmount, 2)} {collateral}
+          </div>
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
@@ -93,7 +97,7 @@ export const Portfolio = () => {
           <div className={`pill ${isExpired ? 'red' : 'green'}`}>{isExpired ? 'EXPIRED' : 'LIVE'}</div>
         </div>
         <div className="expand flex-align-baseline">
-          <Link to={`${link}/manage`} className="button-secondary button-tiny white">
+          <Link to={`${link}/manage`} className="button button-small">
             Manage
           </Link>
         </div>
@@ -110,15 +114,6 @@ export const Portfolio = () => {
           <Loader className="flex-align-center flex-justify-center padding-top-48" />
         ) : (
           <>
-            <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
-              {mintedPositions.length > 0 ? (
-                mintedPositions.map((minted, index) => {
-                  return <MintedRow {...minted} key={index} />;
-                })
-              ) : (
-                <TableRow>You do not have any synths minted</TableRow>
-              )}
-            </Table>
             <Table title="Synths In Wallet" headers={['Token', 'Balance', 'Price', 'Status', 'Actions']}>
               {synthsInWallet && synthsInWallet.length > 0 ? (
                 synthsInWallet.map((inWallet, index) => {
@@ -126,6 +121,15 @@ export const Portfolio = () => {
                 })
               ) : (
                 <TableRow>You do not have any synths in your wallet</TableRow>
+              )}
+            </Table>
+            <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
+              {mintedPositions.length > 0 ? (
+                mintedPositions.map((minted, index) => {
+                  return <MintedRow {...minted} key={index} />;
+                })
+              ) : (
+                <TableRow>You do not have any synths minted</TableRow>
               )}
             </Table>
           </>

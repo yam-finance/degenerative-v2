@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { Icon } from '@/components';
 import { SynthGroups } from '@/utils';
-import zombieHead from '@/assets/zombie_head_large.png';
+import yamIcon from '@/assets/yamIcon.png';
 import ethIcon from '@/assets/ethIcon.png';
 import mintLp from '@/assets/mintLp.png';
 import hold from '@/assets/hold.png';
@@ -11,7 +11,15 @@ import short from '@/assets/short.png';
 import redeem from '@/assets/redeem.png';
 
 export const Landing: React.FC = () => {
-  const SynthBlock: React.FC<{ name: string; image: string; url: string; description: string; apr: number }> = ({ name, image, url, description, apr }) => {
+  interface SynthBlockProps {
+    name: string;
+    image: string;
+    url: string;
+    description: string;
+    apr: number;
+  }
+
+  const SynthBlock: React.FC<SynthBlockProps> = ({ name, image, url, description, apr }) => {
     return (
       <Link
         to={url}
@@ -20,18 +28,17 @@ export const Landing: React.FC = () => {
         <img src={`/images/${image}.png`} className="width-32" />
         <h4 className="margin-top-8">{name}</h4>
         <p className="text-small opacity-60">{description}</p>
-        <div className="button">Earn {apr}% APY</div>
         <div className="pill absolute-top-right margin-4">New</div>
       </Link>
     );
   };
 
   return (
-    <body>
+    <>
       <div data-collapse="small" data-animation="default" data-duration="400" role="banner" className="background-color-transparent w-nav">
         <div className="container-1280 flex-row-middle padding-y-2 portrait-padding-x-2 w-container">
           <a href="#" className="margin-left-6 flex-row-middle w-inline-block">
-            <img src={zombieHead} loading="lazy" alt="A cute degen zombie head as the logo" className="degen margin-right-2" />
+            <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
             <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
           </a>
           <nav role="navigation" className="margin-left-auto flex-align-center landscape-padding-2 landscape-background-color-2 w-nav-menu">
@@ -124,8 +131,10 @@ export const Landing: React.FC = () => {
             </Link>
           </div>
           <div className="grid-3-columns">
-            <SynthBlock name="uGas-JUN21" image="ugas" url="/synths/uGas/JUN21" description={SynthGroups['uGas'].description} apr={50} />
-            <SynthBlock name="uSTONKS-APR21" image="ustonks" url="/synths/uStonks/APR21" description={SynthGroups['uStonks'].description} apr={50} />
+            {/* TODO Finalize names, punctuation, links, etc */}
+            <SynthBlock name="uPUNKS" image="cryptopunk" url="/synths/uPUNKS" description={SynthGroups['uPUNKS'].description} apr={50} />
+            <SynthBlock name="uGAS" image="ugas" url="/synths/uGas" description={SynthGroups['uGas'].description} apr={50} />
+            <SynthBlock name="uSTONKS" image="ustonks" url="/synths/uStonks" description={SynthGroups['uStonks'].description} apr={50} />
           </div>
         </div>
       </div>
@@ -228,11 +237,13 @@ export const Landing: React.FC = () => {
       </div>
       <div className="section-in-base aura-bg z-2">
         <div className="container-1140 w-container">
-          <div className="w-layout-grid grid-2">
-            <h4>
-              <strong className="line-height-1-625">Built with love by YAM 🍠 </strong>
-            </h4>
-            <div>
+          <div className="flex-row flex-wrap">
+            <div className="width-1-2 tablet-width-full">
+              <h4>
+                <strong className="line-height-1-625">Built with love by YAM 🍠 </strong>
+              </h4>
+            </div>
+            <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
               <h6 className="margin-top-4">Help</h6>
               <a href="#" className="block margin-bottom-2">
                 Tutorials
@@ -244,7 +255,7 @@ export const Landing: React.FC = () => {
                 FAQs
               </a>
             </div>
-            <div>
+            <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
               <h6 className="margin-top-4">Community</h6>
               <a href="#" className="block margin-bottom-2">
                 Twitter
@@ -256,7 +267,7 @@ export const Landing: React.FC = () => {
                 Telegram
               </a>
             </div>
-            <div>
+            <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
               <h6 className="margin-top-4">Information</h6>
               <a href="#" className="block margin-bottom-2">
                 About Yam Synths
@@ -271,17 +282,18 @@ export const Landing: React.FC = () => {
                 Visit Yam
               </a>
             </div>
-            <a href="#" className="flex-align-center w-inline-block">
-              <img src={zombieHead} loading="lazy" alt="Yam Synths" className="degen margin-right-2" />
-              <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
-            </a>
-            <p className="text-align-right margin-top-4 text-small landscape-text-align-left">
-              © 2020 Yam Synths. All rights reserved.
-              <br />
-            </p>
+            <div className="flex-space-between width-full margin-top-8 tablet-block landscape-block portrait-block">
+              <a href="#" className="flex-align-center w-inline-block">
+                <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
+                <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
+              </a>
+              <p className="margin-top-4 tablet-margin-top-8 landscape-margin-top-8 portrait-margin-top-8 text-small">
+                © 2020 Yam Synths. All rights reserved.
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </body>
+      </>
   );
 };

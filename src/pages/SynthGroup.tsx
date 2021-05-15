@@ -4,6 +4,7 @@ import { Line } from 'react-chartjs-2';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader } from '@/components';
 import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
+import chartLoader from '/src/assets/chart-loader.svg';
 
 interface SynthParams {
   group: string;
@@ -100,6 +101,8 @@ export const SynthGroup: React.FC = () => {
     };
 
     const options = {
+      responsive: true,
+      maintainAspectRatio: false,
       tooltips: {
         //mode: 'index', // TODO this breaks build, but is needed
         intersect: false,
@@ -156,7 +159,7 @@ export const SynthGroup: React.FC = () => {
       display: false,
     };
 
-    return <Line data={data} options={options} legend={legend} />;
+    return <Line data={data} height={380} options={options} legend={legend} />;
   };
 
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
@@ -221,7 +224,11 @@ export const SynthGroup: React.FC = () => {
       <div className="tabs portrait-margin-top-1">
         {Object.keys(synthGroup).map((synthName, index) => {
           return (
-            <div className={`tab ${synthInFocus === synthName && 'active'}`} onClick={() => setSynthInFocus(synthName)} key={index}>
+            <div
+              className={`tab ${synthInFocus === synthName && 'active'}`}
+              onClick={() => setSynthInFocus(synthName)}
+              key={index}
+            >
               {synthName}
             </div>
           );
@@ -239,7 +246,11 @@ export const SynthGroup: React.FC = () => {
         <div className="padding-x-8 padding-y-1 flex-row portrait-flex-column portrait-flex-align-start">
           <ChartSelector />
         </div>
-        <div className="width-full margin-y-2 w-embed w-script">{historicPriceData ? <Chart /> : <Loader className="flex-align-center flex-justify-center loader-padding" />}</div>
+
+        <div style={{ width: '100%', height: '400px' }} className="relative width-full margin-y-2 w-embed w-script">
+          {historicPriceData ? <Chart /> : <img className="chart-loader pulse" src={chartLoader} />}
+        </div>
+
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <TableFilter />
         <Table headers={['Maturity', 'APY', 'Your Balance', 'Liquidity', 'Price']}>
