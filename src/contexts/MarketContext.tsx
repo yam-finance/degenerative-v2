@@ -1,7 +1,17 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { EthereumContext } from '@/contexts';
 import { ISynthMarketData, ISynth, IToken } from '@/types';
-import { getSynthMetadata, getPairPriceEth, getUsdPrice, getApr, getPoolData, getEmpState, roundDecimals, getCollateralData, SynthGroups } from '@/utils';
+import {
+  getSynthMetadata,
+  getPairPriceEth,
+  getUsdPrice,
+  getApr,
+  getPoolData,
+  getEmpState,
+  roundDecimals,
+  getCollateralData,
+  SynthGroups,
+} from '@/utils';
 import { utils } from 'ethers';
 
 const initialState = {
@@ -23,7 +33,10 @@ export const MarketProvider: React.FC = ({ children }) => {
   const { chainId, provider } = useContext(EthereumContext);
 
   useEffect(() => {
-    const initializeMarketData = async (synthMetadata: Record<string, ISynth>, collateralData: Record<string, IToken>) => {
+    const initializeMarketData = async (
+      synthMetadata: Record<string, ISynth>,
+      collateralData: Record<string, IToken>
+    ) => {
       const data: typeof synthMarketData = {};
 
       try {
@@ -39,7 +52,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             paired,
             getEmpState(synth, chainId, provider),
             getUsdPrice(collateral.coingeckoId ?? ''),
-            getPoolData(synth.pool.address, chainId),
+            getPoolData(synth.pool),
           ]);
         });
         const resolved = await Promise.all(requests);
@@ -50,7 +63,16 @@ export const MarketProvider: React.FC = ({ children }) => {
             synth,
             collateral,
             paired,
-            { tvl, totalSupply, expirationTimestamp, currentTime, rawGlobalUtilization, minTokens, liquidationPoint, withdrawalPeriod },
+            {
+              tvl,
+              totalSupply,
+              expirationTimestamp,
+              currentTime,
+              rawGlobalUtilization,
+              minTokens,
+              liquidationPoint,
+              withdrawalPeriod,
+            },
             collateralPriceUsd,
             pool,
           ] = synthData;

@@ -9,6 +9,10 @@ export interface IToken extends IContract {
   coingeckoId: string;
 }
 
+export interface ILiquidityPool extends IContract {
+  location: 'uni' | 'sushi' | 'bal';
+}
+
 export interface ISynth {
   imgLocation: string;
   group: string;
@@ -17,7 +21,7 @@ export interface ISynth {
   collateral: string; // TODO remove, get collateral through group
   token: IToken;
   emp: IContract;
-  pool: IContract;
+  pool: ILiquidityPool;
 }
 
 export interface ISynthGroup {

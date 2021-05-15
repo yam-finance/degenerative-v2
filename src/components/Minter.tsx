@@ -378,7 +378,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     return utilization ? (
       <div className="old-position-marker">
         <div className="old-position-outer-line"></div>
-        <div className="text-block">{roundDecimals(utilization * 100, 3) ?? 0}% Current Utilization</div>
+        <div className="text-block">{roundDecimals(utilization * 100, 2) ?? 0}% Current Utilization</div>
       </div>
     ) : null;
   };
@@ -433,8 +433,8 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     );
 
     const MintButton: React.FC = () => {
-      const newTokens = pendingTokens - state.sponsorTokens;
-      const newCollateral = pendingCollateral - state.sponsorCollateral;
+      const newTokens = pendingTokens - sponsorTokens;
+      const newCollateral = pendingCollateral - sponsorCollateral;
 
       const disableMinting =
         newTokens <= 0 ||
@@ -847,8 +847,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           </form>
         </div>
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
-          <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4">
-          </div>
+          <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4"></div>
           <div className="padding-8 padding-top-0 tablet-padding-top-0 landscape-padding-top-0 portrait-padding-top-0 flex-column expand">
             <div className="margin-top-3">
               <h6 className="margin-bottom-0">Actions</h6>
