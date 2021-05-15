@@ -195,7 +195,7 @@ export const Synth: React.FC = () => {
                 required
               />
               <button
-                className="button-secondary button-tiny margin-right-1"
+                className="button-secondary button-tiny margin-left-1"
                 onClick={(e) => {
                   e.preventDefault();
                   formState.setField('ethAmount', maxEth);
@@ -206,7 +206,7 @@ export const Synth: React.FC = () => {
             </div>
             <div className="flex-row margin-top-2">
               <button
-                className="button-secondary button-tiny margin-right-1"
+                className="button button-small margin-right-1"
                 onClick={(e) => {
                   e.preventDefault();
                   actions.onWrapEth(Number(formState.values.ethAmount));
