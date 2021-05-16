@@ -21,7 +21,7 @@ export const NavbarButton: React.FC<NavbarButtonProps> = ({ icon, to, text, exte
   };
 
   return external ? (
-    <a href={to} className="nav-link w-inline-block">
+    <a href={to} target="_blank" className="nav-link w-inline-block">
       <IconButton />
     </a>
   ) : (
