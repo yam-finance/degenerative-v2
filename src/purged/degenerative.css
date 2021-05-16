@@ -598,6 +598,22 @@ a:hover {
   max-width: 286px;
 }
 
+.flex-column-middle {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
 .flex-column-centered {
   display: -webkit-box;
   display: -webkit-flex;
@@ -2809,6 +2825,10 @@ a:hover {
     margin: 0px;
   }
 
+  .tablet-margin-8 {
+    margin: 2rem;
+  }
+
   .tablet-margin-top-8 {
     margin-top: 2rem;
   }
@@ -2881,6 +2901,10 @@ a:hover {
     padding-top: 0px;
   }
 
+  .tablet-padding-bottom-32 {
+    padding-bottom: 8rem;
+  }
+
   .tablet-padding-left-0 {
     padding-left: 0px;
   }
@@ -2939,6 +2963,14 @@ a:hover {
     top: 0%;
     right: 0%;
     bottom: auto;
+  }
+
+  .tablet-fixed-bottom-right {
+    position: fixed;
+    left: auto;
+    top: auto;
+    right: 0%;
+    bottom: 0%;
   }
 
   .tablet-border-none {
@@ -3455,6 +3487,10 @@ a:hover {
     padding-top: 1rem;
   }
 
+  .landscape-padding-bottom-32 {
+    padding-bottom: 8rem;
+  }
+
   .landscape-width-full {
     width: 100%;
   }
@@ -3729,8 +3765,8 @@ a:hover {
     padding-bottom: 2.25rem;
   }
 
-  .portrait-padding-0 {
-    padding: 0px;
+  .portrait-padding-3 {
+    padding: 0.75rem;
   }
 
   .portrait-padding-4 {
@@ -3739,6 +3775,10 @@ a:hover {
 
   .portrait-padding-top-0 {
     padding-top: 0px;
+  }
+
+  .portrait-padding-bottom-32 {
+    padding-bottom: 8rem;
   }
 
   .portrait-padding-x-2 {
