@@ -27,7 +27,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ className }) => {
       }}
       className={className}
     >
-      Connect
+      Connect Wallet
     </div>
   );
 };
