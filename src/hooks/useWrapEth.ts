@@ -7,7 +7,7 @@ import { isEmpty } from '@/utils';
 
 export const useWrapEth = () => {
   const { collateralData } = useContext(MarketContext);
-  const { signer } = useContext(EthereumContext);
+  const { signer, provider } = useContext(EthereumContext);
 
   const [wethContract, setWethContract] = useState<Weth>();
 
@@ -21,7 +21,15 @@ export const useWrapEth = () => {
   const wrapEth = async (ethAmount: number) => {
     const amount = utils.parseEther(ethAmount.toString());
     const tx = await wethContract?.deposit({ value: amount });
-    return tx;
+
+    if (tx && provider) {
+      provider.waitForTransaction(tx.hash).then(function (tx) {
+        console.log('Transaction Mined: ' + tx);
+        console.log(tx);
+
+        return tx;
+      });
+    }
   };
 
   return wrapEth;
