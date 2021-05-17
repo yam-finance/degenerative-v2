@@ -10,7 +10,7 @@
     "description": "Track the top ten stocks chosen by the Wall Street Bets community",
     "collateral": "USDC",
     "paired": "USDC",
-    "image": "ustonks",
+    "image": "ustonks_zombie",
     "creator": "UMA"
   },
   "uVolBtc": {

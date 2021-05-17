@@ -175,18 +175,11 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
     const refPrices = await getReferencePriceHistory(group, chainId);
 
     if (min && max) {
-      console.log(min);
-      console.log(max);
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
       const maxIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(max));
-      console.log(minIndex);
-      console.log(maxIndex);
-      console.log(refPrices.slice(0, maxIndex));
       return refPrices.slice(minIndex, maxIndex).map((ref: any) => ref.price);
     }
   })();
-
-  console.log(referenceData);
 
   // Map price data to date for each synth for easy access
   const priceData: Record<string, Record<string, number>> = {};

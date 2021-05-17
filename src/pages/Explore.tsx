@@ -88,7 +88,11 @@ export const Explore = () => {
         <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
-        <div className="button button-small"><span className="opacity-60">Up to </span>{`${aprMax}% APR`}</div> {/* TODO */}
+        <div className="button button-small">
+          <span className="opacity-60">Up to </span>
+          {`${aprMax}% APR`}
+        </div>{' '}
+        {/* TODO */}
         <div className="pill absolute-top-right margin-4">New</div>
       </Link>
     );
@@ -102,7 +106,7 @@ export const Explore = () => {
       <TableRow to={`/synths/${group}`} onMouseEnter={() => setSidebarData(group)}>
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
-            <img src={image} loading="lazy" className="margin-2" />
+            <img src={image} loading="lazy" className="margin-1 radius-full" />
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{group}</div>
@@ -111,7 +115,10 @@ export const Explore = () => {
         </div>
         <div></div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4"><span className="opacity-50">Up to </span>{`${aprMax}%`}</div>
+          <div className="text-color-4">
+            <span className="opacity-50">Up to </span>
+            {`${aprMax}%`}
+          </div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{formatForDisplay(totalLiquidity)}</div>
@@ -134,13 +141,17 @@ export const Explore = () => {
             <div className="expand flex-align-center">
               <div>Trading Volume</div>
             </div>
-            <div className="weight-medium text-color-4">${formatForDisplay(synthGroupData[sidebarData].totalVolume24h)}</div>
+            <div className="weight-medium text-color-4">
+              ${formatForDisplay(synthGroupData[sidebarData].totalVolume24h)}
+            </div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
               <div>Marketcap</div>
             </div>
-            <div className="weight-medium text-color-4">${formatForDisplay(synthGroupData[sidebarData].totalMarketCap)}</div>
+            <div className="weight-medium text-color-4">
+              ${formatForDisplay(synthGroupData[sidebarData].totalMarketCap)}
+            </div>
           </div>
           <div className="flex-align-baseline margin-bottom-2">
             <div className="expand flex-align-center">
@@ -160,7 +171,10 @@ export const Explore = () => {
       <MainDisplay>
         <MainHeading>Explore Synths</MainHeading>
         <div className="padding-x-8 flex-row margin-top-4 flex-wrap">
-          <SearchForm setSearch={setSearchTerm} className="margin-0 margin-right-2 expand portrait-width-full portrait-margin-bottom-2 w-form" />
+          <SearchForm
+            setSearch={setSearchTerm}
+            className="margin-0 margin-right-2 expand portrait-width-full portrait-margin-bottom-2 w-form"
+          />
         </div>
         <div className="padding-x-8 flex-align-baseline" />
         {isEmpty(synthMarketData) ? (

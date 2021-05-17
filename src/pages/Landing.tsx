@@ -8,7 +8,6 @@ import ethIcon from '@/assets/ethIcon.png';
 import mintLp from '@/assets/mintLp.png';
 import hold from '@/assets/hold.png';
 import short from '@/assets/short.png';
-import redeem from '@/assets/redeem.png';
 
 export const Landing: React.FC = () => {
   interface SynthBlockProps {
@@ -35,13 +34,22 @@ export const Landing: React.FC = () => {
 
   return (
     <>
-      <div data-collapse="small" data-animation="default" data-duration="400" role="banner" className="background-color-transparent w-nav">
+      <div
+        data-collapse="small"
+        data-animation="default"
+        data-duration="400"
+        role="banner"
+        className="background-color-transparent w-nav"
+      >
         <div className="container-1280 flex-row-middle padding-y-2 portrait-padding-x-2 w-container">
           <a href="#" className="margin-left-6 flex-row-middle w-inline-block">
             <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
             <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
           </a>
-          <nav role="navigation" className="margin-left-auto flex-align-center landscape-padding-2 landscape-background-color-2 w-nav-menu">
+          <nav
+            role="navigation"
+            className="margin-left-auto flex-align-center landscape-padding-2 landscape-background-color-2 w-nav-menu"
+          >
             <a href="#" target="_blank" className="text-color-4 landscape-text-align-center landscape-block w-nav-link">
               Learn
             </a>
@@ -123,7 +131,9 @@ export const Landing: React.FC = () => {
           </a> */}
 
           <h1 className="text-align-center margin-bottom-4 text-5xl">Trade, hedge, & earn with Yam Synths</h1>
-          <p className="text-large text-color-4 text-align-center">Yam Synths is your portal to the powerful world of synthetic derivatives</p>
+          <p className="text-large text-color-4 text-align-center">
+            Yam Synths is your portal to the powerful world of synthetic derivatives
+          </p>
           <div className="flex-space-between flex-align-baseline margin-top-16">
             <h4>Explore Yam Synths</h4>
             <Link to="/synths" className="text-color-5">
@@ -132,9 +142,27 @@ export const Landing: React.FC = () => {
           </div>
           <div className="grid-3-columns">
             {/* TODO Finalize names, punctuation, links, etc */}
-            <SynthBlock name="uPUNKS" image="cryptopunk" url="/synths/uPUNKS" description={SynthGroups['uPUNKS'].description} apr={50} />
-            <SynthBlock name="uGAS" image="ugas" url="/synths/uGas" description={SynthGroups['uGas'].description} apr={50} />
-            <SynthBlock name="uSTONKS" image="ustonks" url="/synths/uStonks" description={SynthGroups['uStonks'].description} apr={50} />
+            <SynthBlock
+              name="uPUNKS"
+              image="cryptopunk"
+              url="/synths/uPUNKS"
+              description={SynthGroups['uPUNKS'].description}
+              apr={50}
+            />
+            <SynthBlock
+              name="uGAS"
+              image="ugas"
+              url="/synths/uGas"
+              description={SynthGroups['uGas'].description}
+              apr={50}
+            />
+            <SynthBlock
+              name="uSTONKS"
+              image="ustonks_zombie"
+              url="/synths/uStonks"
+              description={SynthGroups['uStonks'].description}
+              apr={50}
+            />
           </div>
         </div>
       </div>
@@ -191,44 +219,36 @@ export const Landing: React.FC = () => {
         <div className="container-1140 w-container">
           <h2 className="margin-bottom-10">What can you do with Yam Synths?</h2>
           <div className="flex-row tablet-block">
-            <div className="padding-20 padding-left-0 border-bottom-2px border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0">
+            <div className="padding-12 padding-left-0 border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0">
               <img src={mintLp} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
-                Mint and LP{' '}
+                Provide Liquidity{' '}
                 <span className="opacity-50">
-                  synths in pools to earn UMA and Yam rewards. To qualify, users must both mint and deposit their synth tokens. Tokens which are traded and then
-                  deposited will not qualify.
+                  to earn rewards by minting a synth against collateral & pool it alongside the asset it trades against
+                  in our selected AMM to earn UMA + Yam rewards. On top of this, LPs earn market maker fees.
+                  Alternatively, you can go long a synth instead of minting it, to use when providing liquidity.
                 </span>
               </h5>
             </div>
-            <div className="padding-20 padding-right-0 border-bottom-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0">
+            <div className="padding-12  border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0">
               <img src={hold} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
-                Hold <span className="opacity-50">your synth tokens until the expiry date or</span> trade{' '}
+                Go Long{' '}
                 <span className="opacity-50">
-                  them on your favorite DEX to pocket the difference between your minting cost and the synthetics spot price as profit.
+                  to express your price positive market view on a variety of innovative synthetic assets. Simply buy the
+                  synth from our chosen AMM pool and hold until expiry, or sell it back to the AMM pool anytime before
+                  expiry.
                 </span>
               </h5>
             </div>
-          </div>
-          <div className="flex-row tablet-block">
-            <div className="padding-20 padding-left-0 border-right-2px width-1-2 padding-bottom-0 tablet-width-full tablet-border-none tablet-padding-x-0">
+            <div className="padding-12 padding-right-0 width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0">
               <img src={short} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
-                Short{' '}
+                Go Short{' '}
                 <span className="opacity-50">
-                  by depositing collateral to mint synth tokens and sell them on a DEX. After the synth token price has fallen, buy back your position and
-                  unlock the collateral.
-                </span>
-              </h5>
-            </div>
-            <div className="padding-20 padding-right-0 width-1-2 padding-bottom-0 tablet-width-full tablet-border-none tablet-padding-x-0">
-              <img src={redeem} loading="lazy" className="bobacon margin-bottom-4" />
-              <h5 className="line-height-1-625">
-                Redeem{' '}
-                <span className="opacity-50">
-                  your minted synth at any time before or after expiry to retrieve your collateral. We give you full flexibility to make sure you can do with
-                  your collateral whatever you like.
+                  into what you perceive is an overvalued market, profiting on falling prices. To achieve this you’ll
+                  need to mint the synth against collateral and sell it to the relevant AMM pool. To realise
+                  gains/losses on your position, hold until expiry, or buy back the synth before expiry.
                 </span>
               </h5>
             </div>
@@ -294,6 +314,6 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
-      </>
+    </>
   );
 };

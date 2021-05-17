@@ -1,4 +1,4 @@
-# Degenerative.Finance V2 Website
+# Yam Synths Website
 
 #### Development
 
