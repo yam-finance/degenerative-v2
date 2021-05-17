@@ -20,10 +20,10 @@ interface SynthParams {
 export const Synth: React.FC = () => {
   const { group, cycleYear, action } = useParams<SynthParams>();
   const { currentSynth, currentCollateral, setSynth, mintedPositions } = useContext(UserContext);
-  const { synthMetadata, synthMarketData } = useContext(MarketContext);
+  const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
   const { signer } = useContext(EthereumContext);
 
-  const [{ cycle, year, collateral }, setSynthInfo] = useState({} as ISynth);
+  const [synth, setSynthInfo] = useState({} as ISynth);
   const [
     { isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization, liquidationPoint, minTokens },
     setMarketData,
@@ -60,34 +60,31 @@ export const Synth: React.FC = () => {
   }, [currentSynth, mintedPositions]);
 
   const ActionSelector: React.FC = () => {
+    let tradeLink;
+    let lpLink;
+    switch (synth.pool.location) {
+      case 'uni': {
+        tradeLink = `https://app.uniswap.org/#/swap?inputCurrency=${collateralData[currentCollateral].address}&outputCurrency=${synth.token.address}`;
+        lpLink = `https://app.uniswap.org/#/add/v2/${collateralData[currentCollateral].address}-${synth.token.address}`;
+      }
+    }
+
+    if (isEmpty(collateralData) && isEmpty(synthMetadata)) return null;
     return (
       <div className="padding-x-8 flex-row">
         <div className="tabs margin-right-2">
-          <NavLink to={`/synths/${group}/${cycle}${year}/manage`} className="tab large" activeClassName="active">
+          <NavLink to={`/synths/${group}/${cycleYear}/manage`} className="tab large" activeClassName="active">
             Manage
           </NavLink>
-          <NavLink to={`/synths/${group}/${cycle}${year}/trade`} className="tab large" activeClassName="active">
+          <a href={tradeLink} target="_blank" rel="noreferrer" className="tab large">
             Trade
-          </NavLink>
-          <NavLink to={`/synths/${group}/${cycle}${year}/lp`} className="tab large" activeClassName="active">
-            LP
-          </NavLink>
+          </a>
+          <a href={lpLink} target="_blank" rel="noreferrer" className="tab large">
+            Provide Liquidity
+          </a>
         </div>
       </div>
     );
-  };
-
-  const Action: React.FC = () => {
-    switch (action) {
-      case 'manage':
-        return <Minter actions={actions} />;
-      //case 'trade':
-      //  return <Trade />
-      //case 'lp':
-      //  return <Lp />
-      default:
-        return null;
-    }
   };
 
   const WithdrawalRequestDialog: React.FC = () => {
@@ -167,8 +164,6 @@ export const Synth: React.FC = () => {
       const getEthBalance = async () => {
         if (signer) {
           const ethBalance = await signer.getBalance();
-          console.log('ETH BALANCE');
-          console.log(utils.formatEther(ethBalance));
           setMaxEth(Number(utils.formatEther(ethBalance)));
         }
       };
@@ -221,18 +216,17 @@ export const Synth: React.FC = () => {
     );
   };
 
-  if (!currentSynth) return null;
   return (
     <Page>
       <Navbar />
       <MainDisplay>
         <MainHeading>{currentSynth}</MainHeading>
-        <ActionSelector />
+        {!isEmpty(synth) && <ActionSelector />}
         <div className="border-bottom-1px margin-x-8 margin-y-4" />
-        <Action />
+        <Minter actions={actions} />
       </MainDisplay>
       <SideDisplay>
-        {collateral === 'WETH' && <WrapEthDialog />}
+        {synth.collateral === 'WETH' && <WrapEthDialog />}
         {withdrawalAmount > 0 && <WithdrawalRequestDialog />}
         {!isEmpty(synthMarketData) && (
           <>

@@ -5661,7 +5661,7 @@ a:hover {
 }
 
 .button-secondary.button-tiny.selected {
-  box-shadow: 0 0 0 4px #FF6AF4;
+  box-shadow: 0 0 0 4px #ff6af4;
 }
 
 .button-secondary.button-tiny.glass {
@@ -6151,6 +6151,7 @@ a:hover {
   color: hsla(0, 0%, 100%, 0.5);
   font-size: 0.75rem;
   font-weight: 500;
+  cursor: pointer;
 }
 
 .tab.active {

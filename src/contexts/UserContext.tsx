@@ -66,7 +66,12 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const getSponsorPosition = async (synthName: string) => {
     const synth = synthMetadata[synthName];
-    const { tokensOutstanding, rawCollateral, withdrawalRequestPassTimeStamp, withdrawalRequestAmount } = await emp.getUserPosition(synth.emp.address);
+    const {
+      tokensOutstanding,
+      rawCollateral,
+      withdrawalRequestPassTimeStamp,
+      withdrawalRequestAmount,
+    } = await emp.getUserPosition(synth.emp.address);
     const { price } = synthMarketData[synthName];
 
     if (rawCollateral.gt(0) || tokensOutstanding.gt(0)) {

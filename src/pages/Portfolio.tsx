@@ -10,10 +10,6 @@ export const Portfolio = () => {
   const { mintedPositions, synthsInWallet } = useContext(UserContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
 
-  useEffect(() => {
-    console.log(synthsInWallet);
-  }, [synthsInWallet]);
-
   const MintedRow: React.FC<IMintedPosition> = (props) => {
     const { name, tokenAmount, collateralAmount, utilization } = props;
     const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
