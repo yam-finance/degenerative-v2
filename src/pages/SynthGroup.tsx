@@ -132,7 +132,7 @@ export const SynthGroup: React.FC = () => {
             ticks: {
               beginAtZero: false,
               display: true,
-              fontColor: "rgba(255,255,255,0.5)"
+              fontColor: 'rgba(255,255,255,0.5)',
             },
             gridLines: {
               drawBorder: false,
@@ -249,7 +249,7 @@ export const SynthGroup: React.FC = () => {
         </div>
 
         <div style={{ width: '100%', height: '300px' }} className="relative width-full margin-y-2 w-embed w-script">
-          {historicPriceData ? <Chart /> : <img className="chart-loader pulse" src="/src/assets/chart-loader.svg" />}
+          {historicPriceData ? <Chart /> : <img className="chart-loader pulse" src={chartLoader} />}
         </div>
 
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
