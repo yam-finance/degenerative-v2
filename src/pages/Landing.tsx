@@ -8,6 +8,8 @@ import ethIcon from '@/assets/ethIcon.png';
 import mintLp from '@/assets/mintLp.png';
 import hold from '@/assets/hold.png';
 import short from '@/assets/short.png';
+import hero from '@/assets/degen-hero.png';
+import umaLogo from '@/assets/uma_logo.png';
 
 export const Landing: React.FC = () => {
   interface SynthBlockProps {
@@ -130,6 +132,7 @@ export const Landing: React.FC = () => {
             </div>
           </a> */}
 
+          <img src={hero} className="radius-xl box-shadow-large margin-top-8" />
           <h1 className="text-align-center margin-bottom-4 text-5xl">Trade, hedge, & earn with Yam Synths</h1>
           <p className="text-large text-color-4 text-align-center">
             Yam Synths is your portal to the powerful world of synthetic derivatives
@@ -260,7 +263,8 @@ export const Landing: React.FC = () => {
           <div className="flex-row flex-wrap">
             <div className="width-1-2 tablet-width-full">
               <h4>
-                <strong className="line-height-1-625">Built with love by YAM 🍠 </strong>
+                <strong className="line-height-1-625">Built with love by YAM 🍠 </strong> <br />
+                <strong className="line-height-1-625">Powered by UMA</strong>
               </h4>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
@@ -296,10 +300,10 @@ export const Landing: React.FC = () => {
                 Blog
               </a>
               <a href="#" className="block margin-bottom-2">
-                Visit UMA
+                Visit Yam
               </a>
               <a href="#" className="block margin-bottom-2">
-                Visit Yam
+                Visit UMA
               </a>
             </div>
             <div className="flex-space-between width-full margin-top-8 tablet-block landscape-block portrait-block">
