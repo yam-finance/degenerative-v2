@@ -1494,6 +1494,7 @@ a:hover {
   transition: color 200ms ease-in-out, background-color 200ms ease-in-out;
   font-weight: 700;
   text-align: center;
+  cursor: pointer;
 }
 
 .button:hover {
