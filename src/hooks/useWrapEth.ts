@@ -24,10 +24,12 @@ export const useWrapEth = () => {
 
     if (tx && provider) {
       provider.waitForTransaction(tx.hash).then(function (tx) {
-        console.log('Transaction Mined: ' + tx);
+        console.log('Transaction Mined: ' + tx.transactionHash);
 
         return tx;
       });
+    } else {
+      return null;
     }
   };
 
