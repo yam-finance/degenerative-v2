@@ -33,6 +33,26 @@ export const getUsdPrice = async (tokenAddress: string) => {
 };
 */
 
+export const getReferenceSpotPrice = async (synth: ISynth) => {
+  switch (synth.group) {
+    case 'uGas': {
+      const res = await axios.get('http://data.yam.finance/median');
+      console.log(res.data);
+      return;
+    }
+    case 'uStonks': {
+      const res = await axios.get('http://data.yam.finance/ustonks/index/jun21');
+      console.log(res.data);
+      return;
+    }
+    case 'uPUNKS': {
+      const res = await axios.get('https://api.yam.finance/degenerative/upunks/price');
+      console.log(res.data);
+      return;
+    }
+  }
+};
+
 // Get price of token in terms of Ether from Coingecko
 // TODO should probably replace with on-chain data
 export const getPairPriceEth = async (token: IToken) => {
