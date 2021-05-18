@@ -13,7 +13,7 @@ interface SynthParams {
 interface ISynthGroupItem {
   name: string;
   maturity: number;
-  apy: number;
+  apr: number;
   balance: number;
   liquidity: number;
   price: number;
@@ -58,7 +58,7 @@ export const SynthGroup: React.FC = () => {
           synths[synthName] = {
             name: synthName,
             maturity: maturity,
-            apy: synthMarketData[synthName].apr, //TODO
+            apr: synthMarketData[synthName].apr, //TODO
             // TODO should be showing minted positions
             balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? 0,
             liquidity: synthMarketData[synthName].liquidity, // TODO
@@ -164,7 +164,7 @@ export const SynthGroup: React.FC = () => {
   };
 
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
-    const { name, maturity, apy, balance, liquidity, price } = props;
+    const { name, maturity, apr, balance, liquidity, price } = props;
     const { cycle, year, group } = synthMetadata[name];
 
     return (
@@ -174,7 +174,7 @@ export const SynthGroup: React.FC = () => {
           <div className="text-xs opacity-50">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{apy}%</div>
+          <div className="text-color-4">{apr}%</div>
         </div>
         <div className="expand portrait-hide">
           <div className="text-color-4">$0.00</div>
@@ -254,7 +254,7 @@ export const SynthGroup: React.FC = () => {
 
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <TableFilter />
-        <Table headers={['Maturity', 'APY', 'Your Balance', 'Liquidity', 'Price']}>
+        <Table headers={['Maturity', 'APR', 'Your Balance', 'Liquidity', 'Price']}>
           {Object.keys(synthGroup).length > 0 ? (
             Object.entries(synthGroup).map(([name, synth], index) => {
               return <SynthGroupRow {...synth} key={index} />;

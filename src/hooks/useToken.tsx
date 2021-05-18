@@ -62,5 +62,3 @@ export const useToken = () => {
     getBalance,
   };
 };
-
-export default useToken;

@@ -60,16 +60,18 @@ export const Synth: React.FC = () => {
   }, [currentSynth, mintedPositions]);
 
   const ActionSelector: React.FC = () => {
+    const collateral = collateralData[currentCollateral];
+
     let tradeLink;
     let lpLink;
     switch (synth.pool.location) {
       case 'uni':
-        tradeLink = `https://app.uniswap.org/#/swap?inputCurrency=${collateralData[currentCollateral].address}&outputCurrency=${synth.token.address}`;
-        lpLink = `https://app.uniswap.org/#/add/v2/${collateralData[currentCollateral].address}-${synth.token.address}`;
+        tradeLink = `https://app.uniswap.org/#/swap?inputCurrency=${collateral.address}&outputCurrency=${synth.token.address}`;
+        lpLink = `https://app.uniswap.org/#/add/v2/${collateral.address}-${synth.token.address}`;
         break;
       case 'sushi':
-        tradeLink = `https://app.sushi.com/swap?inputCurrency=${collateralData[currentCollateral].address}&outputCurrency=${synth.token.address}`;
-        lpLink = `https://app.sushi.com/add/${collateralData[currentCollateral].address}-${synth.token.address}`;
+        tradeLink = `https://app.sushi.com/swap?inputCurrency=${collateral.address}&outputCurrency=${synth.token.address}`;
+        lpLink = `https://app.sushi.com/add/${collateral.address}-${synth.token.address}`;
         break;
       default:
         break;
@@ -164,6 +166,7 @@ export const Synth: React.FC = () => {
 
   const WrapEthDialog: React.FC = () => {
     const [maxEth, setMaxEth] = useState(0);
+    const [waiting, setWaiting] = useState(false);
     const [formState, { number }] = useFormState<{ ethAmount: number }>({ ethAmount: 0 });
 
     useEffect(() => {
@@ -173,6 +176,7 @@ export const Synth: React.FC = () => {
           setMaxEth(Number(utils.formatEther(ethBalance)));
         }
       };
+
       getEthBalance();
     }, [signer]);
 
@@ -208,10 +212,13 @@ export const Synth: React.FC = () => {
             <div className="flex-row margin-top-2">
               <button
                 className="button button-small margin-right-1"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.preventDefault();
-                  actions.onWrapEth(Number(formState.values.ethAmount));
+                  setWaiting(true);
+                  await actions.onWrapEth(Number(formState.values.ethAmount));
+                  setWaiting(false);
                 }}
+                disabled={waiting}
               >
                 Wrap
               </button>

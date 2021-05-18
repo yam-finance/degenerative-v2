@@ -217,5 +217,3 @@ export const useEmp = () => {
     getUserPosition,
   };
 };
-
-export default useEmp;

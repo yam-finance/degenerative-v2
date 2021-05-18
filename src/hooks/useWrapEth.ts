@@ -21,10 +21,8 @@ export const useWrapEth = () => {
   const wrapEth = async (ethAmount: number) => {
     const amount = utils.parseEther(ethAmount.toString());
     const tx = await wethContract?.deposit({ value: amount });
-    return tx;
+    return tx?.wait();
   };
 
   return wrapEth;
 };
-
-export default useWrapEth;

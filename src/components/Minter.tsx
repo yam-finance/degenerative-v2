@@ -6,8 +6,9 @@ import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import { Dropdown, Icon, Loader } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, ISynthActions } from '@/hooks';
-import { roundDecimals, isEmpty } from '@/utils';
+import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
 import clsx from 'clsx';
+import { IToken } from '@/types';
 
 /* The component's state is the actual sponsor position. The form is the pending position. */
 
@@ -51,7 +52,8 @@ type Action =
   | 'UPDATE_PENDING_UTILIZATION'
   | 'CHANGE_ACTION'
   | 'OPEN_INPUTS'
-  | 'TOGGLE_WITHDRAWAL_MODAL';
+  | 'TOGGLE_WITHDRAWAL_MODAL'
+  | 'UPDATE_MAX_COLLATERAL';
 
 const Reducer = (state: State, action: { type: Action; payload: any }) => {
   switch (action.type) {
@@ -117,6 +119,14 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         modalWithdrawalAmount: withdrawalAmount,
       };
     }
+    case 'UPDATE_MAX_COLLATERAL': {
+      const { collateral } = action.payload;
+
+      return {
+        ...state,
+        maxCollateral: collateral,
+      };
+    }
     default:
       throw new Error('Invalid state change');
   }
@@ -130,12 +140,11 @@ interface MinterFormFields {
 }
 
 export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
-  const { account } = useContext(EthereumContext);
+  const { account, provider } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, mintedPositions, triggerUpdate } = useContext(UserContext);
   const { synthMarketData, collateralData } = useContext(MarketContext);
 
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
-  //const actions = useSynthActions();
   const erc20 = useToken();
 
   const [formState, { number }] = useFormState<MinterFormFields>(
@@ -170,15 +179,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
   useEffect(() => {
     const initMinterState = async () => {
-      const collateralAddress = collateralData[currentCollateral].address;
-      const collateralDecimals = collateralData[currentCollateral].decimals;
-
-      let collateralBalance = BigNumber.from(0);
-      try {
-        collateralBalance = (await erc20.getBalance(collateralAddress)) ?? BigNumber.from(0);
-      } catch (err) {
-        console.error(err);
-      }
+      const collateralBalance = await setCollateralBalance(collateralData[currentCollateral]);
 
       const marketData = synthMarketData[currentSynth];
       const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
@@ -212,7 +213,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           liquidationPoint: marketData.liquidationPoint,
           tokenPrice: marketData.price,
           minTokens: marketData.minTokens,
-          maxCollateral: Number(utils.formatUnits(collateralBalance, collateralDecimals)),
+          maxCollateral: collateralBalance,
           isExpired: marketData.isExpired,
         },
       });
@@ -224,6 +225,18 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       initMinterState();
     }
   }, [currentSynth, currentCollateral, synthMarketData, collateralData, account, mintedPositions]);
+
+  // Set an event listener to update when collateral balance changes
+  useEffect(() => {
+    provider?.on('block', () => {
+      if (!isEmpty(collateralData) && currentCollateral) {
+        setCollateralBalance(collateralData[currentCollateral]);
+      }
+    });
+    return () => {
+      provider?.removeAllListeners('block');
+    };
+  }, [collateralData, currentCollateral]);
 
   // Set windows and fields based on action selected
   useEffect(() => {
@@ -284,6 +297,20 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       // Set form to initial state
       setFormInputs(collateral, tokens);
     }
+  };
+
+  const setCollateralBalance = async (collateral: IToken) => {
+    const rawBalance = (await erc20.getBalance(collateral.address)) ?? BigNumber.from(0);
+    const collateralBalance = Number(utils.formatUnits(rawBalance, collateral.decimals));
+
+    dispatch({
+      type: 'UPDATE_MAX_COLLATERAL',
+      payload: {
+        collateral: collateralBalance,
+      },
+    });
+
+    return collateralBalance;
   };
 
   const setMaximum = (e: React.MouseEvent) => {

@@ -198,10 +198,8 @@ export const useSynthActions = () => {
   const onWrapEth = async (ethAmount: number) => {
     if (ethAmount > 0) {
       try {
-        const result = await wrapEth(ethAmount);
-        if (result) {
-          await result.wait();
-        }
+        const txReceipt = await wrapEth(ethAmount);
+        console.log(txReceipt?.transactionHash);
       } catch (err) {
         console.error(err);
       }
