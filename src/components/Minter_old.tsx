@@ -15,7 +15,7 @@ interface MinterFormFields {
 export const Minter: React.FC = () => {
   const { account } = useContext(EthereumContext);
   const { currentSynth, currentCollateral } = useContext(UserContext);
-  const actions = useSynthActions(); // TODO pass this in
+  // const actions = useSynthActions(); // TODO pass this in
   const erc20 = useToken();
 
   const [maxCollateral, setMaxCollateral] = useState<BigNumber>(BigNumber.from(0));
@@ -105,7 +105,7 @@ export const Minter: React.FC = () => {
           className="button w-button"
           onClick={(e) => {
             e.preventDefault();
-            actions.onWrapEth(ethAmount);
+            // actions.onWrapEth(ethAmount);
           }}
         >
           Wrap Eth
