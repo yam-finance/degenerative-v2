@@ -23,8 +23,8 @@ export const useWrapEth = () => {
     const tx = await wethContract?.deposit({ value: amount });
 
     if (tx && provider) {
-      provider.waitForTransaction(tx.hash).then(function (tx) {
-        console.log('Transaction Mined: ' + tx.transactionHash);
+      await provider.waitForTransaction(tx.hash).then(function (transaction) {
+        console.log('Transaction Mined: ' + transaction.transactionHash);
 
         return tx;
       });
