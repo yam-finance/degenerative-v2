@@ -48,7 +48,6 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
       const usdPriceCollateral = collateralUsd.get(dateString) ?? 1;
-      console.log(usdPriceCollateral);
 
       return {
         timestamp: dateString,
