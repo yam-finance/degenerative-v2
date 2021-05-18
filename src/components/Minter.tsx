@@ -57,7 +57,6 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
   switch (action.type) {
     case 'INIT_SPONSOR_POSITION': {
       const initialized = action.payload;
-      console.log(initialized);
 
       return {
         ...state,
@@ -132,7 +131,7 @@ interface MinterFormFields {
 
 export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
   const { account } = useContext(EthereumContext);
-  const { currentSynth, currentCollateral, collateralInWallet, mintedPositions } = useContext(UserContext);
+  const { currentSynth, currentCollateral, mintedPositions, triggerUpdate } = useContext(UserContext);
   const { synthMarketData, collateralData } = useContext(MarketContext);
 
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
@@ -178,7 +177,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       try {
         collateralBalance = (await erc20.getBalance(collateralAddress)) ?? BigNumber.from(0);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
 
       const marketData = synthMarketData[currentSynth];
@@ -224,7 +223,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     if (currentSynth && currentCollateral && !isEmpty(collateralData) && !isEmpty(synthMarketData[currentSynth])) {
       initMinterState();
     }
-  }, [currentSynth, currentCollateral, synthMarketData, collateralData, account]);
+  }, [currentSynth, currentCollateral, synthMarketData, collateralData, account, mintedPositions]);
 
   // Set windows and fields based on action selected
   useEffect(() => {
@@ -406,6 +405,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       setWaiting(true);
       await action;
       setWaiting(false);
+      triggerUpdate(); // TODO Make UserContext refresh user positions. Not currently working.
     };
 
     const CollateralApproveButton: React.FC = () => (

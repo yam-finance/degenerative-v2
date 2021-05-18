@@ -11,26 +11,26 @@ import { isEmpty, roundDecimals } from '@/utils';
 const initialState = {
   mintedPositions: [] as IMintedPosition[],
   synthsInWallet: [] as ITokensInWallet[],
-  collateralInWallet: [] as ITokensInWallet[],
   //poolPositions: [] as IPoolPosition[],
   setSynth: (synthName: string) => {},
   getSponsorPosition: (synthName: string) => {},
   currentSynth: '',
   currentCollateral: '',
+  triggerUpdate: () => {},
   emp: {} as ReturnType<typeof useEmp>,
 };
 
 export const UserContext = createContext(initialState);
 
 export const UserProvider: React.FC = ({ children }) => {
-  const { account, signer } = useContext(EthereumContext);
+  const { signer } = useContext(EthereumContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
 
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);
   const [synthsInWallet, setSynthsInWallet] = useState<ITokensInWallet[]>([]);
-  const [collateralInWallet, setCollateralInWallet] = useState<ITokensInWallet[]>([]);
   const [currentSynth, setCurrentSynth] = useState('');
   const [currentCollateral, setCurrentCollateral] = useState('');
+  const [forceUpdate, setForceUpdate] = useState(false);
 
   const emp = useEmp();
   const erc20 = useToken();
@@ -41,14 +41,13 @@ export const UserProvider: React.FC = ({ children }) => {
     }
   }, [currentSynth, synthMetadata]);
 
-  // TODO update when user has minted tokens
   useEffect(() => {
-    if (signer && synthMetadata && synthMarketData) {
+    if (forceUpdate || (signer && synthMetadata && synthMarketData && collateralData)) {
       updateMintedPositions();
       updateSynthsInWallet();
-      updateCollateralInWallet();
+      setForceUpdate(false);
     }
-  }, [signer, synthMetadata, synthMarketData]);
+  }, [signer, synthMetadata, synthMarketData, collateralData, forceUpdate]);
 
   const setSynth = (synthName: string) => {
     setCurrentSynth(synthName);
@@ -100,7 +99,6 @@ export const UserProvider: React.FC = ({ children }) => {
     }
   };
 
-  // TODO Change to updateTokensInWallet. Grab all relevant tokens: synths and collateral tokens
   const updateSynthsInWallet = () => {
     const synthsOwned: ITokensInWallet[] = [];
 
@@ -123,39 +121,19 @@ export const UserProvider: React.FC = ({ children }) => {
     setSynthsInWallet(synthsOwned);
   };
 
-  const updateCollateralInWallet = () => {
-    const collateralOwned: ITokensInWallet[] = [];
-
-    Object.entries(collateralData).forEach(async ([name, token]) => {
-      const balance = await erc20.getBalance(token.address);
-
-      if (balance.gt(0)) {
-        console.log(name);
-        const tokens = Number(utils.formatUnits(balance, token.decimals));
-        const inWallet: ITokensInWallet = {
-          name: name,
-          tokenAmount: roundDecimals(tokens, 2),
-        };
-
-        collateralOwned.push(inWallet);
-        console.log(collateralOwned);
-      }
-    });
-
-    console.log(collateralOwned);
-    setCollateralInWallet(collateralOwned);
-  };
+  // TODO This can probably be removed if useDapp or Web3React are integrated
+  const triggerUpdate = () => setForceUpdate(true);
 
   return (
     <UserContext.Provider
       value={{
         mintedPositions,
         synthsInWallet,
-        collateralInWallet,
         currentSynth,
         currentCollateral,
         setSynth,
         getSponsorPosition,
+        triggerUpdate,
         emp,
       }}
     >
