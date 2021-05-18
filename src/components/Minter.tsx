@@ -130,7 +130,7 @@ interface MinterFormFields {
   pendingTokens: number;
 }
 
-export const Minter: React.FC<{ isWrapped: Boolean, actions: ISynthActions }> = ({ isWrapped, actions }) => {
+export const Minter: React.FC<{ isWrapped: boolean, actions: ISynthActions }> = ({ isWrapped, actions }) => {
   const { account } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, synthsInWallet, mintedPositions } = useContext(UserContext);
   const { synthMarketData, collateralData } = useContext(MarketContext);

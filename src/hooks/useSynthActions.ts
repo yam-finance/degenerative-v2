@@ -4,7 +4,7 @@ import { UserContext, MarketContext } from '@/contexts';
 import { useToken, useWrapEth } from '@/hooks';
 import { isEmpty } from '@/utils';
 
-export const useSynthActions = (wethWrapStatus: Boolean, setWethWrapStatus: Function) => {
+export const useSynthActions = (wethWrapStatus: boolean, setWethWrapStatus: Function) => {
   const { currentSynth, currentCollateral, emp } = useContext(UserContext);
   const { synthMetadata, collateralData } = useContext(MarketContext);
   const [empAddress, setEmpAddress] = useState('');

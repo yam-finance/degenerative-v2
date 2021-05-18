@@ -5,7 +5,7 @@ import { EthereumContext, MarketContext } from '@/contexts';
 import { Weth__factory, Weth } from '@/types/contracts';
 import { isEmpty } from '@/utils';
 
-export const useWrapEth = (wrapStatus: Boolean, setWrapStatus: Function) => {
+export const useWrapEth = (wrapStatus: boolean, setWrapStatus: Function) => {
   const { collateralData } = useContext(MarketContext);
   const { signer, provider } = useContext(EthereumContext);
 
