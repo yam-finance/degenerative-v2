@@ -5,7 +5,7 @@ import { fromUnixTime, differenceInMinutes } from 'date-fns';
 
 import { Dropdown, Icon, Loader } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
-import { useToken, useSynthActions, ISynthActions } from '@/hooks';
+import { useToken, ISynthActions } from '@/hooks';
 import { roundDecimals, isEmpty } from '@/utils';
 import clsx from 'clsx';
 
