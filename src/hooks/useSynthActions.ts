@@ -4,7 +4,7 @@ import { UserContext, MarketContext } from '@/contexts';
 import { useToken, useWrapEth } from '@/hooks';
 import { isEmpty } from '@/utils';
 
-export const useSynthActions = () => {
+export const useSynthActions = (wethWrapStatus: Boolean, setWethWrapStatus: Function) => {
   const { currentSynth, currentCollateral, emp } = useContext(UserContext);
   const { synthMetadata, collateralData } = useContext(MarketContext);
   const [empAddress, setEmpAddress] = useState('');
@@ -14,7 +14,7 @@ export const useSynthActions = () => {
   const [synthApproval, setSynthApproval] = useState(false);
 
   const erc20 = useToken();
-  const wrapEth = useWrapEth();
+  const wrapEth = useWrapEth(wethWrapStatus, setWethWrapStatus);
 
   useEffect(() => {
     if (currentSynth && currentCollateral && !isEmpty(synthMetadata) && !isEmpty(collateralData)) {
@@ -96,9 +96,6 @@ export const useSynthActions = () => {
     if (ethAmount > 0) {
       try {
         const result = await wrapEth(ethAmount);
-        if (result) {
-          await result.wait();
-        }
       } catch (err) {
         console.error(err);
       }

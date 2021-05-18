@@ -130,7 +130,7 @@ interface MinterFormFields {
   pendingTokens: number;
 }
 
-export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
+export const Minter: React.FC<{ isWrapped: Boolean, actions: ISynthActions }> = ({ isWrapped, actions }) => {
   const { account } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, synthsInWallet, mintedPositions } = useContext(UserContext);
   const { synthMarketData, collateralData } = useContext(MarketContext);
@@ -224,7 +224,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     if (currentSynth && currentCollateral && !isEmpty(collateralData) && !isEmpty(synthMarketData[currentSynth])) {
       initMinterState();
     }
-  }, [currentSynth, currentCollateral, synthMarketData, collateralData, account]);
+  }, [currentSynth, currentCollateral, synthMarketData, collateralData, account, isWrapped]);
 
   // Set windows and fields based on action selected
   useEffect(() => {
@@ -806,11 +806,10 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
               <div className="expand padding-left-2">
                 <div
-                  className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${
-                    Number(formState.values.pendingTokens) === 0 &&
+                  className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${Number(formState.values.pendingTokens) === 0 &&
                     Number(formState.values.pendingCollateral) === 0 &&
                     'disabled'
-                  }`}
+                    }`}
                   style={{
                     top: `${state.pendingUtilization < 1 ? (1 - state.pendingUtilization) * 100 : 0}%`,
                   }}

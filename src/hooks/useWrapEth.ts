@@ -5,7 +5,7 @@ import { EthereumContext, MarketContext } from '@/contexts';
 import { Weth__factory, Weth } from '@/types/contracts';
 import { isEmpty } from '@/utils';
 
-export const useWrapEth = () => {
+export const useWrapEth = (wrapStatus: Boolean, setWrapStatus: Function) => {
   const { collateralData } = useContext(MarketContext);
   const { signer, provider } = useContext(EthereumContext);
 
@@ -25,7 +25,7 @@ export const useWrapEth = () => {
     if (tx && provider) {
       await provider.waitForTransaction(tx.hash).then(function (transaction) {
         console.log('Transaction Mined: ' + transaction.transactionHash);
-
+        setWrapStatus(!wrapStatus)
         return tx;
       });
     } else {

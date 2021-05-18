@@ -22,6 +22,7 @@ export const Synth: React.FC = () => {
   const { currentSynth, currentCollateral, setSynth, mintedPositions } = useContext(UserContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
   const { signer } = useContext(EthereumContext);
+  const [wethWrapStatus, setWethWrapStatus] = useState(false);
 
   const [synth, setSynthInfo] = useState({} as ISynth);
   const [
@@ -31,7 +32,7 @@ export const Synth: React.FC = () => {
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
   const [withdrawalMinutesLeft, setWithdrawalMinutesLeft] = useState(0);
 
-  const actions = useSynthActions();
+  const actions = useSynthActions(wethWrapStatus, setWethWrapStatus);
 
   useEffect(() => {
     // TODO validate and redirect if synth doesn't exist
@@ -229,7 +230,7 @@ export const Synth: React.FC = () => {
         <MainHeading>{currentSynth}</MainHeading>
         {!isEmpty(synth) && <ActionSelector />}
         <div className="border-bottom-1px margin-x-8 margin-y-4" />
-        <Minter actions={actions} />
+        <Minter isWrapped={wethWrapStatus} actions={actions} />
       </MainDisplay>
       <SideDisplay>
         {synth.collateral === 'WETH' && <WrapEthDialog />}
