@@ -59,6 +59,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
   switch (action.type) {
     case 'INIT_SPONSOR_POSITION': {
       const initialized = action.payload;
+      console.log(initialized);
 
       return {
         ...state,
@@ -160,7 +161,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
         // Special case for redeem. Must maintain utilization.
         let collateral: number;
         if (state.action === 'REDEEM') {
-          collateral = roundDecimals(tokens / state.utilization, 4);
+          collateral = roundDecimals((tokens / state.utilization) * state.tokenPrice, 4);
           formState.setField('pendingCollateral', collateral);
         } else {
           collateral = roundDecimals(Number(pendingCollateral), 4);

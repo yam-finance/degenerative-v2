@@ -34,8 +34,8 @@ export const Navbar = () => {
         <NavbarButton text="Portfolio" icon="User" to="/portfolio" />
         <div className="nav-divider margin-y-5"></div>
         <h6 className="margin-left-8 padding-left-3 tablet-padding-left-0 tablet-margin-left-3">Learn</h6>
+        <NavbarButton text="Docs" icon="Book" to="https://yam.gitbook.io/synths/" external />
         <NavbarButton text="Tutorial" icon="FileText" to="#" external />
-        <NavbarButton text="Docs" icon="Book" to="#" external />
         <NavbarButton text="FAQs" icon="HelpCircle" to="#" external />
         <NavbarButton text="Support" icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
         <div className="expand"></div>
