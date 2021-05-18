@@ -2,16 +2,20 @@ import { useContext, useCallback } from 'react';
 import { Signer, BigNumber } from 'ethers';
 
 import { EthereumContext } from '@/contexts/EthereumContext';
-import { Empv2__factory, Unsigned, IEmpState, IUserPositions } from '@/types';
+import { Empv2__factory, Unsigned, IEmpState, IUserPositions, ISynth } from '@/types';
 
 // Stateless hook for EMP contract helper functions
 export const useEmp = () => {
   const { account, signer, provider } = useContext(EthereumContext);
 
   const mint = useCallback(
-    async (empAddress: string, collateral: number, tokens: number) => {
-      const [collateralAmount, tokenAmount] = [new Unsigned(collateral), new Unsigned(tokens)];
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+    async (synth: ISynth, collateral: number, tokens: number) => {
+      const decimals = synth.token.decimals; // Token and collateral have same decimals
+      const [collateralAmount, tokenAmount] = [new Unsigned(collateral, decimals), new Unsigned(tokens, decimals)];
+      console.log(decimals);
+      console.log(collateralAmount);
+      console.log(tokenAmount);
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
       try {
         console.log('COLLATERAL: ' + collateralAmount.rawValue);
@@ -32,9 +36,9 @@ export const useEmp = () => {
   );
 
   const deposit = useCallback(
-    async (empAddress: string, collateral: number) => {
-      const collateralAmount = new Unsigned(collateral);
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+    async (synth: ISynth, collateral: number) => {
+      const collateralAmount = new Unsigned(collateral, synth.token.decimals);
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.deposit(collateralAmount);
         const tx = await empContract.deposit(collateralAmount, {
@@ -50,9 +54,9 @@ export const useEmp = () => {
   );
 
   const redeem = useCallback(
-    async (empAddress: string, tokens: number) => {
-      const tokenAmount = new Unsigned(tokens);
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+    async (synth: ISynth, tokens: number) => {
+      const tokenAmount = new Unsigned(tokens, synth.token.decimals);
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.redeem(tokenAmount);
         const tx = await empContract.redeem(tokenAmount, {
@@ -69,9 +73,9 @@ export const useEmp = () => {
 
   // TODO Repay is not implemented on old EMP contracts. Figure out wtf to do!
   const repay = useCallback(
-    async (empAddress: string, tokens: number) => {
-      const tokenAmount = new Unsigned(tokens);
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+    async (synth: ISynth, tokens: number) => {
+      const tokenAmount = new Unsigned(tokens, synth.token.decimals);
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.repay(tokenAmount);
         const tx = await empContract.repay(tokenAmount, {
@@ -87,8 +91,8 @@ export const useEmp = () => {
   );
 
   const settle = useCallback(
-    async (empAddress: string) => {
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+    async (synth: ISynth) => {
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
       try {
         const gasLimit = await empContract.estimateGas.settleExpired();
         const tx = await empContract.settleExpired({
@@ -105,9 +109,9 @@ export const useEmp = () => {
 
   // NOTE: Only works up to GCR. Otherwise will fail.
   const withdraw = useCallback(
-    async (empAddress: string, collateral: number) => {
-      const collateralAmount = new Unsigned(collateral);
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+    async (synth: ISynth, collateral: number) => {
+      const collateralAmount = new Unsigned(collateral, synth.token.decimals);
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
       try {
         const gasLimit = await empContract.estimateGas.withdraw(collateralAmount);
@@ -124,9 +128,9 @@ export const useEmp = () => {
   );
 
   const initWithdrawalRequest = useCallback(
-    async (empAddress: string, collateral: number) => {
-      const collateralAmount = new Unsigned(collateral);
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+    async (synth: ISynth, collateral: number) => {
+      const collateralAmount = new Unsigned(collateral, synth.token.decimals);
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
       try {
         const gasLimit = await empContract.estimateGas.requestWithdrawal(collateralAmount);
@@ -143,8 +147,8 @@ export const useEmp = () => {
   );
 
   const withdrawPassedRequest = useCallback(
-    async (empAddress: string) => {
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+    async (synth: ISynth) => {
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
       try {
         const gasLimit = await empContract.estimateGas.withdrawPassedRequest();
@@ -161,8 +165,8 @@ export const useEmp = () => {
   );
 
   const cancelWithdrawalRequest = useCallback(
-    async (empAddress: string) => {
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+    async (synth: ISynth) => {
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
       try {
         const gasLimit = await empContract.estimateGas.cancelWithdrawal();
@@ -179,9 +183,9 @@ export const useEmp = () => {
   );
 
   const getUserPosition = useCallback(
-    async (empAddress: string) => {
+    async (synth: ISynth) => {
       if (!account) return Promise.reject('Wallet not connected');
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
+      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
       try {
         const userPositions = await empContract.positions(account as string);
 
@@ -200,68 +204,6 @@ export const useEmp = () => {
     [signer, account]
   );
 
-  // TODO remove?
-  const queryEmpState = useCallback(
-    async (empAddress: string) => {
-      console.log('QUERYING');
-      console.log(empAddress);
-      console.log(signer);
-      const empContract = Empv2__factory.connect(empAddress, signer as Signer);
-      try {
-        const res = (
-          await Promise.allSettled([
-            empContract.expirationTimestamp(),
-            empContract.collateralCurrency(),
-            empContract.priceIdentifier(),
-            empContract.tokenCurrency(),
-            empContract.collateralRequirement(),
-            empContract.disputeBondPct(),
-            empContract.disputerDisputeRewardPct(),
-            empContract.sponsorDisputeRewardPct(),
-            empContract.minSponsorTokens(),
-            empContract.timerAddress(),
-            empContract.cumulativeFeeMultiplier(),
-            empContract.rawTotalPositionCollateral(),
-            empContract.totalTokensOutstanding(),
-            empContract.liquidationLiveness(),
-            empContract.withdrawalLiveness(),
-            empContract.getCurrentTime(),
-            empContract.contractState(),
-            empContract.finder(),
-            empContract.expiryPrice(),
-          ])
-        ).map((res) => (res.status === 'fulfilled' ? res.value : undefined));
-
-        return {
-          expirationTimestamp: res[0] as BigNumber,
-          collateralCurrency: res[1] as string, // address
-          priceIdentifier: res[2] as string,
-          tokenCurrency: res[3] as string, // address
-          collateralRequirement: res[4] as BigNumber,
-          disputeBondPct: res[5] as BigNumber,
-          disputerDisputeRewardPct: res[6] as BigNumber,
-          sponsorDisputeRewardPct: res[7] as BigNumber,
-          minSponsorTokens: res[8] as BigNumber,
-          timerAddress: res[9] as string, // address
-          cumulativeFeeMultiplier: res[10] as BigNumber,
-          rawTotalPositionCollateral: res[11] as BigNumber,
-          totalTokensOutstanding: res[12] as BigNumber,
-          liquidationLiveness: res[13] as BigNumber,
-          withdrawalLiveness: res[14] as BigNumber,
-          currentTime: res[15] as BigNumber,
-          isExpired: Number(res[15]) >= Number(res[0]),
-          contractState: Number(res[16]),
-          finderAddress: res[17] as string, // address
-          expiryPrice: res[18] as BigNumber,
-        } as IEmpState;
-      } catch (err) {
-        console.error(err.message);
-        return Promise.reject('EMP State retrieval failed.');
-      }
-    },
-    [signer]
-  );
-
   return {
     mint,
     deposit,
@@ -273,7 +215,6 @@ export const useEmp = () => {
     withdrawPassedRequest,
     cancelWithdrawalRequest,
     getUserPosition,
-    queryEmpState,
   };
 };
 

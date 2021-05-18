@@ -4,7 +4,7 @@ export interface IContract {
 
 export interface IToken extends IContract {
   name: string;
-  decimals: number;
+  decimals: number; // NOTE: Synth and collateral will have same decimals
   symbol: string;
   coingeckoId: string;
 }

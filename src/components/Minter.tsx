@@ -132,7 +132,7 @@ interface MinterFormFields {
 
 export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
   const { account } = useContext(EthereumContext);
-  const { currentSynth, currentCollateral, synthsInWallet, mintedPositions } = useContext(UserContext);
+  const { currentSynth, currentCollateral, collateralInWallet, mintedPositions } = useContext(UserContext);
   const { synthMarketData, collateralData } = useContext(MarketContext);
 
   const [state, dispatch] = useReducer(Reducer, initialMinterState);

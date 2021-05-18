@@ -8,7 +8,7 @@ import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { Page, Navbar, Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
 import { ISynth, ISynthMarketData } from '@/types';
 import { utils } from 'ethers';
-import { isEmpty } from '@/utils';
+import { isEmpty, roundDecimals } from '@/utils';
 import numeral from 'numeral';
 
 interface SynthParams {
@@ -254,13 +254,13 @@ export const Synth: React.FC = () => {
                 <div className="expand flex-align-center text-small">
                   <div>Global utilization</div>
                 </div>
-                <div className="weight-medium text-color-4">{globalUtilization * 100}%</div>
+                <div className="weight-medium text-color-4">{roundDecimals(globalUtilization * 100, 2)}%</div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
                   <div>Liquidation</div>
                 </div>
-                <div className="weight-medium text-color-4">{liquidationPoint * 100}%</div>
+                <div className="weight-medium text-color-4">{roundDecimals(liquidationPoint * 100, 2)}%</div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
