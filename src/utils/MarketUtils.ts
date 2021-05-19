@@ -222,8 +222,8 @@ export const getDailyPriceHistory_new = async (synth: ISynth) => {
 };
 */
 
+// TODO This whole function needs to be refactored
 /** Get labels, reference price data and all market price data for this synth type. */
-// TODO Need to pass in entire synth object to be able to handle differences between synths in the same group
 export const getDailyPriceHistory = async (group: string, synthMetadata: Record<string, ISynth>, chainId: number) => {
   // Defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));

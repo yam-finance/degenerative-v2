@@ -83,7 +83,6 @@ export const SynthGroup: React.FC = () => {
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
-    console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
       datasets: Object.entries(historicPriceData.synthPrices)
@@ -106,7 +105,7 @@ export const SynthGroup: React.FC = () => {
       responsive: true,
       maintainAspectRatio: false,
       tooltips: {
-        mode: 'index', // TODO this breaks build, but is needed
+        //mode: 'index', // TODO this breaks build, but is needed
         intersect: false,
         backgroundColor: '#191053',
         titleFontFamily: 'Open Sauce',
