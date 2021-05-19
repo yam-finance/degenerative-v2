@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Icon } from '@/components';
+import { Icon, Dropdown } from '@/components';
 import { SynthGroups } from '@/utils';
 import yamIcon from '@/assets/yamIcon.png';
 import ethIcon from '@/assets/ethIcon.png';
@@ -19,12 +19,15 @@ export const Landing: React.FC = () => {
     description: string;
     apr: number;
   }
+  
+  const [openMenu, setOpenMenu] = useState(false);
+  const toggleMenu = () => setOpenMenu(!openMenu);
 
   const SynthBlock: React.FC<SynthBlockProps> = ({ name, image, url, description, apr }) => {
     return (
       <Link
         to={url}
-        className="padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative background-color-1 padding-12 sheen w-inline-block"
+        className="padding-8 blur flex-column-centered radius-xl box-shadow-large text-align-center relative background-color-1 padding-12 sheen w-inline-block"
       >
         <img src={`/images/${image}.png`} className="width-32" />
         <h4 className="margin-top-8">{name}</h4>
@@ -48,21 +51,32 @@ export const Landing: React.FC = () => {
             <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
             <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
           </a>
-          <nav
+          <div
             role="navigation"
-            className="margin-left-auto flex-align-center landscape-padding-2 landscape-background-color-2 w-nav-menu"
+            className="margin-left-auto flex-align-center"
           >
-            <a href="#" target="_blank" className="text-color-4 landscape-text-align-center landscape-block w-nav-link">
+            <a href="#" target="_blank" className="text-color-4 tablet-hide w-nav-link">
               Learn
             </a>
-            <Link to="/synths" className="button w-button">
+            <Link to="/synths" className="tablet-hide button w-button">
               Explore Synths
             </Link>
-          </nav>
-          {/* TODO make into responsive navbar component */}
-          <div className="margin-left-auto landscaape-background-color-2 w-nav-button">
-            <div className="w-icon-nav-menu" />
           </div>
+          
+          <div className="cursor-pointer hide tablet-block padding-2 desktop-hide relative"
+            onClick={(e) => {
+              e.preventDefault();
+              toggleMenu();
+            }}>
+            <Icon name="Menu" className="icon opacity-100" />
+            <Dropdown className="margin-top-10 background-color-2 absolute-top-right box-shadow-large radius-large padding-3 w-dropdown-list" openDropdown={openMenu}>
+              <Link to="#" className="dropdown-link width-full margin-bottom-2"><div className="width-full text-align-center">Learn</div></Link>
+              <Link to="/synths" className="button width-full w-button break-no-wrap">
+                Explore Synths
+              </Link>
+            </Dropdown>
+          </div>
+          
         </div>
       </div>
       <div className="section-in-base padding-top-0">
@@ -132,7 +146,6 @@ export const Landing: React.FC = () => {
             </div>
           </a> */}
 
-          <img src={hero} className="radius-xl box-shadow-large margin-top-8" />
           <h1 className="text-align-center margin-bottom-4 text-5xl">Trade, hedge, & earn with Yam Synths</h1>
           <p className="text-large text-color-4 text-align-center">
             Yam Synths is your portal to the powerful world of synthetic derivatives
@@ -169,6 +182,7 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
+    <img className="width-full hero-img" src={hero}></img>
       {/*
       <div className="contains-rings">
         <div className="margin-y-48 relative flex-column-centered container-1140 w-container">
@@ -191,8 +205,8 @@ export const Landing: React.FC = () => {
       </div>
       */}
       <div className="section-in-base">
-        <div className="margin-y-48 radius-xl background-color-4 padding-12 box-shadow-large sheen margin-y-0 relative container-1140 w-container">
-          <h2 className="width-1-2 margin-bottom-8">
+        <div className="margin-y-48 radius-xl background-color-4 padding-12 box-shadow-large sheen margin-y-0 relative container-1140 w-container overflow-hidden">
+          <h2 className="width-1-2 tablet-width-full z-1 margin-bottom-8">
             Yam Synths enable <span className="text-color-1">powerful investment strategies</span>
           </h2>
           <div className="flex-align-center margin-top-4">
@@ -201,19 +215,20 @@ export const Landing: React.FC = () => {
             </div>
             <p className="text-color-4 margin-0 text-medium">Access to new synths that push the bounds of DeFi</p>
           </div>
-          <div className="flex-align-center margin-top-4">
+          <div className="flex-align-center margin-top-4 z-1">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
             <p className="text-color-4 margin-0 text-medium">Execute innovative trading and hedging strategies</p>
           </div>
-          <div className="flex-align-center margin-top-4">
+          <div className="flex-align-center margin-top-4 tablet-margin-bottom-12">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
             <p className="text-color-4 margin-0 text-medium">Grow along with the expanding world of Yam Synths</p>
           </div>
-          <Link to="/synths" className="button-secondary absolute-bottom-right margin-12 w-button">
+          <img src="/src/assets/gloop.png" className="absolute-top-right width-64 tablet-hide"></img>
+          <Link to="/synths" className="button-secondary absolute-bottom-right margin-12 margin-12 tablet-relative tablet-margin-0 landscape-margin-0 portrait-margin-0">
             Explore Synths
           </Link>
         </div>
@@ -222,7 +237,7 @@ export const Landing: React.FC = () => {
         <div className="container-1140 w-container">
           <h2 className="margin-bottom-10">What can you do with Yam Synths?</h2>
           <div className="flex-row tablet-block">
-            <div className="padding-12 padding-left-0 border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0">
+            <div className="padding-12 padding-left-0 border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0 landscape-padding-x-0 portrait-padding-x-0">
               <img src={mintLp} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
                 Provide Liquidity{' '}
@@ -233,7 +248,7 @@ export const Landing: React.FC = () => {
                 </span>
               </h5>
             </div>
-            <div className="padding-12  border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0">
+            <div className="padding-12  border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0 landscape-padding-x-0 portrait-padding-x-0">
               <img src={hold} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
                 Go Long{' '}
@@ -244,7 +259,7 @@ export const Landing: React.FC = () => {
                 </span>
               </h5>
             </div>
-            <div className="padding-12 padding-right-0 width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0">
+            <div className="padding-12 padding-right-0 width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0 landscape-padding-x-0 portrait-padding-x-0">
               <img src={short} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
                 Go Short{' '}
@@ -267,7 +282,7 @@ export const Landing: React.FC = () => {
                 <strong className="line-height-1-625">Powered by UMA</strong>
               </h4>
             </div>
-            <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
+            <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Help</h6>
               <a href="#" className="block margin-bottom-2">
                 Tutorials
@@ -279,7 +294,7 @@ export const Landing: React.FC = () => {
                 FAQs
               </a>
             </div>
-            <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
+            <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Community</h6>
               <a href="#" className="block margin-bottom-2">
                 Twitter
@@ -291,7 +306,7 @@ export const Landing: React.FC = () => {
                 Telegram
               </a>
             </div>
-            <div className="width-1-6 tablet-width-1-3 landscape-width-full margin-top-6">
+            <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Information</h6>
               <a href="#" className="block margin-bottom-2">
                 About Yam Synths
