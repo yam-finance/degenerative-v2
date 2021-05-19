@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Icon } from '@/components';
+import { Icon, Dropdown } from '@/components';
 import { SynthGroups } from '@/utils';
 import yamIcon from '@/assets/yamIcon.png';
 import ethIcon from '@/assets/ethIcon.png';
@@ -19,6 +19,9 @@ export const Landing: React.FC = () => {
     description: string;
     apr: number;
   }
+  
+  const [openMenu, setOpenMenu] = useState(false);
+  const toggleMenu = () => setOpenMenu(!openMenu);
 
   const SynthBlock: React.FC<SynthBlockProps> = ({ name, image, url, description, apr }) => {
     return (
@@ -48,21 +51,32 @@ export const Landing: React.FC = () => {
             <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
             <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
           </a>
-          <nav
+          <div
             role="navigation"
-            className="margin-left-auto flex-align-center landscape-padding-2 landscape-background-color-2 w-nav-menu"
+            className="margin-left-auto flex-align-center"
           >
-            <a href="#" target="_blank" className="text-color-4 landscape-text-align-center landscape-block w-nav-link">
+            <a href="#" target="_blank" className="text-color-4 tablet-hide w-nav-link">
               Learn
             </a>
-            <Link to="/synths" className="button w-button">
+            <Link to="/synths" className="tablet-hide button w-button">
               Explore Synths
             </Link>
-          </nav>
-          {/* TODO make into responsive navbar component */}
-          <div className="margin-left-auto landscaape-background-color-2 w-nav-button">
-            <div className="w-icon-nav-menu" />
           </div>
+          
+          <div className="cursor-pointer hide tablet-block padding-2 desktop-hide relative"
+            onClick={(e) => {
+              e.preventDefault();
+              toggleMenu();
+            }}>
+            <Icon name="Menu" className="icon opacity-100" />
+            <Dropdown className="margin-top-10 background-color-2 absolute-top-right box-shadow-large radius-large padding-3 w-dropdown-list" openDropdown={openMenu}>
+              <Link to="#" className="dropdown-link width-full margin-bottom-2"><div className="width-full text-align-center">Learn</div></Link>
+              <Link to="/synths" className="button width-full w-button break-no-wrap">
+                Explore Synths
+              </Link>
+            </Dropdown>
+          </div>
+          
         </div>
       </div>
       <div className="section-in-base padding-top-0">
