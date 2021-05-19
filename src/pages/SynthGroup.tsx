@@ -3,7 +3,7 @@ import { Link, Redirect, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader } from '@/components';
-import { SynthGroups, isEmpty, getDailyPriceHistory, getDailyPriceHistory_new, formatForDisplay } from '@/utils';
+import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 import chartLoader from '/src/assets/chart-loader.svg';
 
 interface SynthParams {
