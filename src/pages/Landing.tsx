@@ -24,7 +24,7 @@ export const Landing: React.FC = () => {
     return (
       <Link
         to={url}
-        className="padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative background-color-1 padding-12 sheen w-inline-block"
+        className="padding-8 blur flex-column-centered radius-xl box-shadow-large text-align-center relative background-color-1 padding-12 sheen w-inline-block"
       >
         <img src={`/images/${image}.png`} className="width-32" />
         <h4 className="margin-top-8">{name}</h4>
@@ -169,6 +169,8 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
+    <img style={{borderBottomLeftRadius:"20%",
+      borderBottomRightRadius:"20%", marginTop:"-260px"}} className="width-full" src="/src/assets/degen-hero-edit-2.png"></img>
       {/*
       <div className="contains-rings">
         <div className="margin-y-48 relative flex-column-centered container-1140 w-container">
@@ -191,7 +193,7 @@ export const Landing: React.FC = () => {
       </div>
       */}
       <div className="section-in-base">
-        <div className="margin-y-48 radius-xl background-color-4 padding-12 box-shadow-large sheen margin-y-0 relative container-1140 w-container">
+        <div className="margin-y-48 radius-xl background-color-4 padding-12 box-shadow-large sheen margin-y-0 relative container-1140 w-container overflow-hidden">
           <h2 className="width-1-2 margin-bottom-8">
             Yam Synths enable <span className="text-color-1">powerful investment strategies</span>
           </h2>
@@ -213,6 +215,7 @@ export const Landing: React.FC = () => {
             </div>
             <p className="text-color-4 margin-0 text-medium">Grow along with the expanding world of Yam Synths</p>
           </div>
+          <img src="/src/assets/gloop.png" className="absolute-top-right width-64"></img>
           <Link to="/synths" className="button-secondary absolute-bottom-right margin-12 w-button">
             Explore Synths
           </Link>
