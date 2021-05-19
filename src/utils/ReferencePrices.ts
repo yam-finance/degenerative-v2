@@ -24,19 +24,21 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   };
 
   const fetchUstonks = async (collateral: string, chainId: number) => {
-    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
+    // TODO this part is probably unnecessary since USDC is 'stable'
+    //const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
+
     // TODO !!!!!!!!!!!!
     // TODO endpoint hardcoded to jun21 for now
     // TODO !!!!!!!!!!!!
-    const res = await axios.get('http://data.yam.finance/ustonks/index-history-daily/jun21');
+    const res = await axios.get('https://data.yam.finance/ustonks/index-history-daily/jun21');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
-      const usdPriceCollateral = collateralUsd.get(dateString) ?? 1;
+      //const usdPriceCollateral = collateralUsd.get(dateString) ?? 1;
 
       return {
         timestamp: dateString,
-        price: roundDecimals(price * usdPriceCollateral, 2),
+        price: roundDecimals(Number(price), 2),
       };
     });
   };

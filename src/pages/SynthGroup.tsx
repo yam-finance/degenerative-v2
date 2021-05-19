@@ -3,7 +3,7 @@ import { Link, Redirect, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader } from '@/components';
-import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
+import { SynthGroups, isEmpty, getDailyPriceHistory, getDailyPriceHistory_new, formatForDisplay } from '@/utils';
 import chartLoader from '/src/assets/chart-loader.svg';
 
 interface SynthParams {
@@ -75,13 +75,15 @@ export const SynthGroup: React.FC = () => {
   // TODO account for different data per synth
   useEffect(() => {
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
+    //async () => await getDailyPriceHistory_new(synthMetadata[synthInFocus]);
 
     if (chainId) getChartData();
-  }, [synthMetadata]);
+  }, [synthMetadata, synthInFocus]);
 
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
+    console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
       datasets: Object.entries(historicPriceData.synthPrices)
@@ -104,7 +106,7 @@ export const SynthGroup: React.FC = () => {
       responsive: true,
       maintainAspectRatio: false,
       tooltips: {
-        //mode: 'index', // TODO this breaks build, but is needed
+        mode: 'index', // TODO this breaks build, but is needed
         intersect: false,
         backgroundColor: '#191053',
         titleFontFamily: 'Open Sauce',

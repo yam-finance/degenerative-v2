@@ -11,6 +11,7 @@ import {
   getReferencePriceHistory,
   getDateString,
   getCollateralData,
+  roundDecimals,
 } from '@/utils';
 import { ISynth, IToken, ILiquidityPool } from '@/types';
 
@@ -36,12 +37,12 @@ export const getUsdPrice = async (tokenAddress: string) => {
 export const getReferenceSpotPrice = async (synth: ISynth) => {
   switch (synth.group) {
     case 'uGas': {
-      const res = await axios.get('http://data.yam.finance/median');
+      const res = await axios.get('https://data.yam.finance/median');
       console.log(res.data);
       return;
     }
     case 'uStonks': {
-      const res = await axios.get('http://data.yam.finance/ustonks/index/jun21');
+      const res = await axios.get('https://data.yam.finance/ustonks/index/jun21');
       console.log(res.data);
       return;
     }
@@ -132,17 +133,94 @@ interface PriceHistoryResponse {
  */
 // TODO this will grab data for individual synth
 // TODO data will NOT be paired to USD
+/*
 export const getDailyPriceHistory_new = async (synth: ISynth) => {
+  const synthAddress = synth.token.address;
+  const poolAddress = synth.pool.address;
+
   // Defaults to 30 days
-  const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
+  const min = sub(new Date(), { days: 30 });
+  const max = new Date();
+  const startingTime = getUnixTime(min);
+
+  const dateArray = (() => {
+    const dates: string[] = [];
+    const currentDate = new Date(min);
+    while (currentDate <= max) {
+      dates.push(getDateString(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+  })();
+
+  // Get reference index prices for each date
+  const referencePrices = await (async () => {
+    const refPrices = await getReferencePriceHistory(synth.group, 1); // TODO
+
+    // If API gives too much data, filter to find relevant data.
+    if (refPrices > 30) {
+      const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
+      return refPrices.slice(minIndex);
+    } else {
+      return refPrices;
+    }
+  })();
+
+  console.log(referencePrices);
+
+  // Get pool data from subgraph
+  const poolData: { pairDayDatas: PriceHistoryResponse[] } = await request(
+    UNISWAP_ENDPOINT[1],
+    UNISWAP_DAILY_PAIR_DATA,
+    {
+      pairAddress: poolAddress,
+      startingTime: startingTime,
+    }
+  );
 
   const dailyPriceResponse: {
     tokenDayDatas: PriceHistoryResponse[];
   } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
-    tokenAddresses: [synth.token.address],
+    tokenAddresses: addressList,
     startingTime: startingTime,
   });
+
+  console.log(poolData);
+
+  // Find which token is the synth
+  const tokenId = poolData.pairDayDatas[0].token0.id === synthAddress ? 'token0' : 'token1';
+
+  // Put pool price data into a map, indexed by date
+  const dailyPairData = new Map(
+    poolData.pairDayDatas.map((dailyData) => [
+      formatISO(fromUnixTime(dailyData.date), { representation: 'date' }),
+      dailyData[tokenId].derivedETH,
+    ])
+  );
+  //console.log(dailyPairData);
+
+  // Fill in empty spaces, since subgraph only captures price when it changes
+  let lastPrice = dailyPairData.values().next().value;
+
+  const synthPrices = dateArray.map((date) => {
+    const price = dailyPairData.get(date);
+    if (price) {
+      lastPrice = price;
+      return roundDecimals(Number(price), 2);
+    } else {
+      return roundDecimals(Number(lastPrice), 2);
+    }
+  });
+
+  //console.log(synthPrices);
+
+  return {
+    labels: dateArray,
+    referencePrices: referencePrices,
+    synthPrices: synthPrices,
+  };
 };
+*/
 
 /** Get labels, reference price data and all market price data for this synth type. */
 // TODO Need to pass in entire synth object to be able to handle differences between synths in the same group
@@ -194,15 +272,31 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
   const referenceData = await (async () => {
     const refPrices = await getReferencePriceHistory(group, chainId);
 
-    if (min && max) {
+    if (refPrices.length > 30) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
       const maxIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(max));
       return refPrices.slice(minIndex, maxIndex).map((ref: any) => ref.price);
+    } else {
+      const returnObject: any[] = [];
+      const refMap = new Map(
+        refPrices.map(({ timestamp, price }: { timestamp: string; price: number }) => [timestamp, price])
+      );
+
+      console.log(refMap.get(dateArray[10]));
+      dateArray.forEach((date) => {
+        console.log(date);
+        refMap.get(date) ? returnObject.push(refMap.get(date)) : returnObject.push(undefined);
+      });
+
+      return returnObject;
     }
   })();
 
+  //console.log(referenceData);
+
   // Map price data to date for each synth for easy access
   const priceData: Record<string, Record<string, number>> = {};
+
   dailyPriceResponse.tokenDayDatas.forEach((dayData) => {
     // id is concatenated with a timestamp at end. Not necessary for us since we have the date
     const synthName = relevantSynths.get(dayData.id.split('-')[0]) ?? '';
@@ -227,6 +321,8 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
       }
     });
   });
+
+  console.log(res);
 
   return {
     labels: dateArray,

@@ -884,14 +884,14 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
             </div>
 
             <div className="margin-top-8">
-              <h6 className="margin-bottom-0">Your wallet</h6>
+              <h6 className="margin-bottom-0">Your Current Position</h6>
               <div className="divider margin-y-2"></div>
               <div className="text-small">
                 <div className="flex-align-baseline margin-bottom-2">
                   <div className="expand flex-align-center">
                     <div>{currentCollateral}</div>
                   </div>
-                  <div className="weight-medium text-color-4">{state.maxCollateral}</div>
+                  <div className="weight-medium text-color-4">{state.sponsorCollateral}</div>
                 </div>
                 <div className="flex-align-baseline margin-bottom-2">
                   <div className="expand flex-align-center">
