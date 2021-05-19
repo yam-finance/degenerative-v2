@@ -274,7 +274,12 @@ label {
 .w-container:after {
   clear: both;
 }
-@media screen and (max-width: 991px) {
+.hero-img {
+  border-bottom-left-radius: 20%;
+  border-bottom-right-radius: 20%;
+  margin-top: -260px
+}
+@media screen and (max-width: 1220px) {
   /* Connect button */
   .connect {
     position: fixed;
@@ -287,11 +292,23 @@ label {
     margin-left: 1.2rem;
     margin-bottom: 2rem;
   }
+  
+  .hero-img {
+    margin-top: -200px
+  }
   .w-container {
     max-width: 728px;
   }
 }
+@media screen and (max-width: 767px) {
+  .hero-img {
+    margin-top: -80px
+  }
+}
 @media screen and (max-width: 479px) {
+  .hero-img {
+    margin-top: -40px
+  }
   .w-container {
     max-width: none;
   }
@@ -405,7 +422,7 @@ label {
 .w-nav[data-collapse='all'] .w-nav-button {
   display: block;
 }
-@media screen and (max-width: 991px) {
+@media screen and (max-width: 1220px) {
   .w-nav[data-collapse='medium'] .w-nav-menu {
     display: none;
   }
@@ -961,6 +978,9 @@ a:hover {
 
 .padding-4 {
   padding: 1rem;
+}
+.z-1 {
+  z-index: 1;
 }
 
 .padding-6 {
@@ -2823,6 +2843,10 @@ a:hover {
     margin-top: 5rem;
   }
 
+  .tablet-margin-bottom-12 {
+    margin-bottom: 3rem;
+  }
+
   .tablet-margin-left-0 {
     margin-left: 0px;
   }
@@ -2937,6 +2961,10 @@ a:hover {
 
   .text-5xl {
     font-size: 3.5rem;
+  }
+
+  .tablet-relative {
+    position: relative;
   }
 
   .tablet-absolute-top {
@@ -3309,6 +3337,10 @@ a:hover {
     margin-top: 0px;
   }
 
+  .landscape-margin-top-6 {
+    margin-top: 1.5rem;
+  }
+
   .landscape-margin-top-8 {
     margin-top: 2rem;
   }
@@ -3443,6 +3475,11 @@ a:hover {
 
   .landscape-padding-bottom-32 {
     padding-bottom: 8rem;
+  }
+
+  .landscape-padding-x-0 {
+    padding-right: 0px;
+    padding-left: 0px;
   }
 
   .landscape-width-full {
@@ -3729,6 +3766,11 @@ a:hover {
 
   .portrait-padding-bottom-32 {
     padding-bottom: 8rem;
+  }
+
+  .portrait-padding-x-0 {
+    padding-right: 0px;
+    padding-left: 0px;
   }
 
   .portrait-padding-x-2 {
