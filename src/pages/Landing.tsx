@@ -212,25 +212,25 @@ export const Landing: React.FC = () => {
       <div className="section-in-base">
         <div className="margin-y-48 radius-xl background-color-4 padding-12 box-shadow-large sheen margin-y-0 relative container-1140 w-container overflow-hidden">
           <h2 className="width-1-2 tablet-width-full z-1 margin-bottom-8">
-            Yam Synths enable <span className="text-color-1">powerful investment strategies</span>
+            Yam Synths brings you <span className="text-color-1">new opportunities</span>
           </h2>
           <div className="flex-align-center margin-top-4">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
-            <p className="text-color-4 margin-0 text-medium">Access to new synths that push the bounds of DeFi</p>
+            <p className="text-color-4 margin-0 text-medium">Yield farm on an extensive list of collateral tokens</p>
           </div>
           <div className="flex-align-center margin-top-4 z-1">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
-            <p className="text-color-4 margin-0 text-medium">Execute innovative trading and hedging strategies</p>
+            <p className="text-color-4 margin-0 text-medium">Access exotic synths pushing the boundaries of DeFi</p>
           </div>
           <div className="flex-align-center margin-top-4 tablet-margin-bottom-12">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
-            <p className="text-color-4 margin-0 text-medium">Grow along with the expanding world of Yam Synths</p>
+            <p className="text-color-4 margin-0 text-medium">Execute novel trading and hedging strategies</p>
           </div>
           <img src={gloop} className="absolute-top-right width-64 tablet-hide"></img>
           <Link
@@ -248,34 +248,22 @@ export const Landing: React.FC = () => {
             <div className="padding-12 padding-left-0 border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0 landscape-padding-x-0 portrait-padding-x-0">
               <img src={mintLp} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
-                Provide Liquidity{' '}
-                <span className="opacity-50">
-                  to earn rewards by minting a synth against collateral & pool it alongside the asset it trades against
-                  in our selected AMM to earn UMA + Yam rewards. On top of this, LPs earn market maker fees.
-                  Alternatively, you can go long a synth instead of minting it, to use when providing liquidity.
-                </span>
+                Provide Liquidity <br />
+                <span className="opacity-50">Earn swap fees and attractive UMA and YAM rewards.</span>
               </h5>
             </div>
             <div className="padding-12  border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0 landscape-padding-x-0 portrait-padding-x-0">
               <img src={hold} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
-                Go Long{' '}
-                <span className="opacity-50">
-                  to express your price positive market view on a variety of innovative synthetic assets. Simply buy the
-                  synth from our chosen AMM pool and hold until expiry, or sell it back to the AMM pool anytime before
-                  expiry.
-                </span>
+                Go Long <br />
+                <span className="opacity-50">Purchase and hold a synthetic asset to gain positive exposure.</span>
               </h5>
             </div>
             <div className="padding-12 padding-right-0 width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0 landscape-padding-x-0 portrait-padding-x-0">
               <img src={short} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
-                Go Short{' '}
-                <span className="opacity-50">
-                  into what you perceive is an overvalued market, profiting on falling prices. To achieve this you’ll
-                  need to mint the synth against collateral and sell it to the relevant AMM pool. To realise
-                  gains/losses on your position, hold until expiry, or buy back the synth before expiry.
-                </span>
+                Go Short <br />
+                <span className="opacity-50">Mint and sell a synth to open a short position.</span>
               </h5>
             </div>
           </div>
@@ -287,15 +275,12 @@ export const Landing: React.FC = () => {
             <div className="width-1-2 tablet-width-full">
               <h4>
                 <strong className="line-height-1-625">Built with love by YAM 🍠 </strong> <br />
-                <strong className="line-height-1-625">Powered by UMA</strong>
+                <strong className="line-height-1-625">Powered by UMA 🦑</strong>
               </h4>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Help</h6>
-              <a href="#" className="block margin-bottom-2">
-                Tutorials
-              </a>
-              <a href="#" className="block margin-bottom-2">
+              <a href="https://yam.gitbook.io/synths/" className="block margin-bottom-2">
                 Documentation
               </a>
               <a href="#" className="block margin-bottom-2">
@@ -304,28 +289,22 @@ export const Landing: React.FC = () => {
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Community</h6>
-              <a href="#" className="block margin-bottom-2">
+              <a href="https://twitter.com/YamFinance" className="block margin-bottom-2">
                 Twitter
               </a>
-              <a href="#" className="block margin-bottom-2">
+              <a href="https://discord.com/invite/fbHX7NRa52" className="block margin-bottom-2">
                 Discord
-              </a>
-              <a href="#" className="block margin-bottom-2">
-                Telegram
               </a>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Information</h6>
-              <a href="#" className="block margin-bottom-2">
-                About Yam Synths
-              </a>
-              <a href="#" className="block margin-bottom-2">
+              <a href="https://yambrief.substack.com/" className="block margin-bottom-2">
                 Blog
               </a>
-              <a href="#" className="block margin-bottom-2">
+              <a href="https://yam.finance/" className="block margin-bottom-2">
                 Visit Yam
               </a>
-              <a href="#" className="block margin-bottom-2">
+              <a href="https://umaproject.org/" className="block margin-bottom-2">
                 Visit UMA
               </a>
             </div>
@@ -335,7 +314,7 @@ export const Landing: React.FC = () => {
                 <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
               </a>
               <p className="margin-top-4 tablet-margin-top-8 landscape-margin-top-8 portrait-margin-top-8 text-small">
-                © 2020 Yam Synths. All rights reserved.
+                © 2021 Yam Synths. All rights reserved.
               </p>
             </div>
           </div>
