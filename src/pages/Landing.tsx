@@ -283,7 +283,7 @@ export const Landing: React.FC = () => {
               <a href="https://yam.gitbook.io/synths/" className="block margin-bottom-2">
                 Documentation
               </a>
-              <a href="#" className="block margin-bottom-2">
+              <a href="https://yam.gitbook.io/synths/overview/faq" className="block margin-bottom-2">
                 FAQs
               </a>
             </div>

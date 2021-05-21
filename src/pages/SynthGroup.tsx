@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Link, Redirect, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader } from '@/components';
