@@ -97,7 +97,10 @@ export const MarketProvider: React.FC = ({ children }) => {
             const globalUtilization = rawGlobalUtilization * pricePerPaired;
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, paired.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, paired.decimals));
-            const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
+
+            // Grab APRs from API
+            //const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
+            const apr = (await getApr(synth.group, synth.cycle)) ?? 0;
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
@@ -112,7 +115,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
               withdrawalPeriod: withdrawalPeriod / 60, // Convert to minutes
-              apr: apr,
+              apr: roundDecimals(apr, 2),
               daysTillExpiry: daysTillExpiry,
               isExpired: isExpired,
             };

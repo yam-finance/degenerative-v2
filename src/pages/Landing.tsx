@@ -9,6 +9,7 @@ import mintLp from '@/assets/mintLp.png';
 import hold from '@/assets/hold.png';
 import short from '@/assets/short.png';
 import hero from '@/assets/degen-hero.png';
+import gloop from '@/assets/gloop.png';
 import umaLogo from '@/assets/uma_logo.png';
 
 export const Landing: React.FC = () => {
@@ -18,12 +19,13 @@ export const Landing: React.FC = () => {
     url: string;
     description: string;
     apr: number;
+    isNew?: boolean;
   }
-  
+
   const [openMenu, setOpenMenu] = useState(false);
   const toggleMenu = () => setOpenMenu(!openMenu);
 
-  const SynthBlock: React.FC<SynthBlockProps> = ({ name, image, url, description, apr }) => {
+  const SynthBlock: React.FC<SynthBlockProps> = ({ name, image, url, description, apr, isNew }) => {
     return (
       <Link
         to={url}
@@ -32,51 +34,53 @@ export const Landing: React.FC = () => {
         <img src={`/images/${image}.png`} className="width-32" />
         <h4 className="margin-top-8">{name}</h4>
         <p className="text-small opacity-60">{description}</p>
-        <div className="pill absolute-top-right margin-4">New</div>
+        {isNew && <div className="pill absolute-top-right margin-4">New</div>}
       </Link>
     );
   };
 
   return (
     <>
-      <div
-        data-collapse="small"
-        data-animation="default"
-        data-duration="400"
-        role="banner"
-        className="background-color-transparent w-nav"
-      >
+      <div role="banner" className="background-color-transparent w-nav">
         <div className="container-1280 flex-row-middle padding-y-2 portrait-padding-x-2 w-container">
           <a href="#" className="margin-left-6 flex-row-middle w-inline-block">
             <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
             <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
           </a>
-          <div
-            role="navigation"
-            className="margin-left-auto flex-align-center"
-          >
-            <a href="#" target="_blank" className="text-color-4 tablet-hide w-nav-link">
+          <div role="navigation" className="margin-left-auto flex-align-center">
+            <a
+              href="https://yam.gitbook.io/synths/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-color-4 tablet-hide w-nav-link"
+            >
               Learn
             </a>
             <Link to="/synths" className="tablet-hide button w-button">
               Explore Synths
             </Link>
           </div>
-          
-          <div className="cursor-pointer hide tablet-block padding-2 desktop-hide relative"
+
+          <div
+            className="cursor-pointer hide tablet-block padding-2 desktop-hide relative"
             onClick={(e) => {
               e.preventDefault();
               toggleMenu();
-            }}>
+            }}
+          >
             <Icon name="Menu" className="icon opacity-100" />
-            <Dropdown className="margin-top-10 background-color-2 absolute-top-right box-shadow-large radius-large padding-3 w-dropdown-list" openDropdown={openMenu}>
-              <Link to="#" className="dropdown-link width-full margin-bottom-2"><div className="width-full text-align-center">Learn</div></Link>
+            <Dropdown
+              className="margin-top-10 background-color-2 absolute-top-right box-shadow-large radius-large padding-3 w-dropdown-list"
+              openDropdown={openMenu}
+            >
+              <Link to="https://yam.gitbook.io/synths/" className="dropdown-link width-full margin-bottom-2">
+                <div className="width-full text-align-center">Learn</div>
+              </Link>
               <Link to="/synths" className="button width-full w-button break-no-wrap">
                 Explore Synths
               </Link>
             </Dropdown>
           </div>
-          
         </div>
       </div>
       <div className="section-in-base padding-top-0">
@@ -164,6 +168,7 @@ export const Landing: React.FC = () => {
               url="/synths/uPUNKS"
               description={SynthGroups['uPUNKS'].description}
               apr={50}
+              isNew
             />
             <SynthBlock
               name="uGAS"
@@ -182,7 +187,7 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
-    <img className="width-full hero-img" src={hero}></img>
+      <img className="width-full hero-img" src={hero}></img>
       {/*
       <div className="contains-rings">
         <div className="margin-y-48 relative flex-column-centered container-1140 w-container">
@@ -227,8 +232,11 @@ export const Landing: React.FC = () => {
             </div>
             <p className="text-color-4 margin-0 text-medium">Grow along with the expanding world of Yam Synths</p>
           </div>
-          <img src="/src/assets/gloop.png" className="absolute-top-right width-64 tablet-hide"></img>
-          <Link to="/synths" className="button-secondary absolute-bottom-right margin-12 margin-12 tablet-relative tablet-margin-0 landscape-margin-0 portrait-margin-0">
+          <img src={gloop} className="absolute-top-right width-64 tablet-hide"></img>
+          <Link
+            to="/synths"
+            className="button-secondary absolute-bottom-right margin-12 margin-12 tablet-relative tablet-margin-0 landscape-margin-0 portrait-margin-0"
+          >
             Explore Synths
           </Link>
         </div>

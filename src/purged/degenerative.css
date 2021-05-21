@@ -1,3 +1,6 @@
+.cursor-pointer {
+  cursor: pointer;
+}
 /* Loader */
 /* Breadcrumb margin */
 /* ---- */
@@ -262,7 +265,7 @@ label {
 .hero-img {
   border-bottom-left-radius: 20%;
   border-bottom-right-radius: 20%;
-  margin-top: -260px
+  margin-top: -260px;
 }
 @media screen and (max-width: 1220px) {
   /* Connect button */
@@ -277,9 +280,9 @@ label {
     margin-left: 1.2rem;
     margin-bottom: 2rem;
   }
-  
+
   .hero-img {
-    margin-top: -200px
+    margin-top: -200px;
   }
   .w-container {
     max-width: 728px;
@@ -287,12 +290,12 @@ label {
 }
 @media screen and (max-width: 767px) {
   .hero-img {
-    margin-top: -80px
+    margin-top: -80px;
   }
 }
 @media screen and (max-width: 479px) {
   .hero-img {
-    margin-top: -40px
+    margin-top: -40px;
   }
   .w-container {
     max-width: none;
@@ -3180,10 +3183,6 @@ a:hover {
     margin-bottom: 4rem;
   }
 
-  .margin-left-auto.flex-align-center.landscape-padding-2.landscape-background-color-2 {
-    background-color: #4347bd;
-  }
-
   .margin-left-6 {
     margin-left: 1.25rem;
   }
@@ -3434,10 +3433,6 @@ a:hover {
 
   .text-5xl {
     font-size: 2.25rem;
-  }
-
-  .landscape-text-align-center {
-    text-align: center;
   }
 
   .landscape-overflow-hidden {

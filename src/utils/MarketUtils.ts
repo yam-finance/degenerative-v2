@@ -119,8 +119,15 @@ export const getPoolData = async (pool: ILiquidityPool) => {
   }
 };
 
-// TODO get APR from Degenerative API
-export const getApr = () => {};
+export const getApr = async (group: string, cycle: string): Promise<number> => {
+  try {
+    const res = await axios.get('https://api.yam.finance/apr/degenerative');
+    return Promise.resolve(res.data[group.toUpperCase()][cycle.toUpperCase()]);
+  } catch (err) {
+    console.error(err);
+    return Promise.reject('Failed to get APR.');
+  }
+};
 
 interface PriceHistoryResponse {
   date: number;

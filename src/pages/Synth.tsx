@@ -133,7 +133,7 @@ export const Synth: React.FC = () => {
               <div className="flex-row margin-top-2">
                 <button
                   onClick={async () => await actions.onWithdrawPassedRequest()}
-                  className="button-secondary button-tiny margin-right-1 white w-button"
+                  className="button-secondary button-tiny margin-right-1 w-button"
                 >
                   Withdraw
                 </button>

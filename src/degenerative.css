@@ -1,3 +1,6 @@
+.cursor-pointer {
+  cursor: pointer;
+}
 /* Loader */
 .loader-padding {
   display: block;
@@ -696,7 +699,7 @@ textarea.w-select {
 .hero-img {
   border-bottom-left-radius: 20%;
   border-bottom-right-radius: 20%;
-  margin-top: -260px
+  margin-top: -260px;
 }
 @media screen and (max-width: 1220px) {
   /* Connect button */
@@ -711,9 +714,9 @@ textarea.w-select {
     margin-left: 1.2rem;
     margin-bottom: 2rem;
   }
-  
+
   .hero-img {
-    margin-top: -200px
+    margin-top: -200px;
   }
   .breadcrumb-margin {
     margin-top: 4rem;
@@ -771,7 +774,7 @@ textarea.w-select {
 }
 @media screen and (max-width: 767px) {
   .hero-img {
-    margin-top: -80px
+    margin-top: -80px;
   }
   .w-hidden-main {
     display: inherit !important;
@@ -834,7 +837,7 @@ textarea.w-select {
     margin-top: 0.75rem;
   }
   .hero-img {
-    margin-top: -40px
+    margin-top: -40px;
   }
   .w-container {
     max-width: none;
