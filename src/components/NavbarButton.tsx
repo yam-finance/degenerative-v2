@@ -1,4 +1,3 @@
-// TODO icon + text with link prop
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -22,7 +21,7 @@ export const NavbarButton: React.FC<NavbarButtonProps> = ({ icon, to, text, exte
   };
 
   return external ? (
-    <a href={to} className="nav-link w-inline-block">
+    <a href={to} target="_blank" rel="noreferrer" className="nav-link w-inline-block">
       <IconButton />
     </a>
   ) : (

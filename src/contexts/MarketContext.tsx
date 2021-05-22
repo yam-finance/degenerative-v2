@@ -1,28 +1,59 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { ISynthMarketData, IMap } from '@/types';
-import { SynthInfo, CollateralMap, getUsdPrice, getApr, getPoolData, getEmpState, roundDecimals } from '@/utils';
+import { EthereumContext } from '@/contexts';
+import { ISynthMarketData, ISynth, IToken } from '@/types';
+import {
+  getSynthMetadata,
+  getPairPriceEth,
+  getUsdPrice,
+  getApr,
+  getPoolData,
+  getEmpState,
+  roundDecimals,
+  getCollateralData,
+  SynthGroups,
+} from '@/utils';
 import { utils } from 'ethers';
 
 const initialState = {
-  synthMarketData: {} as IMap<ISynthMarketData>,
+  synthMarketData: {} as Record<string, ISynthMarketData>,
+  synthMetadata: {} as Record<string, ISynth>,
+  collateralData: {} as Record<string, IToken>,
+  loading: false,
 };
 
 export const MarketContext = createContext(initialState);
 
-// TODO Rename to SynthContext, put useEmp hook in here
+// TODO Rename to SynthContext (?)
 export const MarketProvider: React.FC = ({ children }) => {
-  const [synthMarketData, setSynthMarketData] = useState<IMap<ISynthMarketData>>(initialState.synthMarketData);
+  const [synthMarketData, setSynthMarketData] = useState(initialState.synthMarketData);
+  const [synthMetadata, setSynthMetadata] = useState(initialState.synthMetadata);
+  const [collateralData, setCollateralData] = useState(initialState.collateralData);
+  const [loading, setLoading] = useState(false);
 
-  // TODO This entire context can be moved to utils with other synth information by connecting to
-  //      app's eth node rather than user's connection
+  const { chainId, provider } = useContext(EthereumContext);
+
   useEffect(() => {
-    const initializeMarketData = async () => {
+    const initializeMarketData = async (
+      synthMetadata: Record<string, ISynth>,
+      collateralData: Record<string, IToken>
+    ) => {
       const data: typeof synthMarketData = {};
 
       try {
-        const requests = Object.entries(SynthInfo).map(([name, synth]) => {
-          const collateral = CollateralMap[synth.collateral];
-          return Promise.all([name, synth, collateral, getEmpState(synth), getUsdPrice(collateral.address), getPoolData(synth.pool.address)]);
+        const requests = Object.entries(synthMetadata).map(([name, synth]) => {
+          const pairedToken = SynthGroups[synth.group].paired;
+          const paired = collateralData[pairedToken];
+          const collateral = collateralData[synth.collateral];
+
+          return Promise.all([
+            name,
+            synth,
+            collateral,
+            paired,
+            getEmpState(synth, chainId, provider),
+            getUsdPrice(collateral.coingeckoId ?? ''),
+            getPoolData(synth.pool),
+          ]);
         });
         const resolved = await Promise.all(requests);
 
@@ -31,62 +62,114 @@ export const MarketProvider: React.FC = ({ children }) => {
             name,
             synth,
             collateral,
-            { tvl, totalSupply, expirationTimestamp, rawGlobalUtilization, minTokens, liquidationPoint },
+            paired,
+            {
+              tvl,
+              totalSupply,
+              expirationTimestamp,
+              currentTime,
+              rawGlobalUtilization,
+              minTokens,
+              liquidationPoint,
+              withdrawalPeriod,
+            },
             collateralPriceUsd,
             pool,
           ] = synthData;
 
-          //const isExpired = expirationTimestamp.toNumber() < Math.trunc(Date.now() / 1000);
-          const dateToday = new Date(Math.trunc(Date.now() / 1000));
-          const expiration = new Date(expirationTimestamp.toNumber());
-          const daysTillExpiry = Math.round((expiration.getTime() - dateToday.getTime()) / (3600 * 24));
-          const liquidity = pool.reserveUSD;
+          try {
+            const dateToday = new Date(currentTime.toNumber());
+            const expiration = new Date(expirationTimestamp.toNumber());
+            const daysTillExpiry = Math.round((expiration.getTime() - dateToday.getTime()) / (3600 * 24));
+            const isExpired = dateToday >= expiration;
+            const liquidity = pool.reserveUSD ?? 0;
 
-          let priceUsd;
-          let pricePerCollateral;
-          if (synth.collateral === pool.token0.symbol) {
-            priceUsd = pool.token0Price * collateralPriceUsd;
-            pricePerCollateral = pool.token0Price;
-          } else {
-            priceUsd = pool.token1Price * collateralPriceUsd;
-            pricePerCollateral = pool.token1Price;
+            let priceUsd;
+            let pricePerPaired;
+            if (synth.collateral === pool.token0.symbol) {
+              priceUsd = pool.token0Price * collateralPriceUsd;
+              pricePerPaired = pool.token0Price;
+            } else {
+              priceUsd = pool.token1Price * collateralPriceUsd;
+              pricePerPaired = pool.token1Price;
+            }
+
+            const globalUtilization = rawGlobalUtilization * pricePerPaired;
+            const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, paired.decimals));
+            const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, paired.decimals));
+
+            // Grab APRs from API
+            //const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
+            const apr = (await getApr(synth.group, synth.cycle)) ?? 0;
+
+            data[name] = {
+              price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
+              priceUsd: roundDecimals(priceUsd, 2),
+              collateralPriceUsd: roundDecimals(collateralPriceUsd, 2),
+              liquidity: Math.trunc(liquidity),
+              totalSupply: roundDecimals(Number(utils.formatUnits(totalSupply, paired.decimals)), 2),
+              tvl: tvlUsd,
+              marketCap: Math.trunc(marketCap),
+              volume24h: 0, // TODO need to get from subgraph
+              globalUtilization: roundDecimals(globalUtilization, 4),
+              minTokens: minTokens,
+              liquidationPoint: liquidationPoint,
+              withdrawalPeriod: withdrawalPeriod / 60, // Convert to minutes
+              apr: roundDecimals(apr, 2),
+              daysTillExpiry: daysTillExpiry,
+              isExpired: isExpired,
+            };
+          } catch (err0) {
+            console.error(err0);
+            console.error('Could not retrieve market data this synth');
+
+            // TODO is this necessary?
+            data[name] = {
+              price: 1,
+              priceUsd: 0,
+              collateralPriceUsd: 0,
+              liquidity: 0,
+              totalSupply: 1,
+              tvl: 1,
+              marketCap: 1,
+              volume24h: 1, // TODO need to get from subgraph
+              globalUtilization: 0.1,
+              minTokens: 1,
+              liquidationPoint: 0.01,
+              withdrawalPeriod: 0,
+              apr: 0,
+              daysTillExpiry: 69,
+              isExpired: false,
+            };
           }
-
-          const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, collateral.decimals));
-          const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, collateral.decimals));
-          const apr = String((Math.random() * 100).toFixed(2)); // TODO get actual APR
-
-          console.log(name);
-          console.log(rawGlobalUtilization);
-
-          data[name] = {
-            price: priceUsd.toFixed(2),
-            liquidity: liquidity,
-            totalSupply: utils.formatUnits(totalSupply, collateral.decimals),
-            tvl: tvlUsd.toString(),
-            marketCap: marketCap.toString(),
-            volume24h: '0', // TODO need to get from subgraph
-            globalUtilization: roundDecimals(rawGlobalUtilization * pricePerCollateral, 4),
-            minTokens: minTokens,
-            liquidationPoint: liquidationPoint,
-            apr: apr,
-            daysTillExpiry: daysTillExpiry,
-          };
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
 
       setSynthMarketData(data);
     };
 
-    initializeMarketData();
-  }, []);
+    setLoading(true);
+
+    if (chainId !== 0) {
+      const metadata = getSynthMetadata(chainId);
+      const collateral = getCollateralData(chainId);
+      initializeMarketData(metadata, collateral);
+      setCollateralData(collateral);
+      setSynthMetadata(metadata);
+    }
+
+    setLoading(false);
+  }, [provider, chainId]);
 
   return (
     <MarketContext.Provider
       value={{
+        loading,
         synthMarketData,
+        synthMetadata,
+        collateralData,
       }}
     >
       {children}

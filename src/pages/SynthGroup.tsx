@@ -1,54 +1,55 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Link, Redirect, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
-import 'chartjs-adapter-date-fns';
-import { UserContext, MarketContext } from '@/contexts';
-import { MainDisplay, MainHeading, SideDisplay, Table } from '@/components';
-import { SynthInfo, SynthTypes, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
-import { IMap } from '@/types';
+import { UserContext, MarketContext, EthereumContext } from '@/contexts';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader } from '@/components';
+import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
+import chartLoader from '/src/assets/chart-loader.svg';
 
 interface SynthParams {
-  type: string;
+  group: string;
 }
 
-interface ISynthTypeItem {
+interface ISynthGroupItem {
   name: string;
   maturity: number;
-  apy: string;
-  balance: string;
-  liquidity: string;
-  price: string;
+  apr: number;
+  balance: number;
+  liquidity: number;
+  price: number;
 }
 
 type SynthTableFilter = 'Live' | 'Expired' | 'All';
 
-export const SynthType: React.FC = () => {
+export const SynthGroup: React.FC = () => {
   const { synthsInWallet } = useContext(UserContext);
-  const { synthMarketData } = useContext(MarketContext);
-  const { type } = useParams<SynthParams>();
-  const [synthGroup, setSynthGroup] = useState<Record<string, ISynthTypeItem>>({});
+  const { chainId } = useContext(EthereumContext);
+  const { synthMetadata, synthMarketData } = useContext(MarketContext);
+  const { group } = useParams<SynthParams>();
+  const [synthGroup, setSynthGroup] = useState<Record<string, ISynthGroupItem>>({});
   const [historicPriceData, setHistoricPriceData] = useState<{
     labels: string[];
-    synthPrices: IMap<number[]>;
+    synthPrices: Record<string, number[]>;
   }>();
-  const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('All');
+  const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('Live');
   const [synthInFocus, setSynthInFocus] = useState<string>('');
 
   // TODO redirect if type does not exist
 
   useEffect(() => {
-    const initSynthTypes = () => {
+    const initSynthGroups = () => {
       let selectedSynth: string | undefined;
       const synths: typeof synthGroup = {};
-      Object.entries(SynthInfo)
-        .filter((synth) => synth[1].type === type)
+
+      Object.entries(synthMetadata)
+        .filter((synth) => synth[1].group === group)
         .filter(([synthName, synthInfo]) => {
           if (filterSynths === 'All') {
             return true;
           } else if (filterSynths === 'Live') {
-            return synthMarketData[synthName].daysTillExpiry > 0;
+            return !synthMarketData[synthName].isExpired;
           } else {
-            return synthMarketData[synthName].daysTillExpiry <= 0;
+            return synthMarketData[synthName].isExpired;
           }
         })
         .forEach(([synthName, synthInfo]) => {
@@ -57,9 +58,9 @@ export const SynthType: React.FC = () => {
           synths[synthName] = {
             name: synthName,
             maturity: maturity,
-            apy: synthMarketData[synthName].apr, //TODO
+            apr: synthMarketData[synthName].apr, //TODO
             // TODO should be showing minted positions
-            balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? '0',
+            balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? 0,
             liquidity: synthMarketData[synthName].liquidity, // TODO
             price: synthMarketData[synthName].price, // TODO
           };
@@ -68,19 +69,20 @@ export const SynthType: React.FC = () => {
       setSynthGroup(synths);
     };
 
-    if (!isEmpty(synthMarketData)) initSynthTypes();
+    if (!isEmpty(synthMarketData)) initSynthGroups();
   }, [synthMarketData, filterSynths]);
 
+  // TODO account for different data per synth
   useEffect(() => {
-    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(type));
+    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
+    //async () => await getDailyPriceHistory_new(synthMetadata[synthInFocus]);
 
-    getChartData();
-  }, []);
+    if (chainId) getChartData();
+  }, [synthMetadata, synthInFocus]);
 
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
-    console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
       datasets: Object.entries(historicPriceData.synthPrices)
@@ -99,9 +101,9 @@ export const SynthType: React.FC = () => {
         })),
     };
 
-    console.log(data);
-
     const options = {
+      responsive: true,
+      maintainAspectRatio: false,
       tooltips: {
         //mode: 'index', // TODO this breaks build, but is needed
         intersect: false,
@@ -131,6 +133,7 @@ export const SynthType: React.FC = () => {
             ticks: {
               beginAtZero: false,
               display: true,
+              fontColor: 'rgba(255,255,255,0.5)',
             },
             gridLines: {
               drawBorder: false,
@@ -158,22 +161,21 @@ export const SynthType: React.FC = () => {
       display: false,
     };
 
-    return <Line data={data} options={options} legend={legend} />;
+    return <Line data={data} height={300} options={options} legend={legend} />;
   };
 
-  const SynthGroupRow: React.FC<ISynthTypeItem> = (props) => {
-    const { name, maturity, apy, balance, liquidity, price } = props;
-    const { cycle, year, type } = SynthInfo[name];
+  const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
+    const { name, maturity, apr, balance, liquidity, price } = props;
+    const { cycle, year, group } = synthMetadata[name];
 
-    // TODO change maturity to show if live or expired
     return (
-      <Link to={`/synths/${type}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
+      <Link to={`/synths/${group}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
         <div className="expand">
           <div className="margin-right-1 text-color-4">{name}</div>
-          <div className="text-xs">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
+          <div className="text-xs opacity-50">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{apy}%</div>
+          <div className="text-color-4">{apr}%</div>
         </div>
         <div className="expand portrait-hide">
           <div className="text-color-4">$0.00</div>
@@ -213,11 +215,22 @@ export const SynthType: React.FC = () => {
   };
 
   const ChartSelector: React.FC = () => {
+    if (isEmpty(synthGroup)) {
+      return (
+        <div className="tabs">
+          <div className="tab">No synths available</div>
+        </div>
+      );
+    }
     return (
       <div className="tabs portrait-margin-top-1">
         {Object.keys(synthGroup).map((synthName, index) => {
           return (
-            <div className={`tab ${synthInFocus === synthName && 'active'}`} onClick={() => setSynthInFocus(synthName)} key={index}>
+            <div
+              className={`tab ${synthInFocus === synthName && 'active'}`}
+              onClick={() => setSynthInFocus(synthName)}
+              key={index}
+            >
               {synthName}
             </div>
           );
@@ -227,25 +240,49 @@ export const SynthType: React.FC = () => {
   };
 
   return (
-    <>
+    <Page>
+      <Navbar />
       <MainDisplay>
-        <MainHeading className="margin-bottom-1">{type}</MainHeading>
-        <div className="padding-x-8 flex-align-baseline">{SynthTypes[type].description}</div>
+        <MainHeading className="margin-bottom-1">{group}</MainHeading>
+        <div className="padding-x-8 flex-align-baseline">{SynthGroups[group].description}</div>
         <div className="padding-x-8 padding-y-1 flex-row portrait-flex-column portrait-flex-align-start">
           <ChartSelector />
         </div>
-        <div className="width-full margin-y-2 w-embed w-script">{historicPriceData && <Chart />}</div>
+
+        <div style={{ width: '100%', height: '300px' }} className="relative width-full margin-y-2 w-embed w-script">
+          {historicPriceData ? <Chart /> : <img className="chart-loader pulse" src={chartLoader} />}
+        </div>
+
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <TableFilter />
-        <Table headers={['Maturity', 'APY', 'Your Balance', 'Liquidity', 'Price']}>
-          {Object.keys(synthGroup).length > 0
-            ? Object.entries(synthGroup).map(([name, synth], index) => {
-                return <SynthGroupRow {...synth} key={index} />;
-              })
-            : 'There are no synths in this type'}
+        <Table headers={['Maturity', 'APR', 'Your Balance', 'Liquidity', 'Price']}>
+          {Object.keys(synthGroup).length > 0 ? (
+            Object.entries(synthGroup).map(([name, synth], index) => {
+              return <SynthGroupRow {...synth} key={index} />;
+            })
+          ) : (
+            <div className="table-row margin-y-2 w-inline-block">There are no synths in this group</div>
+          )}
         </Table>
       </MainDisplay>
-      <SideDisplay>{/* TODO add synth copy */}</SideDisplay>
-    </>
+      <SideDisplay>
+        <div className="flex-align-center">
+          <img src={`/images/${SynthGroups[group].image}.png`} className="width-16 margin-right-4" />
+          <div>
+            <h5 className="margin-bottom-1">{group}</h5>
+            <h6 className="margin-0">By {SynthGroups[group].creator}</h6>
+          </div>
+        </div>
+        <p className="text-small margin-top-2">{SynthGroups[group].description}</p>
+        <div>
+          <a href="#" className="button-secondary button-small margin-right-4 w-button">
+            Learn more
+          </a>
+          <a href="#" className="text-small weight-bold">
+            See tutorial
+          </a>
+        </div>
+      </SideDisplay>
+    </Page>
   );
 };

@@ -1,86 +1,224 @@
 {
-  "uGas": [
-    {
-      "cycle": "JAN",
-      "year": "21",
-      "collateral": "WETH",
-      "token": {
-        "address": "0x3d995510f8d82c2ea341845932b5ddde0bead9a3",
-        "decimals": 18
+  "mainnet": {
+    "uGas": [
+      {
+        "name": "January",
+        "cycle": "JAN",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x3d995510f8d82c2ea341845932b5ddde0bead9a3",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0x516f595978d87b67401dab7afd8555c3d28a3af4"
+        },
+        "pool": {
+          "address": "0x25fb29d865c1356f9e95d621f21366d3a5db6bb0",
+          "location": "uni"
+        }
       },
-      "emp": {
-        "address": "0x516f595978d87b67401dab7afd8555c3d28a3af4",
-        "new": false
+      {
+        "name": "February",
+        "cycle": "FEB",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x81fab276aec924fbde190cf379783526d413cf70",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0xeaa081a9fad4607cdf046fea7d4bf3dfef533282"
+        },
+        "pool": {
+          "address": "0x4a8a2ea3718964ed0551a3191c30e49ea38a5ade",
+          "location": "uni"
+        }
       },
-      "pool": {
-        "address": "0x25fb29d865c1356f9e95d621f21366d3a5db6bb0"
+      {
+        "name": "March",
+        "cycle": "MAR",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x4e110603e70b0b5f1c403ee543b37e1f1244cf28",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0xfa3aa7ee08399a4ce0b4921c85ab7d645ccac669"
+        },
+        "pool": {
+          "address": "0x683ea972ffa19b7bad6d6be0440e0a8465dba71c",
+          "location": "uni"
+        }
+      },
+      {
+        "name": "June",
+        "cycle": "JUN",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0xa6b9d7e3d76cf23549293fb22c488e0ea591a44e",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0x4e8d60a785c2636a63c5bd47c7050d21266c8b43"
+        },
+        "pool": {
+          "address": "0x2b5dfb7874f685bea30b7d8426c9643a4bcf5873",
+          "location": "uni"
+        }
       }
-    },
-    {
-      "cycle": "FEB",
-      "year": "21",
-      "collateral": "WETH",
-      "token": {
-        "address": "0x81fab276aec924fbde190cf379783526d413cf70",
-        "decimals": 18
+    ],
+    "uStonks": [
+      {
+        "name": "April",
+        "cycle": "APR",
+        "year": "21",
+        "collateral": "USDC",
+        "token": {
+          "address": "0xec58d3aefc9aaa2e0036fa65f70d569f49d9d1ed",
+          "decimals": 6
+        },
+        "emp": {
+          "address": "0x4f1424cef6ace40c0ae4fc64d74b734f1eaf153c"
+        },
+        "pool": {
+          "address": "0xedf187890af846bd59f560827ebd2091c49b75df",
+          "location": "uni"
+        }
       },
-      "emp": {
-        "address": "0xeaa081a9fad4607cdf046fea7d4bf3dfef533282",
-        "new": false
-      },
-      "pool": {
-        "address": "0x4a8a2ea3718964ed0551a3191c30e49ea38a5ade"
+      {
+        "name": "June",
+        "cycle": "JUN",
+        "year": "21",
+        "collateral": "USDC",
+        "token": {
+          "address": "0x20f8d43672cfd78c471972c737134b5dcb700dd8",
+          "decimals": 6
+        },
+        "emp": {
+          "address": "0xb1a3e5a8d642534840bfc50c6417f9566e716cc7"
+        },
+        "pool": {
+          "address": "0x360acfeb5c1548bad3583c559a646d803077236d",
+          "location": "uni"
+        }
       }
-    },
-    {
-      "cycle": "MAR",
-      "year": "21",
-      "collateral": "WETH",
-      "token": {
-        "address": "0x4e110603e70b0b5f1c403ee543b37e1f1244cf28",
-        "decimals": 18
-      },
-      "emp": {
-        "address": "0xfa3aa7ee08399a4ce0b4921c85ab7d645ccac669",
-        "new": false
-      },
-      "pool": {
-        "address": "0x683ea972ffa19b7bad6d6be0440e0a8465dba71c"
+    ],
+    "uPUNKS": [
+      {
+        "name": "September",
+        "cycle": "09",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x86140A763077155964754968B6F6e243fE809cBe",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0xF8eF02C10C473CA5E48b10c62ba4d46115dd2288"
+        },
+        "pool": {
+          "address": "0x6e01db46b183593374a49c0025e42c4bb7ee3ffa",
+          "location": "sushi"
+        }
       }
-    },
-    {
-      "cycle": "JUN",
-      "year": "21",
-      "collateral": "WETH",
-      "token": {
-        "address": "0xa6b9d7e3d76cf23549293fb22c488e0ea591a44e",
-        "decimals": 18
-      },
-      "emp": {
-        "address": "0x4e8d60a785c2636a63c5bd47c7050d21266c8b43",
-        "new": true
-      },
-      "pool": {
-        "address": "0x2b5dfb7874f685bea30b7d8426c9643a4bcf5873"
+    ]
+  },
+  "kovan": {
+    "uGas": [
+      {
+        "name": "December",
+        "cycle": "DEC",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x5A5Fe09310BBE12E98fb7415A0f76F6BE453638F",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0x8E632ee4f46C7DC444a0fA19c8af65f6FC030458"
+        },
+        "pool": {
+          "address": "0x8cf2123ec57bbd05709cbde9024d90d3ab46d4c7",
+          "location": "uni"
+        }
       }
-    }
-  ],
-  "uStonks": [
-    {
-      "cycle": "APR",
-      "year": "21",
-      "collateral": "USDC",
-      "token": {
-        "address": "0xec58d3aefc9aaa2e0036fa65f70d569f49d9d1ed",
-        "decimals": 6
-      },
-      "emp": {
-        "address": "0x4f1424cef6ace40c0ae4fc64d74b734f1eaf153c",
-        "new": true
-      },
-      "pool": {
-        "address": "0xedf187890af846bd59f560827ebd2091c49b75df"
+    ],
+    "uVolBtc": [
+      {
+        "name": "December",
+        "cycle": "DEC",
+        "year": "21",
+        "collateral": "USDC",
+        "token": {
+          "address": "0x1Ef69bc8c569094F7eaFb88BB8021DdA30614b7e",
+          "decimals": 6
+        },
+        "emp": {
+          "address": "0x7BD3e1A41EA086206423Ec5cDF04fccb264a7D01"
+        },
+        "pool": {
+          "address": "0xb4556914684e50F3d4491d7C8d338304e7e40387",
+          "location": "uni"
+        }
       }
-    }
-  ]
+    ],
+    "yamDollar": [
+      {
+        "name": "December",
+        "cycle": "DEC",
+        "year": "21",
+        "collateral": "USDC",
+        "token": {
+          "address": "0xdD26d67D855abFa3D8517A04fEfec834EB06ce6D",
+          "decimals": 6
+        },
+        "emp": {
+          "address": "0x188f136F7b92268A596F7b3EDDfc2B527D010F3e"
+        },
+        "pool": {
+          "address": "0xa56b0c3cc9cc98873f07587f9b2ecdcfa33ad629",
+          "location": "uni"
+        }
+      }
+    ],
+    "uPUNKS": [
+      {
+        "name": "May",
+        "cycle": "0510",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x2dd7cdfe776035237abbe246603c1a438dc57efe",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0x5d05A239e4de895d55bcf91fdE4dF4fC1B5961E7"
+        },
+        "pool": {
+          "address": "0x6bf5c7afad3a0edf9ba5c90ba4e83ab82d547769",
+          "location": "uni"
+        }
+      },
+      {
+        "name": "May",
+        "cycle": "0511",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x80a321a53be4164bdc740a4933af37b6a8ad0707",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0x44094C174091AB2b41be0Eae0604E04c18a1fb1B"
+        },
+        "pool": {
+          "address": "0x0000000000000000000000000000000000000000",
+          "location": "uni"
+        }
+      }
+    ]
+  }
 }

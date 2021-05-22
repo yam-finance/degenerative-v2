@@ -9,8 +9,8 @@ interface UnsignedInterface {
 export default class Unsigned implements UnsignedInterface {
   rawValue: BigNumber;
 
-  constructor(value: number | string) {
+  constructor(value: number | string, decimals: number) {
     // TODO change to parseUnits, pass in decimals
-    this.rawValue = utils.parseEther(String(value));
+    this.rawValue = utils.parseUnits(String(value), decimals);
   }
 }

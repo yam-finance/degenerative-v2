@@ -3,57 +3,49 @@ export interface IContract {
 }
 
 export interface IToken extends IContract {
-  name?: string;
-  decimals?: number;
-  symbol?: string;
-  coingeckoId?: string;
-  //balance: BigNumber;
-  //priceUsd: number;
+  name: string;
+  decimals: number; // NOTE: Synth and collateral will have same decimals
+  symbol: string;
+  coingeckoId: string;
 }
 
-// TODO remove
-//export interface ISynthMetadata {
-//  name: string;
-//  //type: string;
-//  cycle: string;
-//  year: string;
-//  collateral: string;
-//  //expired: boolean;
-//  //apy?: number;
-//  //description?: string
-//}
+export interface ILiquidityPool extends IContract {
+  location: 'uni' | 'sushi' | 'bal';
+}
 
-export interface ISynthInfo {
+export interface ISynth {
   imgLocation: string;
-  type: string;
+  group: string;
   cycle: string;
   year: string;
-  collateral: string; // TODO remove, get collateral through type
+  collateral: string; // TODO remove, get collateral through group
   token: IToken;
   emp: IContract;
-  pool: IContract;
+  pool: ILiquidityPool;
 }
 
-export interface ISynthType {
+export interface ISynthGroup {
   description: string;
   collateral: string;
+  paired: string;
+  image: string;
+  creator: string;
 }
 
 export interface ISynthMarketData {
-  price: string;
-  tvl: string;
-  apr: string;
-  volume24h: string;
-  marketCap: string;
-  totalSupply: string;
-  liquidity: string;
+  price: number;
+  priceUsd: number;
+  collateralPriceUsd: number;
+  tvl: number;
+  apr: number;
+  volume24h: number;
+  marketCap: number;
+  totalSupply: number;
+  liquidity: number;
   minTokens: number;
   daysTillExpiry: number;
+  isExpired: boolean;
   globalUtilization: number; // Inverse of GCR taken from EMP
   liquidationPoint: number;
-}
-
-// TODO use Record<T1, T2> instead
-export interface IMap<T> {
-  [key: string]: T;
+  withdrawalPeriod: number;
 }

@@ -4,18 +4,26 @@ import { UserProvider } from './UserContext';
 import { GlobalProvider } from './GlobalContext';
 import { MarketProvider } from './MarketContext';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { Web3ReactProvider } from '@web3-react/core';
+import { providers } from 'ethers';
 
 const queryClient = new QueryClient();
+
+const getLibrary = (provider: any): providers.Web3Provider => {
+  const library = new providers.Web3Provider(provider);
+  library.pollingInterval = 15000;
+  return library;
+};
 
 const ContextProviders: React.FC = ({ children }) => {
   return (
     <GlobalProvider>
       <QueryClientProvider client={queryClient}>
-        <MarketProvider>
-          <EthereumProvider>
+        <EthereumProvider>
+          <MarketProvider>
             <UserProvider>{children}</UserProvider>
-          </EthereumProvider>
-        </MarketProvider>
+          </MarketProvider>
+        </EthereumProvider>
       </QueryClientProvider>
     </GlobalProvider>
   );

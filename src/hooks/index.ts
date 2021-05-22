@@ -1,5 +1,5 @@
-export { default as useEmp } from './useEmp';
+export * from './useEmp';
 export * from './useQuery';
-export { default as useSynthActions } from './useSynthActions';
-export { default as useToken } from './useToken';
-export { default as useWrapEth } from './useWrapEth';
+export * from './useSynthActions';
+export * from './useToken';
+export * from './useWrapEth';

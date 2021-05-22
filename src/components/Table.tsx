@@ -29,7 +29,6 @@ export const Table: React.FC<TableProps> = ({ title, headers, headerClass, class
   );
 };
 
-// TODO Make a generic composable table + table row + table cells
 // All table rows use same styles
 
 interface TableRowProps {

@@ -1,51 +1,75 @@
 // Get reference price history for each synth type
 import axios from 'axios';
-import { SynthTypes, getUsdPriceHistory, getDateString } from '@/utils';
+import { SynthGroups, getUsdPriceHistory, getDateString, roundDecimals } from '@/utils';
+import { fromUnixTime } from 'date-fns';
 
 /** Get reference price history and transform for use in charts. Returns array
  *  of objects with keys of timestamp and price.
  */
-export const getReferencePriceHistory = async (type: string) => {
-  const fetchUgas = async (collateral: string) => {
-    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral));
+export const getReferencePriceHistory = async (type: string, chainId: number) => {
+  const fetchUgas = async (collateral: string, chainId: number) => {
+    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     const res = await axios.get('https://data.yam.finance/median-history');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
-      const dateString = getDateString(new Date(timestamp));
+      const dateString = getDateString(fromUnixTime(timestamp));
       const usdPriceCollateral = (collateralUsd.get(dateString) ?? 1) / 10 ** 9;
-      const scaledPrice = price / 1000; // TODO numbers don't work without dividing by 1000. Not sure why.
+      const scaledPrice = price / 1000; // Numbers don't work without dividing by 1000. Not sure why.
 
       return {
         timestamp: dateString,
-        price: Math.round(scaledPrice * usdPriceCollateral * 100) / 100,
+        price: roundDecimals(scaledPrice * usdPriceCollateral, 2),
       };
     });
   };
 
-  const fetchUstonks = async (collateral: string) => {
-    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral));
-    const res = await axios.get('https://data.yam.finance/ustonks/index-history');
+  const fetchUstonks = async (collateral: string, chainId: number) => {
+    // TODO this part is probably unnecessary since USDC is 'stable'
+    //const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
+
+    // TODO !!!!!!!!!!!!
+    // TODO endpoint hardcoded to jun21 for now
+    // TODO !!!!!!!!!!!!
+    const res = await axios.get('https://data.yam.finance/ustonks/index-history-daily/jun21');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
-      const dateString = getDateString(new Date(timestamp));
+      const dateString = getDateString(fromUnixTime(timestamp));
+      //const usdPriceCollateral = collateralUsd.get(dateString) ?? 1;
+
+      return {
+        timestamp: dateString,
+        price: roundDecimals(Number(price), 2),
+      };
+    });
+  };
+
+  const fetchUpunks = async (collateral: string, chainId: number) => {
+    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
+    const res = await axios.get('https://api.yam.finance/degenerative/upunks/price-history');
+
+    return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
+      const dateString = getDateString(fromUnixTime(timestamp));
       const usdPriceCollateral = collateralUsd.get(dateString) ?? 1;
 
       return {
         timestamp: dateString,
-        price: Math.round(price * usdPriceCollateral * 100) / 100,
+        price: roundDecimals(price * usdPriceCollateral, 2),
       };
     });
   };
 
   try {
     // Get collateral price in USD
-    const collateral = SynthTypes[type].collateral;
+    const collateral = SynthGroups[type].collateral;
 
+    console.log(type);
     switch (type) {
       case 'uGas':
-        return await fetchUgas(collateral);
+        return await fetchUgas(collateral, chainId);
       case 'uStonks':
-        return await fetchUstonks(collateral);
+        return await fetchUstonks(collateral, chainId);
+      case 'uPUNKS':
+        return await fetchUpunks(collateral, chainId);
       default:
         return Promise.reject('Type not recognized');
     }
