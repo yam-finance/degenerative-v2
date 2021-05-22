@@ -5,7 +5,7 @@ import { useFormState } from 'react-use-form-state';
 
 import { useSynthActions, useToken } from '@/hooks';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
+import { Page, Navbar, Icon, MainDisplay, MainHeading, NewMinter, SideDisplay } from '@/components';
 import { ISynth, ISynthMarketData } from '@/types';
 import { utils } from 'ethers';
 import { isEmpty, roundDecimals } from '@/utils';
@@ -236,7 +236,7 @@ export const Synth: React.FC = () => {
         <MainHeading>{currentSynth}</MainHeading>
         {!isEmpty(synth) && <ActionSelector />}
         <div className="border-bottom-1px margin-x-8 margin-y-4" />
-        <Minter actions={actions} />
+        <NewMinter actions={actions} />
       </MainDisplay>
       <SideDisplay>
         {synth.collateral === 'WETH' && <WrapEthDialog />}

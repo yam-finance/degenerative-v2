@@ -5,7 +5,7 @@ export * from './Dropdown';
 export * from './Icon';
 export * from './LangSwitcher';
 export * from './Loader';
-export * from './Minter';
+export * from './NewMinter';
 export * from './NavbarButton';
 export * from './SearchForm';
 export * from './Table';
