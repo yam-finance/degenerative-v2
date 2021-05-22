@@ -119,6 +119,7 @@ export const getPoolData = async (pool: ILiquidityPool) => {
   }
 };
 
+// TODO APRs from API are wrong. Hardcoding for now.
 export const getApr = async (group: string, cycle: string): Promise<number> => {
   try {
     const res = await axios.get('https://api.yam.finance/apr/degenerative');
