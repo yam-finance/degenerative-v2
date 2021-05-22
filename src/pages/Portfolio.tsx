@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { MarketContext, UserContext } from '@/contexts';
 import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow, Loader } from '@/components';
-import { IMintedPosition, ISynthInWallet, ISynthMarketData } from '@/types';
+import { IMintedPosition, ITokensInWallet } from '@/types';
 import { getUsdPrice, roundDecimals, isEmpty } from '@/utils';
 
 export const Portfolio = () => {
@@ -60,7 +60,7 @@ export const Portfolio = () => {
     );
   };
 
-  const SynthsInWalletRow: React.FC<ISynthInWallet> = (props) => {
+  const SynthsInWalletRow: React.FC<ITokensInWallet> = (props) => {
     const { name, tokenAmount } = props;
     const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
     const { price, daysTillExpiry } = synthMarketData[name];

@@ -4,6 +4,7 @@ export * from './TokenTypes';
 export { default as Unsigned } from './Unsigned';
 export * from './UserTypes';
 export * from './contracts/factories/Emp__factory';
+export * from './contracts/factories/Empv2__factory';
 export * from './contracts/factories/Erc20__factory';
 export * from './contracts/factories/UniFactory__factory';
 export * from './contracts/factories/Uni__factory';

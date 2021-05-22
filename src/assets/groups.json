@@ -1,6 +1,6 @@
 {
   "uGas": {
-    "description": "Speculate or hedge on Ethereum gas prices",
+    "description": "Tracks median Ethereum gas prices",
     "collateral": "WETH",
     "paired": "WETH",
     "image": "ugas",

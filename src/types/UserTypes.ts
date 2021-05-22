@@ -13,7 +13,7 @@ export interface IMintedPosition {
   withdrawalRequestTimestamp: number; // Time when withdrawal request is approved, unix time
 }
 
-export interface ISynthInWallet {
+export interface ITokensInWallet {
   name: string;
   tokenAmount: number;
   //tokenPriceUsd: number;

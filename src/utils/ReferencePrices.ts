@@ -24,13 +24,28 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   };
 
   const fetchUstonks = async (collateral: string, chainId: number) => {
-    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
+    // TODO this part is probably unnecessary since USDC is 'stable'
+    //const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
+
     // TODO !!!!!!!!!!!!
     // TODO endpoint hardcoded to jun21 for now
     // TODO !!!!!!!!!!!!
-    const res = await axios.get('http://data.yam.finance/ustonks/index-history-daily/jun21');
+    const res = await axios.get('https://data.yam.finance/ustonks/index-history-daily/jun21');
 
-    console.log(res.data);
+    return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
+      const dateString = getDateString(fromUnixTime(timestamp));
+      //const usdPriceCollateral = collateralUsd.get(dateString) ?? 1;
+
+      return {
+        timestamp: dateString,
+        price: roundDecimals(Number(price), 2),
+      };
+    });
+  };
+
+  const fetchUpunks = async (collateral: string, chainId: number) => {
+    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
+    const res = await axios.get('https://api.yam.finance/degenerative/upunks/price-history');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
@@ -47,12 +62,14 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
     // Get collateral price in USD
     const collateral = SynthGroups[type].collateral;
 
+    console.log(type);
     switch (type) {
       case 'uGas':
         return await fetchUgas(collateral, chainId);
       case 'uStonks':
         return await fetchUstonks(collateral, chainId);
-      case 'uPUNK':
+      case 'uPUNKS':
+        return await fetchUpunks(collateral, chainId);
       default:
         return Promise.reject('Type not recognized');
     }
