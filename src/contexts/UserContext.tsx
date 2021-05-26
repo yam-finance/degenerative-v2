@@ -17,7 +17,7 @@ const initialState = {
   currentSynth: '',
   currentCollateral: '',
   triggerUpdate: () => {},
-  //actions: {} as ReturnType<typeof useSynthActions>,
+  actions: {} as ReturnType<typeof useSynthActions>,
   //emp: {} as ReturnType<typeof useEmp>,
 };
 
@@ -136,7 +136,7 @@ export const UserProvider: React.FC = ({ children }) => {
         setSynth,
         getSponsorPosition,
         triggerUpdate,
-        //actions,
+        actions,
       }}
     >
       {children}

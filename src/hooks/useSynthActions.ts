@@ -240,4 +240,5 @@ export const useSynthActions = () => {
 
 export type ISynthActions = ReturnType<typeof useSynthActions>;
 
+// TODO use this everywhere instead
 export const SynthActionsContainer = createContainer(useSynthActions);

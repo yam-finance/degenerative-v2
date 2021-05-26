@@ -12,7 +12,7 @@ interface MintFormFields {
   pendingTokens: number;
 }
 
-export const Mint: React.FC = () => {
+export const Mint: React.FC = React.memo(() => {
   const { state, dispatch } = PositionManagerContainer.useContainer();
   const { currentSynth, currentCollateral } = useContext(UserContext);
 
@@ -77,7 +77,9 @@ export const Mint: React.FC = () => {
     setFormInputs(state.pendingCollateral, getTokensAtGcr(state.pendingCollateral));
   };
 
-  const CollateralApproveButton: React.FC = () => null;
+  const CollateralApproveButton: React.FC = () => {
+    return <ActionButton action={() => actions.onApproveCollateral()}>Approve {currentCollateral}</ActionButton>;
+  };
 
   const MintButton: React.FC = () => {
     const newTokens = state.pendingTokens - state.sponsorTokens;
@@ -90,7 +92,7 @@ export const Mint: React.FC = () => {
       state.pendingUtilization > state.liquidationPoint;
 
     return (
-      <ActionButton action={actions.onMint(newCollateral, newTokens)} disableCondition={disableMinting}>
+      <ActionButton action={() => actions.onMint(newCollateral, newTokens)} disableCondition={disableMinting}>
         {`Mint ${newTokens} ${currentSynth} for ${newCollateral} ${currentCollateral}`}
       </ActionButton>
     );
@@ -174,10 +176,8 @@ export const Mint: React.FC = () => {
           </div>
         </div>
 
-        <MintButton />
+        {!actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />}
       </div>
     </ActionDisplay>
   );
-};
-
-export const MemoizedMint = React.memo(Mint);
+});

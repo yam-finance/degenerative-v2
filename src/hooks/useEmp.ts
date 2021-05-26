@@ -10,6 +10,7 @@ export const useEmp = () => {
 
   const mint = useCallback(
     async (synth: ISynth, collateral: number, tokens: number) => {
+      console.log(synth);
       const decimals = synth.token.decimals; // Token and collateral have same decimals
       const [collateralAmount, tokenAmount] = [new Unsigned(collateral, decimals), new Unsigned(tokens, decimals)];
       console.log(decimals);

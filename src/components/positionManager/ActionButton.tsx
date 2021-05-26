@@ -4,15 +4,15 @@ import { UserContext } from '@/contexts';
 
 interface ActionButtonProps {
   disableCondition?: boolean;
-  action: Promise<void>;
+  action: (...args: any[]) => Promise<void>;
 }
 export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, action, children }) => {
   const { triggerUpdate } = useContext(UserContext);
   const [waiting, setWaiting] = useState(false);
 
-  const callAction = async (action: Promise<void>) => {
+  const callAction = async (action: (...args: any[]) => Promise<void>) => {
     setWaiting(true);
-    await action;
+    await action();
     setWaiting(false);
     triggerUpdate(); // TODO Make UserContext refresh user positions. Not currently working.
   };
@@ -34,16 +34,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
     );
   }
   return (
-    <button
-      onClick={async () => {
-        setWaiting(true);
-        await action;
-        setWaiting(false);
-        triggerUpdate(); // TODO Make UserContext refresh user positions. Not currently working.
-      }}
-      className={baseStyle}
-      disabled={disableCondition}
-    >
+    <button onClick={async () => callAction(action)} className={baseStyle} disabled={disableCondition}>
       {children}
     </button>
   );
