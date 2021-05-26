@@ -98,15 +98,20 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     }
     case 'UPDATE_PENDING_POSITION': {
       const { pendingCollateral, pendingTokens } = action.payload;
-      const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
+      const util = (() => {
+        const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
+        return util > 0 && util !== Infinity ? roundDecimals(util, 4) : 0;
+      })();
+      console.log('-----------');
       console.log(pendingCollateral);
       console.log(pendingTokens);
+      console.log(util);
 
       return {
         ...state,
         pendingCollateral: pendingCollateral,
         pendingTokens: pendingTokens,
-        pendingUtilization: util > 0 && util !== Infinity ? roundDecimals(util, 2) : 0,
+        pendingUtilization: util,
       };
     }
     case 'CHANGE_ACTION': {

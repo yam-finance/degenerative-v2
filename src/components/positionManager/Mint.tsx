@@ -26,10 +26,21 @@ export const Mint: React.FC = React.memo(() => {
     },
     {
       onChange: (e, stateValues, nextStateValues) => {
+        const { pendingCollateral: currentCollateral, pendingTokens: currentTokens } = stateValues;
         const { pendingCollateral, pendingTokens } = nextStateValues;
-        const tokens = roundDecimals(Number(pendingTokens), 4);
-        const collateral = roundDecimals(Number(pendingCollateral), 4);
 
+        // Figure out which input changed. If adjustToGcr is true, set other field to GCR.
+        let collateral: number;
+        let tokens: number;
+        if (currentCollateral !== pendingCollateral) {
+          collateral = roundDecimals(Number(pendingCollateral), 4);
+          tokens = adjustToGcr ? getTokensAtGcr(collateral) : roundDecimals(Number(pendingTokens), 4);
+        } else {
+          tokens = roundDecimals(Number(pendingTokens), 4);
+          collateral = adjustToGcr ? getCollateralAtGcr(tokens) : roundDecimals(Number(pendingCollateral), 4);
+        }
+
+        setFormInputs(collateral, tokens);
         dispatch({
           type: 'UPDATE_PENDING_POSITION',
           payload: {
@@ -44,14 +55,6 @@ export const Mint: React.FC = React.memo(() => {
   const setFormInputs = (collateral: number, tokens: number) => {
     formState.setField('pendingCollateral', collateral);
     formState.setField('pendingTokens', tokens);
-
-    dispatch({
-      type: 'UPDATE_PENDING_POSITION',
-      payload: {
-        pendingCollateral: collateral,
-        pendingTokens: tokens,
-      },
-    });
   };
 
   const getTokensAtGcr = (collateral: number) =>
@@ -61,14 +64,20 @@ export const Mint: React.FC = React.memo(() => {
 
   const setMaximum = (e: React.MouseEvent) => {
     e.preventDefault();
-
     const newCollateral = state.maxCollateral + state.sponsorCollateral;
-    // Must divide by price because global utilization is scaled by price
-    const newTokens = adjustToGcr
-      ? newCollateral * (state.globalUtilization / state.tokenPrice)
-      : Number(formState.values.pendingTokens);
 
+    // Must divide by price because global utilization is scaled by price
+    const newTokens = adjustToGcr ? getTokensAtGcr(newCollateral) : Number(formState.values.pendingTokens);
+
+    // Update form and then component state to match form
     setFormInputs(newCollateral, roundDecimals(newTokens, 2));
+    dispatch({
+      type: 'UPDATE_PENDING_POSITION',
+      payload: {
+        pendingCollateral: newCollateral,
+        pendingTokens: newTokens,
+      },
+    });
   };
 
   // Uses current pending collateral to set synth field
@@ -115,12 +124,6 @@ export const Mint: React.FC = React.memo(() => {
               <input
                 {...number('pendingCollateral')}
                 onClick={(e) => e.currentTarget.select()}
-                onInput={(e) => {
-                  if (adjustToGcr) {
-                    const collateral = Number(e.currentTarget.value);
-                    setFormInputs(collateral, getTokensAtGcr(collateral));
-                  }
-                }}
                 type="number"
                 className="form-input height-24 text-large bottom-sharp margin-bottom-0 border-bottom-none w-input"
                 maxLength={256}
@@ -147,12 +150,6 @@ export const Mint: React.FC = React.memo(() => {
               <input
                 {...number('pendingTokens')}
                 onClick={(e) => e.currentTarget.select()}
-                onInput={(e) => {
-                  if (adjustToGcr) {
-                    const tokens = Number(e.currentTarget.value);
-                    setFormInputs(getCollateralAtGcr(tokens), tokens);
-                  }
-                }}
                 type="number"
                 className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
                 maxLength={256}

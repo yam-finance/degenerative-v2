@@ -241,14 +241,11 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     return (
       <div>
         <div className="gauge horizontal large overflow-hidden">
-          <div className={`collateral large ${!state.pendingUtilization && 'empty'}`}>
+          <div className={`collateral large ${state.pendingUtilization === 0 && 'empty'}`}>
             <div className="gcr horizontal large" style={{ left: `${state.globalUtilization * 100}%` }} />
             <div className="liquidation-point horizontal large" style={{ left: `${state.liquidationPoint * 100}%` }} />
           </div>
-          <div
-            className="debt horizontal large"
-            style={{ width: `${state.pendingUtilization ? state.pendingUtilization * 100 : 0}%` }}
-          >
+          <div className="debt horizontal large" style={{ width: `${state.pendingUtilization * 100}%` }}>
             <div className="gradient horizontal" />
           </div>
         </div>
@@ -263,201 +260,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     pendingCollateral: number;
     pendingTokens: number;
   }
-
-  const ActionButton: React.FC<ActionButtonProps> = ({
-    action,
-    sponsorCollateral,
-    sponsorTokens,
-    pendingCollateral,
-    pendingTokens,
-  }) => {
-    const [waiting, setWaiting] = useState(false);
-
-    const baseStyle = clsx('button', 'width-full', 'text-small', 'w-button', 'button-large');
-
-    const callAction = async (action: Promise<void>) => {
-      setWaiting(true);
-      await action;
-      setWaiting(false);
-      triggerUpdate(); // TODO Make UserContext refresh user positions. Not currently working.
-    };
-
-    const CollateralApproveButton: React.FC = () => (
-      <button
-        onClick={async (e) => {
-          e.preventDefault();
-          await actions.onApproveCollateral();
-        }}
-        className={baseStyle}
-      >
-        Approve {currentCollateral}
-      </button>
-    );
-
-    const SynthApproveButton: React.FC = () => (
-      <button
-        onClick={async (e) => {
-          e.preventDefault();
-          await actions.onApproveSynth();
-        }}
-        className={baseStyle}
-      >
-        Approve {currentSynth}
-      </button>
-    );
-
-    const MintButton: React.FC = () => {
-      const newTokens = pendingTokens - sponsorTokens;
-      const newCollateral = pendingCollateral - sponsorCollateral;
-
-      const disableMinting =
-        newTokens <= 0 ||
-        newCollateral < 0 ||
-        state.pendingUtilization > state.globalUtilization ||
-        state.pendingUtilization > state.liquidationPoint;
-
-      return (
-        <button
-          onClick={() => callAction(actions.onMint(newCollateral, newTokens))}
-          className={clsx(baseStyle, disableMinting && 'disabled')}
-          disabled={disableMinting}
-        >
-          {`Mint ${newTokens} ${currentSynth} for ${newCollateral} ${currentCollateral}`}
-        </button>
-      );
-    };
-
-    const AddCollateralButton: React.FC = () => {
-      const difference = pendingCollateral - sponsorCollateral;
-
-      const disabledAddCollateral = difference <= 0;
-
-      return (
-        <button
-          onClick={() => callAction(actions.onDeposit(sponsorCollateral, pendingCollateral))}
-          className={clsx(baseStyle, disabledAddCollateral && 'disabled')}
-          disabled={disabledAddCollateral}
-        >
-          {`Add ${difference} ${currentCollateral} to sponsor position`}
-        </button>
-      );
-    };
-
-    const RepayButton: React.FC = () => {
-      const repayTokens = sponsorTokens - pendingTokens;
-      const disableRepay = repayTokens <= 0 || repayTokens >= sponsorTokens;
-
-      return (
-        <button
-          onClick={() => callAction(actions.onRepay(repayTokens))}
-          className={clsx(baseStyle, disableRepay && 'disabled')}
-          disabled={disableRepay}
-        >
-          {`Repay ${repayTokens} ${currentSynth}`}
-        </button>
-      );
-    };
-
-    const RedeemButton: React.FC = () => {
-      const redeemableTokens = sponsorTokens - pendingTokens;
-      const resultingCollateral = redeemableTokens / state.utilization;
-
-      const disableRedeem = redeemableTokens <= 0 || redeemableTokens >= sponsorTokens;
-
-      return (
-        <button
-          onClick={() => callAction(actions.onRedeem(redeemableTokens))}
-          className={clsx(baseStyle, disableRedeem && 'disabled')}
-          disabled={disableRedeem}
-        >
-          {`Redeem ${redeemableTokens} ${currentSynth} and receive ${resultingCollateral} ${currentCollateral}`}
-        </button>
-      );
-    };
-
-    const WithdrawButton: React.FC = () => {
-      const withdrawalAmount = sponsorCollateral - pendingCollateral;
-      const disableWithdrawal = withdrawalAmount <= 0 || state.withdrawalRequestMinutesLeft !== 0;
-
-      if (state.pendingUtilization > state.globalUtilization && state.pendingUtilization < state.liquidationPoint) {
-        // Show Withdrawal Request modal
-        return (
-          <button
-            onClick={() =>
-              dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { withdrawalAmount: withdrawalAmount } })
-            }
-            className={clsx(baseStyle, disableWithdrawal && 'disabled')}
-            disabled={disableWithdrawal}
-          >
-            {`Request withdrawal for ${withdrawalAmount} ${currentCollateral}`}
-          </button>
-        );
-      } else {
-        return (
-          <button
-            onClick={() => callAction(actions.onWithdraw(withdrawalAmount))}
-            className={clsx(baseStyle, disableWithdrawal && 'disabled')}
-            disabled={disableWithdrawal}
-          >
-            {`Withdraw ${withdrawalAmount} ${currentCollateral}`}
-          </button>
-        );
-      }
-    };
-
-    const WithdrawRequestButton = () => {
-      if (state.withdrawalRequestMinutesLeft > 0) {
-        return (
-          <button onClick={() => callAction(actions.onCancelWithdraw())} className={baseStyle}>
-            {`Cancel withdrawal request of ${state.withdrawalRequestAmount} ${currentCollateral}`}
-          </button>
-        );
-      } else {
-        return (
-          <button onClick={() => callAction(actions.onWithdrawPassedRequest())} className={baseStyle}>
-            {`Withdraw passed request of ${state.withdrawalRequestAmount} ${currentCollateral}`}
-          </button>
-        );
-      }
-    };
-
-    const SettleButton = () => {
-      return (
-        <button
-          onClick={() => callAction(actions.onSettle())}
-          className={clsx(baseStyle, !state.isExpired && 'disabled')}
-          disabled={!state.isExpired}
-        >
-          {`Settle ${currentSynth} for ${currentCollateral}`}
-        </button>
-      );
-    };
-
-    if (waiting) {
-      return (
-        <button className={clsx(baseStyle, 'disabled')} disabled={true}>
-          Waiting on transaction
-        </button>
-      );
-    }
-
-    switch (action) {
-      case 'MINT':
-        return !actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />;
-      case 'ADD_COLLATERAL':
-        return !actions.collateralApproval ? <CollateralApproveButton /> : <AddCollateralButton />;
-      case 'REPAY':
-        return !actions.synthApproval ? <SynthApproveButton /> : <RepayButton />;
-      case 'REDEEM':
-        return !actions.synthApproval ? <SynthApproveButton /> : <RedeemButton />;
-      case 'WITHDRAW':
-        return state.withdrawalRequestAmount > 0 ? <WithdrawRequestButton /> : <WithdrawButton />;
-      case 'SETTLE':
-        return !actions.synthApproval ? <SynthApproveButton /> : <SettleButton />;
-      default:
-        return null;
-    }
-  };
 
   const ActionSelector: React.FC<{ currentAction: MinterAction; noPosition: boolean }> = ({
     currentAction,
@@ -592,89 +394,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     );
   };
 
-  const MintAction: React.FC = () => {
-    return (
-      <ActionDisplay>
-        <h3 className="margin-0 text-align-center">Mint {currentSynth}</h3>
-        <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
-          Deposit <strong className="text-color-4">{currentCollateral}</strong> to mint <strong>{currentSynth}</strong>{' '}
-          at or above <span className="weight-bold text-color-4">{state.globalUtilization * 100}%</span> utilization
-        </p>
-        <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
-
-        <div className="expand width-full flex-column-end">
-          <div className="flex-row">
-            <div className="width-full margin-bottom-4">
-              <div className="relative">
-                <input
-                  {...number('pendingCollateral')}
-                  onClick={(e) => e.currentTarget.select()}
-                  onInput={(e) =>
-                    (formState.values.pendingTokens =
-                      (state.globalUtilization / state.tokenPrice) * e.currentTarget.value)
-                  }
-                  type="number"
-                  className="form-input height-24 text-large bottom-sharp margin-bottom-0 border-bottom-none w-input"
-                  maxLength={256}
-                  placeholder="0"
-                  required
-                />
-                <div className="border-bottom-1px"></div>
-                <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
-                  <div className="padding-0 flex-align-center w-dropdown-toggle">
-                    <p className="margin-0 text-color-4">{currentCollateral}</p>
-                  </div>
-                </div>
-                <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
-                  <label className="opacity-60 weight-medium">Collateral</label>
-                  <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
-                    Max {utils.formatEther(state.maxCollateral.toString())}
-                  </button>
-                </div>
-              </div>
-              <div className="width-8 height-8 margin-auto flex-align-center flex-justify-center radius-full background-color-white inverse-margin">
-                <Icon name="ArrowDown" className="icon opacity-100 text-color-1" />
-              </div>
-              <div className="relative">
-                <input
-                  {...number('pendingTokens')}
-                  onClick={(e) => e.currentTarget.select()}
-                  onInput={(e) =>
-                    (formState.values.pendingCollateral =
-                      (e.currentTarget.value * state.tokenPrice) / state.globalUtilization)
-                  }
-                  type="number"
-                  className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
-                  maxLength={256}
-                  required
-                />
-                <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
-                  <div className="padding-0 flex-align-center">
-                    <p className="margin-0 text-color-4">{currentSynth}</p>
-                  </div>
-                </div>
-                <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
-                  <label className="opacity-60 weight-medium">Mint</label>
-                </div>
-              </div>
-              <div className="text-xs opacity-50 margin-top-1">Mint a minimum of 5 {currentSynth}</div>
-            </div>
-          </div>
-
-          <div>
-            <ActionButton
-              action={state.action}
-              sponsorCollateral={state.sponsorCollateral}
-              sponsorTokens={state.sponsorTokens}
-              pendingCollateral={Number(formState.values.pendingCollateral)}
-              pendingTokens={Number(formState.values.pendingTokens)}
-            />
-          </div>
-        </div>
-      </ActionDisplay>
-    );
-  };
-
   if (state.loading) {
     return <Loader className="flex-align-center flex-justify-center padding-top-48" />;
   }
@@ -721,11 +440,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
               </div>
               <div className="divider margin-y-2"></div>
 
-              <HorizontalGauge
-                pendingUtilization={state.pendingUtilization}
-                globalUtilization={state.globalUtilization}
-                liquidation={state.liquidationPoint}
-              />
+              <HorizontalGauge />
 
               <div>
                 <div className="gauge horizontal large overflow-hidden">
