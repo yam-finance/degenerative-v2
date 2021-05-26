@@ -3,9 +3,9 @@ import { useParams, NavLink } from 'react-router-dom';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import { useFormState } from 'react-use-form-state';
 
-import { useSynthActions, useToken } from '@/hooks';
+import { PositionManagerContainer, useSynthActions, useToken } from '@/hooks';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, Icon, MainDisplay, MainHeading, NewMinter, SideDisplay } from '@/components';
+import { Page, Navbar, Icon, MainDisplay, MainHeading, NewMinter, PositionManager, SideDisplay } from '@/components';
 import { ISynth, ISynthMarketData } from '@/types';
 import { utils } from 'ethers';
 import { isEmpty, roundDecimals } from '@/utils';
@@ -236,7 +236,9 @@ export const Synth: React.FC = () => {
         <MainHeading>{currentSynth}</MainHeading>
         {!isEmpty(synth) && <ActionSelector />}
         <div className="border-bottom-1px margin-x-8 margin-y-4" />
-        <NewMinter actions={actions} />
+        <PositionManagerContainer.Provider>
+          <PositionManager actions={actions} />
+        </PositionManagerContainer.Provider>
       </MainDisplay>
       <SideDisplay>
         {synth.collateral === 'WETH' && <WrapEthDialog />}

@@ -1,156 +1,26 @@
 import React, { useReducer, useEffect, useContext, useState } from 'react';
-import { createContainer } from 'unstated-next';
 import { useFormState } from 'react-use-form-state';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
-
-import { Dropdown, Icon, Loader, ActionDisplay } from '@/components';
-import { UserContext, EthereumContext, MarketContext } from '@/contexts';
-import { useToken, ISynthActions } from '@/hooks';
-import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
 import clsx from 'clsx';
+
+import { Dropdown, Icon, Loader, ActionDisplay, Mint, MemoizedMint } from '@/components';
+import { UserContext, EthereumContext, MarketContext } from '@/contexts';
+import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from '@/hooks';
+import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
 import { IToken, ISynthMarketData } from '@/types';
-
-/* The component's state is the actual sponsor position. The form is the pending position. */
-
-/* TODO remove this when added to copy
-  - Mint: Create new position OR add synths to existing position.
-  - Add collateral: Adds collateral to position, reducing utilization.
-  - Repay Debt: Removes synths from position. Must have synths in wallet to do so.
-  - Withdraw collateral: Removes collateral from position, increasing utilization. May have to request
-  - Redeem: Repays debt AND removes collateral to maintain same utilization.
-  - Settle: Settles sponsor position AFTER expiry.
-*/
-export type MinterAction = 'MANAGE' | 'MINT' | 'ADD_COLLATERAL' | 'REPAY' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
-
-const initialMinterState = {
-  loading: true,
-  image: '/images/Box-01.png',
-  action: 'MINT' as MinterAction,
-  sponsorCollateral: 0,
-  sponsorTokens: 0,
-  withdrawalRequestAmount: 0,
-  withdrawalRequestMinutesLeft: 0,
-  utilization: 0,
-  globalUtilization: 0,
-  liquidationPoint: 0,
-  tokenPrice: 0,
-  minTokens: 0,
-  maxCollateral: 0, // TODO replace with synthInWallet item
-  isExpired: false,
-
-  pendingUtilization: 0,
-  editCollateral: true,
-  editTokens: true,
-
-  showWithdrawalModal: false,
-  modalWithdrawalAmount: 0,
-};
-
-type State = typeof initialMinterState;
-type Action =
-  | 'INIT_SPONSOR_POSITION'
-  | 'UPDATE_SPONSOR_POSITION'
-  | 'UPDATE_PENDING_UTILIZATION'
-  | 'CHANGE_ACTION'
-  | 'OPEN_INPUTS'
-  | 'TOGGLE_WITHDRAWAL_MODAL'
-  | 'UPDATE_MAX_COLLATERAL';
-
-const Reducer = (state: State, action: { type: Action; payload: any }) => {
-  switch (action.type) {
-    case 'INIT_SPONSOR_POSITION': {
-      const initialized = action.payload;
-      console.log(initialized);
-
-      return {
-        ...state,
-        loading: false,
-        image: initialized.image,
-        sponsorCollateral: initialized.sponsorCollateral,
-        sponsorTokens: initialized.sponsorTokens,
-        withdrawalRequestAmount: initialized.withdrawalRequestAmount,
-        withdrawalRequestMinutesLeft: initialized.withdrawalRequestMinutesLeft,
-        utilization: initialized.utilization,
-        globalUtilization: initialized.globalUtilization,
-        liquidationPoint: initialized.liquidationPoint,
-        tokenPrice: initialized.tokenPrice,
-        minTokens: initialized.minTokens,
-        maxCollateral: initialized.maxCollateral,
-        isExpired: initialized.isExpired,
-      };
-    }
-    case 'UPDATE_SPONSOR_POSITION': {
-      const { pendingCollateral, pendingTokens } = action.payload;
-
-      return {
-        ...state,
-        sponsorCollateral: pendingCollateral,
-        sponsorTokens: pendingTokens,
-        utilization: calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice),
-      };
-    }
-    case 'UPDATE_PENDING_UTILIZATION': {
-      const { pendingCollateral, pendingTokens } = action.payload;
-      const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
-
-      return {
-        ...state,
-        pendingUtilization: util > 0 && util !== Infinity ? roundDecimals(util, 2) : 0,
-      };
-    }
-    case 'CHANGE_ACTION': {
-      return {
-        ...state,
-        action: action.payload,
-      };
-    }
-    case 'OPEN_INPUTS': {
-      const { editCollateral, editTokens } = action.payload;
-
-      return {
-        ...state,
-        editCollateral: editCollateral,
-        editTokens: editTokens,
-      };
-    }
-    case 'TOGGLE_WITHDRAWAL_MODAL': {
-      const { withdrawalAmount } = action.payload;
-
-      return {
-        ...state,
-        showWithdrawalModal: !state.showWithdrawalModal,
-        modalWithdrawalAmount: withdrawalAmount,
-      };
-    }
-    case 'UPDATE_MAX_COLLATERAL': {
-      const { collateral } = action.payload;
-
-      return {
-        ...state,
-        maxCollateral: collateral,
-      };
-    }
-    default:
-      throw new Error('Invalid state change');
-  }
-};
-
-const calculateUtilization = (collateral: number, tokens: number, price: number) => (tokens * price) / collateral;
 
 interface MinterFormFields {
   pendingCollateral: number;
   pendingTokens: number;
 }
 
-export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
-  const [{ collateralPriceUsd }, setMarketData] = useState({} as ISynthMarketData);
-
+export const PositionManager: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
   const { account, provider } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, mintedPositions, triggerUpdate } = useContext(UserContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
 
-  const [state, dispatch] = useReducer(Reducer, initialMinterState);
+  const { state, dispatch } = PositionManagerContainer.useContainer();
   const erc20 = useToken();
 
   const [formState, { number }] = useFormState<MinterFormFields>(
@@ -190,7 +60,7 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
       const image = synthMetadata[currentSynth].imgLocation;
       const marketData = synthMarketData[currentSynth];
       const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
-      const utilization = Number(sponsorPosition?.utilization) ?? 0;
+      const utilization = Number(sponsorPosition?.utilization ?? 0);
       const sponsorCollateral = Number(sponsorPosition?.collateralAmount ?? 0);
       const sponsorTokens = Number(sponsorPosition?.tokenAmount ?? 0);
 
@@ -367,22 +237,17 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
     );
   };
 
-  const HorizontalGauge: React.FC<{ pendingUtilization: number; globalUtilization: number; liquidation: number }> = ({
-    pendingUtilization,
-    globalUtilization,
-    liquidation,
-  }) => {
-    console.log(pendingUtilization);
+  const HorizontalGauge: React.FC = () => {
     return (
       <div>
         <div className="gauge horizontal large overflow-hidden">
-          <div className={`collateral large ${!pendingUtilization && 'empty'}`}>
-            <div className="gcr horizontal large" style={{ left: `${globalUtilization * 100}%` }} />
-            <div className="liquidation-point horizontal large" style={{ left: `${liquidation * 100}%` }} />
+          <div className={`collateral large ${!state.pendingUtilization && 'empty'}`}>
+            <div className="gcr horizontal large" style={{ left: `${state.globalUtilization * 100}%` }} />
+            <div className="liquidation-point horizontal large" style={{ left: `${state.liquidationPoint * 100}%` }} />
           </div>
           <div
             className="debt horizontal large"
-            style={{ width: `${pendingUtilization ? pendingUtilization * 100 : 0}%` }}
+            style={{ width: `${state.pendingUtilization ? state.pendingUtilization * 100 : 0}%` }}
           >
             <div className="gradient horizontal" />
           </div>
@@ -816,87 +681,8 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
   return (
     <>
       <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
-        <div className="margin-0 w-form">
-          <form className="width-full max-width-medium portrait-max-width-full flex-column-middle background-color-2 padding-8 radius-xl box-shadow-large z-1 padding-y-12 landscape-padding-2">
-            <h3 className="margin-0 text-align-center">Mint {currentSynth}</h3>
-            <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
-              Deposit <strong className="text-color-4">{currentCollateral}</strong> to mint{' '}
-              <strong>{currentSynth}</strong> at or above{' '}
-              <span className="weight-bold text-color-4">{state.globalUtilization * 100}%</span> utilization
-            </p>
-            <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
+        <MemoizedMint />
 
-            <div className="expand width-full flex-column-end">
-              <div className="flex-row">
-                <div className="width-full margin-bottom-4">
-                  <div className="relative">
-                    <input
-                      {...number('pendingCollateral')}
-                      onClick={(e) => e.currentTarget.select()}
-                      onInput={(e) =>
-                        (formState.values.pendingTokens =
-                          (state.globalUtilization / state.tokenPrice) * e.currentTarget.value)
-                      }
-                      type="number"
-                      className="form-input height-24 text-large bottom-sharp margin-bottom-0 border-bottom-none w-input"
-                      maxLength={256}
-                      placeholder="0"
-                      required
-                    />
-                    <div className="border-bottom-1px"></div>
-                    <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
-                      <div className="padding-0 flex-align-center w-dropdown-toggle">
-                        <p className="margin-0 text-color-4">{currentCollateral}</p>
-                      </div>
-                    </div>
-                    <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
-                      <label className="opacity-60 weight-medium">Collateral</label>
-                      <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
-                        Max {utils.formatEther(state.maxCollateral.toString())}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="width-8 height-8 margin-auto flex-align-center flex-justify-center radius-full background-color-white inverse-margin">
-                    <Icon name="ArrowDown" className="icon opacity-100 text-color-1" />
-                  </div>
-                  <div className="relative">
-                    <input
-                      {...number('pendingTokens')}
-                      onClick={(e) => e.currentTarget.select()}
-                      onInput={(e) =>
-                        (formState.values.pendingCollateral =
-                          (e.currentTarget.value * state.tokenPrice) / state.globalUtilization)
-                      }
-                      type="number"
-                      className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
-                      maxLength={256}
-                      required
-                    />
-                    <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
-                      <div className="padding-0 flex-align-center">
-                        <p className="margin-0 text-color-4">{currentSynth}</p>
-                      </div>
-                    </div>
-                    <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
-                      <label className="opacity-60 weight-medium">Mint</label>
-                    </div>
-                  </div>
-                  <div className="text-xs opacity-50 margin-top-1">Mint a minimum of 5 {currentSynth}</div>
-                </div>
-              </div>
-
-              <div>
-                <ActionButton
-                  action={state.action}
-                  sponsorCollateral={state.sponsorCollateral}
-                  sponsorTokens={state.sponsorTokens}
-                  pendingCollateral={Number(formState.values.pendingCollateral)}
-                  pendingTokens={Number(formState.values.pendingTokens)}
-                />
-              </div>
-            </div>
-          </form>
-        </div>
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
           <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4"></div>
           <div className="padding-8 padding-top-0 tablet-padding-top-0 landscape-padding-top-0 portrait-padding-top-0 flex-column expand">
