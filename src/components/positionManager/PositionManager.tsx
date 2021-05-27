@@ -237,15 +237,15 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     );
   };
 
-  const HorizontalGauge: React.FC = () => {
+  const HorizontalGauge: React.FC<{ utilization: number }> = ({ utilization }) => {
     return (
       <div>
         <div className="gauge horizontal large overflow-hidden">
-          <div className={`collateral large ${state.pendingUtilization === 0 && 'empty'}`}>
+          <div className={`collateral large ${utilization === 0 && 'empty'}`}>
             <div className="gcr horizontal large" style={{ left: `${state.globalUtilization * 100}%` }} />
             <div className="liquidation-point horizontal large" style={{ left: `${state.liquidationPoint * 100}%` }} />
           </div>
-          <div className="debt horizontal large" style={{ width: `${state.pendingUtilization * 100}%` }}>
+          <div className="debt horizontal large" style={{ width: `${utilization * 100}%` }}>
             <div className="gradient horizontal" />
           </div>
         </div>
@@ -425,26 +425,48 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
             </div>
 
             <div className="margin-top-8">
-              <div className="flex-align-center flex-space-between">
-                <h6 className="margin-bottom-0">Resulting position</h6>
-                <GaugeLabel
-                  label={`${state.pendingUtilization > 0 ? (1 / state.pendingUtilization).toFixed(2) : '0'} CR`}
-                  tooltip={`This is what your position will look like after minting. You will mint ${
-                    state.sponsorTokens
-                  } ${currentSynth}, utilizing ${
-                    state.utilization ? state.utilization * 100 : 0
-                  }% of your ${currentCollateral}`}
-                  className="flex-align-center"
-                  emphasized
-                />
+              {!!state.utilization && (
+                <div>
+                  <div className="flex-align-center flex-space-between">
+                    <h6 className="margin-bottom-0">Current Position</h6>
+                    <GaugeLabel
+                      label={`${(1 / state.utilization).toFixed(2)} CR`}
+                      tooltip={`This is your current sponsor position. You have minted ${
+                        state.sponsorTokens
+                      } ${currentSynth}, using ${state.utilization * 100}% of your deposited ${
+                        state.sponsorCollateral
+                      } ${currentCollateral}.`}
+                      className="flex-align-center"
+                      emphasized
+                    />
+                  </div>
+                  <div className="divider margin-y-2"></div>
+                  <HorizontalGauge utilization={state.utilization} />
+                </div>
+              )}
+
+              <div className="margin-top-4">
+                <div className="flex-align-center flex-space-between">
+                  <h6 className="margin-bottom-0">Resulting position</h6>
+                  <GaugeLabel
+                    label={`${state.resultingUtilization > 0 ? (1 / state.resultingUtilization).toFixed(2) : '0'} CR`}
+                    tooltip={`This is what your position will look like after minting. You will mint ${
+                      state.pendingTokens
+                    } ${currentSynth}, utilizing ${state.resultingUtilization ? state.utilization * 100 : 0}% of your ${
+                      state.pendingCollateral
+                    } ${currentCollateral}`}
+                    className="flex-align-center"
+                    emphasized
+                  />
+                </div>
+                <div className="divider margin-y-2"></div>
+                <HorizontalGauge utilization={state.resultingUtilization} />
               </div>
-              <div className="divider margin-y-2"></div>
 
-              <HorizontalGauge />
-
+              {/* 
               <div>
                 <div className="gauge horizontal large overflow-hidden">
-                  <div className={`collateral large ${formState.values.pendingCollateral > 0 ? '' : 'empty'}`}>
+                  <div className={`collateral large ${state.pendingUtilization > 0 ? '' : 'empty'}`}>
                     <div className="gcr horizontal large" style={{ left: `${state.globalUtilization * 100}%` }} />
                     <div
                       className="liquidation-point horizontal large"
@@ -456,6 +478,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                   </div>
                 </div>
               </div>
+              */}
 
               <div className="relative z-1">
                 <div className="flex-align-center flex-space-between margin-top-6 margin-bottom-4">

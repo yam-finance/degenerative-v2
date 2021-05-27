@@ -33,7 +33,7 @@ const initialMinterState = {
 
   pendingCollateral: 0,
   pendingTokens: 0,
-  pendingUtilization: 0,
+  resultingUtilization: 0,
   editCollateral: true,
   editTokens: true,
 
@@ -93,25 +93,30 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
 
       return {
         ...state,
-        pendingUtilization: util > 0 && util !== Infinity ? roundDecimals(util, 2) : 0,
+        resultingUtilization: util > 0 && util !== Infinity ? roundDecimals(util, 2) : 0,
       };
     }
     case 'UPDATE_PENDING_POSITION': {
       const { pendingCollateral, pendingTokens } = action.payload;
+
+      const newCollateral = pendingCollateral + state.sponsorCollateral;
+      const newTokens = pendingTokens + state.sponsorTokens;
+
       const util = (() => {
-        const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
+        const util = calculateUtilization(newCollateral, newTokens, state.tokenPrice);
         return util > 0 && util !== Infinity ? roundDecimals(util, 4) : 0;
       })();
-      console.log('-----------');
-      console.log(pendingCollateral);
-      console.log(pendingTokens);
+
+      console.log('---------');
+      console.log(newCollateral);
+      console.log(newTokens);
       console.log(util);
 
       return {
         ...state,
-        pendingCollateral: pendingCollateral,
-        pendingTokens: pendingTokens,
-        pendingUtilization: util,
+        pendingCollateral: newCollateral,
+        pendingTokens: newTokens,
+        resultingUtilization: util,
       };
     }
     case 'CHANGE_ACTION': {

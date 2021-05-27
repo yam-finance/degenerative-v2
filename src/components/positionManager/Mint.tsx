@@ -5,7 +5,6 @@ import { Icon, ActionDisplay, ActionButton } from '@/components';
 import { PositionManagerContainer, useSynthActions } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
-import { utils } from 'ethers';
 
 interface MintFormFields {
   pendingCollateral: number;
@@ -26,28 +25,26 @@ export const Mint: React.FC = React.memo(() => {
     },
     {
       onChange: (e, stateValues, nextStateValues) => {
-        const { pendingCollateral: currentCollateral, pendingTokens: currentTokens } = stateValues;
-        const { pendingCollateral, pendingTokens } = nextStateValues;
+        const { pendingCollateral: oldCollateral, pendingTokens: oldTokens } = stateValues; // Old form state
+        const { pendingCollateral, pendingTokens } = nextStateValues; // New form state
 
         // Figure out which input changed. If adjustToGcr is true, set other field to GCR.
         let collateral: number;
         let tokens: number;
-        if (currentCollateral !== pendingCollateral) {
+
+        if (oldCollateral !== pendingCollateral) {
           collateral = roundDecimals(Number(pendingCollateral), 4);
-          tokens = adjustToGcr ? getTokensAtGcr(collateral) : roundDecimals(Number(pendingTokens), 4);
+          tokens = adjustToGcr
+            ? getTokensAtGcr(collateral + state.sponsorCollateral) - state.sponsorTokens
+            : roundDecimals(Number(pendingTokens), 4);
         } else {
           tokens = roundDecimals(Number(pendingTokens), 4);
-          collateral = adjustToGcr ? getCollateralAtGcr(tokens) : roundDecimals(Number(pendingCollateral), 4);
+          collateral = adjustToGcr
+            ? getCollateralAtGcr(tokens + state.sponsorTokens) - state.sponsorCollateral
+            : roundDecimals(Number(pendingCollateral), 4);
         }
 
         setFormInputs(collateral, tokens);
-        dispatch({
-          type: 'UPDATE_PENDING_POSITION',
-          payload: {
-            pendingCollateral: collateral,
-            pendingTokens: tokens,
-          },
-        });
       },
     }
   );
@@ -55,10 +52,19 @@ export const Mint: React.FC = React.memo(() => {
   const setFormInputs = (collateral: number, tokens: number) => {
     formState.setField('pendingCollateral', collateral);
     formState.setField('pendingTokens', tokens);
+
+    dispatch({
+      type: 'UPDATE_PENDING_POSITION',
+      payload: {
+        pendingCollateral: collateral,
+        pendingTokens: tokens,
+      },
+    });
   };
 
   const getTokensAtGcr = (collateral: number) =>
     roundDecimals(collateral * (state.globalUtilization / state.tokenPrice), 2);
+
   const getCollateralAtGcr = (tokens: number) =>
     roundDecimals((tokens * state.tokenPrice) / state.globalUtilization, 2);
 
@@ -71,19 +77,15 @@ export const Mint: React.FC = React.memo(() => {
 
     // Update form and then component state to match form
     setFormInputs(newCollateral, roundDecimals(newTokens, 2));
-    dispatch({
-      type: 'UPDATE_PENDING_POSITION',
-      payload: {
-        pendingCollateral: newCollateral,
-        pendingTokens: newTokens,
-      },
-    });
   };
 
   // Uses current pending collateral to set synth field
   const toggleAdjustToGcr = () => {
     setAdjustToGcr(!adjustToGcr);
-    setFormInputs(state.pendingCollateral, getTokensAtGcr(state.pendingCollateral));
+    setFormInputs(
+      state.pendingCollateral - state.sponsorCollateral,
+      getTokensAtGcr(state.pendingCollateral) - state.sponsorTokens
+    );
   };
 
   const CollateralApproveButton: React.FC = () => {
@@ -97,8 +99,8 @@ export const Mint: React.FC = React.memo(() => {
     const disableMinting =
       newTokens <= 0 ||
       newCollateral < 0 ||
-      state.pendingUtilization > state.globalUtilization ||
-      state.pendingUtilization > state.liquidationPoint;
+      state.resultingUtilization > state.globalUtilization ||
+      state.resultingUtilization > state.liquidationPoint;
 
     return (
       <ActionButton action={() => actions.onMint(newCollateral, newTokens)} disableCondition={disableMinting}>

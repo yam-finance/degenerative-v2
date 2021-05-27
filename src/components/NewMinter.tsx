@@ -744,10 +744,6 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
                 <input
                   {...number('pendingCollateral')}
                   onClick={(e) => e.currentTarget.select()}
-                  onInput={(e) =>
-                    (formState.values.pendingTokens =
-                      (state.globalUtilization / state.tokenPrice) * e.currentTarget.value)
-                  }
                   type="number"
                   className="form-input height-24 text-large bottom-sharp margin-bottom-0 border-bottom-none w-input"
                   maxLength={256}
@@ -774,10 +770,6 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
                 <input
                   {...number('pendingTokens')}
                   onClick={(e) => e.currentTarget.select()}
-                  onInput={(e) =>
-                    (formState.values.pendingCollateral =
-                      (e.currentTarget.value * state.tokenPrice) / state.globalUtilization)
-                  }
                   type="number"
                   className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
                   maxLength={256}
@@ -833,10 +825,6 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
                     <input
                       {...number('pendingCollateral')}
                       onClick={(e) => e.currentTarget.select()}
-                      onInput={(e) =>
-                        (formState.values.pendingTokens =
-                          (state.globalUtilization / state.tokenPrice) * e.currentTarget.value)
-                      }
                       type="number"
                       className="form-input height-24 text-large bottom-sharp margin-bottom-0 border-bottom-none w-input"
                       maxLength={256}
@@ -863,10 +851,6 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
                     <input
                       {...number('pendingTokens')}
                       onClick={(e) => e.currentTarget.select()}
-                      onInput={(e) =>
-                        (formState.values.pendingCollateral =
-                          (e.currentTarget.value * state.tokenPrice) / state.globalUtilization)
-                      }
                       type="number"
                       className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
                       maxLength={256}
@@ -943,7 +927,7 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
 
               <div>
                 <div className="gauge horizontal large overflow-hidden">
-                  <div className={`collateral large ${formState.values.pendingCollateral > 0 ? '' : 'empty'}`}>
+                  <div className={`collateral large `}>
                     <div className="gcr horizontal large" style={{ left: `${state.globalUtilization * 100}%` }} />
                     <div
                       className="liquidation-point horizontal large"
