@@ -7,8 +7,8 @@ import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
 
 interface MintFormFields {
-  pendingCollateral: number;
-  pendingTokens: number;
+  collateralToAdd: number;
+  tokensToAdd: number;
 }
 
 export const Mint: React.FC = React.memo(() => {
@@ -20,28 +20,28 @@ export const Mint: React.FC = React.memo(() => {
 
   const [formState, { number }] = useFormState<MintFormFields>(
     {
-      pendingCollateral: state.sponsorCollateral,
-      pendingTokens: state.sponsorTokens,
+      collateralToAdd: state.sponsorCollateral,
+      tokensToAdd: state.sponsorTokens,
     },
     {
       onChange: (e, stateValues, nextStateValues) => {
-        const { pendingCollateral: oldCollateral, pendingTokens: oldTokens } = stateValues; // Old form state
-        const { pendingCollateral, pendingTokens } = nextStateValues; // New form state
+        const { collateralToAdd: oldCollateral, tokensToAdd: oldTokens } = stateValues; // Old form state
+        const { collateralToAdd, tokensToAdd } = nextStateValues; // New form state
 
         // Figure out which input changed. If adjustToGcr is true, set other field to GCR.
         let collateral: number;
         let tokens: number;
 
-        if (oldCollateral !== pendingCollateral) {
-          collateral = roundDecimals(Number(pendingCollateral), 4);
+        if (oldCollateral !== collateralToAdd) {
+          collateral = roundDecimals(Number(collateralToAdd), 4);
           tokens = adjustToGcr
             ? getTokensAtGcr(collateral + state.sponsorCollateral) - state.sponsorTokens
-            : roundDecimals(Number(pendingTokens), 4);
+            : roundDecimals(Number(tokensToAdd), 4);
         } else {
-          tokens = roundDecimals(Number(pendingTokens), 4);
+          tokens = roundDecimals(Number(tokensToAdd), 4);
           collateral = adjustToGcr
             ? getCollateralAtGcr(tokens + state.sponsorTokens) - state.sponsorCollateral
-            : roundDecimals(Number(pendingCollateral), 4);
+            : roundDecimals(Number(collateralToAdd), 4);
         }
 
         setFormInputs(collateral, tokens);
@@ -50,8 +50,8 @@ export const Mint: React.FC = React.memo(() => {
   );
 
   const setFormInputs = (collateral: number, tokens: number) => {
-    formState.setField('pendingCollateral', collateral);
-    formState.setField('pendingTokens', tokens);
+    formState.setField('collateralToAdd', collateral);
+    formState.setField('tokensToAdd', tokens);
 
     dispatch({
       type: 'UPDATE_PENDING_POSITION',
@@ -70,10 +70,10 @@ export const Mint: React.FC = React.memo(() => {
 
   const setMaximum = (e: React.MouseEvent) => {
     e.preventDefault();
-    const newCollateral = state.maxCollateral + state.sponsorCollateral;
+    const newCollateral = state.maxCollateral;
 
     // Must divide by price because global utilization is scaled by price
-    const newTokens = adjustToGcr ? getTokensAtGcr(newCollateral) : Number(formState.values.pendingTokens);
+    const newTokens = adjustToGcr ? getTokensAtGcr(newCollateral) : Number(formState.values.tokensToAdd);
 
     // Update form and then component state to match form
     setFormInputs(newCollateral, roundDecimals(newTokens, 2));
@@ -93,8 +93,8 @@ export const Mint: React.FC = React.memo(() => {
   };
 
   const MintButton: React.FC = () => {
-    const newTokens = state.pendingTokens - state.sponsorTokens;
-    const newCollateral = state.pendingCollateral - state.sponsorCollateral;
+    const newCollateral = Number(formState.values.collateralToAdd);
+    const newTokens = Number(formState.values.tokensToAdd);
 
     const disableMinting =
       newTokens <= 0 ||
@@ -124,7 +124,7 @@ export const Mint: React.FC = React.memo(() => {
           <div className="width-full margin-bottom-4">
             <div className="relative">
               <input
-                {...number('pendingCollateral')}
+                {...number('collateralToAdd')}
                 onClick={(e) => e.currentTarget.select()}
                 type="number"
                 className="form-input height-24 text-large bottom-sharp margin-bottom-0 border-bottom-none w-input"
@@ -150,12 +150,13 @@ export const Mint: React.FC = React.memo(() => {
             </div>
             <div className="relative">
               <input
-                {...number('pendingTokens')}
+                {...number('tokensToAdd')}
                 onClick={(e) => e.currentTarget.select()}
                 type="number"
                 className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
                 maxLength={256}
                 min={0}
+                placeholder="0"
                 required
               />
               <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
@@ -171,7 +172,9 @@ export const Mint: React.FC = React.memo(() => {
                 </button>
               </div>
             </div>
-            <div className="text-xs opacity-50 margin-top-1">Mint a minimum of 5 {currentSynth}</div>
+            <div className="text-xs opacity-50 margin-top-1">
+              Mint a minimum of {state.minTokens} {currentSynth}
+            </div>
           </div>
         </div>
 

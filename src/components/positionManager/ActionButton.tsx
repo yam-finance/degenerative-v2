@@ -6,6 +6,7 @@ interface ActionButtonProps {
   disableCondition?: boolean;
   action: (...args: any[]) => Promise<void>;
 }
+
 export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, action, children }) => {
   const { triggerUpdate } = useContext(UserContext);
   const [waiting, setWaiting] = useState(false);
@@ -14,7 +15,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
     setWaiting(true);
     await action();
     setWaiting(false);
-    triggerUpdate(); // TODO Make UserContext refresh user positions. Not currently working.
+    triggerUpdate();
   };
 
   const baseStyle = clsx(
@@ -34,7 +35,14 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
     );
   }
   return (
-    <button onClick={async () => callAction(action)} className={baseStyle} disabled={disableCondition}>
+    <button
+      onClick={async (e) => {
+        e.preventDefault();
+        callAction(action);
+      }}
+      className={baseStyle}
+      disabled={disableCondition}
+    >
       {children}
     </button>
   );
