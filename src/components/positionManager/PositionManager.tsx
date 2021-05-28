@@ -4,7 +4,7 @@ import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import clsx from 'clsx';
 
-import { Dropdown, Icon, Loader, Mint, Burn, Deposit } from '@/components';
+import { Dropdown, Icon, Loader, Manage, Mint, Burn, Deposit, Withdraw } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from '@/hooks';
 import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
@@ -74,7 +74,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
 
       const withdrawalRequestAmount = sponsorPosition?.withdrawalRequestAmount ?? 0;
 
-      const initialAction = sponsorPosition ? 'ADD_COLLATERAL' : 'MINT';
+      const initialAction = sponsorPosition ? 'DEPOSIT' : 'MINT';
 
       dispatch({
         type: 'INIT_SPONSOR_POSITION',
@@ -222,82 +222,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     );
   };
 
-  interface ActionButtonProps {
-    action: MinterAction;
-    sponsorCollateral: number;
-    sponsorTokens: number;
-    pendingCollateral: number;
-    pendingTokens: number;
-  }
-
-  const ActionSelector: React.FC<{ currentAction: MinterAction; noPosition: boolean }> = ({
-    currentAction,
-    noPosition,
-  }) => {
-    const changeAction = (action: MinterAction) => {
-      dispatch({
-        type: 'CHANGE_ACTION',
-        payload: action,
-      });
-    };
-
-    const styles = 'button-secondary button-tiny glass margin-1 w-button';
-
-    return (
-      <div className="flex-column">
-        <span>Collateral: {currentCollateral}</span>
-        <div className="flex-row flex-wrap">
-          <button
-            disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'ADD_COLLATERAL' && 'selected')}
-            onClick={() => changeAction('ADD_COLLATERAL')}
-          >
-            Deposit
-          </button>
-          <button
-            disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'WITHDRAW' && 'selected')}
-            onClick={() => changeAction('WITHDRAW')}
-          >
-            Withdraw
-          </button>
-          {/* 
-         <button
-            disabled={noPosition || !state.isExpired}
-            className={clsx(
-              styles,
-              (noPosition || !state.isExpired) && 'opacity-10',
-              currentAction === 'SETTLE' && 'selected'
-            )}
-            onClick={() => changeAction('SETTLE')}
-          >
-            Settle
-          </button>
-         */}
-        </div>
-        <div className="flex-row flex-wrap">
-          <button className={clsx(styles, currentAction === 'MINT' && 'selected')} onClick={() => changeAction('MINT')}>
-            Mint Synth
-          </button>
-          <button
-            disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'REPAY' && 'selected')}
-            onClick={() => changeAction('REPAY')}
-          >
-            Repay Synth
-          </button>
-          <button
-            disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'REDEEM' && 'selected')}
-            onClick={() => changeAction('REDEEM')}
-          >
-            Redeem Synth
-          </button>
-        </div>
-      </div>
-    );
-  };
-
   // TODO Finish this
   const TransactionDetails: React.FC = () => {
     switch (state.action) {
@@ -363,37 +287,41 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     );
   };
 
+  const Action: React.FC = () => {
+    switch (state.action) {
+      case 'MANAGE': {
+        return <Manage />;
+      }
+      case 'MINT': {
+        return <Mint />;
+      }
+      case 'BURN': {
+        return <Burn />;
+      }
+      case 'DEPOSIT': {
+        return <Deposit />;
+      }
+      case 'WITHDRAW': {
+        return <Withdraw />;
+      }
+      default: {
+        return null;
+      }
+    }
+  };
+
   if (state.loading) {
     return <Loader className="flex-align-center flex-justify-center padding-top-48" />;
   }
   return (
     <>
       <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
-        <Deposit />
+        <Action />
 
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
           <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4"></div>
           <div className="padding-8 padding-top-0 tablet-padding-top-0 landscape-padding-top-0 portrait-padding-top-0 flex-column expand">
             <div className="margin-top-8">
-              <h6 className="margin-bottom-0">Current Position</h6>
-              <div className="divider margin-y-2"></div>
-              <div className="text-small">
-                <div className="flex-align-baseline margin-bottom-2">
-                  <div className="expand flex-align-center">
-                    <div>{currentCollateral}</div>
-                  </div>
-                  <div className="weight-medium text-color-4">{state.sponsorCollateral}</div>
-                </div>
-                <div className="flex-align-baseline margin-bottom-2">
-                  <div className="expand flex-align-center">
-                    <div>{currentSynth}</div>
-                  </div>
-                  <div className="weight-medium text-color-4">{state.sponsorTokens}</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="margin-top-4">
               {!!state.utilization && (
                 <div>
                   <div className="flex-align-center flex-space-between">
@@ -410,6 +338,20 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                     />
                   </div>
                   <div className="divider margin-y-2"></div>
+                  <div className="text-small">
+                    <div className="flex-align-baseline margin-bottom-2">
+                      <div className="expand flex-align-center">
+                        <div>{currentCollateral}</div>
+                      </div>
+                      <div className="weight-medium text-color-4">{state.sponsorCollateral}</div>
+                    </div>
+                    <div className="flex-align-baseline margin-bottom-2">
+                      <div className="expand flex-align-center">
+                        <div>{currentSynth}</div>
+                      </div>
+                      <div className="weight-medium text-color-4">{state.sponsorTokens}</div>
+                    </div>
+                  </div>
                   <HorizontalGauge utilization={state.utilization} />
                 </div>
               )}

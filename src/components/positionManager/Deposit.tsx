@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 
-import { ActionDisplay, ActionButton } from '@/components';
+import { ActionDisplay, ActionButton, BackButton } from '@/components';
 import { PositionManagerContainer, useSynthActions } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
@@ -74,7 +74,7 @@ export const Deposit: React.FC = React.memo(() => {
 
   return (
     <ActionDisplay>
-      <h3 className="margin-0 text-align-center">Deposit {currentCollateral}</h3>
+      <h3 className="margin-0 text-align-center">Deposit</h3>
       <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
         Deposit <strong className="text-color-4">{currentCollateral}</strong> to an existing position
       </p>
@@ -113,6 +113,7 @@ export const Deposit: React.FC = React.memo(() => {
         </div>
 
         {!actions.collateralApproval ? <CollateralApproveButton /> : <DepositButton />}
+        <BackButton />
       </div>
     </ActionDisplay>
   );

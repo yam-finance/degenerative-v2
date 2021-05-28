@@ -20,7 +20,7 @@ import { IToken } from '@/types';
   - Redeem: Repays debt AND removes collateral to maintain same utilization.
   - Settle: Settles sponsor position AFTER expiry.
 */
-type MinterAction = 'MINT' | 'ADD_COLLATERAL' | 'REPAY' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
+type MinterAction = 'MINT' | 'DEPOSIT' | 'BURN' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
 
 const initialMinterState = {
   loading: true,
@@ -198,7 +198,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
       const withdrawalRequestAmount = sponsorPosition?.withdrawalRequestAmount ?? 0;
 
-      const initialAction = sponsorPosition ? 'ADD_COLLATERAL' : 'MINT';
+      const initialAction = sponsorPosition ? 'DEPOSIT' : 'MINT';
 
       dispatch({
         type: 'INIT_SPONSOR_POSITION',
@@ -245,7 +245,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     const openCollateralInput = (action: MinterAction) => {
       switch (action) {
         case 'MINT':
-        case 'ADD_COLLATERAL':
+        case 'DEPOSIT':
         case 'WITHDRAW':
           return true;
         default:
@@ -256,7 +256,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     const openTokenInput = (action: MinterAction) => {
       switch (action) {
         case 'MINT':
-        case 'REPAY':
+        case 'BURN':
         case 'REDEEM':
           return true;
         default:
@@ -598,9 +598,9 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     switch (action) {
       case 'MINT':
         return !actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />;
-      case 'ADD_COLLATERAL':
+      case 'DEPOSIT':
         return !actions.collateralApproval ? <CollateralApproveButton /> : <AddCollateralButton />;
-      case 'REPAY':
+      case 'BURN':
         return !actions.synthApproval ? <SynthApproveButton /> : <RepayButton />;
       case 'REDEEM':
         return !actions.synthApproval ? <SynthApproveButton /> : <RedeemButton />;
@@ -631,10 +631,10 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
         case 'MINT': {
           return <div> Create a new position or create new synths from an existing position.</div>;
         }
-        case 'ADD_COLLATERAL': {
+        case 'DEPOSIT': {
           return <div>Adds collateral to position, reducing utilization.</div>;
         }
-        case 'REPAY': {
+        case 'BURN': {
           return <div>Removes synths from position. Must have synths in wallet to do so.</div>;
         }
         case 'WITHDRAW': {
@@ -662,15 +662,15 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           </button>
           <button
             disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'ADD_COLLATERAL' && 'selected')}
-            onClick={() => changeAction('ADD_COLLATERAL')}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'DEPOSIT' && 'selected')}
+            onClick={() => changeAction('DEPOSIT')}
           >
             Add Collateral
           </button>
           <button
             disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'REPAY' && 'selected')}
-            onClick={() => changeAction('REPAY')}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'BURN' && 'selected')}
+            onClick={() => changeAction('BURN')}
           >
             Repay Synth
           </button>

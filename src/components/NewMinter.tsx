@@ -21,7 +21,7 @@ import { IToken, ISynthMarketData } from '@/types';
   - Redeem: Repays debt AND removes collateral to maintain same utilization.
   - Settle: Settles sponsor position AFTER expiry.
 */
-export type MinterAction = 'MANAGE' | 'MINT' | 'ADD_COLLATERAL' | 'REPAY' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
+export type MinterAction = 'MANAGE' | 'MINT' | 'DEPOSIT' | 'BURN' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
 
 const initialMinterState = {
   loading: true,
@@ -204,7 +204,7 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
 
       const withdrawalRequestAmount = sponsorPosition?.withdrawalRequestAmount ?? 0;
 
-      const initialAction = sponsorPosition ? 'ADD_COLLATERAL' : 'MINT';
+      const initialAction = sponsorPosition ? 'DEPOSIT' : 'MINT';
 
       dispatch({
         type: 'INIT_SPONSOR_POSITION',
@@ -258,7 +258,7 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
     const openCollateralInput = (action: MinterAction) => {
       switch (action) {
         case 'MINT':
-        case 'ADD_COLLATERAL':
+        case 'DEPOSIT':
         case 'WITHDRAW':
           return true;
         default:
@@ -269,7 +269,7 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
     const openTokenInput = (action: MinterAction) => {
       switch (action) {
         case 'MINT':
-        case 'REPAY':
+        case 'BURN':
         case 'REDEEM':
           return true;
         default:
@@ -579,9 +579,9 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
     switch (action) {
       case 'MINT':
         return !actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />;
-      case 'ADD_COLLATERAL':
+      case 'DEPOSIT':
         return !actions.collateralApproval ? <CollateralApproveButton /> : <AddCollateralButton />;
-      case 'REPAY':
+      case 'BURN':
         return !actions.synthApproval ? <SynthApproveButton /> : <RepayButton />;
       case 'REDEEM':
         return !actions.synthApproval ? <SynthApproveButton /> : <RedeemButton />;
@@ -613,8 +613,8 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
         <div className="flex-row flex-wrap">
           <button
             disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'ADD_COLLATERAL' && 'selected')}
-            onClick={() => changeAction('ADD_COLLATERAL')}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'DEPOSIT' && 'selected')}
+            onClick={() => changeAction('DEPOSIT')}
           >
             Deposit
           </button>
@@ -645,8 +645,8 @@ export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => 
           </button>
           <button
             disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'REPAY' && 'selected')}
-            onClick={() => changeAction('REPAY')}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'BURN' && 'selected')}
+            onClick={() => changeAction('BURN')}
           >
             Repay Synth
           </button>

@@ -13,12 +13,12 @@ import { roundDecimals } from '@/utils';
   - Redeem: Repays debt AND removes collateral to maintain same utilization.
   - Settle: Settles sponsor position AFTER expiry.
 */
-export type MinterAction = 'MANAGE' | 'MINT' | 'ADD_COLLATERAL' | 'REPAY' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
+export type MinterAction = 'MANAGE' | 'MINT' | 'DEPOSIT' | 'BURN' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
 
 const initialMinterState = {
   loading: true,
   image: '/images/Box-01.png',
-  action: 'MINT' as MinterAction,
+  action: 'MANAGE' as MinterAction,
   sponsorCollateral: 0,
   sponsorTokens: 0,
   withdrawalRequestAmount: 0,

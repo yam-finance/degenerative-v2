@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 
-import { Icon, ActionDisplay, ActionButton } from '@/components';
+import { Icon, ActionDisplay, ActionButton, BackButton } from '@/components';
 import { PositionManagerContainer, useSynthActions } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
@@ -75,7 +75,7 @@ export const Burn: React.FC = React.memo(() => {
 
   return (
     <ActionDisplay>
-      <h3 className="margin-0 text-align-center">Burn {currentSynth}</h3>
+      <h3 className="margin-0 text-align-center">Burn</h3>
       <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
         Burn <strong className="text-color-4">{currentSynth}</strong> to receive{' '}
         <strong className="text-color-4">{currentCollateral}</strong>
@@ -114,7 +114,10 @@ export const Burn: React.FC = React.memo(() => {
           </div>
         </div>
 
-        {!actions.synthApproval ? <SynthApproveButton /> : <BurnButton />}
+        <div className="">
+          {!actions.synthApproval ? <SynthApproveButton /> : <BurnButton />}
+          <BackButton />
+        </div>
       </div>
     </ActionDisplay>
   );

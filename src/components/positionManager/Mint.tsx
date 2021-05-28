@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 
-import { Icon, ActionDisplay, ActionButton } from '@/components';
+import { Icon, ActionDisplay, ActionButton, BackButton } from '@/components';
 import { PositionManagerContainer, useSynthActions } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
@@ -111,7 +111,7 @@ export const Mint: React.FC = React.memo(() => {
 
   return (
     <ActionDisplay>
-      <h3 className="margin-0 text-align-center">Mint {currentSynth}</h3>
+      <h3 className="margin-0 text-align-center">Mint</h3>
       <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
         Deposit <strong className="text-color-4">{currentCollateral}</strong> at or above{' '}
         <span className="weight-bold text-color-4">{state.globalUtilization * 100}%</span> utilization to mint{' '}
@@ -179,6 +179,7 @@ export const Mint: React.FC = React.memo(() => {
         </div>
 
         {!actions.collateralApproval ? <CollateralApproveButton /> : <MintButton />}
+        <BackButton />
       </div>
     </ActionDisplay>
   );
