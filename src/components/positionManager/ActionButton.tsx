@@ -16,6 +16,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
     await action();
     setWaiting(false);
     triggerUpdate();
+    // TODO reset form fields on success
   };
 
   const baseStyle = clsx(

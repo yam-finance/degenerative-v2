@@ -1,10 +1,10 @@
-import React, { useReducer, useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import clsx from 'clsx';
 
-import { Dropdown, Icon, Loader, ActionDisplay, Mint } from '@/components';
+import { Dropdown, Icon, Loader, Mint, Burn, Deposit } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from '@/hooks';
 import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
@@ -124,37 +124,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
 
   // Set windows and fields based on action selected
   useEffect(() => {
-    // TODO Define types to check against instead of switch
-    const openCollateralInput = (action: MinterAction) => {
-      switch (action) {
-        case 'MINT':
-        case 'ADD_COLLATERAL':
-        case 'WITHDRAW':
-          return true;
-        default:
-          return false;
-      }
-    };
-
-    const openTokenInput = (action: MinterAction) => {
-      switch (action) {
-        case 'MINT':
-        case 'REPAY':
-        case 'REDEEM':
-          return true;
-        default:
-          return false;
-      }
-    };
-
-    dispatch({
-      type: 'OPEN_INPUTS',
-      payload: {
-        editCollateral: openCollateralInput(state.action),
-        editTokens: openTokenInput(state.action),
-      },
-    });
-
     // Reset form state to sponsor
     setGaugeInitialState(state.sponsorCollateral, state.sponsorTokens);
   }, [state.action]);
@@ -400,13 +369,13 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   return (
     <>
       <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
-        <Mint />
+        <Deposit />
 
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
           <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4"></div>
           <div className="padding-8 padding-top-0 tablet-padding-top-0 landscape-padding-top-0 portrait-padding-top-0 flex-column expand">
             <div className="margin-top-8">
-              <h6 className="margin-bottom-0">In your wallet</h6>
+              <h6 className="margin-bottom-0">Current Position</h6>
               <div className="divider margin-y-2"></div>
               <div className="text-small">
                 <div className="flex-align-baseline margin-bottom-2">
@@ -424,7 +393,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
               </div>
             </div>
 
-            <div className="margin-top-8">
+            <div className="margin-top-4">
               {!!state.utilization && (
                 <div>
                   <div className="flex-align-center flex-space-between">

@@ -198,7 +198,8 @@ p {
   clear: both;
 }
 button,
-html input[type='button'] {
+html input[type='button'],
+input[type='reset'] {
   border: 0;
   cursor: pointer;
   -webkit-appearance: button;
@@ -224,26 +225,9 @@ label {
   background-color: #ffffff;
   border: 1px solid #cccccc;
 }
-.w-input:-moz-placeholder {
-  color: #999;
-}
-.w-input::-moz-placeholder {
-  color: #999;
-  opacity: 1;
-}
-.w-input:-ms-input-placeholder {
-  color: #999;
-}
-.w-input::-webkit-input-placeholder {
-  color: #999;
-}
 .w-input:focus {
   border-color: #3898ec;
   outline: 0;
-}
-.w-input[disabled] {
-  cursor: not-allowed;
-  background-color: #eeeeee;
 }
 .w-container {
   margin-left: auto;
@@ -1086,27 +1070,6 @@ a:hover {
 
 .width-4 {
   width: 1rem;
-}
-
-.width-4.height-4.radius-full.background-debt {
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#ff3062), to(#37d774));
-  background-image: linear-gradient(180deg, #ff3062, #37d774);
-}
-
-.width-4.height-4.radius-full.background-debt.margin-right-1 {
-  background-image: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    from(#ff3062),
-    color-stop(55%, #f1d834),
-    to(#37d774)
-  );
-  background-image: linear-gradient(180deg, #ff3062, #f1d834 55%, #37d774);
-}
-
-.width-4.height-4.radius-full.background-collateral {
-  background-color: #7c64ff;
 }
 
 .width-8 {
@@ -2068,7 +2031,7 @@ a:hover {
 }
 
 .collateral.horizontal {
-  transition: width 1s cubic-bezier(.17,.67,.27,1);
+  transition: width 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .collateral.large {
@@ -2109,7 +2072,7 @@ a:hover {
   margin-left: -2px;
   border-left: 4px solid #fff;
   border-bottom-style: none;
-  transition: left 1s cubic-bezier(.17,.67,.27,1)
+  transition: left 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .liquidation-point.horizontal.in-legend {
@@ -2141,7 +2104,7 @@ a:hover {
   margin-left: -2px;
   border-left: 4px dotted hsla(0, 0%, 100%, 0.5);
   border-bottom-style: none;
-  transition: left 1s cubic-bezier(.17,.67,.27,1)
+  transition: left 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .gcr.horizontal.in-legend {
@@ -2182,7 +2145,7 @@ a:hover {
   bottom: 0%;
   width: 30%;
   height: 100%;
-  transition: width 1s cubic-bezier(.17,.67,.27,1);
+  transition: width 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .gradient {
@@ -3738,10 +3701,6 @@ a:hover {
 
   .portrait-padding-3 {
     padding: 0.75rem;
-  }
-
-  .portrait-padding-4 {
-    padding: 1rem;
   }
 
   .portrait-padding-top-0 {

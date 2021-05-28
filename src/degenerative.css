@@ -462,7 +462,6 @@ label {
   border-color: #3898ec;
   outline: 0;
 }
-.w-input[disabled],
 .w-select[disabled],
 .w-input[readonly],
 .w-select[readonly],
@@ -6332,7 +6331,7 @@ a:hover {
 }
 
 .collateral.horizontal {
-  transition: width 1s cubic-bezier(.17,.67,.27,1);
+  transition: width 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .collateral.large {
@@ -6373,7 +6372,7 @@ a:hover {
   margin-left: -2px;
   border-left: 4px solid #fff;
   border-bottom-style: none;
-  transition: left 1s cubic-bezier(.17,.67,.27,1)
+  transition: left 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .liquidation-point.horizontal.in-legend {
@@ -6405,7 +6404,7 @@ a:hover {
   margin-left: -2px;
   border-left: 4px dotted hsla(0, 0%, 100%, 0.5);
   border-bottom-style: none;
-  transition: left 1s cubic-bezier(.17,.67,.27,1)
+  transition: left 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .gcr.horizontal.in-legend {
@@ -6458,7 +6457,7 @@ a:hover {
   bottom: 0%;
   width: 30%;
   height: 100%;
-  transition: width 1s cubic-bezier(.17,.67,.27,1);
+  transition: width 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .debt.horizontal._75 {

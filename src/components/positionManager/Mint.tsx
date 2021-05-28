@@ -56,8 +56,8 @@ export const Mint: React.FC = React.memo(() => {
     dispatch({
       type: 'UPDATE_PENDING_POSITION',
       payload: {
-        pendingCollateral: collateral,
-        pendingTokens: tokens,
+        pendingCollateral: collateral + state.sponsorCollateral,
+        pendingTokens: tokens + state.sponsorTokens,
       },
     });
   };
@@ -97,7 +97,7 @@ export const Mint: React.FC = React.memo(() => {
     const newTokens = Number(formState.values.tokensToAdd);
 
     const disableMinting =
-      newTokens <= 0 ||
+      newTokens < 0 ||
       newCollateral < 0 ||
       state.resultingUtilization > state.globalUtilization ||
       state.resultingUtilization > state.liquidationPoint;

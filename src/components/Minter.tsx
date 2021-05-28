@@ -488,7 +488,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
       return (
         <button
-          onClick={() => callAction(actions.onDeposit(sponsorCollateral, pendingCollateral))}
+          onClick={() => callAction(actions.onDeposit(difference))}
           className={clsx(baseStyle, disabledAddCollateral && 'disabled')}
           disabled={disabledAddCollateral}
         >

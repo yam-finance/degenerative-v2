@@ -90,9 +90,8 @@ export const useSynthActions = () => {
   );
 
   const onDeposit = useCallback(
-    async (oldCollateral: number, newCollateral: number) => {
-      if (oldCollateral > 0 && newCollateral > 0 && newCollateral > oldCollateral) {
-        const collateralAmount = newCollateral - oldCollateral;
+    async (collateralAmount: number) => {
+      if (collateralAmount > 0) {
         try {
           const txReceipt = await emp.deposit(synth, collateralAmount);
           console.log(txReceipt.transactionHash);
@@ -106,6 +105,7 @@ export const useSynthActions = () => {
     [synth]
   );
 
+  // TODO rename to onBurn
   const onRepay = useCallback(
     async (tokenAmount: number) => {
       if (tokenAmount > 0) {

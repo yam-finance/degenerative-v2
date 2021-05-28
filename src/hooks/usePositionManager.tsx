@@ -54,6 +54,7 @@ type Action =
 
 // TODO Reducer has no type checking currently. Need to change.
 const Reducer = (state: State, action: { type: Action; payload: any }) => {
+  console.log(action.type);
   switch (action.type) {
     case 'INIT_SPONSOR_POSITION': {
       const initialized = action.payload;
@@ -99,8 +100,8 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
     case 'UPDATE_PENDING_POSITION': {
       const { pendingCollateral, pendingTokens } = action.payload;
 
-      const newCollateral = pendingCollateral + state.sponsorCollateral;
-      const newTokens = pendingTokens + state.sponsorTokens;
+      const newCollateral = pendingCollateral;
+      const newTokens = pendingTokens;
 
       const util = (() => {
         const util = calculateUtilization(newCollateral, newTokens, state.tokenPrice);
