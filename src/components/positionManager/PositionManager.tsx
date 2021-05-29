@@ -1,5 +1,5 @@
+/* eslint-disable react/display-name */
 import React, { useEffect, useContext, useState } from 'react';
-import { useFormState } from 'react-use-form-state';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import clsx from 'clsx';
@@ -10,11 +10,6 @@ import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from 
 import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
 import { IToken, ISynthMarketData } from '@/types';
 
-interface PositionManagerFormField {
-  pendingCollateral: number;
-  pendingTokens: number;
-}
-
 export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(({ actions }) => {
   const { account, provider } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, mintedPositions, triggerUpdate } = useContext(UserContext);
@@ -22,36 +17,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
 
   const { state, dispatch } = PositionManagerContainer.useContainer();
   const erc20 = useToken();
-
-  const [formState, { number }] = useFormState<PositionManagerFormField>(
-    {
-      pendingCollateral: state.sponsorCollateral,
-      pendingTokens: state.sponsorTokens,
-    },
-    {
-      onChange: (e, stateValues, nextStateValues) => {
-        const { pendingCollateral, pendingTokens } = nextStateValues;
-        const tokens = roundDecimals(Number(pendingTokens), 4);
-
-        // Special case for redeem. Must maintain utilization.
-        let collateral: number;
-        if (state.action === 'REDEEM') {
-          collateral = roundDecimals((tokens / state.utilization) * state.tokenPrice, 4);
-          formState.setField('pendingCollateral', collateral);
-        } else {
-          collateral = roundDecimals(Number(pendingCollateral), 4);
-        }
-
-        dispatch({
-          type: 'UPDATE_PENDING_UTILIZATION',
-          payload: {
-            pendingCollateral: collateral,
-            pendingTokens: tokens,
-          },
-        });
-      },
-    }
-  );
 
   useEffect(() => {
     const initMinterState = async () => {
@@ -73,7 +38,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
       }
 
       const withdrawalRequestAmount = sponsorPosition?.withdrawalRequestAmount ?? 0;
-
       const initialAction = sponsorPosition ? 'DEPOSIT' : 'MINT';
 
       dispatch({
@@ -95,8 +59,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
           isExpired: marketData.isExpired,
         },
       });
-
-      setGaugeInitialState(sponsorCollateral, sponsorTokens);
     };
 
     if (
@@ -122,36 +84,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     };
   }, [collateralData, currentCollateral]);
 
-  // Set windows and fields based on action selected
-  useEffect(() => {
-    // Reset form state to sponsor
-    setGaugeInitialState(state.sponsorCollateral, state.sponsorTokens);
-  }, [state.action]);
-
-  const setFormInputs = (collateral: number, tokens: number) => {
-    formState.setField('pendingCollateral', collateral);
-    formState.setField('pendingTokens', tokens);
-
-    dispatch({
-      type: 'UPDATE_PENDING_UTILIZATION',
-      payload: {
-        pendingCollateral: collateral,
-        pendingTokens: tokens,
-      },
-    });
-  };
-
-  const setGaugeInitialState = (collateral: number, tokens: number) => {
-    // If active withdrawal request, set the form to the difference
-    if (state.withdrawalRequestAmount > 0) {
-      const pendingCollateral = collateral - state.withdrawalRequestAmount;
-      setFormInputs(pendingCollateral, tokens);
-    } else {
-      // Set form to initial state
-      setFormInputs(collateral, tokens);
-    }
-  };
-
   const setCollateralBalance = async (collateral: IToken) => {
     const rawBalance = (await erc20.getBalance(collateral.address)) ?? BigNumber.from(0);
     const collateralBalance = Number(utils.formatUnits(rawBalance, collateral.decimals));
@@ -164,15 +96,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     });
 
     return collateralBalance;
-  };
-
-  const setMaximum = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    const newCollateral = state.maxCollateral + state.sponsorCollateral;
-    // Must divide by price because global utilization is scaled by price
-    const newTokens = newCollateral * (state.globalUtilization / state.tokenPrice);
-    setFormInputs(newCollateral, newTokens);
   };
 
   interface GaugeLabelProps {
