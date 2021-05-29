@@ -4,16 +4,17 @@ import { UserContext } from '@/contexts';
 
 interface ActionButtonProps {
   disableCondition?: boolean;
-  action: (...args: any[]) => Promise<void>;
+  action?: (...args: any[]) => Promise<void>; // This is for SC calls
+  onClick?: (...args: any[]) => any; // This is for everything else
 }
 
-export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, action, children }) => {
+export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, action, onClick, children }) => {
   const { triggerUpdate } = useContext(UserContext);
   const [waiting, setWaiting] = useState(false);
 
   const callAction = async (action: (...args: any[]) => Promise<void>) => {
     setWaiting(true);
-    await action();
+    await action(); // TODO return txHash if successful, undefined if not
     setWaiting(false);
     triggerUpdate();
     // TODO reset form fields on success
@@ -39,7 +40,12 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
     <button
       onClick={async (e) => {
         e.preventDefault();
-        callAction(action);
+        if (action) {
+          await callAction(action);
+        }
+        if (onClick) {
+          onClick();
+        }
       }}
       className={baseStyle}
       disabled={disableCondition}

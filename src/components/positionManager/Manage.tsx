@@ -15,7 +15,7 @@ export const Manage = () => {
     });
   };
 
-  const noPosition = state.sponsorCollateral > 0;
+  const noPosition = state.sponsorCollateral == 0;
   const styles = 'button-secondary button-small white margin-1 w-button';
 
   return (
@@ -59,7 +59,7 @@ export const Manage = () => {
         </div>
         <span>Synth: {currentCollateral}</span>
         <div className="flex-row flex-wrap">
-          <button className={clsx(styles)} onClick={() => changeAction('MINT')}>
+          <button className={styles} onClick={() => changeAction('MINT')}>
             Mint
           </button>
           <button

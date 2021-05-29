@@ -5,6 +5,7 @@ import { ActionDisplay, ActionButton, BackButton } from '@/components';
 import { PositionManagerContainer, useSynthActions } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
+import clsx from 'clsx';
 
 interface WithdrawFormFields {
   collateralToWithdraw: number;
@@ -24,11 +25,10 @@ export const Withdraw: React.FC = React.memo(() => {
       onChange: (e, stateValues, nextStateValues) => {
         const { collateralToWithdraw } = nextStateValues;
 
-        //setFormInputs(collateral, tokens);
         dispatch({
           type: 'UPDATE_PENDING_POSITION',
           payload: {
-            pendingCollateral: state.sponsorCollateral + Number(collateralToWithdraw),
+            pendingCollateral: state.sponsorCollateral - Number(collateralToWithdraw),
             pendingTokens: state.sponsorTokens,
           },
         });
@@ -36,14 +36,14 @@ export const Withdraw: React.FC = React.memo(() => {
     }
   );
 
-  const setFormInputs = (collateral: number, tokens: number) => {
-    formState.setField('collateralToWithdraw', tokens);
+  const setFormInputs = (collateral: number) => {
+    formState.setField('collateralToWithdraw', collateral);
 
     dispatch({
       type: 'UPDATE_PENDING_POSITION',
       payload: {
         pendingCollateral: collateral,
-        pendingTokens: tokens,
+        pendingTokens: state.sponsorTokens,
       },
     });
   };
@@ -51,7 +51,7 @@ export const Withdraw: React.FC = React.memo(() => {
   const setMaximum = (e: React.MouseEvent) => {
     e.preventDefault();
 
-    // TODO Burn max allowable tokens
+    // TODO Withdraw max tokens
 
     // Update form and then component state to match form
     //setFormInputs(newCollateral, roundDecimals(newTokens, 2));
@@ -62,14 +62,42 @@ export const Withdraw: React.FC = React.memo(() => {
   };
 
   const WithdrawButton: React.FC = () => {
-    const depositAmount = Number(formState.values.collateralToWithdraw);
-    const disableDeposit = depositAmount <= 0;
+    const withdrawalAmount = Number(formState.values.collateralToWithdraw);
+    const disableWithdrawal = withdrawalAmount <= 0 || state.withdrawalRequestMinutesLeft !== 0;
 
-    return (
-      <ActionButton action={() => actions.onDeposit(depositAmount)} disableCondition={disableDeposit}>
-        {`Withdraw ${depositAmount} ${currentCollateral}`}
-      </ActionButton>
-    );
+    if (state.resultingUtilization > state.globalUtilization && state.resultingUtilization < state.liquidationPoint) {
+      // Show Withdrawal Request modal
+      return (
+        <ActionButton
+          onClick={() => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { withdrawalAmount: withdrawalAmount } })}
+          disableCondition={disableWithdrawal}
+        >
+          {`Request withdrawal for ${withdrawalAmount} ${currentCollateral}`}
+        </ActionButton>
+      );
+    } else {
+      return (
+        <ActionButton action={() => actions.onWithdraw(withdrawalAmount)} disableCondition={disableWithdrawal}>
+          {`Withdraw ${withdrawalAmount} ${currentCollateral}`}
+        </ActionButton>
+      );
+    }
+  };
+
+  const WithdrawRequestButton = () => {
+    if (state.withdrawalRequestMinutesLeft > 0) {
+      return (
+        <ActionButton action={() => actions.onCancelWithdraw()}>
+          {`Cancel withdrawal request of ${state.withdrawalRequestAmount} ${currentCollateral}`}
+        </ActionButton>
+      );
+    } else {
+      return (
+        <ActionButton action={() => actions.onWithdrawPassedRequest()}>
+          {`Withdraw passed request of ${state.withdrawalRequestAmount} ${currentCollateral}`}
+        </ActionButton>
+      );
+    }
   };
 
   return (
@@ -100,10 +128,11 @@ export const Withdraw: React.FC = React.memo(() => {
               </div>
               <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
                 <label className="opacity-60 weight-medium">Collateral</label>
+                {/* TODO Find out max withdrawable collateral
                 <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
-                  {/* TODO Find out max burnable tokens */}
-                  Max {state.maxCollateral}
+                  Max {state.sponsorCollateral}
                 </button>
+                */}
               </div>
             </div>
             <div className="text-xs opacity-50 margin-top-1">
@@ -112,7 +141,13 @@ export const Withdraw: React.FC = React.memo(() => {
           </div>
         </div>
 
-        {!actions.collateralApproval ? <CollateralApproveButton /> : <WithdrawButton />}
+        {!actions.collateralApproval ? (
+          <CollateralApproveButton />
+        ) : state.withdrawalRequestAmount > 0 ? (
+          <WithdrawRequestButton />
+        ) : (
+          <WithdrawButton />
+        )}
         <BackButton />
       </div>
     </ActionDisplay>

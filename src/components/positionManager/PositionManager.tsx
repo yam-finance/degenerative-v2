@@ -10,7 +10,7 @@ import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from 
 import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
 import { IToken, ISynthMarketData } from '@/types';
 
-interface MinterFormFields {
+interface PositionManagerFormField {
   pendingCollateral: number;
   pendingTokens: number;
 }
@@ -23,7 +23,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   const { state, dispatch } = PositionManagerContainer.useContainer();
   const erc20 = useToken();
 
-  const [formState, { number }] = useFormState<MinterFormFields>(
+  const [formState, { number }] = useFormState<PositionManagerFormField>(
     {
       pendingCollateral: state.sponsorCollateral,
       pendingTokens: state.sponsorTokens,
@@ -100,15 +100,15 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     };
 
     if (
-      currentSynth &&
-      currentCollateral &&
+      //currentSynth &&
+      //currentCollateral &&
       !isEmpty(collateralData) &&
       !isEmpty(synthMarketData[currentSynth]) &&
       !isEmpty(synthMetadata[currentSynth])
     ) {
       initMinterState();
     }
-  }, [currentSynth, currentCollateral, synthMarketData, collateralData, account, mintedPositions]);
+  }, [synthMarketData, collateralData, account, mintedPositions]);
 
   // Set an event listener to update when collateral balance changes
   useEffect(() => {
@@ -249,7 +249,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
         <div className="padding-6 background-color-3 radius-large box-shadow-large width-full max-width-xl">
           <div className="modal-section">
             <div>
-              <h3 className="text-color-6 margin-0">Your collateral will be above GCR ratio!</h3>
+              <h3 className="text-color-6 margin-0">Your collateral will be above the Global Utilization!</h3>
               <p className="margin-top-4">
                 You will need to wait for a withdrawal period of{' '}
                 <strong className="text-color-4">{withdrawalPeriod} minutes</strong> before you can withdraw your{' '}
@@ -298,6 +298,9 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
       case 'BURN': {
         return <Burn />;
       }
+      case 'REDEEM': {
+        return null; // TODO
+      }
       case 'DEPOSIT': {
         return <Deposit />;
       }
@@ -316,7 +319,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   return (
     <>
       <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
-        <Action />
+        <Withdraw />
 
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
           <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4"></div>

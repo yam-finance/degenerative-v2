@@ -24,7 +24,6 @@ export const Deposit: React.FC = React.memo(() => {
       onChange: (e, stateValues, nextStateValues) => {
         const { collateralToDeposit } = nextStateValues;
 
-        //setFormInputs(collateral, tokens);
         dispatch({
           type: 'UPDATE_PENDING_POSITION',
           payload: {
@@ -36,25 +35,23 @@ export const Deposit: React.FC = React.memo(() => {
     }
   );
 
-  const setFormInputs = (collateral: number, tokens: number) => {
-    formState.setField('collateralToDeposit', tokens);
+  // Update form and then component state to match form
+  const setFormInputs = (collateral: number) => {
+    formState.setField('collateralToDeposit', collateral);
 
     dispatch({
       type: 'UPDATE_PENDING_POSITION',
       payload: {
-        pendingCollateral: collateral,
-        pendingTokens: tokens,
+        pendingCollateral: state.sponsorCollateral + collateral,
+        pendingTokens: state.sponsorTokens,
       },
     });
   };
 
   const setMaximum = (e: React.MouseEvent) => {
     e.preventDefault();
-
-    // TODO Burn max allowable tokens
-
-    // Update form and then component state to match form
-    //setFormInputs(newCollateral, roundDecimals(newTokens, 2));
+    const maxCollateral = state.maxCollateral;
+    setFormInputs(maxCollateral);
   };
 
   const CollateralApproveButton: React.FC = () => {
