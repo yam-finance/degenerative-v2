@@ -15,7 +15,7 @@ export * from './layouts/MainDisplay';
 export * from './layouts/Navbar';
 export * from './layouts/Page';
 export * from './layouts/SideDisplay';
-export * from './positionManager/Action';
+export * from './positionManager/ActionSelector';
 export * from './positionManager/ActionButton';
 export * from './positionManager/ActionDisplay';
 export * from './positionManager/BackButton';

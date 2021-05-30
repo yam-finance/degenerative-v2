@@ -1,6 +1,6 @@
 import React from 'react';
-import { PositionManagerContainer, useSynthActions } from '@/hooks';
-import { Dropdown, Icon, Loader, Manage, Mint, Burn, Deposit, Withdraw } from '@/components';
+import { PositionManagerContainer } from '@/hooks';
+import { Manage, Mint, Burn, Deposit, Withdraw } from '@/components';
 
 export const Action = () => {
   const { state, dispatch } = PositionManagerContainer.useContainer();

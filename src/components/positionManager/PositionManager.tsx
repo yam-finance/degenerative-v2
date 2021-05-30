@@ -4,7 +4,7 @@ import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import clsx from 'clsx';
 
-import { Dropdown, Icon, Loader, Manage, Mint, Burn, Deposit, Withdraw, Action } from '@/components';
+import { Dropdown, Icon, Loader, Action } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from '@/hooks';
 import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
