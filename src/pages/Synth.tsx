@@ -59,7 +59,7 @@ export const Synth: React.FC = () => {
     }
   }, [currentSynth, mintedPositions]);
 
-  const ActionSelector: React.FC = () => {
+  const LinkBar: React.FC = () => {
     const collateral = collateralData[currentCollateral];
 
     let tradeLink;
@@ -234,7 +234,7 @@ export const Synth: React.FC = () => {
       <Navbar />
       <MainDisplay>
         <MainHeading>{currentSynth}</MainHeading>
-        {!isEmpty(synth) && <ActionSelector />}
+        {!isEmpty(synth) && <LinkBar />}
         <div className="border-bottom-1px margin-x-8 margin-y-4" />
         <PositionManagerContainer.Provider>
           <PositionManager actions={actions} />
