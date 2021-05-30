@@ -4,7 +4,7 @@ import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import clsx from 'clsx';
 
-import { Dropdown, Icon, Loader, Manage, Mint, Burn, Deposit, Withdraw } from '@/components';
+import { Dropdown, Icon, Loader, Manage, Mint, Burn, Deposit, Withdraw, Action } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from '@/hooks';
 import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
@@ -210,39 +210,13 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     );
   };
 
-  const Action: React.FC = () => {
-    switch (state.action) {
-      case 'MANAGE': {
-        return <Manage />;
-      }
-      case 'MINT': {
-        return <Mint />;
-      }
-      case 'BURN': {
-        return <Burn />;
-      }
-      case 'REDEEM': {
-        return null; // TODO
-      }
-      case 'DEPOSIT': {
-        return <Deposit />;
-      }
-      case 'WITHDRAW': {
-        return <Withdraw />;
-      }
-      default: {
-        return null;
-      }
-    }
-  };
-
   if (state.loading) {
     return <Loader className="flex-align-center flex-justify-center padding-top-48" />;
   }
   return (
     <>
       <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
-        <Withdraw />
+        <Action />
 
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
           <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4"></div>
