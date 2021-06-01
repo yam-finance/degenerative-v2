@@ -16,7 +16,7 @@ export const Manage = () => {
   };
 
   const noPosition = state.sponsorCollateral == 0;
-  const styles = 'button-secondary button-small white margin-1 w-button';
+  const styles = 'button-secondary expand';
 
   return (
     <ActionDisplay>
@@ -26,9 +26,12 @@ export const Manage = () => {
       </p>
       <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
 
-      <div className="flex-column">
-        <span>Collateral: {currentCollateral}</span>
-        <div className="flex-row flex-wrap">
+      <div className="flex-column width-full">
+        <div className="flex-space-between all-caps text-xs weight-bold letters-looser">
+          <span>Collateral</span>
+          <span className="text-color-4 text-small">{currentCollateral}</span>
+        </div>
+        <div className="flex-row flex-wrap margin-top-2">
           <button
             disabled={noPosition}
             className={clsx(styles, noPosition && 'disabled')}
@@ -38,7 +41,7 @@ export const Manage = () => {
           </button>
           <button
             disabled={noPosition}
-            className={clsx(styles, noPosition && 'disabled')}
+            className={clsx(styles, noPosition && 'disabled', "margin-left-2")}
             onClick={() => changeAction('WITHDRAW')}
           >
             Withdraw
@@ -57,26 +60,29 @@ export const Manage = () => {
           </button>
          */}
         </div>
-        <span>Synth: {currentCollateral}</span>
-        <div className="flex-row flex-wrap">
+        <div className="margin-top-6 flex-space-between all-caps text-xs weight-bold letters-looser">
+          <span>Synth</span>
+          <span className="text-color-4 text-small">{currentSynth}</span>
+        </div>
+        <div className="flex-row flex-wrap margin-top-2">
           <button className={styles} onClick={() => changeAction('MINT')}>
             Mint
           </button>
           <button
             disabled={noPosition}
-            className={clsx(styles, noPosition && 'disabled')}
+            className={clsx(styles, noPosition && 'disabled', "margin-left-2")}
             onClick={() => changeAction('BURN')}
           >
             Burn
           </button>
-          <button
-            disabled={noPosition}
-            className={clsx(styles, noPosition && 'disabled')}
-            onClick={() => changeAction('REDEEM')}
-          >
-            Redeem
-          </button>
         </div>
+        <button
+          disabled={noPosition}
+          className={clsx(styles, noPosition && 'disabled', "width-full margin-top-2")}
+          onClick={() => changeAction('REDEEM')}
+        >
+          Redeem
+        </button>
       </div>
     </ActionDisplay>
   );

@@ -7,7 +7,7 @@ export const BackButton = () => {
 
   return (
     <button
-      className="button-secondary button-small white width-full margin-1 w-button"
+      className="button-secondary background-color-5 text-color-4 width-full margin-top-3 w-button"
       onClick={() => {
         dispatch({
           type: 'CHANGE_ACTION',
@@ -15,7 +15,7 @@ export const BackButton = () => {
         });
       }}
     >
-      <div className="flex-align-center flex-justify-center margin-1">
+      <div className="flex-align-center flex-justify-center margin-right-1">
         <Icon name="ArrowLeftCircle" className="margin-right-1" />
         <span className="">Back</span>
       </div>
