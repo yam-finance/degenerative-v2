@@ -38,13 +38,13 @@ export const Redeem: React.FC = React.memo(() => {
     }
   );
 
-  const setFormInputs = (collateral: number, tokens: number) => {
+  const setFormInputs = (tokens: number) => {
     formState.setField('tokensToRedeem', tokens);
 
     dispatch({
       type: 'UPDATE_PENDING_POSITION',
       payload: {
-        pendingCollateral: collateral,
+        pendingCollateral: state.sponsorCollateral,
         pendingTokens: tokens,
       },
     });
@@ -53,10 +53,10 @@ export const Redeem: React.FC = React.memo(() => {
   const setMaximum = (e: React.MouseEvent) => {
     e.preventDefault();
 
-    // TODO Burn max allowable tokens
+    const maxRedeemable = state.sponsorTokens - state.minTokens;
 
     // Update form and then component state to match form
-    //setFormInputs(newCollateral, roundDecimals(newTokens, 2));
+    setFormInputs(roundDecimals(maxRedeemable, 2));
   };
 
   const SynthApproveButton: React.FC = () => {
@@ -105,7 +105,7 @@ export const Redeem: React.FC = React.memo(() => {
                 <label className="opacity-60 weight-medium">Synth</label>
                 <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
                   {/* TODO Find out max burnable tokens */}
-                  Max {state.sponsorTokens}
+                  Max {state.sponsorTokens - 1}
                 </button>
               </div>
             </div>

@@ -62,15 +62,16 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     };
 
     if (
-      //currentSynth &&
-      //currentCollateral &&
+      currentSynth &&
+      currentCollateral &&
       !isEmpty(collateralData) &&
       !isEmpty(synthMarketData[currentSynth]) &&
       !isEmpty(synthMetadata[currentSynth])
     ) {
+      console.log('INIT MINTER CALLED');
       initMinterState();
     }
-  }, [synthMarketData, collateralData, account, mintedPositions]);
+  }, [currentSynth, currentCollateral, synthMarketData, collateralData, account, mintedPositions]);
 
   // Set an event listener to update when collateral balance changes
   useEffect(() => {
