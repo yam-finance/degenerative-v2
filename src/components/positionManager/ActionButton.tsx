@@ -20,14 +20,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
     // TODO reset form fields on success
   };
 
-  const baseStyle = clsx(
-    'button',
-    'width-full',
-    'text-small',
-    'w-button',
-    'button-large',
-    disableCondition && 'disabled'
-  );
+  const baseStyle = clsx('button', 'width-full', 'text-small', 'button-large', disableCondition && 'disabled');
 
   if (waiting) {
     return (

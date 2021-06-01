@@ -1,6 +1,6 @@
 import React from 'react';
 import { PositionManagerContainer } from '@/hooks';
-import { Manage, Mint, Burn, Deposit, Withdraw } from '@/components';
+import { Manage, Mint, Burn, Deposit, Withdraw, Redeem } from '@/components';
 
 export const Action = () => {
   const { state, dispatch } = PositionManagerContainer.useContainer();
@@ -16,7 +16,7 @@ export const Action = () => {
       return <Burn />;
     }
     case 'REDEEM': {
-      return null; // TODO
+      return <Redeem />;
     }
     case 'DEPOSIT': {
       return <Deposit />;
