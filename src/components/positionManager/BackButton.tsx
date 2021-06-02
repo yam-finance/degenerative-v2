@@ -17,7 +17,7 @@ export const BackButton = () => {
     >
       <div className="flex-align-center flex-justify-center margin-right-1">
         <Icon name="ArrowLeftCircle" className="margin-right-1" />
-        <span className="">Back</span>
+        <span>Back</span>
       </div>
     </button>
   );

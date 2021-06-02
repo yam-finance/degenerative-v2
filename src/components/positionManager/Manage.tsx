@@ -41,13 +41,13 @@ export const Manage = () => {
           </button>
           <button
             disabled={noPosition}
-            className={clsx(styles, noPosition && 'disabled', "margin-left-2")}
+            className={clsx(styles, noPosition && 'disabled', 'margin-left-2')}
             onClick={() => changeAction('WITHDRAW')}
           >
             Withdraw
           </button>
           {/* 
-         <button
+          <button
             disabled={noPosition || !state.isExpired}
             className={clsx(
               styles,
@@ -70,7 +70,7 @@ export const Manage = () => {
           </button>
           <button
             disabled={noPosition}
-            className={clsx(styles, noPosition && 'disabled', "margin-left-2")}
+            className={clsx(styles, noPosition && 'disabled', 'margin-left-2')}
             onClick={() => changeAction('BURN')}
           >
             Burn
@@ -78,7 +78,7 @@ export const Manage = () => {
         </div>
         <button
           disabled={noPosition}
-          className={clsx(styles, noPosition && 'disabled', "width-full margin-top-2")}
+          className={clsx(styles, noPosition && 'disabled', 'width-full margin-top-2')}
           onClick={() => changeAction('REDEEM')}
         >
           Redeem

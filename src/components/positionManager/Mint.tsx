@@ -20,31 +20,33 @@ export const Mint: React.FC = React.memo(() => {
 
   const [formState, { number }] = useFormState<MintFormFields>(
     {
-      collateralToAdd: state.sponsorCollateral,
-      tokensToAdd: state.sponsorTokens,
+      collateralToAdd: 0,
+      tokensToAdd: 0,
     },
     {
       onChange: (e, stateValues, nextStateValues) => {
         const { collateralToAdd: oldCollateral, tokensToAdd: oldTokens } = stateValues; // Old form state
         const { collateralToAdd, tokensToAdd } = nextStateValues; // New form state
 
-        // Figure out which input changed. If adjustToGcr is true, set other field to GCR.
-        let collateral: number;
-        let tokens: number;
+        let newCollateral: number;
+        let newTokens: number;
 
+        // Figure out which input changed. If adjustToGcr is true, set other field to GCR.
         if (oldCollateral !== collateralToAdd) {
-          collateral = roundDecimals(Number(collateralToAdd), 4);
-          tokens = adjustToGcr
-            ? getTokensAtGcr(collateral + state.sponsorCollateral) - state.sponsorTokens
-            : roundDecimals(Number(tokensToAdd), 4);
+          newCollateral = Number(collateralToAdd);
+
+          const newPendingCollateral = newCollateral + state.sponsorCollateral;
+
+          newTokens = adjustToGcr ? getTokensAtGcr(newPendingCollateral) - state.sponsorTokens : Number(tokensToAdd);
         } else {
-          tokens = roundDecimals(Number(tokensToAdd), 4);
-          collateral = adjustToGcr
-            ? getCollateralAtGcr(tokens + state.sponsorTokens) - state.sponsorCollateral
-            : roundDecimals(Number(collateralToAdd), 4);
+          newTokens = Number(tokensToAdd);
+
+          newCollateral = adjustToGcr
+            ? getCollateralAtGcr(newTokens + state.sponsorTokens) - state.sponsorCollateral
+            : Number(collateralToAdd);
         }
 
-        setFormInputs(collateral, tokens);
+        setFormInputs(roundDecimals(newCollateral, 4), roundDecimals(newTokens, 4));
       },
     }
   );
@@ -63,29 +65,34 @@ export const Mint: React.FC = React.memo(() => {
   };
 
   const getTokensAtGcr = (collateral: number) =>
-    roundDecimals(collateral * (state.globalUtilization / state.tokenPrice), 2);
+    roundDecimals(collateral * (state.globalUtilization / state.tokenPrice), 4);
 
   const getCollateralAtGcr = (tokens: number) =>
-    roundDecimals((tokens * state.tokenPrice) / state.globalUtilization, 2);
+    roundDecimals((tokens * state.tokenPrice) / state.globalUtilization, 4);
 
-  const setMaximum = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const newCollateral = state.maxCollateral;
-
-    // Must divide by price because global utilization is scaled by price
-    const newTokens = adjustToGcr ? getTokensAtGcr(newCollateral) : Number(formState.values.tokensToAdd);
+  const setMaximum = () => {
+    const newTokens = adjustToGcr ? getTokensAtGcr(state.maxCollateral) : Number(formState.values.tokensToAdd);
 
     // Update form and then component state to match form
-    setFormInputs(newCollateral, roundDecimals(newTokens, 2));
+    setFormInputs(state.maxCollateral, roundDecimals(newTokens, 4));
   };
 
-  // Uses current pending collateral to set synth field
+  // Sets 'synth' field by calculating resulting tokens, then subtracting existing sponsor tokens
   const toggleAdjustToGcr = () => {
+    const shouldAdjust = !adjustToGcr === true;
+
+    if (shouldAdjust) {
+      const newCollateral = Number(formState.values.collateralToAdd);
+      console.log(state.pendingCollateral);
+      const resultingTokensAtGcr = getTokensAtGcr(state.pendingCollateral);
+      const resultingTokens = roundDecimals(resultingTokensAtGcr - state.sponsorTokens, 4);
+      console.log(resultingTokensAtGcr);
+
+      setFormInputs(newCollateral, resultingTokens > 0 ? resultingTokens : 0);
+    }
+
+    // Must call setter last because setState does not update immediately
     setAdjustToGcr(!adjustToGcr);
-    setFormInputs(
-      state.pendingCollateral - state.sponsorCollateral,
-      getTokensAtGcr(state.pendingCollateral) - state.sponsorTokens
-    );
   };
 
   const CollateralApproveButton: React.FC = () => {
@@ -97,8 +104,8 @@ export const Mint: React.FC = React.memo(() => {
     const newTokens = Number(formState.values.tokensToAdd);
 
     const disableMinting =
-      newTokens < 0 ||
-      newCollateral < 0 ||
+      newTokens <= 0 ||
+      newCollateral <= 0 ||
       state.resultingUtilization > state.globalUtilization ||
       state.resultingUtilization > state.liquidationPoint;
 
@@ -140,7 +147,7 @@ export const Mint: React.FC = React.memo(() => {
               </div>
               <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
                 <label className="opacity-60 weight-medium">Collateral</label>
-                <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
+                <button onClick={() => setMaximum()} className="button-secondary button-tiny w-button">
                   Max {state.maxCollateral}
                 </button>
               </div>

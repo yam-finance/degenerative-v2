@@ -2,7 +2,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
-import clsx from 'clsx';
 
 import { Dropdown, Icon, Loader, Action } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
@@ -38,7 +37,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
       }
 
       const withdrawalRequestAmount = sponsorPosition?.withdrawalRequestAmount ?? 0;
-      const initialAction = sponsorPosition ? 'DEPOSIT' : 'MINT';
+      const initialAction = 'MANAGE';
 
       dispatch({
         type: 'INIT_SPONSOR_POSITION',
