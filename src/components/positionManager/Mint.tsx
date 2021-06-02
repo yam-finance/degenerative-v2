@@ -46,7 +46,7 @@ export const Mint: React.FC = React.memo(() => {
             : Number(collateralToAdd);
         }
 
-        setFormInputs(roundDecimals(newCollateral, 4), roundDecimals(newTokens, 4));
+        setFormInputs(roundDecimals(newCollateral, 3), roundDecimals(newTokens, 3));
       },
     }
   );
@@ -65,16 +65,16 @@ export const Mint: React.FC = React.memo(() => {
   };
 
   const getTokensAtGcr = (collateral: number) =>
-    roundDecimals(collateral * (state.globalUtilization / state.tokenPrice), 4);
+    roundDecimals(collateral * (state.globalUtilization / state.tokenPrice), 3);
 
   const getCollateralAtGcr = (tokens: number) =>
-    roundDecimals((tokens * state.tokenPrice) / state.globalUtilization, 4);
+    roundDecimals((tokens * state.tokenPrice) / state.globalUtilization, 3);
 
   const setMaximum = () => {
     const newTokens = adjustToGcr ? getTokensAtGcr(state.maxCollateral) : Number(formState.values.tokensToAdd);
 
     // Update form and then component state to match form
-    setFormInputs(state.maxCollateral, roundDecimals(newTokens, 4));
+    setFormInputs(state.maxCollateral, roundDecimals(newTokens, 3));
   };
 
   // Sets 'synth' field by calculating resulting tokens, then subtracting existing sponsor tokens
@@ -83,12 +83,10 @@ export const Mint: React.FC = React.memo(() => {
 
     if (shouldAdjust) {
       const newCollateral = Number(formState.values.collateralToAdd);
-      console.log(state.pendingCollateral);
       const resultingTokensAtGcr = getTokensAtGcr(state.pendingCollateral);
-      const resultingTokens = roundDecimals(resultingTokensAtGcr - state.sponsorTokens, 4);
-      console.log(resultingTokensAtGcr);
+      const newTokens = roundDecimals(resultingTokensAtGcr - state.sponsorTokens, 3);
 
-      setFormInputs(newCollateral, resultingTokens > 0 ? resultingTokens : 0);
+      setFormInputs(newCollateral, newTokens > 0 ? newTokens : 0);
     }
 
     // Must call setter last because setState does not update immediately

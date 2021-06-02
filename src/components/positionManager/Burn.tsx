@@ -16,45 +16,42 @@ export const Burn: React.FC = React.memo(() => {
 
   const actions = useSynthActions();
 
+  const maxBurnableTokens = state.sponsorTokens - state.minTokens;
+
   const [formState, { number }] = useFormState<BurnFormFields>(
     {
-      tokensToBurn: state.sponsorTokens,
+      tokensToBurn: 0,
     },
     {
       onChange: (e, stateValues, nextStateValues) => {
         const { tokensToBurn } = nextStateValues;
-
-        //setFormInputs(collateral, tokens);
-        dispatch({
-          type: 'UPDATE_PENDING_POSITION',
-          payload: {
-            pendingCollateral: state.sponsorCollateral,
-            pendingTokens: state.sponsorTokens - Number(tokensToBurn),
-          },
-        });
+        setFormInputs(Number(tokensToBurn));
+        //dispatch({
+        //  type: 'UPDATE_PENDING_POSITION',
+        //  payload: {
+        //    pendingCollateral: state.sponsorCollateral,
+        //    pendingTokens: state.sponsorTokens - Number(tokensToBurn),
+        //  },
+        //});
       },
     }
   );
 
-  const setFormInputs = (collateral: number, tokens: number) => {
+  const setFormInputs = (tokens: number) => {
     formState.setField('tokensToBurn', tokens);
 
     dispatch({
       type: 'UPDATE_PENDING_POSITION',
       payload: {
-        pendingCollateral: collateral,
-        pendingTokens: tokens,
+        pendingCollateral: state.sponsorCollateral,
+        pendingTokens: state.sponsorTokens - Number(tokens),
       },
     });
   };
 
-  const setMaximum = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    // TODO Burn max allowable tokens
-
+  const setMaximum = () => {
     // Update form and then component state to match form
-    //setFormInputs(newCollateral, roundDecimals(newTokens, 2));
+    setFormInputs(maxBurnableTokens);
   };
 
   const SynthApproveButton: React.FC = () => {
@@ -63,8 +60,7 @@ export const Burn: React.FC = React.memo(() => {
 
   const BurnButton: React.FC = () => {
     const burnTokens = Number(formState.values.tokensToBurn);
-
-    const disableBurn = burnTokens <= 0 || burnTokens >= state.sponsorTokens;
+    const disableBurn = burnTokens <= 0 || burnTokens > maxBurnableTokens;
 
     return (
       <ActionButton action={() => actions.onRepay(burnTokens)} disableCondition={disableBurn}>
@@ -104,17 +100,17 @@ export const Burn: React.FC = React.memo(() => {
                 <label className="opacity-60 weight-medium">Synth</label>
                 <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
                   {/* TODO Find out max burnable tokens */}
-                  Max {state.sponsorTokens}
+                  Max {maxBurnableTokens}
                 </button>
               </div>
             </div>
             <div className="text-xs opacity-50 margin-top-1">
-              Burn a maximum of {state.sponsorTokens} {currentSynth}
+              Burn a maximum of {maxBurnableTokens} {currentSynth}
             </div>
           </div>
         </div>
 
-        <div className="">
+        <div>
           {!actions.synthApproval ? <SynthApproveButton /> : <BurnButton />}
           <BackButton />
         </div>
