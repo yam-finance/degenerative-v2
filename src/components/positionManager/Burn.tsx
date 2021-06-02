@@ -98,7 +98,7 @@ export const Burn: React.FC = React.memo(() => {
               </div>
               <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
                 <label className="opacity-60 weight-medium">Synth</label>
-                <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
+                <button onClick={() => setMaximum()} className="button-secondary button-tiny w-button">
                   {/* TODO Find out max burnable tokens */}
                   Max {maxBurnableTokens}
                 </button>
@@ -110,10 +110,8 @@ export const Burn: React.FC = React.memo(() => {
           </div>
         </div>
 
-        <div>
-          {!actions.synthApproval ? <SynthApproveButton /> : <BurnButton />}
-          <BackButton />
-        </div>
+        {!actions.synthApproval ? <SynthApproveButton /> : <BurnButton />}
+        <BackButton />
       </div>
     </ActionDisplay>
   );

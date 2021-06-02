@@ -256,7 +256,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                 </div>
               )}
 
-              <div className="margin-top-4">
+              <div className="margin-top-6">
                 <div className="flex-align-center flex-space-between">
                   <h6 className="margin-bottom-0">Resulting position</h6>
                   <GaugeLabel
@@ -271,6 +271,20 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                   />
                 </div>
                 <div className="divider margin-y-2"></div>
+                <div className="text-small">
+                  <div className="flex-align-baseline margin-bottom-2">
+                    <div className="expand flex-align-center">
+                      <div>{currentCollateral}</div>
+                    </div>
+                    <div className="weight-medium text-color-4">{state.pendingCollateral}</div>
+                  </div>
+                  <div className="flex-align-baseline margin-bottom-2">
+                    <div className="expand flex-align-center">
+                      <div>{currentSynth}</div>
+                    </div>
+                    <div className="weight-medium text-color-4">{state.pendingTokens}</div>
+                  </div>
+                </div>
                 <HorizontalGauge utilization={state.resultingUtilization} />
               </div>
 

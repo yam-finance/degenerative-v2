@@ -97,6 +97,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         resultingUtilization: util > 0 && util !== Infinity ? roundDecimals(util, 2) : 0,
       };
     }
+    // TODO RENAME ALL PENDING TO RESULTING
     case 'UPDATE_PENDING_POSITION': {
       const { pendingCollateral, pendingTokens } = action.payload;
 
@@ -126,6 +127,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         action: action.payload,
       };
     }
+    // TODO REMOVE
     case 'OPEN_INPUTS': {
       const { editCollateral, editTokens } = action.payload;
 

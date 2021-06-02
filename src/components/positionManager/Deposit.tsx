@@ -18,7 +18,7 @@ export const Deposit: React.FC = React.memo(() => {
 
   const [formState, { number }] = useFormState<DepositFormFields>(
     {
-      collateralToDeposit: state.sponsorCollateral,
+      collateralToDeposit: 0,
     },
     {
       onChange: (e, stateValues, nextStateValues) => {

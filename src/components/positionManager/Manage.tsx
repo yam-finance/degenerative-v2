@@ -20,7 +20,7 @@ export const Manage = () => {
 
   return (
     <ActionDisplay>
-      <h3 className="margin-0 text-align-center">Manage {currentSynth}</h3>
+      <h3 className="margin-0 text-align-center">Manage Position</h3>
       <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
         View or change your <strong className="text-color-4">{currentSynth}</strong> position
       </p>

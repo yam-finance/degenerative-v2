@@ -3,7 +3,7 @@ import { useFormState } from 'react-use-form-state';
 
 import { ActionDisplay, ActionButton, BackButton } from '@/components';
 import { PositionManagerContainer, useSynthActions } from '@/hooks';
-import { UserContext } from '@/contexts';
+import { UserContext, MarketContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
 import clsx from 'clsx';
 
@@ -19,7 +19,7 @@ export const Withdraw: React.FC = React.memo(() => {
 
   const [formState, { number }] = useFormState<WithdrawFormFields>(
     {
-      collateralToWithdraw: state.sponsorCollateral,
+      collateralToWithdraw: 0,
     },
     {
       onChange: (e, stateValues, nextStateValues) => {
@@ -63,9 +63,13 @@ export const Withdraw: React.FC = React.memo(() => {
 
   const WithdrawButton: React.FC = () => {
     const withdrawalAmount = Number(formState.values.collateralToWithdraw);
-    const disableWithdrawal = withdrawalAmount <= 0 || state.withdrawalRequestMinutesLeft !== 0;
+    const disableWithdrawal =
+      withdrawalAmount <= 0 ||
+      withdrawalAmount >= state.sponsorCollateral ||
+      state.withdrawalRequestMinutesLeft !== 0 ||
+      state.resultingUtilization >= state.liquidationPoint;
 
-    if (state.resultingUtilization > state.globalUtilization && state.resultingUtilization < state.liquidationPoint) {
+    if (state.resultingUtilization > state.globalUtilization) {
       // Show Withdrawal Request modal
       return (
         <ActionButton
@@ -136,7 +140,7 @@ export const Withdraw: React.FC = React.memo(() => {
               </div>
             </div>
             <div className="text-xs opacity-50 margin-top-1">
-              Withdraw a maximum of {state.maxCollateral} {currentCollateral}
+              Withdrawing past GCR requires a withdraw request, which must be completed after the withdrawal period.
             </div>
           </div>
         </div>

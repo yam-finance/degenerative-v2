@@ -15,23 +15,26 @@ export const Redeem: React.FC = React.memo(() => {
   const { currentSynth, currentCollateral } = useContext(UserContext);
 
   const actions = useSynthActions();
+  const maxRedeemableTokens = state.sponsorTokens - state.minTokens;
 
   const [formState, { number }] = useFormState<RedeemFormFields>(
     {
-      tokensToRedeem: state.sponsorTokens,
+      tokensToRedeem: 0,
     },
     {
       onChange: (e, stateValues, nextStateValues) => {
         const { tokensToRedeem } = nextStateValues;
 
         const resultingTokens = state.sponsorTokens - Number(tokensToRedeem);
-        const resultingCollateral = resultingTokens / state.utilization;
+        const resultingCollateral = resultingTokens * state.utilization;
+        console.log(resultingCollateral, resultingTokens);
 
+        //setFormInputs(resultingTokens);
         dispatch({
           type: 'UPDATE_PENDING_POSITION',
           payload: {
-            pendingCollateral: roundDecimals(resultingCollateral, 2),
-            pendingTokens: roundDecimals(resultingTokens, 2),
+            pendingCollateral: resultingCollateral,
+            pendingTokens: resultingTokens,
           },
         });
       },
@@ -41,23 +44,19 @@ export const Redeem: React.FC = React.memo(() => {
   const setFormInputs = (tokens: number) => {
     formState.setField('tokensToRedeem', tokens);
 
+    const resultingTokens = state.sponsorTokens - Number(tokens);
+    const resultingCollateral = tokens / state.utilization;
+
     dispatch({
       type: 'UPDATE_PENDING_POSITION',
       payload: {
-        pendingCollateral: state.sponsorCollateral,
-        pendingTokens: tokens,
+        pendingCollateral: roundDecimals(resultingCollateral, 3),
+        pendingTokens: roundDecimals(resultingTokens, 3),
       },
     });
   };
 
-  const setMaximum = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    const maxRedeemable = state.sponsorTokens - state.minTokens;
-
-    // Update form and then component state to match form
-    setFormInputs(roundDecimals(maxRedeemable, 2));
-  };
+  const setMaximum = () => setFormInputs(roundDecimals(maxRedeemableTokens, 3));
 
   const SynthApproveButton: React.FC = () => {
     return <ActionButton action={() => actions.onApproveSynth()}>Approve {currentSynth}</ActionButton>;
@@ -103,22 +102,20 @@ export const Redeem: React.FC = React.memo(() => {
               </div>
               <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
                 <label className="opacity-60 weight-medium">Synth</label>
-                <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
+                <button onClick={() => setMaximum()} className="button-secondary button-tiny w-button">
                   {/* TODO Find out max burnable tokens */}
-                  Max {state.sponsorTokens - 1}
+                  Max {maxRedeemableTokens}
                 </button>
               </div>
             </div>
             <div className="text-xs opacity-50 margin-top-1">
-              Burn a maximum of {state.sponsorTokens} {currentSynth}
+              Redeem a maximum of {maxRedeemableTokens} {currentSynth}
             </div>
           </div>
         </div>
 
-        <div className="">
-          {!actions.synthApproval ? <SynthApproveButton /> : <RedeemButton />}
-          <BackButton />
-        </div>
+        {!actions.synthApproval ? <SynthApproveButton /> : <RedeemButton />}
+        <BackButton />
       </div>
     </ActionDisplay>
   );
