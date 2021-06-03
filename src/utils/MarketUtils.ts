@@ -187,6 +187,8 @@ interface PriceHistoryResponse {
   priceUSD: string;
 }
 
+// **** START OF APR CALCULATION ****
+
 /**
 * Fetch the mining rewards
 * @param {AssetModel} asset Asset object for the input
@@ -504,6 +506,8 @@ export async function getDevMiningEmps(network: any) {
     return -1;
   }
 }
+
+// **** END OF APR CALCULATION ****
 
 /** Get labels, reference price data and all market price data for this synth type.
  *  Only fetches data from mainnet. This is intentional.
