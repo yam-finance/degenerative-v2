@@ -197,12 +197,11 @@ interface PriceHistoryResponse {
 */
 export const getMiningRewards = async (name: string, asset: ISynth, cr: number) => {
   // console.debug("sdk getMiningRewards", assetGroup, asset, assetPrice);
-  /* @ts-ignore */
-  const assetGroup: AssetGroupModel = Assets["mainnet"];
+  // const assetGroup: AssetGroupModel = Assets["mainnet"];
   const assetPrice = await getPriceByContract(asset["token"]["address"])
-  if (!assetGroup || !asset || !assetPrice) {
+  if (!asset || !assetPrice) {
     return 0
-  };
+  }
   try {
     // TODO Make network param dynamic
     const emps = await getDevMiningEmps("mainnet");
@@ -247,13 +246,11 @@ export const getMiningRewards = async (name: string, asset: ISynth, cr: number) 
     let tokenPrice;
     if (asset.collateral.toUpperCase() === "USDC") {
       baseCollateral = new BigNumber(10).pow(6);
-      /* @ts-ignore */
       tokenPrice = assetPrice * 1;
       // } else if(assetInstance.collateral === "YAM"){
       //   tokenPrice = assetPrice * yamPrice;
     } else {
       baseCollateral = new BigNumber(10).pow(18);
-      /* @ts-ignore */
       // tokenPrice = assetPrice * ethPrice;
       tokenPrice = assetPrice * 1;
     }
@@ -495,7 +492,6 @@ function mergeUnique(arr1: any, arr2: any) {
 }
 
 export async function getDevMiningEmps(network: any) {
-  /* @ts-ignore */
   const assets: any = Assets[network];
   if (assets) {
     const data = [assets["ugas"][1].emp.address, assets["ugas"][2].emp.address, assets["ugas"][3].emp.address, assets["ustonks"][0].emp.address];
