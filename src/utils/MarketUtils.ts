@@ -207,11 +207,11 @@ export const getMiningRewards = async (name: string, asset: ISynth, priceUsd: nu
   try {
     // TODO Make network param dynamic
     const emps = await getDevMiningEmps("mainnet");
-    const signer = EthNodeProvider.getSigner();
-    const empContract = Empv2__factory.connect(asset.emp.address, signer);
-    const lpContract = Uni__factory.connect(asset.pool.address, signer)
+    // const signer = EthNodeProvider.getSigner();
+    const empContract = Empv2__factory.connect(asset.emp.address, EthNodeProvider);
+    const lpContract = Uni__factory.connect(asset.pool.address, EthNodeProvider)
     const devmining = await DevMiningCalculator({
-      provider: signer,
+      provider: EthNodeProvider,
       ethers: ethers,
       getPrice: getPriceByContract,
       empAbi: empContract,
@@ -222,8 +222,10 @@ export const getMiningRewards = async (name: string, asset: ISynth, priceUsd: nu
     // const calculateEmpValue = await devmining.utils.calculateEmpValue(getEmpInfo);
     // console.debug("calculateEmpValue", calculateEmpValue);
     const estimateDevMiningRewards = await devmining.estimateDevMiningRewards({
-      totalRewards: emps.totalReward,
-      empWhitelist: emps.empWhitelist,
+      /* @ts-ignore */
+      totalRewards: emps["totalReward"],
+      /* @ts-ignore */
+      empWhitelist: emps["empWhitelist"],
     });
     // console.debug("estimateDevMiningRewards", estimateDevMiningRewards);
     const rewards: any = {};
@@ -499,9 +501,11 @@ export async function getDevMiningEmps(network: string) {
   if (assets) {
     const data = [assets["uGas"][1].emp.address, assets["uGas"][2].emp.address, assets["uGas"][3].emp.address, assets["uStonks"][0].emp.address];
     const umadata: any = await fetch(`https://raw.githubusercontent.com/UMAprotocol/protocol/master/packages/affiliates/payouts/devmining-status.json`);
-    const empWhitelistUpdated = mergeUnique(umadata.empWhitelist, data);
+    const umadataJson = await umadata.json()
+    const empWhitelistUpdated = mergeUnique(umadataJson["empWhitelist"], data);
     umadata.empWhitelist = empWhitelistUpdated;
-    return umadata;
+    const umaObject = { empWhitelist: empWhitelistUpdated, totalReward: umadataJson["totalReward"] }
+    return umaObject;
     // return emplistDataBackup;
   } else {
     return -1;
