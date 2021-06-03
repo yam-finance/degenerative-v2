@@ -67,7 +67,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
       !isEmpty(synthMarketData[currentSynth]) &&
       !isEmpty(synthMetadata[currentSynth])
     ) {
-      console.log('INIT MINTER CALLED');
       initMinterState();
     }
   }, [currentSynth, currentCollateral, synthMarketData, collateralData, account, mintedPositions]);
@@ -143,22 +142,6 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
         </div>
       </div>
     );
-  };
-
-  // TODO Finish this
-  const TransactionDetails: React.FC = () => {
-    switch (state.action) {
-      case 'WITHDRAW': {
-        if (state.withdrawalRequestMinutesLeft > 0) {
-          return <p>Must wait {state.withdrawalRequestMinutesLeft} minutes until withdrawal is available</p>;
-        } else {
-          return <p>Withdraw</p>;
-        }
-      }
-      default: {
-        return null;
-      }
-    }
   };
 
   const WithdrawalConfirmationModal: React.FC = () => {
@@ -317,8 +300,9 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                     />
                   </div>
                   <p className="text-xs margin-0">
-                    {(1 / state.globalUtilization).toFixed(2)} ({roundDecimals(state.globalUtilization * 100, 2)}%
-                    utilization)
+                    {(1 / state.globalUtilization).toFixed(2)}
+                    {/*({roundDecimals(state.globalUtilization * 100, 2)}%
+                    utilization)*/}
                   </p>
                 </div>
 
@@ -333,8 +317,9 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                     />
                   </div>
                   <p className="text-xs margin-0">
-                    {(1 / state.liquidationPoint).toFixed(2)} ({roundDecimals(state.liquidationPoint * 100, 2)}%
-                    utilization)
+                    {(1 / state.liquidationPoint).toFixed(2)}
+                    {/*({roundDecimals(state.liquidationPoint * 100, 2)}%
+                    utilization)*/}
                   </p>
                 </div>
               </div>

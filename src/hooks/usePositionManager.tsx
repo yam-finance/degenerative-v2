@@ -48,9 +48,9 @@ type Action =
   | 'UPDATE_PENDING_POSITION'
   | 'UPDATE_PENDING_UTILIZATION'
   | 'CHANGE_ACTION'
-  | 'OPEN_INPUTS'
   | 'TOGGLE_WITHDRAWAL_MODAL'
-  | 'UPDATE_MAX_COLLATERAL';
+  | 'UPDATE_MAX_COLLATERAL'
+  | 'RESET_RESULTING_POSITION';
 
 // TODO Reducer has no type checking currently. Need to change.
 const Reducer = (state: State, action: { type: Action; payload: any }) => {
@@ -125,16 +125,11 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       return {
         ...state,
         action: action.payload,
-      };
-    }
-    // TODO REMOVE
-    case 'OPEN_INPUTS': {
-      const { editCollateral, editTokens } = action.payload;
 
-      return {
-        ...state,
-        editCollateral: editCollateral,
-        editTokens: editTokens,
+        // Reset resulting position + utilization
+        pendingCollateral: 0,
+        pendingTokens: 0,
+        resultingUtilization: 0,
       };
     }
     case 'TOGGLE_WITHDRAWAL_MODAL': {

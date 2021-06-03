@@ -261,15 +261,15 @@ export const Synth: React.FC = () => {
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
-                  <div>Global utilization</div>
+                  <div>Global Collateral Ratio</div>
                 </div>
-                <div className="weight-medium text-color-4">{roundDecimals(globalUtilization * 100, 2)}%</div>
+                <div className="weight-medium text-color-4">{roundDecimals(1 / globalUtilization, 2)}</div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
                   <div>Liquidation</div>
                 </div>
-                <div className="weight-medium text-color-4">{roundDecimals(liquidationPoint * 100, 2)}%</div>
+                <div className="weight-medium text-color-4">{roundDecimals(1 / liquidationPoint, 2)}</div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">

@@ -15,7 +15,6 @@ export const Burn: React.FC = React.memo(() => {
   const { currentSynth, currentCollateral } = useContext(UserContext);
 
   const actions = useSynthActions();
-
   const maxBurnableTokens = state.sponsorTokens - state.minTokens;
 
   const [formState, { number }] = useFormState<BurnFormFields>(
@@ -26,13 +25,6 @@ export const Burn: React.FC = React.memo(() => {
       onChange: (e, stateValues, nextStateValues) => {
         const { tokensToBurn } = nextStateValues;
         setFormInputs(Number(tokensToBurn));
-        //dispatch({
-        //  type: 'UPDATE_PENDING_POSITION',
-        //  payload: {
-        //    pendingCollateral: state.sponsorCollateral,
-        //    pendingTokens: state.sponsorTokens - Number(tokensToBurn),
-        //  },
-        //});
       },
     }
   );
