@@ -196,7 +196,7 @@ interface PriceHistoryResponse {
 * @public
 * @methods
 */
-export const getMiningRewards = async (asset: AssetModel, cr: Number) => {
+export const getMiningRewards = async (name: string, asset: ISynth, cr: Number) => {
   // console.debug("sdk getMiningRewards", assetGroup, asset, assetPrice);
   /* @ts-ignore */
   const assetGroup: AssetGroupModel = Assets[this.options.network];
@@ -263,13 +263,13 @@ export const getMiningRewards = async (asset: AssetModel, cr: Number) => {
     const umaRewards = rewards[asset.emp.address];
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
-    if (assetGroup.name === "UGAS" && asset.cycle === "JUN" && asset.year === "21") {
+    if (asset.group === "UGAS" && asset.cycle === "JUN" && asset.year === "21") {
       if (current < week1Until) {
         yamWeekRewards += 5000;
       } else if (current < week2Until) {
         yamWeekRewards += 10000;
       }
-    } else if (assetGroup.name === "USTONKS" && asset.cycle === "APR" && asset.year === "21") {
+    } else if (asset.group === "USTONKS" && asset.cycle === "APR" && asset.year === "21") {
       if (current < week1Until) {
         umaWeekRewards += 5000;
         yamWeekRewards += 5000;
@@ -285,7 +285,7 @@ export const getMiningRewards = async (asset: AssetModel, cr: Number) => {
     const weekRewards = umaWeekRewards * umaPrice + yamWeekRewards * yamPrice;
     const assetReserve0 = new BigNumber(contractLpCall._reserve0).dividedBy(baseAsset).toNumber();
     const assetReserve1 = new BigNumber(contractLpCall._reserve1).dividedBy(baseCollateral).toNumber();
-    if (assetGroup.name === "USTONKS") {
+    if (asset.group === "USTONKS") {
       calcAsset = assetReserve1 * tokenPrice;
       calcCollateral = assetReserve0 * (asset.collateral == "WETH" ? ethPrice : 1);
     } else {

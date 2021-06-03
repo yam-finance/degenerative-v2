@@ -11,6 +11,7 @@ import {
   roundDecimals,
   getCollateralData,
   SynthGroups,
+  getMiningRewards,
 } from '@/utils';
 import { utils } from 'ethers';
 
@@ -100,7 +101,8 @@ export const MarketProvider: React.FC = ({ children }) => {
 
             // Grab APRs from API
             //const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
-            const apr = (await getApr(synth.group, synth.cycle)) ?? 0;
+            const apr = (await getMiningRewards(name, synth, 1.5)) ?? 0;
+            console.log("APR", apr)
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
