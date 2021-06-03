@@ -18,6 +18,7 @@ import { ISynth, IToken, ILiquidityPool, Empv2__factory, Uni__factory, Erc20__fa
 import UNIContract from "../../abi/uni.json";
 import erc20 from "../../abi/erc20.json"
 import moment from "moment";
+import Assets from '@/assets/assets.json'
 
 export const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 export const YAM = "0x0AaCfbeC6a24756c20D41914F2caba817C0d8521";
@@ -491,10 +492,11 @@ function mergeUnique(arr1: any, arr2: any) {
   );
 }
 
-export async function getDevMiningEmps(network: any) {
-  const assets: any = Assets[network];
+export async function getDevMiningEmps(network: string) {
+  // TODO make network dynamic 
+  const assets = Assets["mainnet"];
   if (assets) {
-    const data = [assets["ugas"][1].emp.address, assets["ugas"][2].emp.address, assets["ugas"][3].emp.address, assets["ustonks"][0].emp.address];
+    const data = [assets["uGas"][1].emp.address, assets["uGas"][2].emp.address, assets["uGas"][3].emp.address, assets["uStonks"][0].emp.address];
     const umadata: any = await fetch(`https://raw.githubusercontent.com/UMAprotocol/protocol/master/packages/affiliates/payouts/devmining-status.json`);
     const empWhitelistUpdated = mergeUnique(umadata.empWhitelist, data);
     umadata.empWhitelist = empWhitelistUpdated;
