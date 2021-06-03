@@ -97,7 +97,6 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         resultingUtilization: util > 0 && util !== Infinity ? roundDecimals(util, 2) : 0,
       };
     }
-    // TODO RENAME ALL PENDING TO RESULTING
     case 'UPDATE_RESULTING_POSITION': {
       const { resultingCollateral, resultingTokens } = action.payload;
 

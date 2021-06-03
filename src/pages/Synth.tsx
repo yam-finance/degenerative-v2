@@ -19,7 +19,7 @@ interface SynthParams {
 
 export const Synth: React.FC = () => {
   const { group, cycleYear, action } = useParams<SynthParams>();
-  const { currentSynth, currentCollateral, setSynth, mintedPositions } = useContext(UserContext);
+  const { currentSynth, currentCollateral, setSynth, mintedPositions, triggerUpdate } = useContext(UserContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
   const { signer } = useContext(EthereumContext);
 
@@ -47,6 +47,7 @@ export const Synth: React.FC = () => {
 
   useEffect(() => {
     const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
+    if (sponsorPosition) console.log(sponsorPosition);
 
     if (sponsorPosition) {
       let withdrawalRequestMinutesLeft = 0;
@@ -96,6 +97,8 @@ export const Synth: React.FC = () => {
   };
 
   const WithdrawalRequestDialog: React.FC = () => {
+    const [waiting, setWaiting] = useState(false);
+
     return (
       <div className="width-full padding-2 radius-large background-color-2 margin-bottom-6 text-color-4">
         <div className="flex-align-center margin-bottom-2 flex-space-between">
@@ -113,13 +116,19 @@ export const Synth: React.FC = () => {
               <div className="flex-row margin-top-2">
                 <a
                   href="https://docs.umaproject.org/synthetic-tokens/expiring-synthetic-tokens#slow-withdrawal"
-                  className="button-secondary button-tiny margin-right-1 white w-button"
+                  className="button-secondary button-tiny margin-right-1"
                 >
                   Learn more
                 </a>
                 <button
-                  onClick={async () => await actions.onCancelWithdraw()}
-                  className="button-secondary button-tiny white w-button"
+                  onClick={async () => {
+                    setWaiting(true);
+                    await actions.onCancelWithdraw();
+                    triggerUpdate();
+                    setWaiting(false);
+                  }}
+                  className="button-secondary button-tiny"
+                  disabled={waiting}
                 >
                   Cancel Withdrawal
                 </button>
@@ -132,8 +141,14 @@ export const Synth: React.FC = () => {
               </div>
               <div className="flex-row margin-top-2">
                 <button
-                  onClick={async () => await actions.onWithdrawPassedRequest()}
-                  className="button-secondary button-tiny margin-right-1 w-button"
+                  onClick={async () => {
+                    setWaiting(true);
+                    await actions.onWithdrawPassedRequest();
+                    triggerUpdate();
+                    setWaiting(false);
+                  }}
+                  className="button-secondary button-tiny margin-right-1"
+                  disabled={waiting}
                 >
                   Withdraw
                 </button>
@@ -216,6 +231,7 @@ export const Synth: React.FC = () => {
                   e.preventDefault();
                   setWaiting(true);
                   await actions.onWrapEth(Number(formState.values.ethAmount));
+                  triggerUpdate();
                   setWaiting(false);
                 }}
                 disabled={waiting}
