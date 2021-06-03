@@ -14,9 +14,8 @@ import {
   getCollateralData,
   roundDecimals,
 } from '@/utils';
-import { ISynth, IToken, ILiquidityPool } from '@/types';
+import { ISynth, IToken, ILiquidityPool, Empv2__factory, Uni__factory, Erc20__factory} from '@/types';
 import UNIContract from "../../abi/uni.json";
-import EMPContract from "../../abi/emp.json";
 import erc20 from "../../abi/erc20.json"
 import moment from "moment";
 
@@ -62,7 +61,7 @@ interface AprModel {
   extra: number;
 }
 
-export const EthNodeProvider = new providers.JsonRpcProvider(
+const EthNodeProvider = new providers.JsonRpcProvider(
   'https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud'
 )
 
@@ -196,10 +195,10 @@ interface PriceHistoryResponse {
 * @public
 * @methods
 */
-export const getMiningRewards = async (name: string, asset: ISynth, cr: Number) => {
+export const getMiningRewards = async (name: string, asset: ISynth, cr: number) => {
   // console.debug("sdk getMiningRewards", assetGroup, asset, assetPrice);
   /* @ts-ignore */
-  const assetGroup: AssetGroupModel = Assets[this.options.network];
+  const assetGroup: AssetGroupModel = Assets["mainnet"];
   const assetPrice = await getPriceByContract(asset["token"]["address"])
   if (!assetGroup || !asset || !assetPrice) {
     return 0
@@ -207,11 +206,14 @@ export const getMiningRewards = async (name: string, asset: ISynth, cr: Number) 
   try {
     // TODO Make network param dynamic
     const emps = await getDevMiningEmps("mainnet");
+    const signer = EthNodeProvider.getSigner();
+    const empContract = Empv2__factory.connect(asset.emp.address, signer);
+    const lpContract = Uni__factory.connect(asset.pool.address, signer)
     const devmining = await DevMiningCalculator({
-      provider: EthNodeProvider,
+      provider: signer,
       ethers: ethers,
       getPrice: getPriceByContract,
-      empAbi: EMPContract.abi,
+      empAbi: empContract,
       erc20Abi: erc20.abi
     });
     const getEmpInfo: any = await devmining.utils.getEmpInfo(asset.emp.address);
@@ -230,12 +232,12 @@ export const getMiningRewards = async (name: string, asset: ISynth, cr: Number) 
     const baseGeneral = new BigNumber(10).pow(18);
     const baseAsset = new BigNumber(10).pow(asset.token.decimals);
     let baseCollateral;
-    const contractLp = new ethers.Contract(asset.pool.address, UNIContract.abi, EthNodeProvider);
-    // const contractLp = new this.options.web3.eth.Contract((UNIContract.abi as unknown) as AbiItem, asset.pool.address);
-    const contractEmp = new ethers.Contract(asset.emp.address, EMPContract.abi, EthNodeProvider)
+    // const lpContract = new ethers.Contract(asset.pool.address, UNIContract.abi, EthNodeProvider);
+    // const lpContract = new this.options.web3.eth.Contract((UNIContract.abi as unknown) as AbiItem, asset.pool.address);
+    // const contractEmp = new ethers.Contract(asset.emp.address, EMPContract.abi, EthNodeProvider)
     // const contractEmp = new this.options.web3.eth.Contract((EMPContract.abi as unknown) as AbiItem, asset.emp.address);
-    const contractLpCall = await contractLp.methods.getReserves().call();
-    const contractEmpCall = await contractEmp.methods.rawTotalPositionCollateral().call();
+    const contractLpCall = await lpContract.getReserves();
+    const contractEmpCall = await empContract.rawTotalPositionCollateral();
     const ethPrice = await getPriceByContract(WETH);
     const umaPrice = await getPriceByContract(UMA);
     const yamPrice = await getPriceByContract(YAM);
@@ -243,7 +245,7 @@ export const getMiningRewards = async (name: string, asset: ISynth, cr: Number) 
 
     // temp pricing
     let tokenPrice;
-    if (asset.collateral === "USDC") {
+    if (asset.collateral.toUpperCase() === "USDC") {
       baseCollateral = new BigNumber(10).pow(6);
       /* @ts-ignore */
       tokenPrice = assetPrice * 1;
@@ -263,13 +265,13 @@ export const getMiningRewards = async (name: string, asset: ISynth, cr: Number) 
     const umaRewards = rewards[asset.emp.address];
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
-    if (asset.group === "UGAS" && asset.cycle === "JUN" && asset.year === "21") {
+    if (asset.group.toUpperCase() === "UGAS" && asset.cycle === "JUN" && asset.year === "21") {
       if (current < week1Until) {
         yamWeekRewards += 5000;
       } else if (current < week2Until) {
         yamWeekRewards += 10000;
       }
-    } else if (asset.group === "USTONKS" && asset.cycle === "APR" && asset.year === "21") {
+    } else if (asset.group.toUpperCase() === "USTONKS" && asset.cycle === "APR" && asset.year === "21") {
       if (current < week1Until) {
         umaWeekRewards += 5000;
         yamWeekRewards += 5000;
@@ -283,8 +285,8 @@ export const getMiningRewards = async (name: string, asset: ISynth, cr: Number) 
     let calcCollateral = 0;
     const normalRewards = umaRewards * umaPrice + yamRewards * yamPrice;
     const weekRewards = umaWeekRewards * umaPrice + yamWeekRewards * yamPrice;
-    const assetReserve0 = new BigNumber(contractLpCall._reserve0).dividedBy(baseAsset).toNumber();
-    const assetReserve1 = new BigNumber(contractLpCall._reserve1).dividedBy(baseCollateral).toNumber();
+    const assetReserve0 = new BigNumber(contractLpCall._reserve0.toNumber()).dividedBy(baseAsset).toNumber();
+    const assetReserve1 = new BigNumber(contractLpCall._reserve1.toNumber()).dividedBy(baseCollateral).toNumber();
     if (asset.group === "USTONKS") {
       calcAsset = assetReserve1 * tokenPrice;
       calcCollateral = assetReserve0 * (asset.collateral == "WETH" ? ethPrice : 1);
@@ -352,7 +354,7 @@ export function DevMiningCalculator({
   const { utils, BigNumber, FixedNumber } = ethers;
   const { parseEther } = utils;
   async function getEmpInfo(address: string, toCurrency = "usd") {
-    const emp = new ethers.Contract(address, empAbi, provider);
+    const emp = empAbi;
     const tokenAddress = await emp.tokenCurrency();
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, provider);
     const tokenPrice = await getPrice(tokenAddress, toCurrency).catch(
