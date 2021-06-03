@@ -198,7 +198,7 @@ interface PriceHistoryResponse {
 export const getMiningRewards = async (name: string, asset: ISynth, cr: number) => {
   // console.debug("sdk getMiningRewards", assetGroup, asset, assetPrice);
   // const assetGroup: AssetGroupModel = Assets["mainnet"];
-  const assetPrice = await getPriceByContract(asset["token"]["address"])
+  const assetPrice = await getPriceByContract(asset.token.address)
   if (!asset || !assetPrice) {
     return 0
   }
