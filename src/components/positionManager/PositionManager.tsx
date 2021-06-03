@@ -245,9 +245,9 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                   <GaugeLabel
                     label={`${state.resultingUtilization > 0 ? (1 / state.resultingUtilization).toFixed(2) : '0'} CR`}
                     tooltip={`This is what your position will look like after minting. You will mint ${
-                      state.pendingTokens
+                      state.resultingTokens
                     } ${currentSynth}, utilizing ${state.resultingUtilization ? state.utilization * 100 : 0}% of your ${
-                      state.pendingCollateral
+                      state.resultingCollateral
                     } ${currentCollateral}`}
                     className="flex-align-center"
                     emphasized
@@ -259,13 +259,13 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                     <div className="expand flex-align-center">
                       <div>{currentCollateral}</div>
                     </div>
-                    <div className="weight-medium text-color-4">{state.pendingCollateral}</div>
+                    <div className="weight-medium text-color-4">{state.resultingCollateral}</div>
                   </div>
                   <div className="flex-align-baseline margin-bottom-2">
                     <div className="expand flex-align-center">
                       <div>{currentSynth}</div>
                     </div>
-                    <div className="weight-medium text-color-4">{state.pendingTokens}</div>
+                    <div className="weight-medium text-color-4">{state.resultingTokens}</div>
                   </div>
                 </div>
                 <HorizontalGauge utilization={state.resultingUtilization} />

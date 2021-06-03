@@ -33,10 +33,10 @@ export const Burn: React.FC = React.memo(() => {
     formState.setField('tokensToBurn', tokens);
 
     dispatch({
-      type: 'UPDATE_PENDING_POSITION',
+      type: 'UPDATE_RESULTING_POSITION',
       payload: {
-        pendingCollateral: state.sponsorCollateral,
-        pendingTokens: state.sponsorTokens - Number(tokens),
+        resultingCollateral: state.sponsorCollateral,
+        resultingTokens: state.sponsorTokens - Number(tokens),
       },
     });
   };

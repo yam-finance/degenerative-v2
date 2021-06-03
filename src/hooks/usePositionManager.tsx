@@ -31,8 +31,8 @@ const initialMinterState = {
   maxCollateral: 0, // TODO replace with synthInWallet item
   isExpired: false,
 
-  pendingCollateral: 0,
-  pendingTokens: 0,
+  resultingCollateral: 0,
+  resultingTokens: 0,
   resultingUtilization: 0,
   editCollateral: true,
   editTokens: true,
@@ -45,7 +45,7 @@ type State = typeof initialMinterState;
 type Action =
   | 'INIT_SPONSOR_POSITION'
   | 'UPDATE_SPONSOR_POSITION'
-  | 'UPDATE_PENDING_POSITION'
+  | 'UPDATE_RESULTING_POSITION'
   | 'UPDATE_PENDING_UTILIZATION'
   | 'CHANGE_ACTION'
   | 'TOGGLE_WITHDRAWAL_MODAL'
@@ -78,19 +78,19 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       };
     }
     case 'UPDATE_SPONSOR_POSITION': {
-      const { pendingCollateral, pendingTokens } = action.payload;
+      const { resultingCollateral, resultingTokens } = action.payload;
 
       return {
         ...state,
-        sponsorCollateral: pendingCollateral,
-        sponsorTokens: pendingTokens,
-        utilization: calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice),
+        sponsorCollateral: resultingCollateral,
+        sponsorTokens: resultingTokens,
+        utilization: calculateUtilization(resultingCollateral, resultingTokens, state.tokenPrice),
       };
     }
     // TODO Remove
     case 'UPDATE_PENDING_UTILIZATION': {
-      const { pendingCollateral, pendingTokens } = action.payload;
-      const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
+      const { resultingCollateral, resultingTokens } = action.payload;
+      const util = calculateUtilization(resultingCollateral, resultingTokens, state.tokenPrice);
 
       return {
         ...state,
@@ -98,11 +98,11 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       };
     }
     // TODO RENAME ALL PENDING TO RESULTING
-    case 'UPDATE_PENDING_POSITION': {
-      const { pendingCollateral, pendingTokens } = action.payload;
+    case 'UPDATE_RESULTING_POSITION': {
+      const { resultingCollateral, resultingTokens } = action.payload;
 
-      const newCollateral = pendingCollateral;
-      const newTokens = pendingTokens;
+      const newCollateral = resultingCollateral;
+      const newTokens = resultingTokens;
 
       const util = (() => {
         const util = calculateUtilization(newCollateral, newTokens, state.tokenPrice);
@@ -116,8 +116,8 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
 
       return {
         ...state,
-        pendingCollateral: newCollateral,
-        pendingTokens: newTokens,
+        resultingCollateral: newCollateral,
+        resultingTokens: newTokens,
         resultingUtilization: util,
       };
     }
@@ -127,8 +127,8 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         action: action.payload,
 
         // Reset resulting position + utilization
-        pendingCollateral: 0,
-        pendingTokens: 0,
+        resultingCollateral: 0,
+        resultingTokens: 0,
         resultingUtilization: 0,
       };
     }

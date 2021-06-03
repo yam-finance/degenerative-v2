@@ -78,18 +78,18 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       };
     }
     case 'UPDATE_SPONSOR_POSITION': {
-      const { pendingCollateral, pendingTokens } = action.payload;
+      const { resultingCollateral, resultingTokens } = action.payload;
 
       return {
         ...state,
-        sponsorCollateral: pendingCollateral,
-        sponsorTokens: pendingTokens,
-        utilization: calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice),
+        sponsorCollateral: resultingCollateral,
+        sponsorTokens: resultingTokens,
+        utilization: calculateUtilization(resultingCollateral, resultingTokens, state.tokenPrice),
       };
     }
     case 'UPDATE_PENDING_UTILIZATION': {
-      const { pendingCollateral, pendingTokens } = action.payload;
-      const util = calculateUtilization(pendingCollateral, pendingTokens, state.tokenPrice);
+      const { resultingCollateral, resultingTokens } = action.payload;
+      const util = calculateUtilization(resultingCollateral, resultingTokens, state.tokenPrice);
 
       return {
         ...state,
@@ -136,8 +136,8 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
 const calculateUtilization = (collateral: number, tokens: number, price: number) => (tokens * price) / collateral;
 
 interface MinterFormFields {
-  pendingCollateral: number;
-  pendingTokens: number;
+  resultingCollateral: number;
+  resultingTokens: number;
 }
 
 export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
@@ -150,28 +150,28 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
   const [formState, { number }] = useFormState<MinterFormFields>(
     {
-      pendingCollateral: state.sponsorCollateral,
-      pendingTokens: state.sponsorTokens,
+      resultingCollateral: state.sponsorCollateral,
+      resultingTokens: state.sponsorTokens,
     },
     {
       onChange: (e, stateValues, nextStateValues) => {
-        const { pendingCollateral, pendingTokens } = nextStateValues;
-        const tokens = roundDecimals(Number(pendingTokens), 4);
+        const { resultingCollateral, resultingTokens } = nextStateValues;
+        const tokens = roundDecimals(Number(resultingTokens), 4);
 
         // Special case for redeem. Must maintain utilization.
         let collateral: number;
         if (state.action === 'REDEEM') {
           collateral = roundDecimals((tokens / state.utilization) * state.tokenPrice, 4);
-          formState.setField('pendingCollateral', collateral);
+          formState.setField('resultingCollateral', collateral);
         } else {
-          collateral = roundDecimals(Number(pendingCollateral), 4);
+          collateral = roundDecimals(Number(resultingCollateral), 4);
         }
 
         dispatch({
           type: 'UPDATE_PENDING_UTILIZATION',
           payload: {
-            pendingCollateral: collateral,
-            pendingTokens: tokens,
+            resultingCollateral: collateral,
+            resultingTokens: tokens,
           },
         });
       },
@@ -277,14 +277,14 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
   }, [state.action]);
 
   const setFormInputs = (collateral: number, tokens: number) => {
-    formState.setField('pendingCollateral', collateral);
-    formState.setField('pendingTokens', tokens);
+    formState.setField('resultingCollateral', collateral);
+    formState.setField('resultingTokens', tokens);
 
     dispatch({
       type: 'UPDATE_PENDING_UTILIZATION',
       payload: {
-        pendingCollateral: collateral,
-        pendingTokens: tokens,
+        resultingCollateral: collateral,
+        resultingTokens: tokens,
       },
     });
   };
@@ -292,8 +292,8 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
   const setGaugeInitialState = (collateral: number, tokens: number) => {
     // If active withdrawal request, set the form to the difference
     if (state.withdrawalRequestAmount > 0) {
-      const pendingCollateral = collateral - state.withdrawalRequestAmount;
-      setFormInputs(pendingCollateral, tokens);
+      const resultingCollateral = collateral - state.withdrawalRequestAmount;
+      setFormInputs(resultingCollateral, tokens);
     } else {
       // Set form to initial state
       setFormInputs(collateral, tokens);
@@ -414,16 +414,16 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     action: MinterAction;
     sponsorCollateral: number;
     sponsorTokens: number;
-    pendingCollateral: number;
-    pendingTokens: number;
+    resultingCollateral: number;
+    resultingTokens: number;
   }
 
   const ActionButton: React.FC<ActionButtonProps> = ({
     action,
     sponsorCollateral,
     sponsorTokens,
-    pendingCollateral,
-    pendingTokens,
+    resultingCollateral,
+    resultingTokens,
   }) => {
     const [waiting, setWaiting] = useState(false);
 
@@ -461,8 +461,8 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     );
 
     const MintButton: React.FC = () => {
-      const newTokens = pendingTokens - sponsorTokens;
-      const newCollateral = pendingCollateral - sponsorCollateral;
+      const newTokens = resultingTokens - sponsorTokens;
+      const newCollateral = resultingCollateral - sponsorCollateral;
 
       const disableMinting =
         newTokens <= 0 ||
@@ -482,7 +482,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     };
 
     const AddCollateralButton: React.FC = () => {
-      const difference = pendingCollateral - sponsorCollateral;
+      const difference = resultingCollateral - sponsorCollateral;
 
       const disabledAddCollateral = difference <= 0;
 
@@ -498,7 +498,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     };
 
     const RepayButton: React.FC = () => {
-      const repayTokens = sponsorTokens - pendingTokens;
+      const repayTokens = sponsorTokens - resultingTokens;
       const disableRepay = repayTokens <= 0 || repayTokens >= sponsorTokens;
 
       return (
@@ -513,7 +513,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     };
 
     const RedeemButton: React.FC = () => {
-      const redeemableTokens = sponsorTokens - pendingTokens;
+      const redeemableTokens = sponsorTokens - resultingTokens;
       const resultingCollateral = redeemableTokens / state.utilization;
 
       const disableRedeem = redeemableTokens <= 0 || redeemableTokens >= sponsorTokens;
@@ -530,7 +530,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     };
 
     const WithdrawButton: React.FC = () => {
-      const withdrawalAmount = sponsorCollateral - pendingCollateral;
+      const withdrawalAmount = sponsorCollateral - resultingCollateral;
       const disableWithdrawal = withdrawalAmount <= 0 || state.withdrawalRequestMinutesLeft !== 0;
 
       if (state.pendingUtilization > state.globalUtilization && state.pendingUtilization < state.liquidationPoint) {
@@ -800,12 +800,12 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
                   <div className="width-full flex-justify-center margin-top-1 w-dropdown">
                     <div className="padding-0 flex-align-center">
                       <a className="weight-bold">
-                        {roundDecimals(Number(formState.values.pendingCollateral), 4)} {currentCollateral}
+                        {roundDecimals(Number(formState.values.resultingCollateral), 4)} {currentCollateral}
                       </a>
                     </div>
                   </div>
                   <input
-                    {...number('pendingCollateral')}
+                    {...number('resultingCollateral')}
                     type="number"
                     className="form-input small margin-bottom-1 w-input"
                     maxLength={10}
@@ -835,8 +835,8 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
               <div className="expand padding-left-2">
                 <div
                   className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${
-                    Number(formState.values.pendingTokens) === 0 &&
-                    Number(formState.values.pendingCollateral) === 0 &&
+                    Number(formState.values.resultingTokens) === 0 &&
+                    Number(formState.values.resultingCollateral) === 0 &&
                     'disabled'
                   }`}
                   style={{
@@ -853,11 +853,11 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
                     </>
                   )}
                   <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">
-                    {roundDecimals(Number(formState.values.pendingTokens), 4)} {currentSynth}
+                    {roundDecimals(Number(formState.values.resultingTokens), 4)} {currentSynth}
                   </h5>
                   <div className="height-auto flex-align-end">
                     <input
-                      {...number('pendingTokens')}
+                      {...number('resultingTokens')}
                       type="number"
                       className="form-input small margin-bottom-1 w-input"
                       maxLength={10}
@@ -922,8 +922,8 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
                 action={state.action}
                 sponsorCollateral={state.sponsorCollateral}
                 sponsorTokens={state.sponsorTokens}
-                pendingCollateral={Number(formState.values.pendingCollateral)}
-                pendingTokens={Number(formState.values.pendingTokens)}
+                resultingCollateral={Number(formState.values.resultingCollateral)}
+                resultingTokens={Number(formState.values.resultingTokens)}
               />
             </div>
           </div>

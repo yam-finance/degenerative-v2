@@ -26,10 +26,10 @@ export const Withdraw: React.FC = React.memo(() => {
         const { collateralToWithdraw } = nextStateValues;
 
         dispatch({
-          type: 'UPDATE_PENDING_POSITION',
+          type: 'UPDATE_RESULTING_POSITION',
           payload: {
-            pendingCollateral: state.sponsorCollateral - Number(collateralToWithdraw),
-            pendingTokens: state.sponsorTokens,
+            resultingCollateral: state.sponsorCollateral - Number(collateralToWithdraw),
+            resultingTokens: state.sponsorTokens,
           },
         });
       },
@@ -40,10 +40,10 @@ export const Withdraw: React.FC = React.memo(() => {
     formState.setField('collateralToWithdraw', collateral);
 
     dispatch({
-      type: 'UPDATE_PENDING_POSITION',
+      type: 'UPDATE_RESULTING_POSITION',
       payload: {
-        pendingCollateral: collateral,
-        pendingTokens: state.sponsorTokens,
+        resultingCollateral: collateral,
+        resultingTokens: state.sponsorTokens,
       },
     });
   };

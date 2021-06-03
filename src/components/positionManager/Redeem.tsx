@@ -26,17 +26,8 @@ export const Redeem: React.FC = React.memo(() => {
         const { tokensToRedeem } = nextStateValues;
 
         const resultingTokens = state.sponsorTokens - Number(tokensToRedeem);
-        const resultingCollateral = resultingTokens * state.utilization;
-        console.log(resultingCollateral, resultingTokens);
 
-        //setFormInputs(resultingTokens);
-        dispatch({
-          type: 'UPDATE_PENDING_POSITION',
-          payload: {
-            pendingCollateral: resultingCollateral,
-            pendingTokens: resultingTokens,
-          },
-        });
+        setFormInputs(resultingTokens);
       },
     }
   );
@@ -45,13 +36,14 @@ export const Redeem: React.FC = React.memo(() => {
     formState.setField('tokensToRedeem', tokens);
 
     const resultingTokens = state.sponsorTokens - Number(tokens);
-    const resultingCollateral = tokens / state.utilization;
+    const resultingCollateral = (resultingTokens / state.utilization) * state.tokenPrice;
+    console.log(resultingCollateral, resultingTokens);
 
     dispatch({
-      type: 'UPDATE_PENDING_POSITION',
+      type: 'UPDATE_RESULTING_POSITION',
       payload: {
-        pendingCollateral: roundDecimals(resultingCollateral, 3),
-        pendingTokens: roundDecimals(resultingTokens, 3),
+        resultingCollateral: roundDecimals(resultingCollateral, 3),
+        resultingTokens: roundDecimals(resultingTokens, 3),
       },
     });
   };

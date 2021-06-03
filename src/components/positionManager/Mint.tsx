@@ -35,9 +35,9 @@ export const Mint: React.FC = React.memo(() => {
         if (oldCollateral !== collateralToAdd) {
           newCollateral = Number(collateralToAdd);
 
-          const newPendingCollateral = newCollateral + state.sponsorCollateral;
+          const newresultingCollateral = newCollateral + state.sponsorCollateral;
 
-          newTokens = adjustToGcr ? getTokensAtGcr(newPendingCollateral) - state.sponsorTokens : Number(tokensToAdd);
+          newTokens = adjustToGcr ? getTokensAtGcr(newresultingCollateral) - state.sponsorTokens : Number(tokensToAdd);
         } else {
           newTokens = Number(tokensToAdd);
 
@@ -56,10 +56,10 @@ export const Mint: React.FC = React.memo(() => {
     formState.setField('tokensToAdd', tokens);
 
     dispatch({
-      type: 'UPDATE_PENDING_POSITION',
+      type: 'UPDATE_RESULTING_POSITION',
       payload: {
-        pendingCollateral: collateral + state.sponsorCollateral,
-        pendingTokens: tokens + state.sponsorTokens,
+        resultingCollateral: collateral + state.sponsorCollateral,
+        resultingTokens: tokens + state.sponsorTokens,
       },
     });
   };
@@ -83,7 +83,7 @@ export const Mint: React.FC = React.memo(() => {
 
     if (shouldAdjust) {
       const newCollateral = Number(formState.values.collateralToAdd);
-      const resultingTokensAtGcr = getTokensAtGcr(state.pendingCollateral);
+      const resultingTokensAtGcr = getTokensAtGcr(state.resultingCollateral);
       const newTokens = roundDecimals(resultingTokensAtGcr - state.sponsorTokens, 3);
 
       setFormInputs(newCollateral, newTokens > 0 ? newTokens : 0);

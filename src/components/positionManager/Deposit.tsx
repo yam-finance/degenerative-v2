@@ -25,10 +25,10 @@ export const Deposit: React.FC = React.memo(() => {
         const { collateralToDeposit } = nextStateValues;
 
         dispatch({
-          type: 'UPDATE_PENDING_POSITION',
+          type: 'UPDATE_RESULTING_POSITION',
           payload: {
-            pendingCollateral: state.sponsorCollateral + Number(collateralToDeposit),
-            pendingTokens: state.sponsorTokens,
+            resultingCollateral: state.sponsorCollateral + Number(collateralToDeposit),
+            resultingTokens: state.sponsorTokens,
           },
         });
       },
@@ -40,10 +40,10 @@ export const Deposit: React.FC = React.memo(() => {
     formState.setField('collateralToDeposit', collateral);
 
     dispatch({
-      type: 'UPDATE_PENDING_POSITION',
+      type: 'UPDATE_RESULTING_POSITION',
       payload: {
-        pendingCollateral: state.sponsorCollateral + collateral,
-        pendingTokens: state.sponsorTokens,
+        resultingCollateral: state.sponsorCollateral + collateral,
+        resultingTokens: state.sponsorTokens,
       },
     });
   };
