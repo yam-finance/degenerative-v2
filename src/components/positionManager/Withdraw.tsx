@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 
 import { ActionDisplay, ActionButton, BackButton } from '@/components';
@@ -13,7 +13,7 @@ interface WithdrawFormFields {
 
 export const Withdraw: React.FC = React.memo(() => {
   const { state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, currentCollateral } = useContext(UserContext);
+  const { currentCollateral, mintedPositions } = useContext(UserContext);
 
   const actions = useSynthActions();
 
@@ -35,6 +35,10 @@ export const Withdraw: React.FC = React.memo(() => {
       },
     }
   );
+
+  useEffect(() => {
+    formState.reset();
+  }, [mintedPositions]);
 
   const setFormInputs = (collateral: number) => {
     formState.setField('collateralToWithdraw', collateral);

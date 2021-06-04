@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 
 import { Icon, ActionDisplay, ActionButton, BackButton } from '@/components';
@@ -12,7 +12,7 @@ interface BurnFormFields {
 
 export const Burn: React.FC = React.memo(() => {
   const { state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, currentCollateral } = useContext(UserContext);
+  const { currentSynth, currentCollateral, mintedPositions } = useContext(UserContext);
 
   const actions = useSynthActions();
   const maxBurnableTokens = state.sponsorTokens - state.minTokens;
@@ -28,6 +28,10 @@ export const Burn: React.FC = React.memo(() => {
       },
     }
   );
+
+  useEffect(() => {
+    formState.reset();
+  }, [mintedPositions]);
 
   const setFormInputs = (tokens: number) => {
     formState.setField('tokensToBurn', tokens);

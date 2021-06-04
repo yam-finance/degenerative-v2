@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 
 import { ActionDisplay, ActionButton, BackButton } from '@/components';
@@ -12,7 +12,7 @@ interface DepositFormFields {
 
 export const Deposit: React.FC = React.memo(() => {
   const { state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, currentCollateral } = useContext(UserContext);
+  const { currentCollateral, mintedPositions } = useContext(UserContext);
 
   const actions = useSynthActions();
 
@@ -34,6 +34,10 @@ export const Deposit: React.FC = React.memo(() => {
       },
     }
   );
+
+  useEffect(() => {
+    formState.reset();
+  }, [mintedPositions]);
 
   // Update form and then component state to match form
   const setFormInputs = (collateral: number) => {
