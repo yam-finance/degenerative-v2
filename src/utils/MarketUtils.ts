@@ -1,4 +1,3 @@
-import { AbiItem } from "web3-utils"
 import { request } from 'graphql-request';
 import axios from 'axios';
 import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
@@ -235,8 +234,6 @@ export const getMiningRewards = async (name: string, asset: ISynth, priceUsd: nu
     const baseGeneral = new BigNumber(10).pow(18);
     const baseAsset = new BigNumber(10).pow(asset.token.decimals);
     let baseCollateral;
-    console.log(asset.pool.address)
-    console.log(asset.emp.address) 
     const contractLp = new ethers.Contract(asset.pool.address, UNIContract.abi, EthNodeProvider);
     const contractEmp = new ethers.Contract(asset.emp.address, EMPContract.abi, EthNodeProvider);
     const contractLpCall = await contractLp.getReserves();
@@ -292,9 +289,6 @@ export const getMiningRewards = async (name: string, asset: ISynth, priceUsd: nu
     const reserve1 = contractLpCall._reserve1.toNumber() 
     const assetReserve0 = new BigNumber(reserve0).dividedBy(baseAsset).toNumber();
     const assetReserve1 = new BigNumber(reserve1).dividedBy(baseCollateral).toNumber();
-    console.log(assetReserve0)
-    console.log(assetReserve0)
-    console.log("Asset Reserve", assetReserve1)
     if (assetGroup.name === "USTONKS") {
       calcAsset = assetReserve1 * tokenPrice;
       calcCollateral = assetReserve0 * (asset.collateral == "WETH" ? ethPrice : 1);
@@ -323,6 +317,7 @@ export const getMiningRewards = async (name: string, asset: ISynth, priceUsd: nu
     const generalAPR = sponsorAmountPerDollarMintedPerWeek.multipliedBy(collateralEfficiency).multipliedBy(52).toNumber() 
 
     console.log(
+      asset.token.address, 
       umaRewardsPercentage,
       dynamicAmountPerWeek,
       dynamicAmountPerWeekInDollars,
