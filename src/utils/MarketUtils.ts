@@ -2,7 +2,7 @@ import { request } from 'graphql-request';
 import axios from 'axios';
 import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
-import { ethers, utils, constants, providers } from 'ethers';
+import { BigNumber, ethers, utils, constants, providers } from 'ethers';
 import {
   UNISWAP_ENDPOINT,
   SUSHISWAP_ENDPOINT,
@@ -22,7 +22,6 @@ import Assets from '../assets/assets.json';
 import UNIContract from '../../abi/uni.json';
 import EMPContract from '../../abi/emp.json';
 import erc20 from '../../abi/erc20.json';
-import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 import { ExternalProvider, Web3Provider } from '@ethersproject/providers';
 
@@ -421,7 +420,7 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
 
     /// @dev Setup base variables for calculation
     let baseCollateral;
-    const baseAsset = new BigNumber(10).pow(asset.token.decimals);
+    const baseAsset = BigNumber.from(10).pow(asset.token.decimals);
 
     /// @dev Setup contract calls
     const contractLp = new ethers.Contract(asset.pool.address, UNIContract.abi, ethersProvider);
@@ -438,13 +437,13 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     /// @dev Temp pricing
     let tokenPrice;
     if (asset.collateral === 'USDC') {
-      baseCollateral = new BigNumber(10).pow(6);
+      baseCollateral = BigNumber.from(10).pow(6);
       /* @ts-ignore */
       tokenPrice = assetPrice * 1;
       // } else if(assetInstance.collateral === "YAM"){
       //   tokenPrice = assetPrice * yamPrice;
     } else {
-      baseCollateral = new BigNumber(10).pow(18);
+      baseCollateral = BigNumber.from(10).pow(18);
       /* @ts-ignore */
       // tokenPrice = assetPrice * ethPrice;
       tokenPrice = assetPrice * 1;
@@ -479,8 +478,8 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     let calcCollateral = 0;
     const normalRewards = umaRewards * umaPrice + yamRewards * yamPrice;
     const weekRewards = umaWeekRewards * umaPrice + yamWeekRewards * yamPrice;
-    const assetReserve0 = new BigNumber(contractLpCall._reserve0).dividedBy(baseAsset).toNumber();
-    const assetReserve1 = new BigNumber(contractLpCall._reserve1).dividedBy(baseCollateral).toNumber();
+    const assetReserve0 = BigNumber.from(contractLpCall._reserve0).div(baseAsset).toNumber();
+    const assetReserve1 = BigNumber.from(contractLpCall._reserve1).div(baseCollateral).toNumber();
 
     if (assetGroup.name === 'USTONKS') {
       calcAsset = assetReserve1 * tokenPrice;
@@ -492,30 +491,27 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
 
     // @notice New calculation based on the doc
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
-    let umaRewardsPercentage = new BigNumber(collateralCount).multipliedBy(synthTokenPrice);
-    umaRewardsPercentage = umaRewardsPercentage.dividedBy(tokenCount);
+    let umaRewardsPercentage = BigNumber.from(collateralCount).mul(synthTokenPrice);
+    umaRewardsPercentage = umaRewardsPercentage.div(tokenCount);
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
-    const dynamicAmountPerWeek = umaRewardsPercentage.multipliedBy(umaRewards);
+    const dynamicAmountPerWeek = umaRewardsPercentage.mul(umaRewards);
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
-    const dynamicAmountPerWeekInDollars = dynamicAmountPerWeek.multipliedBy(umaPrice);
+    const dynamicAmountPerWeekInDollars = dynamicAmountPerWeek.mul(umaPrice);
     // standardWeeklyRewards = dynamicAmountPerWeekInDollars * developerRewardsPercentage
-    const standardWeeklyRewards = dynamicAmountPerWeekInDollars.multipliedBy(0.82);
+    const standardWeeklyRewards = dynamicAmountPerWeekInDollars.mul(0.82);
     // totalWeeklyRewards = (standardRewards) + (Additional UMA * UMA price) + (Additional Yam * Yam Price)
-    const totalWeeklyRewards = standardWeeklyRewards.plus(weekRewards);
+    const totalWeeklyRewards = standardWeeklyRewards.add(weekRewards);
     // sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / (Synth in AMM pool * synth price)
-    const sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards.dividedBy(calcAsset);
+    const sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards.div(calcAsset);
     // collateralEfficiency = 1 / (CR + 1)
-    const collateralEfficiency = new BigNumber(1).dividedBy(new BigNumber(cr).plus(1));
+    const collateralEfficiency = BigNumber.from(1).div(BigNumber.from(cr).add(1));
     // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
-    const generalAPR = sponsorAmountPerDollarMintedPerWeek
-      .multipliedBy(collateralEfficiency)
-      .multipliedBy(52)
-      .toNumber();
+    const generalAPR = sponsorAmountPerDollarMintedPerWeek.mul(collateralEfficiency).mul(52).toNumber();
 
     // TODO: Remove old calculations
     // @notice Old apr calculation
     // ((dynamicAmountPerWeek * 52) * umaTokenPrice / 2) / (empCollateral + 50% totalCombinedLp) * 100
-    // let empTVL = new BigNumber(contractEmpCall).dividedBy(baseAsset).toNumber();
+    // let empTVL = BigNumber.from(contractEmpCall).div(baseAsset).toNumber();
     // empTVL *= (asset.collateral == "WETH" ? ethPrice : 1);
     // const uniLpPair = calcAsset + calcCollateral;
     // const assetReserveValue = empTVL + (uniLpPair * 0.5);
