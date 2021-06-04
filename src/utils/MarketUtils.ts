@@ -364,7 +364,8 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
  * @public
  * @methods
  */
-export const getMiningRewards = async (asset: ISynth) => {
+/* @ts-ignore */
+export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCount, synthTokenPrice, marketCap) => {
   // TODO Use params for setup instead of test setup
   const assetGroup = { name: 'UGAS', AssetModel: Assets['mainnet']['uGas'] };
   asset = asset;
@@ -401,7 +402,7 @@ export const getMiningRewards = async (asset: ISynth) => {
     });
 
     /// @dev Get emp info from devMiningCalculator
-    const getEmpInfo: any = await devmining.utils.getEmpInfo(asset.emp.address);
+    // const getEmpInfo: any = await devmining.utils.getEmpInfo(asset.emp.address);
 
     /// @dev Get dev mining reward estimation from devMiningCalculator
     const estimateDevMiningRewards = await devmining.estimateDevMiningRewards({
@@ -491,8 +492,8 @@ export const getMiningRewards = async (asset: ISynth) => {
 
     // @notice New calculation based on the doc
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
-    let umaRewardsPercentage = new BigNumber(getEmpInfo.collateralCount).multipliedBy(getEmpInfo.tokenPrice);
-    umaRewardsPercentage = umaRewardsPercentage.dividedBy(getEmpInfo.tokenCount);
+    let umaRewardsPercentage = new BigNumber(collateralCount).multipliedBy(synthTokenPrice);
+    umaRewardsPercentage = umaRewardsPercentage.dividedBy(tokenCount);
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
     const dynamicAmountPerWeek = umaRewardsPercentage.multipliedBy(umaRewards);
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
@@ -663,9 +664,11 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
   async function estimateDevMiningRewards({
     totalRewards,
     empWhitelist,
-  }: {
+  }: // marketCap,
+  {
     totalRewards: number;
     empWhitelist: string[];
+    // marketCap: any;
   }) {
     const allInfo = await Promise.all(empWhitelist.map((address) => getEmpInfo(address)));
 
