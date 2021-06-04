@@ -377,6 +377,7 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
   // const provider: ExternalProvider = new Web3Provider(web3.currentProvider as any).provider;
   const ethersProvider = new ethers.providers.JsonRpcProvider(rpcURL || '');
 
+  // TODO Remove logs
   // console.log("assetGroup", assetGroup)
   // console.log("asset: ", asset)
   // console.log("assetPrice", assetPrice)
