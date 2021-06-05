@@ -490,34 +490,24 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
       calcCollateral = assetReserve1 * (asset.collateral == 'WETH' ? ethPrice : 1);
     }
 
-    console.log(
-      typeof collateralCount,
-      collateralCount,
-      typeof synthTokenPrice,
-      synthTokenPrice,
-      typeof tokenCount,
-      tokenCount,
-      umaRewards,
-      umaPrice,
-      weekRewards,
-      calcAsset,
-      cr
-    );
-
     // @notice New calculation based on the doc
     const convertedTokenCount = parseInt(utils.formatEther(tokenCount));
-    console.log('convertedTokenCount', convertedTokenCount);
 
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
     let umaRewardsPercentage = (collateralCount * synthTokenPrice) / convertedTokenCount;
+    console.log('collateralCount', collateralCount);
+    console.log('synthTokenPrice', synthTokenPrice);
+    console.log('convertedTokenCount', convertedTokenCount);
     console.log('umaRewardsPercentage', umaRewardsPercentage);
 
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
     const dynamicAmountPerWeek = umaRewardsPercentage * umaRewards;
+    console.log('umaRewards', umaRewards);
     console.log('dynamicAmountPerWeek', dynamicAmountPerWeek);
 
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
     const dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * umaPrice;
+    console.log('umaPrice', umaPrice);
     console.log('dynamicAmountPerWeekInDollars', dynamicAmountPerWeekInDollars);
 
     // standardWeeklyRewards = dynamicAmountPerWeekInDollars * developerRewardsPercentage
@@ -526,10 +516,12 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
 
     // totalWeeklyRewards = (standardRewards) + (Additional UMA * UMA price) + (Additional Yam * Yam Price)
     const totalWeeklyRewards = standardWeeklyRewards + weekRewards;
+    console.log('weekRewards', weekRewards);
     console.log('totalWeeklyRewards', totalWeeklyRewards);
 
     // sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / (Synth in AMM pool * synth price)
     const sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / calcAsset;
+    console.log('calcAsset', calcAsset);
     console.log('sponsorAmountPerDollarMintedPerWeek', sponsorAmountPerDollarMintedPerWeek);
 
     // collateralEfficiency = 1 / (CR + 1)
