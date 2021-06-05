@@ -504,7 +504,7 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     console.log('umaRewardsPercentage', umaRewardsPercentage);
 
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
-    const dynamicAmountPerWeek = umaRewardsPercentage * umaRewards;
+    const dynamicAmountPerWeek = umaRewardsPercentage * 50_000;
     console.log('umaRewards', umaRewards);
     console.log('dynamicAmountPerWeek', dynamicAmountPerWeek);
 
