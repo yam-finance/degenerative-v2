@@ -490,6 +490,16 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
       calcCollateral = assetReserve1 * (asset.collateral == 'WETH' ? ethPrice : 1);
     }
 
+    console.log('-----');
+    console.log('tokenCount', tokenCount);
+    console.log('tokenPrice', tokenPrice);
+    console.log('collateralCount', collateralCount);
+    console.log('umaRewards', umaRewards);
+    console.log('umaPrice', umaPrice);
+    console.log('weekRewards', weekRewards);
+    console.log('calcAsset', calcAsset);
+    console.log('-----');
+
     // @notice New calculation based on the doc
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
     let umaRewardsPercentage = BigNumber.from(tokenCount).mul(tokenPrice);
