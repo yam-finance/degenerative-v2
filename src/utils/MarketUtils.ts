@@ -455,10 +455,7 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     const week1Until = 1615665600;
     const week2Until = 1616961600;
     const yamRewards = 0;
-    console.log(rewards);
-    console.log(asset.emp.address);
     const umaRewards = await rewards[asset.emp.address];
-    console.log(umaRewards);
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
     if (assetGroup.name.toUpperCase() === 'UGAS' && asset.cycle === 'JUN' && asset.year === '21') {
@@ -493,47 +490,24 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
       calcCollateral = assetReserve1 * (asset.collateral == 'WETH' ? ethPrice : 1);
     }
 
-    console.log('CollateralCount', collateralCount);
-    console.log('TokenPrice', tokenPrice);
-    console.log('TokenCount', tokenCount);
-
-    collateralCount = 584917684906901860629;
-    tokenPrice = 242.93;
-    tokenCount = 1304256103561098948665;
-
     // @notice New calculation based on the doc
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
-    let umaRewardsPercentage = BigNumber.from(collateralCount).mul(tokenPrice);
-    umaRewardsPercentage = umaRewardsPercentage.div(tokenCount);
-    console.log('umaRewardsPercentage', umaRewardsPercentage);
-
+    let umaRewardsPercentage = BigNumber.from(tokenCount).mul(tokenPrice);
+    umaRewardsPercentage = umaRewardsPercentage.div(collateralCount);
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
-    const dynamicAmountPerWeek = umaRewardsPercentage.mul(50_000);
-    console.log('dynamicAmountPerWeek', dynamicAmountPerWeek.toNumber());
-
+    const dynamicAmountPerWeek = umaRewardsPercentage.mul(umaRewards);
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
     const dynamicAmountPerWeekInDollars = dynamicAmountPerWeek.mul(umaPrice);
-    console.log('dynamicAmountPerWeekInDollars', dynamicAmountPerWeekInDollars.toNumber());
-
     // standardWeeklyRewards = dynamicAmountPerWeekInDollars * developerRewardsPercentage
     const standardWeeklyRewards = dynamicAmountPerWeekInDollars.mul(0.82);
-    console.log('standardWeeklyRewards', standardWeeklyRewards.toNumber());
-
     // totalWeeklyRewards = (standardRewards) + (Additional UMA * UMA price) + (Additional Yam * Yam Price)
     const totalWeeklyRewards = standardWeeklyRewards.add(weekRewards);
-    console.log('totalWeeklyRewards', totalWeeklyRewards.toNumber());
-
     // sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / (Synth in AMM pool * synth price)
     const sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards.div(calcAsset);
-    console.log('sponsorAmountPerDollarMintedPerWeek', sponsorAmountPerDollarMintedPerWeek.toNumber());
-
     // collateralEfficiency = 1 / (CR + 1)
     const collateralEfficiency = BigNumber.from(1).div(BigNumber.from(cr).add(1));
-    console.log('collateralEfficiency', collateralEfficiency.toNumber());
-
     // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
     const generalAPR = sponsorAmountPerDollarMintedPerWeek.mul(collateralEfficiency).mul(52).toNumber();
-    console.log('sponsorAmountPerDollarMintedPerWeek', sponsorAmountPerDollarMintedPerWeek.toNumber());
 
     // // @notice New calculation based on the doc
     // const convertedTokenCount = parseInt(utils.formatEther(tokenCount));
