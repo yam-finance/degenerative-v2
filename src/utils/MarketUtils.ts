@@ -703,11 +703,9 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
   async function estimateDevMiningRewards({
     totalRewards,
     empWhitelist,
-  }: // marketCap,
-  {
+  }: {
     totalRewards: number;
     empWhitelist: string[];
-    // marketCap: any;
   }) {
     const allInfo = await Promise.all(empWhitelist.map((address) => getEmpInfo(address)));
 
