@@ -414,10 +414,10 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
 
     // TODO Object.fromEntries(estimateDevMiningRewards)
     /// @dev Structure rewards
-    const rewards: any = {};
-    for (let i = 0; i < estimateDevMiningRewards.length; i++) {
-      rewards[estimateDevMiningRewards[i][0]] = estimateDevMiningRewards[i][1];
-    }
+    const rewards: any = Object.fromEntries(estimateDevMiningRewards);
+    // for (let i = 0; i < estimateDevMiningRewards.length; i++) {
+    //   rewards[estimateDevMiningRewards[i][0]] = estimateDevMiningRewards[i][1];
+    // }
 
     /// @dev Setup base variables for calculation
     let baseCollateral;
@@ -455,7 +455,10 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     const week1Until = 1615665600;
     const week2Until = 1616961600;
     const yamRewards = 0;
-    const umaRewards = rewards[asset.emp.address];
+    console.log(rewards);
+    console.log(asset.emp.address);
+    const umaRewards = await rewards[asset.emp.address];
+    console.log(umaRewards);
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
     if (assetGroup.name.toUpperCase() === 'UGAS' && asset.cycle === 'JUN' && asset.year === '21') {
