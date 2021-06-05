@@ -505,8 +505,10 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     );
 
     // @notice New calculation based on the doc
-    // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
     const convertedTokenCount = parseInt(utils.formatEther(tokenCount));
+    console.log('convertedTokenCount', convertedTokenCount);
+
+    // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
     let umaRewardsPercentage = (collateralCount * synthTokenPrice) / convertedTokenCount;
     console.log('umaRewardsPercentage', umaRewardsPercentage);
 
