@@ -365,7 +365,7 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
  */
 /* @ts-ignore */
 export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCount, synthTokenPrice, marketCap) => {
-  // TODO Use params for setup instead of test setup
+  // TODO Use passed params for setup instead of test setup
   const assetGroup = { name: 'UGAS', AssetModel: Assets['mainnet']['uGas'] };
   asset = asset;
   const assetPrice = 242.93;
@@ -490,6 +490,7 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
       calcCollateral = assetReserve1 * (asset.collateral == 'WETH' ? ethPrice : 1);
     }
 
+    console.log(collateralCount, synthTokenPrice, tokenCount, umaRewards, umaPrice, weekRewards, calcAsset, cr);
     // @notice New calculation based on the doc
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
     let umaRewardsPercentage = BigNumber.from(collateralCount.toString()).mul(synthTokenPrice);
