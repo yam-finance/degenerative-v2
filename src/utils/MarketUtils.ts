@@ -497,6 +497,10 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     console.log('TokenPrice', tokenPrice);
     console.log('TokenCount', tokenCount);
 
+    collateralCount = 584917684906901860629;
+    tokenPrice = 242.93;
+    tokenCount = 1304256103561098948665;
+
     // @notice New calculation based on the doc
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
     let umaRewardsPercentage = BigNumber.from(collateralCount).mul(tokenPrice);
@@ -504,7 +508,7 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     console.log('umaRewardsPercentage', umaRewardsPercentage);
 
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
-    const dynamicAmountPerWeek = umaRewardsPercentage.mul(umaRewards);
+    const dynamicAmountPerWeek = umaRewardsPercentage.mul(50_000);
     console.log('dynamicAmountPerWeek', dynamicAmountPerWeek.toNumber());
 
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
