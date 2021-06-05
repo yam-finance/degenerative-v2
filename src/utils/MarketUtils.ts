@@ -513,23 +513,23 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     console.log('umaRewardsPercentage', umaRewardsPercentage);
 
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
-    const dynamicAmountPerWeek = umaRewardsPercentage * umaRewards;
+    const dynamicAmountPerWeek = BigNumber.from(umaRewardsPercentage).mul(umaRewards);
     console.log('dynamicAmountPerWeek', dynamicAmountPerWeek);
 
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
-    const dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * umaPrice;
+    const dynamicAmountPerWeekInDollars = dynamicAmountPerWeek.mul(umaPrice);
     console.log('dynamicAmountPerWeekInDollars', dynamicAmountPerWeekInDollars);
 
     // standardWeeklyRewards = dynamicAmountPerWeekInDollars * developerRewardsPercentage
-    const standardWeeklyRewards = dynamicAmountPerWeekInDollars * 0.82;
+    const standardWeeklyRewards = dynamicAmountPerWeekInDollars.mul(0.82);
     console.log('standardWeeklyRewards', standardWeeklyRewards);
 
     // totalWeeklyRewards = (standardRewards) + (Additional UMA * UMA price) + (Additional Yam * Yam Price)
-    const totalWeeklyRewards = standardWeeklyRewards + weekRewards;
+    const totalWeeklyRewards = standardWeeklyRewards.add(weekRewards);
     console.log('totalWeeklyRewards', totalWeeklyRewards);
 
     // sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / (Synth in AMM pool * synth price)
-    const sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / calcAsset;
+    const sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards.div(calcAsset);
     console.log('sponsorAmountPerDollarMintedPerWeek', sponsorAmountPerDollarMintedPerWeek);
 
     // collateralEfficiency = 1 / (CR + 1)
@@ -537,7 +537,7 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     console.log('collateralEfficiency', collateralEfficiency);
 
     // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
-    const generalAPR = sponsorAmountPerDollarMintedPerWeek * collateralEfficiency * 52;
+    const generalAPR = sponsorAmountPerDollarMintedPerWeek.mul(collateralEfficiency).mul(52);
     console.log('generalAPR', generalAPR);
 
     // TODO: Remove old calculations
