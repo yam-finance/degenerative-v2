@@ -506,8 +506,9 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
 
     // @notice New calculation based on the doc
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
+    const convertedTokenCount = parseInt(utils.formatEther(tokenCount));
     let umaRewardsPercentage = collateralCount * synthTokenPrice;
-    umaRewardsPercentage = umaRewardsPercentage / tokenCount.toNumber();
+    umaRewardsPercentage = umaRewardsPercentage / convertedTokenCount;
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
     const dynamicAmountPerWeek = umaRewardsPercentage * umaRewards;
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
