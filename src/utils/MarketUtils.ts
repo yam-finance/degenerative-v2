@@ -418,6 +418,13 @@ export const getMiningRewards = async (
       empWhitelist: devMiningEmp['empWhitelist'],
     });
 
+    const whitelistedTVM = await devmining.estimateWhitelistedTVM({
+      /* @ts-ignore */
+      totalRewards: devMiningEmp['totalReward'],
+      /* @ts-ignore */
+      empWhitelist: devMiningEmp['empWhitelist'],
+    });
+
     // TODO Object.fromEntries(estimateDevMiningRewards)
     /// @dev Structure rewards
     const rewards: any = Object.fromEntries(estimateDevMiningRewards);
@@ -511,7 +518,7 @@ export const getMiningRewards = async (
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
     let umaRewardsPercentage = tokenCount.mul(tokenPrice);
     // TODO Calculate whitelistedTVM
-    umaRewardsPercentage = umaRewardsPercentage.div(10000);
+    umaRewardsPercentage = umaRewardsPercentage.div(whitelistedTVM);
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
     const dynamicAmountPerWeek = umaRewardsPercentage.mul(50_000);
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
@@ -526,48 +533,6 @@ export const getMiningRewards = async (
     const collateralEfficiency = BigNumber.from(1).div(BigNumber.from(cr).add(1));
     // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
     const generalAPR = sponsorAmountPerDollarMintedPerWeek.mul(collateralEfficiency).mul(52).toNumber();
-
-    // // @notice New calculation based on the doc
-    // const convertedTokenCount = parseInt(utils.formatEther(tokenCount));
-
-    // // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
-    // let umaRewardsPercentage = (collateralCount * synthTokenPrice) / 1304256103561098948665;
-    // console.log('collateralCount', collateralCount);
-    // console.log('synthTokenPrice', synthTokenPrice);
-    // console.log('convertedTokenCount', convertedTokenCount);
-    // console.log('umaRewardsPercentage', umaRewardsPercentage);
-
-    // // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
-    // const dynamicAmountPerWeek = umaRewardsPercentage * 50_000;
-    // console.log('umaRewards', umaRewards);
-    // console.log('dynamicAmountPerWeek', dynamicAmountPerWeek);
-
-    // // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
-    // const dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * umaPrice;
-    // console.log('umaPrice', umaPrice);
-    // console.log('dynamicAmountPerWeekInDollars', dynamicAmountPerWeekInDollars);
-
-    // // standardWeeklyRewards = dynamicAmountPerWeekInDollars * developerRewardsPercentage
-    // const standardWeeklyRewards = dynamicAmountPerWeekInDollars * 0.82;
-    // console.log('standardWeeklyRewards', standardWeeklyRewards);
-
-    // // totalWeeklyRewards = (standardRewards) + (Additional UMA * UMA price) + (Additional Yam * Yam Price)
-    // const totalWeeklyRewards = standardWeeklyRewards + weekRewards;
-    // console.log('weekRewards', weekRewards);
-    // console.log('totalWeeklyRewards', totalWeeklyRewards);
-
-    // // sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / (Synth in AMM pool * synth price)
-    // const sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / calcAsset;
-    // console.log('calcAsset', calcAsset);
-    // console.log('sponsorAmountPerDollarMintedPerWeek', sponsorAmountPerDollarMintedPerWeek);
-
-    // // collateralEfficiency = 1 / (CR + 1)
-    // const collateralEfficiency = 1 / (cr + 1);
-    // console.log('collateralEfficiency', collateralEfficiency);
-
-    // // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
-    // const generalAPR = sponsorAmountPerDollarMintedPerWeek * collateralEfficiency * 52;
-    // console.log('generalAPR', generalAPR);
 
     // TODO: Remove old calculations
     // @notice Old apr calculation
@@ -729,8 +694,28 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
     });
   }
 
+  async function estimateWhitelistedTVM({
+    totalRewards,
+    empWhitelist,
+  }: {
+    totalRewards: number;
+    empWhitelist: string[];
+  }) {
+    const allInfo = await Promise.all(empWhitelist.map((address) => getEmpInfo(address)));
+
+    const values: any[] = [];
+    const totalValue = allInfo.reduce((totalValue, info) => {
+      const value = calculateEmpValue(info);
+      values.push(value);
+      return totalValue.addUnsafe(value);
+    }, FixedNumber.from('0'));
+
+    return totalValue;
+  }
+
   return {
     estimateDevMiningRewards,
+    estimateWhitelistedTVM,
     utils: {
       getEmpInfo,
       calculateEmpValue,
