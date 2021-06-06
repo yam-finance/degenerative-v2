@@ -364,7 +364,13 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
  * @methods
  */
 /* @ts-ignore */
-export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCount, synthTokenPrice, marketCap) => {
+export const getMiningRewards = async (
+  asset: ISynth,
+  collateralCount: number,
+  tokenCount: BigNumber,
+  synthTokenPrice: number,
+  marketCap: number
+) => {
   // TODO Use passed params for setup instead of test setup
   const assetGroup = { name: 'UGAS', AssetModel: Assets['mainnet']['uGas'] };
   asset = asset;
@@ -503,11 +509,11 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
 
     // @notice New calculation based on the doc
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
-    let umaRewardsPercentage = BigNumber.from(tokenCount).mul(tokenPrice);
+    let umaRewardsPercentage = tokenCount.mul(tokenPrice);
     // TODO Calculate whitelistedTVM
     umaRewardsPercentage = umaRewardsPercentage.div(10000);
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
-    const dynamicAmountPerWeek = umaRewardsPercentage.mul(umaRewards);
+    const dynamicAmountPerWeek = umaRewardsPercentage.mul(50_000);
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
     const dynamicAmountPerWeekInDollars = dynamicAmountPerWeek.mul(umaPrice);
     // standardWeeklyRewards = dynamicAmountPerWeekInDollars * developerRewardsPercentage
