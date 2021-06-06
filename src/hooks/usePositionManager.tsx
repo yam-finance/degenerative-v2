@@ -120,17 +120,27 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         resultingUtilization: util,
       };
     }
-    case 'CHANGE_ACTION': {
+    case 'RESET_RESULTING_POSITION': {
       return {
         ...state,
-        action: action.payload,
-
-        // Reset resulting position + utilization
         resultingCollateral: 0,
         resultingTokens: 0,
         resultingUtilization: 0,
       };
     }
+    case 'CHANGE_ACTION': {
+      return {
+        ...state,
+        action: action.payload,
+      };
+    }
+    //case 'UPDATE_WITHDRAWAL_REQUEST_GAUGE': {
+    //  return {
+    //    ...state,
+    //    resultingCollateral: state.sponsorCollateral - state.withdrawalRequestAmount,
+    //    resultingTokens: state.
+    //  }
+    //}
     case 'TOGGLE_WITHDRAWAL_MODAL': {
       const { withdrawalAmount } = action.payload;
 

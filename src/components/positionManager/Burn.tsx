@@ -56,7 +56,7 @@ export const Burn: React.FC = React.memo(() => {
 
   const BurnButton: React.FC = () => {
     const burnTokens = Number(formState.values.tokensToBurn);
-    const disableBurn = burnTokens <= 0 || burnTokens > maxBurnableTokens;
+    const disableBurn = burnTokens <= 0 || burnTokens > maxBurnableTokens || state.withdrawalRequestAmount > 0;
 
     return (
       <ActionButton action={() => actions.onRepay(burnTokens)} disableCondition={disableBurn}>

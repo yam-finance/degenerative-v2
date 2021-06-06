@@ -13,6 +13,13 @@ export const BackButton = () => {
           type: 'CHANGE_ACTION',
           payload: 'MANAGE',
         });
+
+        if (state.withdrawalRequestAmount <= 0) {
+          dispatch({
+            type: 'RESET_RESULTING_POSITION',
+            payload: null,
+          });
+        }
       }}
     >
       <div className="flex-align-center flex-justify-center margin-right-1">

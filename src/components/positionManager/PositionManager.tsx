@@ -58,6 +58,19 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
           isExpired: marketData.isExpired,
         },
       });
+
+      if (withdrawalRequestAmount > 0) {
+        const resultingCollateral = sponsorCollateral - withdrawalRequestAmount;
+        const resultingTokens = sponsorTokens;
+
+        dispatch({
+          type: 'UPDATE_RESULTING_POSITION',
+          payload: {
+            resultingCollateral: resultingCollateral,
+            resultingTokens: resultingTokens,
+          },
+        });
+      }
     };
 
     if (

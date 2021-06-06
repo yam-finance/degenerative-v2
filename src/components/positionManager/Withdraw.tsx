@@ -4,8 +4,6 @@ import { useFormState } from 'react-use-form-state';
 import { ActionDisplay, ActionButton, BackButton } from '@/components';
 import { PositionManagerContainer, useSynthActions } from '@/hooks';
 import { UserContext, MarketContext } from '@/contexts';
-import { roundDecimals } from '@/utils';
-import clsx from 'clsx';
 
 interface WithdrawFormFields {
   collateralToWithdraw: number;
@@ -35,6 +33,21 @@ export const Withdraw: React.FC = React.memo(() => {
       },
     }
   );
+
+  useEffect(() => {
+    if (state.withdrawalRequestAmount > 0) {
+      const resultingCollateral = state.sponsorCollateral - state.withdrawalRequestAmount;
+      const resultingTokens = state.sponsorTokens;
+
+      dispatch({
+        type: 'UPDATE_RESULTING_POSITION',
+        payload: {
+          resultingCollateral: resultingCollateral,
+          resultingTokens: resultingTokens,
+        },
+      });
+    }
+  }, []);
 
   useEffect(() => {
     formState.reset();
@@ -128,6 +141,7 @@ export const Withdraw: React.FC = React.memo(() => {
                 maxLength={256}
                 min={0}
                 required
+                disabled={state.withdrawalRequestAmount > 0}
               />
               <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4">
                 <div className="padding-0 flex-align-center">

@@ -14,10 +14,9 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
 
   const callAction = async (action: (...args: any[]) => Promise<void>) => {
     setWaiting(true);
-    await action(); // TODO return txHash if successful, undefined if not
+    await action();
     setWaiting(false);
     triggerUpdate();
-    // TODO reset form fields on success
   };
 
   const baseStyle = clsx('button', 'width-full', 'text-small', 'button-large', disableCondition && 'disabled');

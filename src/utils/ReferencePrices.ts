@@ -64,9 +64,9 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
 
     console.log(type);
     switch (type) {
-      case 'uGas':
+      case 'uGAS':
         return await fetchUgas(collateral, chainId);
-      case 'uStonks':
+      case 'uSTONKS':
         return await fetchUstonks(collateral, chainId);
       case 'uPUNKS':
         return await fetchUpunks(collateral, chainId);

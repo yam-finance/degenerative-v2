@@ -16,6 +16,7 @@ export const Manage = () => {
   };
 
   const noPosition = state.sponsorCollateral == 0;
+  const activeWithdrawalRequest = state.withdrawalRequestAmount > 0;
   const styles = 'button-secondary expand';
 
   return (
@@ -33,8 +34,8 @@ export const Manage = () => {
         </div>
         <div className="flex-row flex-wrap margin-top-2">
           <button
-            disabled={noPosition}
-            className={clsx(styles, noPosition && 'disabled')}
+            disabled={noPosition || activeWithdrawalRequest}
+            className={clsx(styles, (noPosition || activeWithdrawalRequest) && 'disabled')}
             onClick={() => changeAction('DEPOSIT')}
           >
             Deposit
@@ -65,23 +66,34 @@ export const Manage = () => {
           <span className="text-color-4 text-small">{currentSynth}</span>
         </div>
         <div className="flex-row flex-wrap margin-top-2">
-          <button className={styles} onClick={() => changeAction('MINT')}>
+          <button className={clsx(styles, activeWithdrawalRequest && 'disabled')} onClick={() => changeAction('MINT')}>
             Mint
           </button>
           <button
-            disabled={noPosition}
-            className={clsx(styles, noPosition && 'disabled', 'margin-left-2')}
+            disabled={noPosition || activeWithdrawalRequest}
+            className={clsx(styles, (noPosition || activeWithdrawalRequest) && 'disabled', 'margin-left-2')}
             onClick={() => changeAction('BURN')}
           >
             Burn
           </button>
         </div>
         <button
-          disabled={noPosition}
-          className={clsx(styles, noPosition && 'disabled', 'width-full margin-top-2')}
+          disabled={noPosition || activeWithdrawalRequest}
+          className={clsx(styles, (noPosition || activeWithdrawalRequest) && 'disabled', 'width-full margin-top-2')}
           onClick={() => changeAction('REDEEM')}
         >
           Redeem
+        </button>
+        <button
+          disabled={!state.isExpired}
+          className={clsx(
+            styles,
+            (noPosition || activeWithdrawalRequest || !state.isExpired) && 'disabled',
+            'width-full margin-top-2'
+          )}
+          onClick={() => changeAction('REDEEM')}
+        >
+          Settle
         </button>
       </div>
     </ActionDisplay>
