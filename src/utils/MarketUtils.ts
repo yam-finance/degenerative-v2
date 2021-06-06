@@ -554,6 +554,8 @@ export const getMiningRewards = async (
   }
 };
 
+/**** DevMiningCalculator ****/
+
 const mergeUnique = (arr1: any, arr2: any) => {
   return arr1.concat(
     arr2.filter(function (item: any) {
@@ -562,6 +564,7 @@ const mergeUnique = (arr1: any, arr2: any) => {
   );
 };
 
+/// @ev Get all the necessary information for the calculation from umas whitelisted emps
 const getDevMiningEmps = async (network: String) => {
   /* @ts-ignore */
   const assets: AssetGroupModel = Assets[network];
@@ -597,8 +600,8 @@ const getContractInfo = async (address: string) => {
 };
 
 const getPriceByContract = async (address: string, toCurrency?: string) => {
-  // TODO: Remove while loop
   let result = await getContractInfo(address);
+  // TODO: Remove while loop
   while (!result) {
     result = await getContractInfo(address);
   }
@@ -612,6 +615,7 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
     const emp = new ethers.Contract(address, empAbi, provider);
     const tokenAddress = await emp.tokenCurrency();
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, provider);
+    /// @dev Fetches the token price from coingecko using getPriceByContract (getPrice == getPriceByContract)
     const tokenPrice = await getPrice(tokenAddress, toCurrency).catch(() => null);
     console.log('Fetched token Price: ', tokenPrice);
     const tokenCount = (await emp.totalTokensOutstanding()).toString();
@@ -619,6 +623,7 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
 
     const collateralAddress = await emp.collateralCurrency();
     const collateralContract = new ethers.Contract(collateralAddress, erc20Abi, provider);
+    /// @dev Fetches the collateral price from coingecko using getPriceByContract (getPrice == getPriceByContract)
     const collateralPrice = await getPrice(collateralAddress, toCurrency).catch(() => null);
     console.log('Fetched collateral Price: ', collateralPrice);
     const collateralCount = (await emp.totalPositionCollateral()).toString();
@@ -639,7 +644,7 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
       collateralRequirement,
     };
   }
-  // returns a fixed number
+  /// @ev Returns a fixed number
   function calculateEmpValue({
     tokenPrice,
     tokenDecimals,
@@ -657,19 +662,20 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
     collateralCount: number;
     collateralRequirement: number;
   }) {
-    // if we have a token price, use this first to estimate EMP value
+    // @dev If we have a token price, use this first to estimate EMP value
     if (tokenPrice) {
       const fixedPrice = FixedNumber.from(tokenPrice.toString());
       const fixedSize = FixedNumber.fromValue(tokenCount, tokenDecimals);
       return fixedPrice.mulUnsafe(fixedSize);
     }
-    // if theres no token price then fallback to collateral price divided by the collateralization requirement (usually 1.2)
+    // @ev If theres no token price then fallback to collateral price divided by the collateralization requirement (usually 1.2)
     // this should give a ballpack of what the total token value will be. Its still an over estimate though.
     if (collateralPrice) {
       const fixedPrice = FixedNumber.from(collateralPrice.toString());
       const collFixedSize = FixedNumber.fromValue(collateralCount, collateralDecimals);
       return fixedPrice.mulUnsafe(collFixedSize).divUnsafe(FixedNumber.fromValue(collateralRequirement, 18));
     }
+
     throw new Error('Unable to calculate emp value, no token price or collateral price');
   }
 
@@ -683,6 +689,8 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
     const allInfo = await Promise.all(empWhitelist.map((address) => getEmpInfo(address)));
 
     const values: any[] = [];
+
+    /// @dev Returns the whitelisted TVM
     const totalValue = allInfo.reduce((totalValue, info) => {
       const value = calculateEmpValue(info);
       values.push(value);
@@ -694,6 +702,7 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
     });
   }
 
+  /// @dev Calculate the whitelisted TVM
   async function estimateWhitelistedTVM({
     totalRewards,
     empWhitelist,
@@ -704,6 +713,8 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
     const allInfo = await Promise.all(empWhitelist.map((address) => getEmpInfo(address)));
 
     const values: any[] = [];
+
+    /// @dev Returns the whitelisted TVM
     const totalValue = allInfo.reduce((totalValue, info) => {
       const value = calculateEmpValue(info);
       values.push(value);
