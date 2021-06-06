@@ -455,6 +455,7 @@ export const getMiningRewards = async (asset: ISynth, collateralCount, tokenCoun
     const week1Until = 1615665600;
     const week2Until = 1616961600;
     const yamRewards = 0;
+    // TODO Check why umaRewards is sometimes undefined
     const umaRewards = await rewards[asset.emp.address];
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
