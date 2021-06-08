@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { BigNumber } from 'ethers';
 import { EthereumContext } from '@/contexts';
 import { ISynthMarketData, ISynth, IToken } from '@/types';
 import {
@@ -107,7 +108,8 @@ export const MarketProvider: React.FC = ({ children }) => {
             // marketCap
             // console.log(totalSupply.toString())
             // const apr = (await getMiningRewards(synth, tvlUsd, totalSupply, priceUsd, marketCap)) ?? 0;
-            const apr = (await getMiningRewards(name, synth, priceUsd, 1.5, totalSupply) ?? 0);
+            const tokenCount = BigNumber.from(utils.formatUnits(totalSupply, paired.decimals))
+            const apr = (await getMiningRewards(name, synth, priceUsd, 1.5, tokenCount) ?? 0);
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
