@@ -32,15 +32,10 @@ if (cached) {
   currentTime.setHours(currentTime.getHours() - 24);
   const expiry = Math.floor(currentTime.getTime() / 1000);
 
-  console.log("Timestamp log", expiry > Number(cached))
-  console.log(expiry)
-  console.log(Number(cached))
-
-  if (expiry < Number(cached)) {
+  if (expiry > Number(cached)) {
     sessionStorage.clear();
   }
 } else {
-  console.log("To be saved", Math.floor(Date.now() / 1000).toString())
   sessionStorage.setItem("timestamp", Math.floor(Date.now() / 1000).toString());
 }
 
