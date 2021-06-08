@@ -459,6 +459,7 @@ export const getMiningRewards = async (
     }
 
     /// @dev Prepare calculation
+    console.log("assetName", assetName)
     // getEmpInfo.tokenCount
     const _tokenCount: number = Number(utils.formatUnits(tokenCount, 18))
     console.log("_tokenCount", _tokenCount.toString())
