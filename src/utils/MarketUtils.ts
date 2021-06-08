@@ -369,7 +369,7 @@ export const getMiningRewards = async (
   asset: ISynth,
   assetPrice: number,
   cr: number,
-  tokenCount: BigNumber,
+  tokenCount: number,
 ) => {
   // TODO Use params for setup instead of test setup
   const rpcURL = 'https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud';
@@ -461,7 +461,7 @@ export const getMiningRewards = async (
     /// @dev Prepare calculation
     console.log("assetName", assetName)
     // getEmpInfo.tokenCount
-    const _tokenCount: number = Number(utils.formatUnits(tokenCount, 18))
+    const _tokenCount: number = tokenCount
     console.log("_tokenCount", _tokenCount.toString())
     // getEmpInfo.tokenPrice
     const _tokenPrice: number = tokenPrice

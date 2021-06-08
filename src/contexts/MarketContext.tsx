@@ -102,7 +102,7 @@ export const MarketProvider: React.FC = ({ children }) => {
 
             // Grab APRs from API
             //const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
-            const tokenCount = BigNumber.from(Number(utils.formatUnits(totalSupply, paired.decimals)))
+            const tokenCount = Number(utils.formatUnits(totalSupply, paired.decimals))
             const apr = (await getMiningRewards(name, synth, priceUsd, 1.5, tokenCount) ?? 0);
 
             data[name] = {
