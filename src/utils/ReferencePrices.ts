@@ -13,12 +13,11 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
-      const usdPriceCollateral = (collateralUsd.get(dateString) ?? 1) / 10 ** 9;
-      const scaledPrice = price / 1000; // Numbers don't work without dividing by 1000. Not sure why.
+      const scaledPrice = price / 10 ** 12; // uGAS represents 1,000,000 gas
 
       return {
         timestamp: dateString,
-        price: roundDecimals(scaledPrice * usdPriceCollateral, 2),
+        price: roundDecimals(scaledPrice, 6),
       };
     });
   };
