@@ -382,26 +382,28 @@ export const getMiningRewards = async (
   }
 
   try {
+    const contractLp = new ethers.Contract(asset.pool.address, UNIContract.abi, ethersProvider);
 
-    const jsonEmpData = await getEmpData(ethersProvider, network)
+    const [
+        jsonEmpData,
+        contractLpCall,
+        ethPrice,
+        umaPrice,
+        yamPrice
+    ] = await Promise.all([
+        getEmpData(ethersProvider, network),
+        contractLp.getReserves(),
+        getPriceByContract(WETH),
+        getPriceByContract(UMA),
+        getPriceByContract(YAM),
+    ]);
+
     const jsonEmpObject = JSON.parse(jsonEmpData)
     const { rewards, whitelistedTVM } = jsonEmpObject
 
     /// @dev Setup base variables for calculation
     let baseCollateral;
     const baseAsset = BigNumber.from(10).pow(asset.token.decimals);
-
-    /// @dev Setup contract calls
-    const contractLp = new ethers.Contract(asset.pool.address, UNIContract.abi, ethersProvider);
-    const contractLpCall = await contractLp.getReserves();
-    // const contractEmp = new this.options.web3.eth.Contract((EMPContract.abi as unknown) as AbiItem, asset.emp.address);
-    // const contractEmpCall = await contractEmp.methods.rawTotalPositionCollateral().call();
-
-    /// @dev Get prices for relevant tokens
-    const ethPrice = await getPriceByContract(WETH);
-    const umaPrice = await getPriceByContract(UMA);
-    const yamPrice = await getPriceByContract(YAM);
-    // const tokenPrice = await getPriceByContract(address);
 
     /// @dev Temporary pricing
     let tokenPrice;
