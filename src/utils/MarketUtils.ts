@@ -528,6 +528,10 @@ export const getMiningRewards = async (
     console.log("generalAPR", generalAPR.toString())
     console.log("------------------------------------")
 
+    if (generalAPR === Infinity) {
+      return 0;
+    }
+
     return generalAPR;
   } catch (e) {
     console.error("error", e);
