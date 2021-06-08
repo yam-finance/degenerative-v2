@@ -525,6 +525,7 @@ export const getMiningRewards = async (
     // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
     const generalAPR: number = sponsorAmountPerDollarMintedPerWeek * collateralEfficiency * _numberOfWeeksInYear * 100;
     console.log("generalAPR", generalAPR.toString())
+    console.log("------------------------------------")
 
     return generalAPR;
   } catch (e) {
