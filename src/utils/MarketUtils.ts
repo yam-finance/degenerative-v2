@@ -354,40 +354,52 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
 
 /**** APR CALCULATION ****/
 
+// /**
+//  * Fetch the mining rewards
+//  * @param {AssetModel} asset Asset object for the input
+//  * @param {AssetGroupModel} assetGroup Asset group of an asset for the input
+//  * @param {number} assetPrice Asset price
+//  * @param {number} cr Collateral Ratio
+//  * @public
+//  * @methods
+//  */
+// /* @ts-ignore */
+// export const getMiningRewards = async (
+//   asset: ISynth,
+//   collateralCount: number,
+//   tokenCount: BigNumber,
+//   synthTokenPrice: number,
+//   marketCap: number
+// ) => {
+//   // TODO Use passed params for setup instead of test setup
+//   const assetGroup = { name: 'UGAS', AssetModel: Assets['mainnet']['uGas'] };
+//   asset = asset;
+//   const assetPrice = 242.93;
+//   const cr = 1.5;
+//   const network = 'mainnet';
+
 /**
  * Fetch the mining rewards
- * @param {AssetModel} asset Asset object for the input
  * @param {AssetGroupModel} assetGroup Asset group of an asset for the input
+ * @param {AssetModel} asset Asset object for the input
  * @param {number} assetPrice Asset price
  * @param {number} cr Collateral Ratio
+ * @param {number} tokenCount Total supply
  * @public
  * @methods
  */
-/* @ts-ignore */
 export const getMiningRewards = async (
+  // assetGroup: AssetGroupModel,
   asset: ISynth,
-  collateralCount: number,
+  assetPrice: number,
+  cr: number,
   tokenCount: BigNumber,
-  synthTokenPrice: number,
-  marketCap: number
 ) => {
-  // TODO Use passed params for setup instead of test setup
-  const assetGroup = { name: 'UGAS', AssetModel: Assets['mainnet']['uGas'] };
-  asset = asset;
-  const assetPrice = 242.93;
-  const cr = 1.5;
-  const network = 'mainnet';
-
+  // TODO Use params for setup instead of test setup
   const rpcURL = 'https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud';
-  // const web3 = await new Web3(new Web3.providers.HttpProvider(rpcURL || ''));
-  // const provider: ExternalProvider = new Web3Provider(web3.currentProvider as any).provider;
   const ethersProvider = new ethers.providers.JsonRpcProvider(rpcURL || '');
-
-  // TODO Remove logs
-  // console.log("assetGroup", assetGroup)
-  // console.log("asset: ", asset)
-  // console.log("assetPrice", assetPrice)
-  // console.log("cr", cr)
+  const network = 'mainnet';
+  const assetGroup = { name: 'UGAS', AssetModel: Assets[network]['uGas'] };
 
   /// @dev Check if params are set
   if (!assetGroup || !asset || !assetPrice || !cr) {
@@ -399,7 +411,7 @@ export const getMiningRewards = async (
     const devMiningEmp = await getDevMiningEmps(network);
 
     /// @dev Construct devMiningCalculator
-    const devmining = await devMiningCalculator({
+    const devmining =  devMiningCalculator({
       provider: ethersProvider,
       ethers: ethers,
       getPrice: getPriceByContract,
@@ -408,29 +420,29 @@ export const getMiningRewards = async (
     });
 
     /// @dev Get emp info from devMiningCalculator
-    // const getEmpInfo: any = await devmining.utils.getEmpInfo(asset.emp.address);
+    // const getEmpInfo: any = await devmining.utils.getEmpInfo(
+    //   asset.emp.address
+    // );
 
     /// @dev Get dev mining reward estimation from devMiningCalculator
-    const estimateDevMiningRewards = await devmining.estimateDevMiningRewards({
-      /* @ts-ignore */
-      totalRewards: devMiningEmp['totalReward'],
-      /* @ts-ignore */
-      empWhitelist: devMiningEmp['empWhitelist'],
-    });
-
-    const whitelistedTVM = await devmining.estimateWhitelistedTVM({
-      /* @ts-ignore */
-      totalRewards: devMiningEmp['totalReward'],
-      /* @ts-ignore */
-      empWhitelist: devMiningEmp['empWhitelist'],
-    });
+    const estimateDevMiningRewards = await devmining.estimateDevMiningRewards(
+      {
+        /* @ts-ignore */
+        totalRewards: devMiningEmp["totalReward"],
+        /* @ts-ignore */
+        empWhitelist: devMiningEmp["empWhitelist"],
+      }
+    );
 
     // TODO Object.fromEntries(estimateDevMiningRewards)
     /// @dev Structure rewards
-    const rewards: any = Object.fromEntries(estimateDevMiningRewards);
-    // for (let i = 0; i < estimateDevMiningRewards.length; i++) {
-    //   rewards[estimateDevMiningRewards[i][0]] = estimateDevMiningRewards[i][1];
-    // }
+    const rewards: any = {};
+    let whitelistedTVM: string = "";
+    for (let i = 0; i < estimateDevMiningRewards.length; i++) {
+      rewards[estimateDevMiningRewards[i][0]] =
+        estimateDevMiningRewards[i][1];
+      whitelistedTVM = estimateDevMiningRewards[i][2];
+    }
 
     /// @dev Setup base variables for calculation
     let baseCollateral;
@@ -448,9 +460,9 @@ export const getMiningRewards = async (
     const yamPrice = await getPriceByContract(YAM);
     // const tokenPrice = await getPriceByContract(address);
 
-    /// @dev Temp pricing
+    /// @dev Temporary pricing
     let tokenPrice;
-    if (asset.collateral === 'USDC') {
+    if (asset.collateral === "USDC") {
       baseCollateral = BigNumber.from(10).pow(6);
       /* @ts-ignore */
       tokenPrice = assetPrice * 1;
@@ -468,17 +480,24 @@ export const getMiningRewards = async (
     const week1Until = 1615665600;
     const week2Until = 1616961600;
     const yamRewards = 0;
-    // TODO Check why umaRewards is sometimes undefined
-    const umaRewards = await rewards[asset.emp.address];
+    const umaRewards = rewards[asset.emp.address];
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
-    if (assetGroup.name.toUpperCase() === 'UGAS' && asset.cycle === 'JUN' && asset.year === '21') {
+    if (
+      assetGroup.name.toUpperCase() === "UGAS" &&
+      asset.cycle === "JUN" &&
+      asset.year === "21"
+    ) {
       if (current < week1Until) {
         yamWeekRewards += 5000;
       } else if (current < week2Until) {
         yamWeekRewards += 10000;
       }
-    } else if (assetGroup.name.toUpperCase() === 'USTONKS' && asset.cycle === 'APR' && asset.year === '21') {
+    } else if (
+      assetGroup.name.toUpperCase() === "USTONKS" &&
+      asset.cycle === "APR" &&
+      asset.year === "21"
+    ) {
       if (current < week1Until) {
         umaWeekRewards += 5000;
         yamWeekRewards += 5000;
@@ -492,69 +511,92 @@ export const getMiningRewards = async (
     let calcAsset = 0;
     let calcCollateral = 0;
     const normalRewards = umaRewards * umaPrice + yamRewards * yamPrice;
-    const weekRewards = umaWeekRewards * umaPrice + yamWeekRewards * yamPrice;
+    const additionalWeekRewards = umaWeekRewards * umaPrice + yamWeekRewards * yamPrice;
     const assetReserve0 = BigNumber.from(contractLpCall._reserve0).div(baseAsset).toNumber();
     const assetReserve1 = BigNumber.from(contractLpCall._reserve1).div(baseCollateral).toNumber();
 
-    if (assetGroup.name === 'USTONKS') {
+    if (assetGroup.name === "USTONKS") {
       calcAsset = assetReserve1 * tokenPrice;
-      calcCollateral = assetReserve0 * (asset.collateral == 'WETH' ? ethPrice : 1);
+      calcCollateral = assetReserve0 * (asset.collateral == "WETH" ? ethPrice : 1);
     } else {
       calcAsset = assetReserve0 * tokenPrice;
-      calcCollateral = assetReserve1 * (asset.collateral == 'WETH' ? ethPrice : 1);
+      calcCollateral = assetReserve1 * (asset.collateral == "WETH" ? ethPrice : 1);
     }
 
-    console.log('-----');
-    console.log('tokenCount', tokenCount);
-    console.log('tokenPrice', tokenPrice);
-    console.log('collateralCount', collateralCount);
-    console.log('umaRewards', umaRewards);
-    console.log('umaPrice', umaPrice);
-    console.log('weekRewards', weekRewards);
-    console.log('calcAsset', calcAsset);
-    console.log('-----');
+    /// @dev Prepare calculation
+    // getEmpInfo.tokenCount
+    const _tokenCount: number = Number(utils.formatUnits(tokenCount, 18))
+    console.log("_tokenCount", _tokenCount.toString())
+    // getEmpInfo.tokenPrice
+    const _tokenPrice: number = tokenPrice
+    console.log("_tokenPrice", _tokenPrice)
+    // whitelistedTVM
+    const _whitelistedTVM: number = Number(whitelistedTVM)
+    console.log("_whitelistedTVM", _whitelistedTVM)
+    // 50_000
+    /// @TODO Check why umaRewards != 50_000
+    const _umaRewards: number = 50_000
+    console.log("_umaRewards", _umaRewards)
+    // umaPrice
+    const _umaPrice: number = umaPrice
+    console.log("_umaPrice", _umaPrice)
+    // 0.82
+    const _developerRewardsPercentage: number = 0.82
+    console.log("_developerRewardsPercentage", _developerRewardsPercentage)
+    // additionalWeekRewards
+    const _additionalWeekRewards: number = additionalWeekRewards
+    console.log("_additionalWeekRewards", _additionalWeekRewards)
+    // calcAsset
+    const _calcAsset: number = calcAsset
+    console.log("_calcAsset", _calcAsset)
+    // 1
+    const _one: number = 1
+    console.log("_one", _one)
+    // 52
+    const _numberOfWeeksInYear: number = 52
+    console.log("_numberOfWeeksInYear", _numberOfWeeksInYear)
+
 
     // @notice New calculation based on the doc
+    /// @TODO Check _whitelistedTVM
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
-    let umaRewardsPercentage = tokenCount.mul(tokenPrice);
-    // TODO Calculate whitelistedTVM
-    umaRewardsPercentage = umaRewardsPercentage.div(whitelistedTVM);
-    // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
-    const dynamicAmountPerWeek = umaRewardsPercentage.mul(50_000);
-    // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
-    const dynamicAmountPerWeekInDollars = dynamicAmountPerWeek.mul(umaPrice);
-    // standardWeeklyRewards = dynamicAmountPerWeekInDollars * developerRewardsPercentage
-    const standardWeeklyRewards = dynamicAmountPerWeekInDollars.mul(0.82);
-    // totalWeeklyRewards = (standardRewards) + (Additional UMA * UMA price) + (Additional Yam * Yam Price)
-    const totalWeeklyRewards = standardWeeklyRewards.add(weekRewards);
-    // sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / (Synth in AMM pool * synth price)
-    const sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards.div(calcAsset);
-    // collateralEfficiency = 1 / (CR + 1)
-    const collateralEfficiency = BigNumber.from(1).div(BigNumber.from(cr).add(1));
-    // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
-    const generalAPR = sponsorAmountPerDollarMintedPerWeek.mul(collateralEfficiency).mul(52).toNumber();
+    let umaRewardsPercentage: number = (_tokenCount * _tokenPrice) / _whitelistedTVM;
+    console.log("umaRewardsPercentage", umaRewardsPercentage.toString())
 
-    // TODO: Remove old calculations
-    // @notice Old apr calculation
-    // ((dynamicAmountPerWeek * 52) * umaTokenPrice / 2) / (empCollateral + 50% totalCombinedLp) * 100
-    // let empTVL = BigNumber.from(contractEmpCall).div(baseAsset).toNumber();
-    // empTVL *= (asset.collateral == "WETH" ? ethPrice : 1);
-    // const uniLpPair = calcAsset + calcCollateral;
-    // const assetReserveValue = empTVL + (uniLpPair * 0.5);
-    // console.debug("assetReserveValue", assetReserveValue);
-    // const aprCalculate = (((normalRewards * 52 * 0.82) / assetReserveValue) * 100);
-    // const aprCalculateExtra = (((weekRewards * 52) / assetReserveValue) * 100);
-    // const totalAprCalculation = aprCalculate + aprCalculateExtra;
-    // console.debug("aprCalculate %", totalAprCalculation);
+    // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
+    const dynamicAmountPerWeek: number = _umaRewards * umaRewardsPercentage;
+    console.log("dynamicAmountPerWeek", dynamicAmountPerWeek.toString())
+
+    // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
+    const dynamicAmountPerWeekInDollars: number = dynamicAmountPerWeek * _umaPrice;
+    console.log("dynamicAmountPerWeekInDollars", dynamicAmountPerWeekInDollars.toString())
+
+    // standardWeeklyRewards = dynamicAmountPerWeekInDollars * developerRewardsPercentage
+    const standardWeeklyRewards: number = dynamicAmountPerWeekInDollars * _developerRewardsPercentage;
+    console.log("standardWeeklyRewards", standardWeeklyRewards.toString())
+
+    // totalWeeklyRewards = (standardRewards) + (Additional UMA * UMA price) + (Additional Yam * Yam Price)
+    const totalWeeklyRewards: number = standardWeeklyRewards + _additionalWeekRewards;
+    console.log("totalWeeklyRewards", totalWeeklyRewards.toString())
+
+    // sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / (Synth in AMM pool * synth price)
+    const sponsorAmountPerDollarMintedPerWeek: number = totalWeeklyRewards / _calcAsset;
+    console.log("sponsorAmountPerDollarMintedPerWeek", sponsorAmountPerDollarMintedPerWeek.toString())
+
+    // collateralEfficiency = 1 / (CR + 1)
+    const collateralEfficiency: number = 1 / (cr + 1)
+    console.log("collateralEfficiency", collateralEfficiency)
+
+    // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
+    const generalAPR: number = sponsorAmountPerDollarMintedPerWeek * collateralEfficiency * _numberOfWeeksInYear * 100;
+    console.log("generalAPR", generalAPR.toString())
 
     return generalAPR;
   } catch (e) {
-    console.error('error', e);
+    console.error("error", e);
     return 0;
   }
 };
-
-/**** DevMiningCalculator ****/
 
 const mergeUnique = (arr1: any, arr2: any) => {
   return arr1.concat(
@@ -564,7 +606,6 @@ const mergeUnique = (arr1: any, arr2: any) => {
   );
 };
 
-/// @ev Get all the necessary information for the calculation from umas whitelisted emps
 const getDevMiningEmps = async (network: String) => {
   /* @ts-ignore */
   const assets: AssetGroupModel = Assets[network];
@@ -572,20 +613,26 @@ const getDevMiningEmps = async (network: String) => {
     /* @ts-ignore */
     const data = [
       /* @ts-ignore */
-      assets['uGas'][1].emp.address,
+      assets["uGas"][1].emp.address,
       /* @ts-ignore */
-      assets['uGas'][2].emp.address,
+      assets["uGas"][2].emp.address,
       /* @ts-ignore */
-      assets['uGas'][3].emp.address,
+      assets["uGas"][3].emp.address,
       /* @ts-ignore */
-      assets['uStonks'][0].emp.address,
+      assets["uStonks"][0].emp.address,
     ];
     const umadata: any = await fetch(
       `https://raw.githubusercontent.com/UMAprotocol/protocol/master/packages/affiliates/payouts/devmining-status.json`
     );
     const umaDataJson = await umadata.json();
-    const empWhitelistUpdated = mergeUnique(umaDataJson['empWhitelist'], data);
-    const umaObject = { empWhitelist: empWhitelistUpdated, totalReward: umaDataJson['totalReward'] };
+    const empWhitelistUpdated = mergeUnique(
+      umaDataJson["empWhitelist"],
+      data
+    );
+    const umaObject = {
+      empWhitelist: empWhitelistUpdated,
+      totalReward: umaDataJson["totalReward"],
+    };
 
     return umaObject;
   } else {
@@ -594,41 +641,62 @@ const getDevMiningEmps = async (network: String) => {
 };
 
 const getContractInfo = async (address: string) => {
-  const data: any = await fetch(`https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`);
+  const data: any = await fetch(
+    `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
+  );
   const jsonData = await data.json();
   return jsonData;
 };
 
 const getPriceByContract = async (address: string, toCurrency?: string) => {
-  let result = await getContractInfo(address);
   // TODO: Remove while loop
+  let result = await getContractInfo(address);
   while (!result) {
     result = await getContractInfo(address);
   }
-  return result && result.market_data && result.market_data.current_price[toCurrency || 'usd'];
+  return (
+    result &&
+    result.market_data &&
+    result.market_data.current_price[toCurrency || "usd"]
+  );
 };
 
-export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20Abi }: DevMiningCalculatorParams) {
+
+export function devMiningCalculator({
+  provider,
+  ethers,
+  getPrice,
+  empAbi,
+  erc20Abi,
+}: DevMiningCalculatorParams) {
   const { utils, BigNumber, FixedNumber } = ethers;
   const { parseEther } = utils;
-  async function getEmpInfo(address: string, toCurrency = 'usd') {
+  async function getEmpInfo(address: string, toCurrency = "usd") {
     const emp = new ethers.Contract(address, empAbi, provider);
     const tokenAddress = await emp.tokenCurrency();
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, provider);
     /// @dev Fetches the token price from coingecko using getPriceByContract (getPrice == getPriceByContract)
-    const tokenPrice = await getPrice(tokenAddress, toCurrency).catch(() => null);
-    console.log('Fetched token Price: ', tokenPrice);
+    const tokenPrice = await getPrice(tokenAddress, toCurrency).catch(
+      () => null
+    );
     const tokenCount = (await emp.totalTokensOutstanding()).toString();
     const tokenDecimals = (await tokenContract.decimals()).toString();
 
     const collateralAddress = await emp.collateralCurrency();
-    const collateralContract = new ethers.Contract(collateralAddress, erc20Abi, provider);
+    const collateralContract = new ethers.Contract(
+      collateralAddress,
+      erc20Abi,
+      provider
+    );
     /// @dev Fetches the collateral price from coingecko using getPriceByContract (getPrice == getPriceByContract)
-    const collateralPrice = await getPrice(collateralAddress, toCurrency).catch(() => null);
-    console.log('Fetched collateral Price: ', collateralPrice);
+    const collateralPrice = await getPrice(collateralAddress, toCurrency).catch(
+      () => null
+    );
     const collateralCount = (await emp.totalPositionCollateral()).toString();
     const collateralDecimals = (await collateralContract.decimals()).toString();
-    const collateralRequirement = (await emp.collateralRequirement()).toString();
+    const collateralRequirement = (
+      await emp.collateralRequirement()
+    ).toString();
 
     return {
       address,
@@ -644,7 +712,7 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
       collateralRequirement,
     };
   }
-  /// @ev Returns a fixed number
+  /// @dev Returns a fixed number
   function calculateEmpValue({
     tokenPrice,
     tokenDecimals,
@@ -662,21 +730,30 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
     collateralCount: number;
     collateralRequirement: number;
   }) {
-    // @dev If we have a token price, use this first to estimate EMP value
+    /// @dev If we have a token price, use this first to estimate EMP value
     if (tokenPrice) {
       const fixedPrice = FixedNumber.from(tokenPrice.toString());
       const fixedSize = FixedNumber.fromValue(tokenCount, tokenDecimals);
       return fixedPrice.mulUnsafe(fixedSize);
     }
-    // @ev If theres no token price then fallback to collateral price divided by the collateralization requirement (usually 1.2)
-    // this should give a ballpack of what the total token value will be. Its still an over estimate though.
+
+    /** @dev Theres no token price then fallback to collateral price divided by
+      * the collateralization requirement (usually 1.2) this should give a
+      * ballpack of what the total token value will be. Its still an over estimate though.
+     */
     if (collateralPrice) {
       const fixedPrice = FixedNumber.from(collateralPrice.toString());
-      const collFixedSize = FixedNumber.fromValue(collateralCount, collateralDecimals);
-      return fixedPrice.mulUnsafe(collFixedSize).divUnsafe(FixedNumber.fromValue(collateralRequirement, 18));
+      const collFixedSize = FixedNumber.fromValue(
+        collateralCount,
+        collateralDecimals
+      );
+      return fixedPrice
+        .mulUnsafe(collFixedSize)
+        .divUnsafe(FixedNumber.fromValue(collateralRequirement, 18));
     }
-
-    throw new Error('Unable to calculate emp value, no token price or collateral price');
+    throw new Error(
+      "Unable to calculate emp value, no token price or collateral price"
+    );
   }
 
   async function estimateDevMiningRewards({
@@ -686,47 +763,32 @@ export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20A
     totalRewards: number;
     empWhitelist: string[];
   }) {
-    const allInfo = await Promise.all(empWhitelist.map((address) => getEmpInfo(address)));
+    const allInfo = await Promise.all(
+      empWhitelist.map((address) => getEmpInfo(address))
+    );
 
     const values: any[] = [];
-
     /// @dev Returns the whitelisted TVM
     const totalValue = allInfo.reduce((totalValue, info) => {
       const value = calculateEmpValue(info);
       values.push(value);
       return totalValue.addUnsafe(value);
-    }, FixedNumber.from('0'));
+    }, FixedNumber.from("0"));
 
-    return allInfo.map((info, i): [string, string] => {
-      return [info.address, values[i].mulUnsafe(FixedNumber.from(totalRewards)).divUnsafe(totalValue).toString()];
+    return allInfo.map((info, i): [string, string, string] => {
+      return [
+        info.address,
+        values[i]
+          .mulUnsafe(FixedNumber.from(totalRewards))
+          .divUnsafe(totalValue)
+          .toString(),
+        totalValue.toString()
+      ];
     });
-  }
-
-  /// @dev Calculate the whitelisted TVM
-  async function estimateWhitelistedTVM({
-    totalRewards,
-    empWhitelist,
-  }: {
-    totalRewards: number;
-    empWhitelist: string[];
-  }) {
-    const allInfo = await Promise.all(empWhitelist.map((address) => getEmpInfo(address)));
-
-    const values: any[] = [];
-
-    /// @dev Returns the whitelisted TVM
-    const totalValue = allInfo.reduce((totalValue, info) => {
-      const value = calculateEmpValue(info);
-      values.push(value);
-      return totalValue.addUnsafe(value);
-    }, FixedNumber.from('0'));
-
-    return totalValue;
   }
 
   return {
     estimateDevMiningRewards,
-    estimateWhitelistedTVM,
     utils: {
       getEmpInfo,
       calculateEmpValue,
