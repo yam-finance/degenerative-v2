@@ -354,42 +354,18 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
 
 /**** APR CALCULATION ****/
 
-// /**
-//  * Fetch the mining rewards
-//  * @param {AssetModel} asset Asset object for the input
-//  * @param {AssetGroupModel} assetGroup Asset group of an asset for the input
-//  * @param {number} assetPrice Asset price
-//  * @param {number} cr Collateral Ratio
-//  * @public
-//  * @methods
-//  */
-// /* @ts-ignore */
-// export const getMiningRewards = async (
-//   asset: ISynth,
-//   collateralCount: number,
-//   tokenCount: BigNumber,
-//   synthTokenPrice: number,
-//   marketCap: number
-// ) => {
-//   // TODO Use passed params for setup instead of test setup
-//   const assetGroup = { name: 'UGAS', AssetModel: Assets['mainnet']['uGas'] };
-//   asset = asset;
-//   const assetPrice = 242.93;
-//   const cr = 1.5;
-//   const network = 'mainnet';
-
 /**
  * Fetch the mining rewards
- * @param {AssetGroupModel} assetGroup Asset group of an asset for the input
+ * @param {string} assetName Name of an asset for the input
  * @param {AssetModel} asset Asset object for the input
- * @param {number} assetPrice Asset price
- * @param {number} cr Collateral Ratio
- * @param {number} tokenCount Total supply
+ * @param {number} assetPrice Asset price for the input
+ * @param {number} cr Collateral Ratio for the input
+ * @param {number} tokenCount Total supply for the input
  * @public
  * @methods
  */
 export const getMiningRewards = async (
-  // assetGroup: AssetGroupModel,
+  assetName: string,
   asset: ISynth,
   assetPrice: number,
   cr: number,
@@ -397,52 +373,19 @@ export const getMiningRewards = async (
 ) => {
   // TODO Use params for setup instead of test setup
   const rpcURL = 'https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud';
-  const ethersProvider = new ethers.providers.JsonRpcProvider(rpcURL || '');
+  const ethersProvider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(rpcURL || '');
   const network = 'mainnet';
-  const assetGroup = { name: 'UGAS', AssetModel: Assets[network]['uGas'] };
 
   /// @dev Check if params are set
-  if (!assetGroup || !asset || !assetPrice || !cr) {
+  if (!assetName || !asset || !assetPrice || !cr || !tokenCount) {
     return 0;
   }
 
   try {
-    /// @dev Get dev mining emp
-    const devMiningEmp = await getDevMiningEmps(network);
 
-    /// @dev Construct devMiningCalculator
-    const devmining =  devMiningCalculator({
-      provider: ethersProvider,
-      ethers: ethers,
-      getPrice: getPriceByContract,
-      empAbi: EMPContract.abi,
-      erc20Abi: erc20.abi,
-    });
-
-    /// @dev Get emp info from devMiningCalculator
-    // const getEmpInfo: any = await devmining.utils.getEmpInfo(
-    //   asset.emp.address
-    // );
-
-    /// @dev Get dev mining reward estimation from devMiningCalculator
-    const estimateDevMiningRewards = await devmining.estimateDevMiningRewards(
-      {
-        /* @ts-ignore */
-        totalRewards: devMiningEmp["totalReward"],
-        /* @ts-ignore */
-        empWhitelist: devMiningEmp["empWhitelist"],
-      }
-    );
-
-    // TODO Object.fromEntries(estimateDevMiningRewards)
-    /// @dev Structure rewards
-    const rewards: any = {};
-    let whitelistedTVM: string = "";
-    for (let i = 0; i < estimateDevMiningRewards.length; i++) {
-      rewards[estimateDevMiningRewards[i][0]] =
-        estimateDevMiningRewards[i][1];
-      whitelistedTVM = estimateDevMiningRewards[i][2];
-    }
+    const jsonEmpData = await getEmpData(ethersProvider, network)
+    const jsonEmpObject = JSON.parse(jsonEmpData)
+    const { rewards, whitelistedTVM } = jsonEmpObject
 
     /// @dev Setup base variables for calculation
     let baseCollateral;
@@ -483,21 +426,13 @@ export const getMiningRewards = async (
     const umaRewards = rewards[asset.emp.address];
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
-    if (
-      assetGroup.name.toUpperCase() === "UGAS" &&
-      asset.cycle === "JUN" &&
-      asset.year === "21"
-    ) {
+    if (assetName === "uGAS-JUN21") {
       if (current < week1Until) {
         yamWeekRewards += 5000;
       } else if (current < week2Until) {
         yamWeekRewards += 10000;
       }
-    } else if (
-      assetGroup.name.toUpperCase() === "USTONKS" &&
-      asset.cycle === "APR" &&
-      asset.year === "21"
-    ) {
+    } else if (assetName === "uSTONKS-APR21") {
       if (current < week1Until) {
         umaWeekRewards += 5000;
         yamWeekRewards += 5000;
@@ -515,7 +450,7 @@ export const getMiningRewards = async (
     const assetReserve0 = BigNumber.from(contractLpCall._reserve0).div(baseAsset).toNumber();
     const assetReserve1 = BigNumber.from(contractLpCall._reserve1).div(baseCollateral).toNumber();
 
-    if (assetGroup.name === "USTONKS") {
+    if (assetName.includes("uSTONKS")) {
       calcAsset = assetReserve1 * tokenPrice;
       calcCollateral = assetReserve0 * (asset.collateral == "WETH" ? ethPrice : 1);
     } else {
@@ -597,6 +532,68 @@ export const getMiningRewards = async (
     return 0;
   }
 };
+// Get USD price of token and cache to sessionstorage
+/*
+export const getUsdPrice = async (tokenAddress: string) => {
+  const cached = sessionStorage.getItem(tokenAddress);
+  if (cached) return Promise.resolve(Number(cached));
+
+  try {
+    const res = await axios.get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${tokenAddress}&vs_currencies=usd`);
+    const price = Number(res.data[tokenAddress].usd);
+    sessionStorage.setItem(tokenAddress, price.toString());
+    return Promise.resolve(price);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
+*/
+
+const getEmpData = async (ethersProvider: ethers.providers.JsonRpcProvider, network: string) => {
+  const cached = sessionStorage.getItem("empData");
+  if (cached) return cached;
+
+  /// @dev Get dev mining emp
+  const devMiningEmp = await getDevMiningEmps(network);
+
+  /// @dev Construct devMiningCalculator
+  const devmining =  devMiningCalculator({
+    provider: ethersProvider,
+    ethers: ethers,
+    getPrice: getPriceByContract,
+    empAbi: EMPContract.abi,
+    erc20Abi: erc20.abi,
+  });
+
+  /// @dev Get emp info from devMiningCalculator
+  // const getEmpInfo: any = await devmining.utils.getEmpInfo(
+  //   asset.emp.address
+  // );
+
+  /// @dev Get dev mining reward estimation from devMiningCalculator
+  const estimateDevMiningRewards = await devmining.estimateDevMiningRewards(
+    {
+      /* @ts-ignore */
+      totalRewards: devMiningEmp["totalReward"],
+      /* @ts-ignore */
+      empWhitelist: devMiningEmp["empWhitelist"],
+    }
+  );
+
+  // TODO Object.fromEntries(estimateDevMiningRewards)
+  /// @dev Structure rewards
+  const rewards: any = {};
+  let whitelistedTVM: string = "";
+  for (let i = 0; i < estimateDevMiningRewards.length; i++) {
+    rewards[estimateDevMiningRewards[i][0]] =
+      estimateDevMiningRewards[i][1];
+    whitelistedTVM = estimateDevMiningRewards[i][2];
+  }
+
+  sessionStorage.setItem("empData", JSON.stringify({ rewards, whitelistedTVM }));
+
+  return JSON.stringify({ rewards, whitelistedTVM })
+}
 
 const mergeUnique = (arr1: any, arr2: any) => {
   return arr1.concat(

@@ -107,7 +107,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             // marketCap
             // console.log(totalSupply.toString())
             // const apr = (await getMiningRewards(synth, tvlUsd, totalSupply, priceUsd, marketCap)) ?? 0;
-            const apr = (await getMiningRewards(synth, priceUsd, 1.5, totalSupply) ?? 0);
+            const apr = (await getMiningRewards(name, synth, priceUsd, 1.5, totalSupply) ?? 0);
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
