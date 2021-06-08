@@ -29,7 +29,7 @@ let currentTime = new Date();
 const cached = sessionStorage.getItem("timestamp");
 
 if (cached) {
-  currentTime.setHours(currentTime.getHours() - 24);
+  currentTime.setHours(currentTime.getHours() - 12);
   const expiry = Math.floor(currentTime.getTime() / 1000);
 
   if (expiry > Number(cached)) {
