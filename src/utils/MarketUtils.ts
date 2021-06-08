@@ -381,6 +381,9 @@ export const getMiningRewards = async (
     return 0;
   }
 
+  const cached = sessionStorage.getItem(assetName);
+  if (cached) return cached;
+
   try {
     const contractLp = new ethers.Contract(asset.pool.address, UNIContract.abi, ethersProvider);
 
@@ -526,15 +529,17 @@ export const getMiningRewards = async (
     console.log("collateralEfficiency", collateralEfficiency)
 
     // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
-    const generalAPR: number = sponsorAmountPerDollarMintedPerWeek * collateralEfficiency * _numberOfWeeksInYear * 100;
+    let generalAPR: number = sponsorAmountPerDollarMintedPerWeek * collateralEfficiency * _numberOfWeeksInYear * 100;
     console.log("generalAPR", generalAPR.toString())
     console.log("------------------------------------")
 
     if (generalAPR === Infinity) {
-      return 0;
+      generalAPR = 0;
     }
 
-    return generalAPR;
+    sessionStorage.setItem(assetName, generalAPR.toString());
+
+    return generalAPR.toString();
   } catch (e) {
     console.error("error", e);
     return 0;
