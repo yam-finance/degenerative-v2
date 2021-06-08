@@ -25,7 +25,24 @@ import erc20 from '../../abi/erc20.json';
 import Web3 from 'web3';
 import { ExternalProvider, Web3Provider } from '@ethersproject/providers';
 
-sessionStorage.clear();
+let currentTime = new Date();
+const cached = sessionStorage.getItem("timestamp");
+
+if (cached) {
+  currentTime.setHours(currentTime.getHours() - 24);
+  const expiry = Math.floor(currentTime.getTime() / 1000);
+
+  console.log("Timestamp log", expiry > Number(cached))
+  console.log(expiry)
+  console.log(Number(cached))
+
+  if (expiry < Number(cached)) {
+    sessionStorage.clear();
+  }
+} else {
+  console.log("To be saved", Math.floor(Date.now() / 1000).toString())
+  sessionStorage.setItem("timestamp", Math.floor(Date.now() / 1000).toString());
+}
 
 const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 const YAM = '0x0AaCfbeC6a24756c20D41914F2caba817C0d8521';
