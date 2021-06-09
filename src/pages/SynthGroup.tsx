@@ -29,7 +29,9 @@ export const SynthGroup: React.FC = () => {
   const [synthGroup, setSynthGroup] = useState<Record<string, ISynthGroupItem>>({});
   const [historicPriceData, setHistoricPriceData] = useState<{
     labels: string[];
-    synthPrices: Record<string, number[]>;
+    //synthPrices: Record<string, number[]>;
+    synthPrices: number[];
+    referencePrices: number[];
   }>();
   const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('Live');
   const [synthInFocus, setSynthInFocus] = useState<string>('');
@@ -74,8 +76,8 @@ export const SynthGroup: React.FC = () => {
 
   // TODO account for different data per synth
   useEffect(() => {
-    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
-    //async () => await getDailyPriceHistory_new(synthMetadata[synthInFocus]);
+    //const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
+    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
 
     if (chainId) getChartData();
   }, [synthMetadata, synthInFocus]);
@@ -83,22 +85,45 @@ export const SynthGroup: React.FC = () => {
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
+    console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
-      datasets: Object.entries(historicPriceData.synthPrices)
-        .filter(([name, prices]) => {
-          return name === synthInFocus || name === 'Reference';
-        }) // TODO
-        .map(([name, prices]) => ({
-          label: name,
-          data: prices,
-          borderColor: name === 'Reference' ? '#fff' : '#FF0099',
+      //datasets: Object.entries(historicPriceData.synthPrices)
+      //  .filter(([name, prices]) => {
+      //    return name === synthInFocus || name === 'Reference';
+      //  }) // TODO
+      //  .map(([name, prices]) => ({
+      //    label: name,
+      //    data: prices,
+      //    borderColor: name === 'Reference' ? '#fff' : '#FF0099',
+      //    borderWidth: 1,
+      //    pointRadius: 0,
+      //    pointHoverRadius: 4,
+      //    pointHoverBackgroundColor: '#FF0099',
+      //    tension: 0.1,
+      //  })),
+      datasets: [
+        {
+          name: synthInFocus,
+          data: historicPriceData.synthPrices,
+          borderColor: '#FF0099',
           borderWidth: 1,
           pointRadius: 0,
           pointHoverRadius: 4,
           pointHoverBackgroundColor: '#FF0099',
           tension: 0.1,
-        })),
+        },
+        {
+          name: 'Reference',
+          data: historicPriceData.referencePrices,
+          borderColor: '#FFF',
+          borderWidth: 1,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: '#FF0099',
+          tension: 0.1,
+        },
+      ],
     };
 
     const options = {
@@ -182,10 +207,10 @@ export const SynthGroup: React.FC = () => {
           <div className="text-xs">{balance} Tokens</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
+          <div className="text-color-4">{price}</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">${price}</div>
+          <div className="text-color-4">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
         </div>
       </Link>
     );
@@ -255,7 +280,7 @@ export const SynthGroup: React.FC = () => {
 
         <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
         <TableFilter />
-        <Table headers={['Maturity', 'APR', 'Your Balance', 'Liquidity', 'Price']}>
+        <Table headers={['Maturity', 'APR', 'Your Balance', 'Price', 'Liquidity']}>
           {Object.keys(synthGroup).length > 0 ? (
             Object.entries(synthGroup).map(([name, synth], index) => {
               return <SynthGroupRow {...synth} key={index} />;

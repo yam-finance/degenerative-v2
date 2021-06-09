@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 
 import { IMintedPosition, ITokensInWallet, IPoolPosition } from '@/types';
 
-import { useEmp, useToken } from '@/hooks';
+import { useEmp, useToken, useSynthActions } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
 import { BigNumber, utils } from 'ethers';
 import { MarketContext } from './MarketContext';
@@ -17,7 +17,8 @@ const initialState = {
   currentSynth: '',
   currentCollateral: '',
   triggerUpdate: () => {},
-  emp: {} as ReturnType<typeof useEmp>,
+  actions: {} as ReturnType<typeof useSynthActions>,
+  //emp: {} as ReturnType<typeof useEmp>,
 };
 
 export const UserContext = createContext(initialState);
@@ -33,6 +34,7 @@ export const UserProvider: React.FC = ({ children }) => {
   const [forceUpdate, setForceUpdate] = useState(false);
 
   const emp = useEmp();
+  const actions = useSynthActions();
   const erc20 = useToken();
 
   useEffect(() => {
@@ -84,11 +86,11 @@ export const UserProvider: React.FC = ({ children }) => {
 
       const mintedPosition: IMintedPosition = {
         name: synthName,
-        tokenAmount: roundDecimals(tokens, 2),
+        tokenAmount: tokens,
         // tokenPrice: await (await getPrice(synth.token, collateral)).price,
-        collateralAmount: roundDecimals(collateral, 2),
+        collateralAmount: collateral,
         // collateralPrice:
-        utilization: roundDecimals((tokens / collateral) * price, 2),
+        utilization: roundDecimals((tokens / collateral) * price, 4),
         withdrawalRequestAmount: withdrawalRequest,
         withdrawalRequestTimestamp: withdrawalRequestTimestamp,
       };
@@ -134,7 +136,7 @@ export const UserProvider: React.FC = ({ children }) => {
         setSynth,
         getSponsorPosition,
         triggerUpdate,
-        emp,
+        actions,
       }}
     >
       {children}
