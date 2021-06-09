@@ -642,6 +642,8 @@ const getDevMiningEmps = async (network: String) => {
       assets["uGas"][3].emp.address,
       /* @ts-ignore */
       assets["uStonks"][0].emp.address,
+      /* @ts-ignore */
+      assets["uStonks"][1].emp.address,
     ];
     const umadata: any = await fetch(
       `https://raw.githubusercontent.com/UMAprotocol/protocol/master/packages/affiliates/payouts/devmining-status.json`
