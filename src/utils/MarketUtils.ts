@@ -437,32 +437,24 @@ export const getMiningRewards = async (
 
     /// @dev Prepare reward calculation
     const current = moment().unix();
-    const week1Until = 1615665600;
-    const week2Until = 1616961600;
-    const yamRewards = 0;
+    /// @TODO Update week1UntilWeek2 and week3UntilWeek4 timestamps for uPUNKS after launch.
+    const week1UntilWeek2 = 1615665600;
+    const week3UntilWeek4 = 1616961600;
     const umaRewards = rewards[asset.emp.address];
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
-    if (assetName === "uGAS-JUN21") {
-      if (current < week1Until) {
+    /// @TODO Check assetName
+    if (assetName === "uPUNKS-SEP09") {
+      if (current < week1UntilWeek2) {
+        umaWeekRewards += 5000
+      } else if (current < week3UntilWeek4) {
         yamWeekRewards += 5000;
-      } else if (current < week2Until) {
-        yamWeekRewards += 10000;
-      }
-    } else if (assetName === "uSTONKS-APR21") {
-      if (current < week1Until) {
-        umaWeekRewards += 5000;
-        yamWeekRewards += 5000;
-      } else if (current < week2Until) {
-        umaWeekRewards += 10000;
-        yamWeekRewards += 10000;
       }
     }
 
     /// @dev Calculate rewards
     let calcAsset = 0;
     let calcCollateral = 0;
-    const normalRewards = umaRewards * umaPrice + yamRewards * yamPrice;
     const additionalWeekRewards = umaWeekRewards * umaPrice + yamWeekRewards * yamPrice;
     const assetReserve0 = BigNumber.from(contractLpCall._reserve0).div(baseAsset).toNumber();
     const assetReserve1 = BigNumber.from(contractLpCall._reserve1).div(baseCollateral).toNumber();
