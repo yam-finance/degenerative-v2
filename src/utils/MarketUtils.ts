@@ -12,6 +12,7 @@ import {
   getDateString,
   getCollateralData,
   roundDecimals,
+  UNISWAP_DAILY_PAIR_DATA,
 } from '@/utils';
 import { ISynth, IToken, ILiquidityPool } from '@/types';
 
@@ -141,8 +142,7 @@ interface PriceHistoryResponse {
  */
 // TODO this will grab data for individual synth
 // TODO data will NOT be paired to USD
-/*
-export const getDailyPriceHistory_new = async (synth: ISynth) => {
+export const getDailyPriceHistory = async (synth: ISynth) => {
   const synthAddress = synth.token.address;
   const poolAddress = synth.pool.address;
 
@@ -166,46 +166,39 @@ export const getDailyPriceHistory_new = async (synth: ISynth) => {
     const refPrices = await getReferencePriceHistory(synth.group, 1); // TODO
 
     // If API gives too much data, filter to find relevant data.
-    if (refPrices > 30) {
+    if (refPrices.length > 30) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
-      return refPrices.slice(minIndex);
+      return refPrices.slice(minIndex).map((ref: any) => ref.price);
     } else {
-      return refPrices;
+      return refPrices.map((ref: any) => ref.price);
     }
   })();
 
-  console.log(referencePrices);
-
   // Get pool data from subgraph
-  const poolData: { pairDayDatas: PriceHistoryResponse[] } = await request(
-    UNISWAP_ENDPOINT[1],
-    UNISWAP_DAILY_PAIR_DATA,
-    {
-      pairAddress: poolAddress,
-      startingTime: startingTime,
-    }
-  );
-
-  const dailyPriceResponse: {
-    tokenDayDatas: PriceHistoryResponse[];
-  } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
-    tokenAddresses: addressList,
+  const poolData: { pairDayDatas: any[] } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PAIR_DATA, {
+    pairAddress: poolAddress,
     startingTime: startingTime,
   });
 
-  console.log(poolData);
+  // Find which token is the synth and which is paired
+  let synthId: string;
+  let pairedId: string;
+  if (poolData.pairDayDatas[0].token0.id === synthAddress) {
+    synthId = 'reserve1';
+    pairedId = 'reserve0';
+  } else {
+    synthId = 'reserve0';
+    pairedId = 'reserve1';
+  }
 
-  // Find which token is the synth
-  const tokenId = poolData.pairDayDatas[0].token0.id === synthAddress ? 'token0' : 'token1';
-
-  // Put pool price data into a map, indexed by date
+  // Put pool price data into a map, indexed by date.
+  // Price is reserve of synth / reserve of paired
   const dailyPairData = new Map(
     poolData.pairDayDatas.map((dailyData) => [
       formatISO(fromUnixTime(dailyData.date), { representation: 'date' }),
-      dailyData[tokenId].derivedETH,
+      dailyData[synthId] / dailyData[pairedId],
     ])
   );
-  //console.log(dailyPairData);
 
   // Fill in empty spaces, since subgraph only captures price when it changes
   let lastPrice = dailyPairData.values().next().value;
@@ -214,13 +207,11 @@ export const getDailyPriceHistory_new = async (synth: ISynth) => {
     const price = dailyPairData.get(date);
     if (price) {
       lastPrice = price;
-      return roundDecimals(Number(price), 2);
+      return roundDecimals(Number(price), 4);
     } else {
-      return roundDecimals(Number(lastPrice), 2);
+      return roundDecimals(Number(lastPrice), 4);
     }
   });
-
-  //console.log(synthPrices);
 
   return {
     labels: dateArray,
@@ -228,11 +219,10 @@ export const getDailyPriceHistory_new = async (synth: ISynth) => {
     synthPrices: synthPrices,
   };
 };
-*/
 
-// TODO This whole function needs to be refactored
 /** Get labels, reference price data and all market price data for this synth type. */
-export const getDailyPriceHistory = async (group: string, synthMetadata: Record<string, ISynth>, chainId: number) => {
+/*
+export const getDailyPriceHistory2 = async (group: string, synthMetadata: Record<string, ISynth>, chainId: number) => {
   // Defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
 
@@ -289,10 +279,12 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
       const refMap = new Map(
         refPrices.map(({ timestamp, price }: { timestamp: string; price: number }) => [timestamp, price])
       );
+      console.log(refMap);
+      console.log(dateArray);
 
       console.log(refMap.get(dateArray[10]));
       dateArray.forEach((date) => {
-        console.log(date);
+        //console.log(date);
         refMap.get(date) ? returnObject.push(refMap.get(date)) : returnObject.push(undefined);
       });
 
@@ -300,7 +292,7 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
     }
   })();
 
-  //console.log(referenceData);
+  console.log(referenceData);
 
   // Map price data to date for each synth for easy access
   const priceData: Record<string, Record<string, number>> = {};
@@ -337,3 +329,4 @@ export const getDailyPriceHistory = async (group: string, synthMetadata: Record<
     synthPrices: res,
   };
 };
+*/

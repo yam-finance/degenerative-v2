@@ -1,13 +1,15 @@
 import { useState, useContext, useEffect, useCallback } from 'react';
+import { createContainer } from 'unstated-next';
 
 import { UserContext, MarketContext } from '@/contexts';
-import { useToken, useWrapEth } from '@/hooks';
+import { useEmp, useToken, useWrapEth } from '@/hooks';
 import { isEmpty } from '@/utils';
 import { ISynth } from '@/types';
 
 export const useSynthActions = () => {
-  const { currentSynth, currentCollateral, emp } = useContext(UserContext);
+  const { currentSynth, currentCollateral } = useContext(UserContext);
   const { synthMetadata, collateralData } = useContext(MarketContext);
+  const emp = useEmp();
 
   const [synth, setSynth] = useState({} as ISynth);
   // TODO consolidate all synth values. Just set an ISynth object instead.
@@ -81,16 +83,15 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error('Collateral amount or token amount is not greater than 0.');
+        console.log('Collateral amount or token amount is not greater than 0.');
       }
     },
     [synth]
   );
 
   const onDeposit = useCallback(
-    async (oldCollateral: number, newCollateral: number) => {
-      if (oldCollateral > 0 && newCollateral > 0 && newCollateral > oldCollateral) {
-        const collateralAmount = newCollateral - oldCollateral;
+    async (collateralAmount: number) => {
+      if (collateralAmount > 0) {
         try {
           const txReceipt = await emp.deposit(synth, collateralAmount);
           console.log(txReceipt.transactionHash);
@@ -104,6 +105,7 @@ export const useSynthActions = () => {
     [synth]
   );
 
+  // TODO rename to onBurn
   const onRepay = useCallback(
     async (tokenAmount: number) => {
       if (tokenAmount > 0) {
@@ -208,6 +210,15 @@ export const useSynthActions = () => {
     }
   };
 
+  const getUserPosition = useCallback(async () => {
+    if (!synth) return Promise.reject('No synth selected');
+    try {
+      return emp.getUserPosition(synth);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }, [synth]);
+
   return {
     collateralApproval,
     synthApproval,
@@ -223,7 +234,11 @@ export const useSynthActions = () => {
     onCancelWithdraw,
     onSettle,
     onWrapEth,
+    getUserPosition,
   };
 };
 
 export type ISynthActions = ReturnType<typeof useSynthActions>;
+
+// TODO use this everywhere instead
+export const SynthActionsContainer = createContainer(useSynthActions);

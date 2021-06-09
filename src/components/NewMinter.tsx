@@ -1,14 +1,15 @@
 import React, { useReducer, useEffect, useContext, useState } from 'react';
+import { createContainer } from 'unstated-next';
 import { useFormState } from 'react-use-form-state';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 
-import { Dropdown, Icon, Loader } from '@/components';
+import { Dropdown, Icon, Loader, ActionDisplay } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, ISynthActions } from '@/hooks';
 import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
 import clsx from 'clsx';
-import { IToken } from '@/types';
+import { IToken, ISynthMarketData } from '@/types';
 
 /* The component's state is the actual sponsor position. The form is the pending position. */
 
@@ -20,10 +21,11 @@ import { IToken } from '@/types';
   - Redeem: Repays debt AND removes collateral to maintain same utilization.
   - Settle: Settles sponsor position AFTER expiry.
 */
-type MinterAction = 'MINT' | 'DEPOSIT' | 'BURN' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
+export type MinterAction = 'MANAGE' | 'MINT' | 'DEPOSIT' | 'BURN' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
 
 const initialMinterState = {
   loading: true,
+  image: '/images/Box-01.png',
   action: 'MINT' as MinterAction,
   sponsorCollateral: 0,
   sponsorTokens: 0,
@@ -64,6 +66,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       return {
         ...state,
         loading: false,
+        image: initialized.image,
         sponsorCollateral: initialized.sponsorCollateral,
         sponsorTokens: initialized.sponsorTokens,
         withdrawalRequestAmount: initialized.withdrawalRequestAmount,
@@ -140,10 +143,12 @@ interface MinterFormFields {
   resultingTokens: number;
 }
 
-export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
+export const NewMinter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
+  const [{ collateralPriceUsd }, setMarketData] = useState({} as ISynthMarketData);
+
   const { account, provider } = useContext(EthereumContext);
   const { currentSynth, currentCollateral, mintedPositions, triggerUpdate } = useContext(UserContext);
-  const { synthMarketData, collateralData } = useContext(MarketContext);
+  const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
 
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
   const erc20 = useToken();
@@ -182,6 +187,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     const initMinterState = async () => {
       const collateralBalance = await setCollateralBalance(collateralData[currentCollateral]);
 
+      const image = synthMetadata[currentSynth].imgLocation;
       const marketData = synthMarketData[currentSynth];
       const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
       const utilization = Number(sponsorPosition?.utilization) ?? 0;
@@ -204,6 +210,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
         type: 'INIT_SPONSOR_POSITION',
         payload: {
           loading: false,
+          image: image,
           action: initialAction,
           sponsorCollateral: sponsorCollateral,
           sponsorTokens: sponsorTokens,
@@ -222,7 +229,13 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
       setGaugeInitialState(sponsorCollateral, sponsorTokens);
     };
 
-    if (currentSynth && currentCollateral && !isEmpty(collateralData) && !isEmpty(synthMarketData[currentSynth])) {
+    if (
+      currentSynth &&
+      currentCollateral &&
+      !isEmpty(collateralData) &&
+      !isEmpty(synthMarketData[currentSynth]) &&
+      !isEmpty(synthMetadata[currentSynth])
+    ) {
       initMinterState();
     }
   }, [currentSynth, currentCollateral, synthMarketData, collateralData, account, mintedPositions]);
@@ -327,22 +340,18 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     label: string;
     tooltip: string;
     className: string;
-    height: number;
     emphasized?: boolean;
   }
 
-  const GaugeLabel: React.FC<GaugeLabelProps> = ({ label, tooltip, className, height, emphasized }) => {
+  const GaugeLabel: React.FC<GaugeLabelProps> = ({ label, tooltip, className, emphasized }) => {
     const [showTooltip, setShowTooltip] = useState(false);
-
-    const labelHeight = {
-      bottom: `${height * 100}%`,
-    };
 
     const toggleDropdown = () => setShowTooltip(!showTooltip);
 
     return (
-      <div className={className} style={labelHeight}>
-        <div className="margin-0 w-dropdown">
+      <div className={className}>
+        <div className={`margin-right-1 text-small ${emphasized && 'text-color-4'}`}>{label}</div>
+        <div className="margin-0">
           <div
             className="padding-0 width-4 height-4 flex-align-center flex-justify-center w-dropdown-toggle"
             onMouseEnter={toggleDropdown}
@@ -351,63 +360,35 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
             <Icon name="Info" className="icon medium" />
           </div>
           <Dropdown className="dropdown-list radius-large box-shadow-medium w-dropdown-list" openDropdown={showTooltip}>
-            <div className="width-32 text-xs">{tooltip}</div>
+            <div className="text-xs">{tooltip}</div>
           </Dropdown>
         </div>
-        <div className={`margin-left-1 text-xs ${emphasized && 'text-color-4'}`}>{label}</div>
       </div>
     );
   };
 
-  interface GaugeProps {
-    utilization: number;
-    pendingUtilization: number;
-    globalUtilization: number;
-    liquidation: number;
-  }
-
-  const Gauge: React.FC<GaugeProps> = ({ utilization, pendingUtilization, globalUtilization, liquidation }) => {
-    const debtHeight = {
-      height: `${utilization * 100}%`,
-    };
-
-    // NOTE: Gauge does not line up correctly without subtracting 2
-    const pendingDebtHeight = {
-      height: `${pendingUtilization * 100}%`,
-    };
-
-    const globalUtilizationHeight = {
-      bottom: `${globalUtilization * 100}%`,
-    };
-
-    const liquidationHeight = {
-      bottom: `${liquidation * 100}%`,
-    };
-
+  const HorizontalGauge: React.FC<{ pendingUtilization: number; globalUtilization: number; liquidation: number }> = ({
+    pendingUtilization,
+    globalUtilization,
+    liquidation,
+  }) => {
+    console.log(pendingUtilization);
     return (
-      <div className="gauge">
-        <div className={`collateral large ${utilization > 0 ? '' : 'empty'}`}></div>
-        <div className="debt" style={pendingDebtHeight}>
-          <div className="gradient" />
-        </div>
-        <div className="liquidation-point" style={liquidationHeight} />
-        <div className="gcr" style={globalUtilizationHeight} />
-        {utilization > 0 && (
-          <div className="old-position" style={debtHeight}>
-            <div className="width-1px background-color-white expand"></div>
+      <div>
+        <div className="gauge horizontal large overflow-hidden">
+          <div className={`collateral large ${!pendingUtilization && 'empty'}`}>
+            <div className="gcr horizontal large" style={{ left: `${globalUtilization * 100}%` }} />
+            <div className="liquidation-point horizontal large" style={{ left: `${liquidation * 100}%` }} />
           </div>
-        )}
+          <div
+            className="debt horizontal large"
+            style={{ width: `${pendingUtilization ? pendingUtilization * 100 : 0}%` }}
+          >
+            <div className="gradient horizontal" />
+          </div>
+        </div>
       </div>
     );
-  };
-
-  const UtilizationMarker: React.FC<{ utilization: number }> = ({ utilization }) => {
-    return utilization ? (
-      <div className="old-position-marker">
-        <div className="old-position-outer-line"></div>
-        <div className="text-block">{roundDecimals(utilization * 100, 2) ?? 0}% Current Utilization</div>
-      </div>
-    ) : null;
   };
 
   interface ActionButtonProps {
@@ -427,7 +408,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
   }) => {
     const [waiting, setWaiting] = useState(false);
 
-    const baseStyle = clsx('button', 'width-full', 'text-small', 'w-button');
+    const baseStyle = clsx('button', 'width-full', 'text-small', 'w-button', 'button-large');
 
     const callAction = async (action: Promise<void>) => {
       setWaiting(true);
@@ -444,7 +425,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
         }}
         className={baseStyle}
       >
-        Approve EMP for {currentCollateral}
+        Approve {currentCollateral}
       </button>
     );
 
@@ -456,7 +437,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
         }}
         className={baseStyle}
       >
-        Approve EMP for {currentSynth}
+        Approve {currentSynth}
       </button>
     );
 
@@ -476,7 +457,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           className={clsx(baseStyle, disableMinting && 'disabled')}
           disabled={disableMinting}
         >
-          {`Mint ${newTokens} new ${currentSynth} for ${newCollateral} ${currentCollateral}`}
+          {`Mint ${newTokens} ${currentSynth} for ${newCollateral} ${currentCollateral}`}
         </button>
       );
     };
@@ -488,7 +469,7 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
       return (
         <button
-          onClick={() => callAction(actions.onDeposit(difference))}
+          onClick={() => callAction(actions.onDeposit(sponsorCollateral))}
           className={clsx(baseStyle, disabledAddCollateral && 'disabled')}
           disabled={disabledAddCollateral}
         >
@@ -626,69 +607,26 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
 
     const styles = 'button-secondary button-tiny glass margin-1 w-button';
 
-    const ActionDescription: React.FC<{ action: MinterAction }> = ({ action }) => {
-      switch (action) {
-        case 'MINT': {
-          return <div> Create a new position or create new synths from an existing position.</div>;
-        }
-        case 'DEPOSIT': {
-          return <div>Adds collateral to position, reducing utilization.</div>;
-        }
-        case 'BURN': {
-          return <div>Removes synths from position. Must have synths in wallet to do so.</div>;
-        }
-        case 'WITHDRAW': {
-          return (
-            <div>
-              Removes collateral from position, increasing utilization. Withdrawals below global utilization must be
-              requested.
-            </div>
-          );
-        }
-        case 'REDEEM': {
-          return <div>Repays debt and redeems equivalent collateral to maintain same utilization</div>;
-        }
-        default: {
-          return null;
-        }
-      }
-    };
-
     return (
-      <>
+      <div className="flex-column">
+        <span>Collateral: {currentCollateral}</span>
         <div className="flex-row flex-wrap">
-          <button className={clsx(styles, currentAction === 'MINT' && 'selected')} onClick={() => changeAction('MINT')}>
-            Mint Synth
-          </button>
           <button
             disabled={noPosition}
             className={clsx(styles, noPosition && 'opacity-10', currentAction === 'DEPOSIT' && 'selected')}
             onClick={() => changeAction('DEPOSIT')}
           >
-            Add Collateral
-          </button>
-          <button
-            disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'BURN' && 'selected')}
-            onClick={() => changeAction('BURN')}
-          >
-            Repay Synth
+            Deposit
           </button>
           <button
             disabled={noPosition}
             className={clsx(styles, noPosition && 'opacity-10', currentAction === 'WITHDRAW' && 'selected')}
             onClick={() => changeAction('WITHDRAW')}
           >
-            Withdraw Collateral
+            Withdraw
           </button>
-          <button
-            disabled={noPosition}
-            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'REDEEM' && 'selected')}
-            onClick={() => changeAction('REDEEM')}
-          >
-            Redeem Synth
-          </button>
-          <button
+          {/* 
+         <button
             disabled={noPosition || !state.isExpired}
             className={clsx(
               styles,
@@ -699,9 +637,28 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
           >
             Settle
           </button>
+         */}
         </div>
-        {/* <ActionDescription action={currentAction} /> */}
-      </>
+        <div className="flex-row flex-wrap">
+          <button className={clsx(styles, currentAction === 'MINT' && 'selected')} onClick={() => changeAction('MINT')}>
+            Mint Synth
+          </button>
+          <button
+            disabled={noPosition}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'BURN' && 'selected')}
+            onClick={() => changeAction('BURN')}
+          >
+            Repay Synth
+          </button>
+          <button
+            disabled={noPosition}
+            className={clsx(styles, noPosition && 'opacity-10', currentAction === 'REDEEM' && 'selected')}
+            onClick={() => changeAction('REDEEM')}
+          >
+            Redeem Synth
+          </button>
+        </div>
+      </div>
     );
   };
 
@@ -770,6 +727,81 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     );
   };
 
+  const MintAction: React.FC = () => {
+    return (
+      <ActionDisplay>
+        <h3 className="margin-0 text-align-center">Mint {currentSynth}</h3>
+        <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
+          Deposit <strong className="text-color-4">{currentCollateral}</strong> to mint <strong>{currentSynth}</strong>{' '}
+          at or above <span className="weight-bold text-color-4">{state.globalUtilization * 100}%</span> utilization
+        </p>
+        <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
+
+        <div className="expand width-full flex-column-end">
+          <div className="flex-row">
+            <div className="width-full margin-bottom-4">
+              <div className="relative">
+                <input
+                  {...number('resultingCollateral')}
+                  onClick={(e) => e.currentTarget.select()}
+                  type="number"
+                  className="form-input height-24 text-large bottom-sharp margin-bottom-0 border-bottom-none w-input"
+                  maxLength={256}
+                  placeholder="0"
+                  required
+                />
+                <div className="border-bottom-1px"></div>
+                <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
+                  <div className="padding-0 flex-align-center w-dropdown-toggle">
+                    <p className="margin-0 text-color-4">{currentCollateral}</p>
+                  </div>
+                </div>
+                <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
+                  <label className="opacity-60 weight-medium">Collateral</label>
+                  <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
+                    Max {utils.formatEther(state.maxCollateral.toString())}
+                  </button>
+                </div>
+              </div>
+              <div className="width-8 height-8 margin-auto flex-align-center flex-justify-center radius-full background-color-white inverse-margin">
+                <Icon name="ArrowDown" className="icon opacity-100 text-color-1" />
+              </div>
+              <div className="relative">
+                <input
+                  {...number('resultingTokens')}
+                  onClick={(e) => e.currentTarget.select()}
+                  type="number"
+                  className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
+                  maxLength={256}
+                  required
+                />
+                <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
+                  <div className="padding-0 flex-align-center">
+                    <p className="margin-0 text-color-4">{currentSynth}</p>
+                  </div>
+                </div>
+                <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
+                  <label className="opacity-60 weight-medium">Mint</label>
+                </div>
+              </div>
+              <div className="text-xs opacity-50 margin-top-1">Mint a minimum of 5 {currentSynth}</div>
+            </div>
+          </div>
+
+          <div>
+            <ActionButton
+              action={state.action}
+              sponsorCollateral={state.sponsorCollateral}
+              sponsorTokens={state.sponsorTokens}
+              resultingCollateral={Number(formState.values.resultingCollateral)}
+              resultingTokens={Number(formState.values.resultingTokens)}
+            />
+          </div>
+        </div>
+      </ActionDisplay>
+    );
+  };
+
   if (state.loading) {
     return <Loader className="flex-align-center flex-justify-center padding-top-48" />;
   }
@@ -777,114 +809,83 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
     <>
       <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
         <div className="margin-0 w-form">
-          <form className="max-width-small portrait-max-width-full flex-column background-color-2 padding-8 radius-xl box-shadow-large z-1 padding-y-12 landscape-padding-2">
-            <h3 className="margin-0 text-align-center">{currentSynth}</h3>
-            <p className="text-align-center margin-top-2 margin-bottom-20 landscape-margin-bottom-20" />
-            <div className="flex-row">
-              <div className="expand relative padding-right-2">
-                <GaugeLabel
-                  label="Global Utilization"
-                  tooltip="Average utilization of all sponsor positions."
-                  className="gcr-legend"
-                  height={state.globalUtilization}
-                />
-                <GaugeLabel
-                  label="Liquidation"
-                  tooltip="Position is at risk of liquidation at this point."
-                  className="liquidation-legend"
-                  height={state.liquidationPoint}
-                  emphasized
-                />
-                <div className="background-color-5 padding-2 radius-large z-10 width-32 collat">
-                  <h6 className="text-align-center margin-bottom-0">Collateral</h6>
-                  <div className="width-full flex-justify-center margin-top-1 w-dropdown">
-                    <div className="padding-0 flex-align-center">
-                      <a className="weight-bold">
-                        {roundDecimals(Number(formState.values.resultingCollateral), 4)} {currentCollateral}
-                      </a>
-                    </div>
-                  </div>
-                  <input
-                    {...number('resultingCollateral')}
-                    type="number"
-                    className="form-input small margin-bottom-1 w-input"
-                    maxLength={10}
-                    min={0}
-                    placeholder="0"
-                    required
-                    disabled={!state.editCollateral}
-                  />
-                  <button
-                    onClick={(e) => setMaximum(e)}
-                    className={`button-secondary button-tiny width-full ${!state.editCollateral && 'disabled'}`}
-                    disabled={!state.editCollateral}
-                  >
-                    Max {state.maxCollateral.toFixed(2)}
-                  </button>
-                  <div className="nub background-color-5"></div>
-                </div>
-              </div>
+          <form className="width-full max-width-medium portrait-max-width-full flex-column-middle background-color-2 padding-8 radius-xl box-shadow-large z-1 padding-y-12 landscape-padding-2">
+            <h3 className="margin-0 text-align-center">Mint {currentSynth}</h3>
+            <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
+              Deposit <strong className="text-color-4">{currentCollateral}</strong> to mint{' '}
+              <strong>{currentSynth}</strong> at or above{' '}
+              <span className="weight-bold text-color-4">{state.globalUtilization * 100}%</span> utilization
+            </p>
+            <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
 
-              <Gauge
-                utilization={state.utilization}
-                pendingUtilization={state.pendingUtilization}
-                globalUtilization={state.globalUtilization}
-                liquidation={state.liquidationPoint}
-              />
-
-              <div className="expand padding-left-2">
-                <div
-                  className={`background-color-debt padding-2 radius-large z-10 width-32 debts ${
-                    Number(formState.values.resultingTokens) === 0 &&
-                    Number(formState.values.resultingCollateral) === 0 &&
-                    'disabled'
-                  }`}
-                  style={{
-                    top: `${state.pendingUtilization < 1 ? (1 - state.pendingUtilization) * 100 : 0}%`,
-                  }}
-                >
-                  <h6 className="text-align-center margin-bottom-0">Synth</h6>
-                  {state.pendingUtilization >= 0 && (
-                    <>
-                      <h4 className="text-align-center margin-top-2 margin-bottom-0">
-                        {roundDecimals(state.pendingUtilization * 100, 2)}%
-                      </h4>
-                      <p className="text-xs text-align-center margin-bottom-0">Utilization</p>
-                    </>
-                  )}
-                  <h5 className="text-align-center margin-bottom-1 margin-top-1 text-small">
-                    {roundDecimals(Number(formState.values.resultingTokens), 4)} {currentSynth}
-                  </h5>
-                  <div className="height-auto flex-align-end">
+            <div className="expand width-full flex-column-end">
+              <div className="flex-row">
+                <div className="width-full margin-bottom-4">
+                  <div className="relative">
                     <input
-                      {...number('resultingTokens')}
+                      {...number('resultingCollateral')}
+                      onClick={(e) => e.currentTarget.select()}
                       type="number"
-                      className="form-input small margin-bottom-1 w-input"
-                      maxLength={10}
-                      min="0"
+                      className="form-input height-24 text-large bottom-sharp margin-bottom-0 border-bottom-none w-input"
+                      maxLength={256}
                       placeholder="0"
                       required
-                      disabled={!state.editTokens}
                     />
+                    <div className="border-bottom-1px"></div>
+                    <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
+                      <div className="padding-0 flex-align-center w-dropdown-toggle">
+                        <p className="margin-0 text-color-4">{currentCollateral}</p>
+                      </div>
+                    </div>
+                    <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
+                      <label className="opacity-60 weight-medium">Collateral</label>
+                      <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
+                        Max {utils.formatEther(state.maxCollateral.toString())}
+                      </button>
+                    </div>
                   </div>
-                  <div className="nub background-color-debt left"></div>
+                  <div className="width-8 height-8 margin-auto flex-align-center flex-justify-center radius-full background-color-white inverse-margin">
+                    <Icon name="ArrowDown" className="icon opacity-100 text-color-1" />
+                  </div>
+                  <div className="relative">
+                    <input
+                      {...number('resultingTokens')}
+                      onClick={(e) => e.currentTarget.select()}
+                      type="number"
+                      className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
+                      maxLength={256}
+                      required
+                    />
+                    <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
+                      <div className="padding-0 flex-align-center">
+                        <p className="margin-0 text-color-4">{currentSynth}</p>
+                      </div>
+                    </div>
+                    <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
+                      <label className="opacity-60 weight-medium">Mint</label>
+                    </div>
+                  </div>
+                  <div className="text-xs opacity-50 margin-top-1">Mint a minimum of 5 {currentSynth}</div>
                 </div>
               </div>
+
+              <div>
+                <ActionButton
+                  action={state.action}
+                  sponsorCollateral={state.sponsorCollateral}
+                  sponsorTokens={state.sponsorTokens}
+                  resultingCollateral={Number(formState.values.resultingCollateral)}
+                  resultingTokens={Number(formState.values.resultingTokens)}
+                />
+              </div>
             </div>
-            <UtilizationMarker utilization={state.utilization} />
           </form>
         </div>
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
           <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4"></div>
           <div className="padding-8 padding-top-0 tablet-padding-top-0 landscape-padding-top-0 portrait-padding-top-0 flex-column expand">
-            <div className="margin-top-3">
-              <h6 className="margin-bottom-0">Actions</h6>
-              <div className="divider margin-y-2"></div>
-              <ActionSelector currentAction={state.action} noPosition={!state.sponsorCollateral} />
-            </div>
-
             <div className="margin-top-8">
-              <h6 className="margin-bottom-0">Your Current Position</h6>
+              <h6 className="margin-bottom-0">In your wallet</h6>
               <div className="divider margin-y-2"></div>
               <div className="text-small">
                 <div className="flex-align-baseline margin-bottom-2">
@@ -903,28 +904,75 @@ export const Minter: React.FC<{ actions: ISynthActions }> = ({ actions }) => {
             </div>
 
             <div className="margin-top-8">
-              <h6 className="margin-bottom-0">TX Details</h6>
+              <div className="flex-align-center flex-space-between">
+                <h6 className="margin-bottom-0">Resulting position</h6>
+                <GaugeLabel
+                  label={`${state.pendingUtilization > 0 ? (1 / state.pendingUtilization).toFixed(2) : '0'} CR`}
+                  tooltip={`This is what your position will look like after minting. You will mint ${
+                    state.sponsorTokens
+                  } ${currentSynth}, utilizing ${
+                    state.utilization ? state.utilization * 100 : 0
+                  }% of your ${currentCollateral}`}
+                  className="flex-align-center"
+                  emphasized
+                />
+              </div>
               <div className="divider margin-y-2"></div>
-              {!state.sponsorCollateral ? (
-                <p className="text-xs">
-                  No collateral deposited yet.
-                  <br />
-                  {`Must mint a minimum of ${state.minTokens} ${currentSynth}.`}
-                  <br />
-                </p>
-              ) : (
-                <TransactionDetails />
-              )}
-            </div>
 
-            <div className="expand flex-align-end">
-              <ActionButton
-                action={state.action}
-                sponsorCollateral={state.sponsorCollateral}
-                sponsorTokens={state.sponsorTokens}
-                resultingCollateral={Number(formState.values.resultingCollateral)}
-                resultingTokens={Number(formState.values.resultingTokens)}
+              <HorizontalGauge
+                pendingUtilization={state.pendingUtilization}
+                globalUtilization={state.globalUtilization}
+                liquidation={state.liquidationPoint}
               />
+
+              <div>
+                <div className="gauge horizontal large overflow-hidden">
+                  <div className={`collateral large `}>
+                    <div className="gcr horizontal large" style={{ left: `${state.globalUtilization * 100}%` }} />
+                    <div
+                      className="liquidation-point horizontal large"
+                      style={{ left: `${state.liquidationPoint * 100}%` }}
+                    />
+                  </div>
+                  <div className="debt horizontal large" style={{ width: `${state.pendingUtilization * 100}%` }}>
+                    <div className="gradient horizontal" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative z-1">
+                <div className="flex-align-center flex-space-between margin-top-6 margin-bottom-4">
+                  <div className="flex-align-center">
+                    <div className="gcr horizontal in-legend margin-right-2" />
+                    <GaugeLabel
+                      label="GCR"
+                      tooltip="Global Collateralization Ratio. The average utilization ratio of all minters"
+                      className="flex-align-center"
+                      emphasized
+                    />
+                  </div>
+                  <p className="text-xs margin-0">
+                    {(1 / state.globalUtilization).toFixed(2)} ({roundDecimals(state.globalUtilization * 100, 2)}%
+                    utilization)
+                  </p>
+                </div>
+
+                <div className="flex-align-center flex-space-between">
+                  <div className="flex-align-center">
+                    <div className="liquidation-point horizontal in-legend margin-right-2" />
+                    <GaugeLabel
+                      label="Liquidation"
+                      tooltip="Position is at risk of liquidation at this point."
+                      className="flex-align-center"
+                      emphasized
+                    />
+                  </div>
+                  <p className="text-xs margin-0">
+                    {(1 / state.liquidationPoint).toFixed(2)} ({roundDecimals(state.liquidationPoint * 100, 2)}%
+                    utilization)
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

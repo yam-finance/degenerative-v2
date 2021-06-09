@@ -46,12 +46,12 @@ export const UNISWAP_DAILY_PAIR_DATA = gql`
       date
       token0 {
         id
-        derivedETH
       }
       token1 {
         id
-        derivedETH
       }
+      reserve0
+      reserve1
     }
   }
 `;
