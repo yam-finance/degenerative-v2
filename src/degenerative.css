@@ -462,7 +462,6 @@ label {
   border-color: #3898ec;
   outline: 0;
 }
-.w-input[disabled],
 .w-select[disabled],
 .w-input[readonly],
 .w-select[readonly],
@@ -1248,10 +1247,11 @@ textarea.w-select {
   position: absolute;
   background: #dddddd;
   display: none;
-  min-width: 100%;
+  max-width: 200px;
 }
 .w-dropdown-list.w--open {
-  display: block;
+  display: inline-block;
+  z-index: 100;
 }
 .w-dropdown-link {
   padding: 10px 20px;
@@ -4004,6 +4004,10 @@ a:hover {
 .width-8.height-8.margin-auto.flex-align-center.flex-justify-center.radius-full.background-color-white.inverse-margin {
   margin-top: -1rem;
   margin-bottom: -1rem;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .width-8.height-8.background-color-1.radius-full.flex-align-center.flex-justify-center.margin-right-2 {
@@ -6113,6 +6117,7 @@ a:hover {
   padding: 8px;
   background-color: #4347bd;
   color: #fff;
+  display: inline-block;
 }
 
 .dropdown-list.top-right.w--open {
@@ -6301,6 +6306,7 @@ a:hover {
 }
 
 .collateral {
+  transition: width 2s ease-in-out;
   position: absolute;
   left: 0%;
   top: auto;
@@ -6322,6 +6328,10 @@ a:hover {
 
 .collateral.box-shadow-medium.box-shadow-large.height-0 {
   height: 0%;
+}
+
+.collateral.horizontal {
+  transition: width 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .collateral.large {
@@ -6349,6 +6359,7 @@ a:hover {
   width: 100%;
   height: 1px;
   border-bottom: 1px dashed #fff;
+  z-index: 1;
 }
 
 .liquidation-point.horizontal {
@@ -6361,6 +6372,7 @@ a:hover {
   margin-left: -2px;
   border-left: 4px solid #fff;
   border-bottom-style: none;
+  transition: left 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .liquidation-point.horizontal.in-legend {
@@ -6379,6 +6391,7 @@ a:hover {
   height: 1px;
   border-bottom: 1px dashed hsla(0, 0%, 100%, 0.5);
   border-left: 1px solid #000;
+  z-index: 1;
 }
 
 .gcr.horizontal {
@@ -6391,6 +6404,7 @@ a:hover {
   margin-left: -2px;
   border-left: 4px dotted hsla(0, 0%, 100%, 0.5);
   border-bottom-style: none;
+  transition: left 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .gcr.horizontal.in-legend {
@@ -6443,6 +6457,7 @@ a:hover {
   bottom: 0%;
   width: 30%;
   height: 100%;
+  transition: width 1s cubic-bezier(0.17, 0.67, 0.27, 1);
 }
 
 .debt.horizontal._75 {
@@ -6476,18 +6491,19 @@ a:hover {
 }
 
 .gradient.horizontal {
-  width: 128px;
+  width: 256px;
   height: 100%;
   background-image: -webkit-gradient(
     linear,
     right top,
     left top,
     from(#ff3062),
-    color-stop(33%, #ff8541),
+    color-stop(30%, #ff3062),
     color-stop(50%, #ff8e3d),
+    color-stop(70%, #37d774),
     to(#37d774)
   );
-  background-image: linear-gradient(270deg, #ff3062, #ff8541 33%, #ff8e3d 50%, #37d774);
+  background-image: linear-gradient(270deg, #ff3062 30%, #ff8541 50%, #37d774 70%);
 }
 
 .gradient.horizontal.large {
@@ -6497,11 +6513,12 @@ a:hover {
     right top,
     left top,
     from(#ff3062),
-    color-stop(33%, #ff8541),
+    color-stop(30%, #ff3062),
     color-stop(50%, #ff8e3d),
+    color-stop(70%, #37d774),
     to(#37d774)
   );
-  background-image: linear-gradient(270deg, #ff3062, #ff8541 33%, #ff8e3d 50%, #37d774);
+  background-image: linear-gradient(270deg, #ff3062 30%, #ff8541 50%, #37d774 70%);
 }
 
 .value {

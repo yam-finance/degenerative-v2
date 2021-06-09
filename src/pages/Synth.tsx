@@ -3,9 +3,9 @@ import { useParams, NavLink } from 'react-router-dom';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import { useFormState } from 'react-use-form-state';
 
-import { useSynthActions, useToken } from '@/hooks';
+import { PositionManagerContainer, useSynthActions, useToken } from '@/hooks';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, Icon, MainDisplay, MainHeading, Minter, SideDisplay } from '@/components';
+import { Page, Navbar, Icon, MainDisplay, MainHeading, NewMinter, PositionManager, SideDisplay } from '@/components';
 import { ISynth, ISynthMarketData } from '@/types';
 import { utils } from 'ethers';
 import { isEmpty, roundDecimals } from '@/utils';
@@ -19,7 +19,7 @@ interface SynthParams {
 
 export const Synth: React.FC = () => {
   const { group, cycleYear, action } = useParams<SynthParams>();
-  const { currentSynth, currentCollateral, setSynth, mintedPositions } = useContext(UserContext);
+  const { currentSynth, currentCollateral, setSynth, mintedPositions, triggerUpdate } = useContext(UserContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
   const { signer } = useContext(EthereumContext);
 
@@ -47,6 +47,7 @@ export const Synth: React.FC = () => {
 
   useEffect(() => {
     const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
+    if (sponsorPosition) console.log(sponsorPosition);
 
     if (sponsorPosition) {
       let withdrawalRequestMinutesLeft = 0;
@@ -59,7 +60,7 @@ export const Synth: React.FC = () => {
     }
   }, [currentSynth, mintedPositions]);
 
-  const ActionSelector: React.FC = () => {
+  const LinkBar: React.FC = () => {
     const collateral = collateralData[currentCollateral];
 
     let tradeLink;
@@ -96,6 +97,8 @@ export const Synth: React.FC = () => {
   };
 
   const WithdrawalRequestDialog: React.FC = () => {
+    const [waiting, setWaiting] = useState(false);
+
     return (
       <div className="width-full padding-2 radius-large background-color-2 margin-bottom-6 text-color-4">
         <div className="flex-align-center margin-bottom-2 flex-space-between">
@@ -113,13 +116,19 @@ export const Synth: React.FC = () => {
               <div className="flex-row margin-top-2">
                 <a
                   href="https://docs.umaproject.org/synthetic-tokens/expiring-synthetic-tokens#slow-withdrawal"
-                  className="button-secondary button-tiny margin-right-1 white w-button"
+                  className="button-secondary button-tiny margin-right-1"
                 >
                   Learn more
                 </a>
                 <button
-                  onClick={async () => await actions.onCancelWithdraw()}
-                  className="button-secondary button-tiny white w-button"
+                  onClick={async () => {
+                    setWaiting(true);
+                    await actions.onCancelWithdraw();
+                    triggerUpdate();
+                    setWaiting(false);
+                  }}
+                  className="button-secondary button-tiny"
+                  disabled={waiting}
                 >
                   Cancel Withdrawal
                 </button>
@@ -132,8 +141,14 @@ export const Synth: React.FC = () => {
               </div>
               <div className="flex-row margin-top-2">
                 <button
-                  onClick={async () => await actions.onWithdrawPassedRequest()}
-                  className="button-secondary button-tiny margin-right-1 w-button"
+                  onClick={async () => {
+                    setWaiting(true);
+                    await actions.onWithdrawPassedRequest();
+                    triggerUpdate();
+                    setWaiting(false);
+                  }}
+                  className="button-secondary button-tiny margin-right-1"
+                  disabled={waiting}
                 >
                   Withdraw
                 </button>
@@ -216,6 +231,7 @@ export const Synth: React.FC = () => {
                   e.preventDefault();
                   setWaiting(true);
                   await actions.onWrapEth(Number(formState.values.ethAmount));
+                  triggerUpdate();
                   setWaiting(false);
                 }}
                 disabled={waiting}
@@ -234,9 +250,11 @@ export const Synth: React.FC = () => {
       <Navbar />
       <MainDisplay>
         <MainHeading>{currentSynth}</MainHeading>
-        {!isEmpty(synth) && <ActionSelector />}
+        {!isEmpty(synth) && <LinkBar />}
         <div className="border-bottom-1px margin-x-8 margin-y-4" />
-        <Minter actions={actions} />
+        <PositionManagerContainer.Provider>
+          <PositionManager actions={actions} />
+        </PositionManagerContainer.Provider>
       </MainDisplay>
       <SideDisplay>
         {synth.collateral === 'WETH' && <WrapEthDialog />}
@@ -259,15 +277,15 @@ export const Synth: React.FC = () => {
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
-                  <div>Global utilization</div>
+                  <div>Global Collateral Ratio</div>
                 </div>
-                <div className="weight-medium text-color-4">{roundDecimals(globalUtilization * 100, 2)}%</div>
+                <div className="weight-medium text-color-4">{roundDecimals(1 / globalUtilization, 2)}</div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
                   <div>Liquidation</div>
                 </div>
-                <div className="weight-medium text-color-4">{roundDecimals(liquidationPoint * 100, 2)}%</div>
+                <div className="weight-medium text-color-4">{roundDecimals(1 / liquidationPoint, 2)}</div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">

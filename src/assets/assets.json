@@ -1,6 +1,6 @@
 {
   "mainnet": {
-    "uGas": [
+    "uGAS": [
       {
         "name": "January",
         "cycle": "JAN",
@@ -70,7 +70,7 @@
         }
       }
     ],
-    "uStonks": [
+    "uSTONKS": [
       {
         "name": "April",
         "cycle": "APR",
@@ -127,7 +127,7 @@
     ]
   },
   "kovan": {
-    "uGas": [
+    "uGAS": [
       {
         "name": "December",
         "cycle": "DEC",
