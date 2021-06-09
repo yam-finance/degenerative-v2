@@ -74,7 +74,7 @@ export const Redeem: React.FC = React.memo(() => {
 
   const ClosePositionButton: React.FC = () => {
     const redeemTokens = state.sponsorTokens;
-    return <ActionButton action={() => actions.onRedeem(redeemTokens)}>{`Close Position`}</ActionButton>;
+    return <ActionButton action={() => actions.onRedeem(redeemTokens)}>Redeem full position</ActionButton>;
   };
 
   return (

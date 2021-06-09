@@ -22,7 +22,7 @@ interface ISynthGroupItem {
 type SynthTableFilter = 'Live' | 'Expired' | 'All';
 
 export const SynthGroup: React.FC = () => {
-  const { synthsInWallet } = useContext(UserContext);
+  const { synthsInWallet, mintedPositions } = useContext(UserContext);
   const { chainId } = useContext(EthereumContext);
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
   const { group } = useParams<SynthParams>();
@@ -79,7 +79,7 @@ export const SynthGroup: React.FC = () => {
     //const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
 
-    if (chainId) getChartData();
+    if (synthMetadata[synthInFocus] && chainId) getChartData();
   }, [synthMetadata, synthInFocus]);
 
   const Chart: React.FC = () => {
@@ -278,8 +278,10 @@ export const SynthGroup: React.FC = () => {
           {historicPriceData ? <Chart /> : <img className="chart-loader pulse" src={chartLoader} />}
         </div>
 
-        <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
-        <TableFilter />
+        <div className="flex-align-baseline margin-top-8">
+          <h5 className="margin-left-8 text-medium">Available Synths</h5>
+          <TableFilter />
+        </div>
         <Table headers={['Maturity', 'APR', 'Your Balance', 'Price', 'Liquidity']}>
           {Object.keys(synthGroup).length > 0 ? (
             Object.entries(synthGroup).map(([name, synth], index) => {

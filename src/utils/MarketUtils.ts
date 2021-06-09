@@ -8,6 +8,7 @@ import {
   SUSHISWAP_ENDPOINT,
   UNISWAP_MARKET_DATA_QUERY,
   UNISWAP_DAILY_PRICE_QUERY,
+  SUSHI_DAILY_PAIR_DATA,
   getReferencePriceHistory,
   getDateString,
   getCollateralData,
@@ -175,7 +176,9 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   })();
 
   // Get pool data from subgraph
-  const poolData: { pairDayDatas: any[] } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PAIR_DATA, {
+  const endpoint = synth.pool.location === 'uni' ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
+  const query = synth.pool.location === 'uni' ? UNISWAP_DAILY_PAIR_DATA : SUSHI_DAILY_PAIR_DATA;
+  const poolData: { pairDayDatas: any[] } = await request(endpoint, query, {
     pairAddress: poolAddress,
     startingTime: startingTime,
   });

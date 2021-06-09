@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 import { useTranslation } from 'react-i18next';
 
 import ContextProviders from '@/contexts';
-import './purged/degenerative.css';
+import './degenerative.css';
+//import './purged/degenerative.css';
 //import './webflow.css';
 import './normalize.css';
 
