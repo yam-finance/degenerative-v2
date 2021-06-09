@@ -451,13 +451,16 @@ export const getMiningRewards = async (
     const assetReserve0 = BigNumber.from(contractLpCall._reserve0).div(baseAsset).toNumber();
     const assetReserve1 = BigNumber.from(contractLpCall._reserve1).div(baseCollateral).toNumber();
 
-    if (assetName.includes("uStonks")) {
-      calcAsset = assetReserve1 * tokenPrice;
-      calcCollateral = assetReserve0 * (asset.collateral == "WETH" ? ethPrice : 1);
-    } else {
-      calcAsset = assetReserve0 * tokenPrice;
-      calcCollateral = assetReserve1 * (asset.collateral == "WETH" ? ethPrice : 1);
-    }
+    // if (assetName.includes("uSTONKS")) {
+    //   calcAsset = assetReserve1 * tokenPrice;
+    //   calcCollateral = assetReserve0 * (asset.collateral == "WETH" ? ethPrice : 1);
+    // } else {
+    //   calcAsset = assetReserve0 * tokenPrice;
+    //   calcCollateral = assetReserve1 * (asset.collateral == "WETH" ? ethPrice : 1);
+    // }
+
+    calcAsset = assetReserve0 * tokenPrice;
+    calcCollateral = assetReserve1 * (asset.collateral == "WETH" ? ethPrice : 1);
 
     /// @dev Prepare calculation
     console.log("assetName", assetName)
