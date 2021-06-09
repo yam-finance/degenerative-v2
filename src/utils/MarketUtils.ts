@@ -451,7 +451,6 @@ export const getMiningRewards = async (
     const assetReserve0 = BigNumber.from(contractLpCall._reserve0).div(baseAsset).toNumber();
     const assetReserve1 = BigNumber.from(contractLpCall._reserve1).div(baseCollateral).toNumber();
 
-    console.log(assetName)
     if (assetName.includes("uSTONKS")) {
       calcAsset = assetReserve1 * tokenPrice;
       calcCollateral = assetReserve0 * (asset.collateral == "WETH" ? ethPrice : 1);
