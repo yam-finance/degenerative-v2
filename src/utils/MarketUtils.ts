@@ -63,12 +63,12 @@ export const getUsdPrice = async (tokenAddress: string) => {
 
 export const getReferenceSpotPrice = async (synth: ISynth) => {
   switch (synth.group) {
-    case 'uGas': {
+    case 'uGAS': {
       const res = await axios.get('https://data.yam.finance/median');
       console.log(res.data);
       return;
     }
-    case 'uStonks': {
+    case 'uSTONKS': {
       const res = await axios.get('https://data.yam.finance/ustonks/index/jun21');
       console.log(res.data);
       return;
@@ -619,15 +619,15 @@ const getDevMiningEmps = async (network: String) => {
     /* @ts-ignore */
     const data = [
       /* @ts-ignore */
-      assets["uGas"][1].emp.address,
+      assets["uGAS"][1].emp.address,
       /* @ts-ignore */
-      assets["uGas"][2].emp.address,
+      assets["uGAS"][2].emp.address,
       /* @ts-ignore */
-      assets["uGas"][3].emp.address,
+      assets["uGAS"][3].emp.address,
       /* @ts-ignore */
-      assets["uStonks"][0].emp.address,
+      assets["uSTONKS"][0].emp.address,
       /* @ts-ignore */
-      assets["uStonks"][1].emp.address,
+      assets["uSTONKS"][1].emp.address,
     ];
     const umadata: any = await fetch(
       `https://raw.githubusercontent.com/UMAprotocol/protocol/master/packages/affiliates/payouts/devmining-status.json`
