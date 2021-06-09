@@ -86,9 +86,9 @@ export const UserProvider: React.FC = ({ children }) => {
 
       const mintedPosition: IMintedPosition = {
         name: synthName,
-        tokenAmount: roundDecimals(tokens, 2),
+        tokenAmount: tokens,
         // tokenPrice: await (await getPrice(synth.token, collateral)).price,
-        collateralAmount: roundDecimals(collateral, 2),
+        collateralAmount: collateral,
         // collateralPrice:
         utilization: roundDecimals((tokens / collateral) * price, 4),
         withdrawalRequestAmount: withdrawalRequest,

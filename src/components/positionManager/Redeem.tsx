@@ -72,11 +72,17 @@ export const Redeem: React.FC = React.memo(() => {
     );
   };
 
+  const ClosePositionButton: React.FC = () => {
+    const redeemTokens = state.sponsorTokens;
+    return <ActionButton action={() => actions.onRedeem(redeemTokens)}>{`Close Position`}</ActionButton>;
+  };
+
   return (
     <ActionDisplay>
       <h3 className="margin-0 text-align-center">Redeem</h3>
       <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
-        Redeem <strong className="text-color-4">{currentSynth}</strong> to lower your collateral ratio
+        Redeem <strong className="text-color-4">{currentSynth}</strong> to lower your collateral ratio, or close your
+        entire position
       </p>
       <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
 
@@ -112,7 +118,15 @@ export const Redeem: React.FC = React.memo(() => {
           </div>
         </div>
 
-        {!actions.synthApproval ? <SynthApproveButton /> : <RedeemButton />}
+        {!actions.synthApproval ? (
+          <SynthApproveButton />
+        ) : (
+          <>
+            <RedeemButton />
+            <div className="margin-top-3" />
+            <ClosePositionButton />
+          </>
+        )}
         <BackButton />
       </div>
     </ActionDisplay>

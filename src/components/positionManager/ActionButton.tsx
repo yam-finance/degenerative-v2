@@ -19,7 +19,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
     triggerUpdate();
   };
 
-  const baseStyle = clsx('button', 'width-full', 'text-small', 'button-large', disableCondition && 'disabled');
+  const baseStyle = clsx('button', 'width-full', 'button-large', disableCondition && 'disabled');
 
   if (waiting) {
     return (
