@@ -165,7 +165,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     return (
       <div className="modal">
         <div className="modal-bg w-inline-block" onClick={closeModal}></div>
-        <div className="padding-6 background-color-3 radius-large box-shadow-large width-full max-width-xl">
+        <div className="padding-6 background-color-3 radius-large box-shadow-large width-full max-width-2xl">
           <div className="modal-section">
             <div>
               <h3 className="text-color-6 margin-0">You are initiating a slow withdrawal</h3>

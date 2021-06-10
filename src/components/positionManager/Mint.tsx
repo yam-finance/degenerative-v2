@@ -15,7 +15,7 @@ export const Mint: React.FC = React.memo(() => {
   const { state, dispatch } = PositionManagerContainer.useContainer();
   const { currentSynth, currentCollateral, mintedPositions } = useContext(UserContext);
 
-  const [adjustToGcr, setAdjustToGcr] = useState(true);
+  const [adjustToGcr, setAdjustToGcr] = useState(!state.sponsorCollateral);
   const actions = useSynthActions();
 
   const [formState, { number }] = useFormState<MintFormFields>(
@@ -107,7 +107,7 @@ export const Mint: React.FC = React.memo(() => {
 
     const disableMinting =
       newTokens <= 0 ||
-      //newCollateral <= 0 ||
+      newCollateral <= 0 ||
       (state.sponsorCollateral && newCollateral > state.sponsorCollateral) ||
       state.resultingUtilization > state.globalUtilization ||
       state.resultingUtilization > state.liquidationPoint;
@@ -166,6 +166,7 @@ export const Mint: React.FC = React.memo(() => {
                 className="form-input height-24 text-large top-sharp border-top-none margin-0 w-input"
                 maxLength={256}
                 min={0}
+                disabled={adjustToGcr}
                 required
               />
               <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">

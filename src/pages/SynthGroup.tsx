@@ -186,12 +186,14 @@ export const SynthGroup: React.FC = () => {
           <div className="margin-right-1 text-color-4">{name}</div>
           <div className="text-xs opacity-50">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
         </div>
-        <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{apr}%</div>
-        </div>
         <div className="expand portrait-hide">{balance}</div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{price}</div>
+          <div className="text-color-4">
+            {price} {collateral}
+          </div>
+        </div>
+        <div className="expand portrait-padding-y-2">
+          <div className="text-color-4">{apr}%</div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
@@ -266,7 +268,7 @@ export const SynthGroup: React.FC = () => {
           <h5 className="margin-left-8 text-medium">Available Synths</h5>
           <TableFilter />
         </div>
-        <Table headers={['Maturity', 'APR', 'Your Balance', 'Price', 'Liquidity']}>
+        <Table headers={['Maturity', 'Your Balance', 'Price', 'APR', 'Liquidity']}>
           {Object.keys(synthGroup).length > 0 ? (
             Object.entries(synthGroup).map(([name, synth], index) => {
               return <SynthGroupRow {...synth} key={index} />;
