@@ -88,7 +88,7 @@ export const SynthGroup: React.FC = () => {
       labels: historicPriceData.labels,
       datasets: [
         {
-          name: synthInFocus,
+          label: synthInFocus,
           data: historicPriceData.synthPrices,
           borderColor: '#FF0099',
           borderWidth: 1,
@@ -98,7 +98,7 @@ export const SynthGroup: React.FC = () => {
           tension: 0.1,
         },
         {
-          name: 'Reference',
+          label: 'Reference',
           data: historicPriceData.referencePrices,
           borderColor: '#FFF',
           borderWidth: 1,
@@ -167,7 +167,10 @@ export const SynthGroup: React.FC = () => {
     };
 
     const legend = {
-      display: false,
+      display: true,
+      labels: {
+        fontColor: '#FFF',
+      },
     };
 
     return <Line data={data} height={300} options={options} legend={legend} />;
