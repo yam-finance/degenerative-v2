@@ -436,7 +436,7 @@ export const getMiningRewards = async (
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
     /// @TODO Check assetName
-    if (assetName === "uPUNKS-SEP09") {
+    if (assetName === "uPUNKS-0921") {
       if (current < week1UntilWeek2) {
         umaWeekRewards += 5000
       } else if (current < week3UntilWeek4) {
