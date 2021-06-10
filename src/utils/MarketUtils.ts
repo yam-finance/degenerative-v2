@@ -450,77 +450,77 @@ export const getMiningRewards = async (
     calcCollateral = assetReserve1 * (asset.collateral == "WETH" ? ethPrice : 1);
 
     /// @dev Prepare calculation
-    console.log("assetName", assetName)
+    // console.log("assetName", assetName)
     // getEmpInfo.tokenCount
     const _tokenCount: number = tokenCount
-    console.log("_tokenCount", _tokenCount.toString())
+    // console.log("_tokenCount", _tokenCount.toString())
     // getEmpInfo.tokenPrice
     const _tokenPrice: number = tokenPrice
-    console.log("_tokenPrice", _tokenPrice)
+    // console.log("_tokenPrice", _tokenPrice)
     // whitelistedTVM
     const _whitelistedTVM: number = Number(whitelistedTVM)
-    console.log("_whitelistedTVM", _whitelistedTVM)
+    // console.log("_whitelistedTVM", _whitelistedTVM)
     // 50_000
     /// @TODO Check why umaRewards != 50_000
     const _umaRewards: number = 50_000
-    console.log("_umaRewards", _umaRewards)
+    // console.log("_umaRewards", _umaRewards)
     // umaPrice
     const _umaPrice: number = umaPrice
-    console.log("_umaPrice", _umaPrice)
+    // console.log("_umaPrice", _umaPrice)
     // 0.82
     const _developerRewardsPercentage: number = 0.82
-    console.log("_developerRewardsPercentage", _developerRewardsPercentage)
+    // console.log("_developerRewardsPercentage", _developerRewardsPercentage)
     // additionalWeekRewards
     const _additionalWeekRewards: number = additionalWeekRewards
-    console.log("_additionalWeekRewards", _additionalWeekRewards)
+    // console.log("_additionalWeekRewards", _additionalWeekRewards)
     // calcAsset
     const _calcAsset: number = calcAsset
-    console.log("_calcAsset", _calcAsset)
+    // console.log("_calcAsset", _calcAsset)
     // 1
     const _one: number = 1
-    console.log("_one", _one)
+    // console.log("_one", _one)
     // 52
     const _numberOfWeeksInYear: number = 52
-    console.log("_numberOfWeeksInYear", _numberOfWeeksInYear)
+    // console.log("_numberOfWeeksInYear", _numberOfWeeksInYear)
     // cr
     const _cr: number = cr
-    console.log("_cr", _cr)
+    // console.log("_cr", _cr)
 
 
     // @notice New calculation based on the doc
     /// @TODO Check _whitelistedTVM
     // umaRewardsPercentage = (`totalTokensOutstanding` * synthPrice) / whitelistedTVM
     let umaRewardsPercentage: number = (_tokenCount * _tokenPrice) / _whitelistedTVM;
-    console.log("umaRewardsPercentage", umaRewardsPercentage.toString())
+    // console.log("umaRewardsPercentage", umaRewardsPercentage.toString())
 
     // dynamicAmountPerWeek = 50,000 * umaRewardsPercentage
     const dynamicAmountPerWeek: number = _umaRewards * umaRewardsPercentage;
-    console.log("dynamicAmountPerWeek", dynamicAmountPerWeek.toString())
+    // console.log("dynamicAmountPerWeek", dynamicAmountPerWeek.toString())
 
     // dynamicAmountPerWeekInDollars = dynamicAmountPerWeek * UMA price
     const dynamicAmountPerWeekInDollars: number = dynamicAmountPerWeek * _umaPrice;
-    console.log("dynamicAmountPerWeekInDollars", dynamicAmountPerWeekInDollars.toString())
+    // console.log("dynamicAmountPerWeekInDollars", dynamicAmountPerWeekInDollars.toString())
 
     // standardWeeklyRewards = dynamicAmountPerWeekInDollars * developerRewardsPercentage
     const standardWeeklyRewards: number = dynamicAmountPerWeekInDollars * _developerRewardsPercentage;
-    console.log("standardWeeklyRewards", standardWeeklyRewards.toString())
+    // console.log("standardWeeklyRewards", standardWeeklyRewards.toString())
 
     // totalWeeklyRewards = (standardRewards) + (Additional UMA * UMA price) + (Additional Yam * Yam Price)
     const totalWeeklyRewards: number = standardWeeklyRewards + _additionalWeekRewards;
-    console.log("totalWeeklyRewards", totalWeeklyRewards.toString())
+    // console.log("totalWeeklyRewards", totalWeeklyRewards.toString())
 
     // sponsorAmountPerDollarMintedPerWeek = totalWeeklyRewards / (Synth in AMM pool * synth price)
     const sponsorAmountPerDollarMintedPerWeek: number = totalWeeklyRewards / _calcAsset;
-    console.log("sponsorAmountPerDollarMintedPerWeek", sponsorAmountPerDollarMintedPerWeek.toString())
+    // console.log("sponsorAmountPerDollarMintedPerWeek", sponsorAmountPerDollarMintedPerWeek.toString())
 
     // collateralEfficiency = 1 / (CR + 1)
     const collateralEfficiency: number = 1 / (_cr + 1)
-    console.log("collateralEfficiency", collateralEfficiency)
+    // console.log("collateralEfficiency", collateralEfficiency)
 
     // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
     let generalAPR: number = sponsorAmountPerDollarMintedPerWeek * collateralEfficiency * _numberOfWeeksInYear * 100;
-    console.log("generalAPR", generalAPR.toString())
-    console.log("------------------------------------")
+    // console.log("generalAPR", generalAPR.toString())
+    // console.log("------------------------------------")
 
     if (generalAPR === Infinity) {
       generalAPR = 0;
