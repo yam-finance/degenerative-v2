@@ -121,10 +121,10 @@ export const Explore = () => {
           </div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{formatForDisplay(totalLiquidity)}</div>
+          <div className="text-color-4">${formatForDisplay(totalLiquidity)}</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{formatForDisplay(totalMarketCap)}</div>
+          <div className="text-color-4">${formatForDisplay(totalMarketCap)}</div>
         </div>
       </TableRow>
     );
