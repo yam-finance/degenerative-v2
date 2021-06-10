@@ -104,7 +104,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             //const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
             const cr = 1 / globalUtilization;
             const tokenCount = Number(utils.formatUnits(totalSupply, paired.decimals));
-            const apr = Number((await getMiningRewards(name, synth, priceUsd, 1.5, tokenCount)) ?? 0);
+            const apr = 0; //Number((await getMiningRewards(name, synth, priceUsd, 1.5, tokenCount)) ?? 0);
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
