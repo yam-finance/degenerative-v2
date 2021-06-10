@@ -446,18 +446,8 @@ export const getMiningRewards = async (
     const assetReserve0 = BigNumber.from(contractLpCall._reserve0).div(baseAsset).toNumber();
     const assetReserve1 = BigNumber.from(contractLpCall._reserve1).div(baseCollateral).toNumber();
 
-    if (assetName.includes("uSTONKS")) {
-      calcAsset = assetReserve1 * tokenPrice;
-      calcCollateral = assetReserve0 * (asset.collateral == "WETH" ? ethPrice : 1);
-    } else {
-      calcAsset = assetReserve0 * tokenPrice;
-      calcCollateral = assetReserve1 * (asset.collateral == "WETH" ? ethPrice : 1);
-    }
-
-    const uniLpPair = calcAsset + calcCollateral;
-
-    // calcAsset = assetReserve0 * tokenPrice;
-    // calcCollateral = assetReserve1 * (asset.collateral == "WETH" ? ethPrice : 1);
+    calcAsset = assetReserve0 * tokenPrice;
+    calcCollateral = assetReserve1 * (asset.collateral == "WETH" ? ethPrice : 1);
 
     /// @dev Prepare calculation
     console.log("assetName", assetName)
@@ -484,7 +474,7 @@ export const getMiningRewards = async (
     const _additionalWeekRewards: number = additionalWeekRewards
     console.log("_additionalWeekRewards", _additionalWeekRewards)
     // calcAsset
-    const _calcAsset: number = uniLpPair
+    const _calcAsset: number = calcAsset
     console.log("_calcAsset", _calcAsset)
     // 1
     const _one: number = 1
