@@ -39,10 +39,6 @@ if (cached) {
   sessionStorage.setItem("timestamp", Math.floor(Date.now() / 1000).toString());
 }
 
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-const YAM = '0x0AaCfbeC6a24756c20D41914F2caba817C0d8521';
-const UMA = '0x04fa0d235c4abf4bcf4787af4cf447de572ef828';
-
 // Get USD price of token and cache to sessionstorage
 /*
 export const getUsdPrice = async (tokenAddress: string) => {
@@ -359,6 +355,7 @@ export const getDailyPriceHistory2 = async (group: string, synthMetadata: Record
 
 /**
  * Fetch the mining rewards
+ * @notice This will be removed after the api is ready
  * @param {string} assetName Name of an asset for the input
  * @param {AssetModel} asset Asset object for the input
  * @param {number} assetPrice Asset price for the input
