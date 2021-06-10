@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { BigNumber } from 'ethers';
 import { EthereumContext } from '@/contexts';
 import { ISynthMarketData, ISynth, IToken } from '@/types';
 import {
@@ -6,6 +7,7 @@ import {
   getPairPriceEth,
   getUsdPrice,
   getApr,
+  getMiningRewards,
   getPoolData,
   getEmpState,
   roundDecimals,
@@ -100,7 +102,9 @@ export const MarketProvider: React.FC = ({ children }) => {
 
             // Grab APRs from API
             //const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
-            const apr = (await getApr(synth.group, synth.cycle)) ?? 0;
+            const cr = 1 / globalUtilization
+            const tokenCount = Number(utils.formatUnits(totalSupply, paired.decimals))
+            const apr = Number((await getMiningRewards(name, synth, priceUsd, cr, tokenCount) ?? 0));
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired

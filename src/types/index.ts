@@ -1,6 +1,7 @@
 export * from './EmpState';
 export * from './MetamaskProvider';
 export * from './TokenTypes';
+export * from './Apr';
 export { default as Unsigned } from './Unsigned';
 export * from './UserTypes';
 export * from './contracts/factories/Emp__factory';
