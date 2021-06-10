@@ -400,9 +400,9 @@ export const getMiningRewards = async (
     ] = await Promise.all([
         getEmpData(ethersProvider, network),
         contractLp.getReserves(),
-        getPriceByContract(WETH),
-        getPriceByContract(UMA),
-        getPriceByContract(YAM),
+        getUsdPrice("weth"),
+        getUsdPrice("uma"),
+        getUsdPrice("yam-2"),
     ]);
 
     const jsonEmpObject = JSON.parse(jsonEmpData)
