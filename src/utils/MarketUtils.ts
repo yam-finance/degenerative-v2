@@ -490,6 +490,9 @@ export const getMiningRewards = async (
     // 52
     const _numberOfWeeksInYear: number = 52
     console.log("_numberOfWeeksInYear", _numberOfWeeksInYear)
+    // cr
+    const _cr: number = cr
+    console.log("_cr", _cr)
 
 
     // @notice New calculation based on the doc
@@ -519,7 +522,7 @@ export const getMiningRewards = async (
     console.log("sponsorAmountPerDollarMintedPerWeek", sponsorAmountPerDollarMintedPerWeek.toString())
 
     // collateralEfficiency = 1 / (CR + 1)
-    const collateralEfficiency: number = 1 / (cr + 1)
+    const collateralEfficiency: number = 1 / (_cr + 1)
     console.log("collateralEfficiency", collateralEfficiency)
 
     // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
