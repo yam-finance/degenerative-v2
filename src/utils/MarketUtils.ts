@@ -3,6 +3,7 @@ import axios from 'axios';
 import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, ethers, utils, constants, providers } from 'ethers';
+import { EthNodeProvider } from './EmpUtils'
 import {
   UNISWAP_ENDPOINT,
   SUSHISWAP_ENDPOINT,
@@ -376,7 +377,7 @@ export const getMiningRewards = async (
   tokenCount: number,
 ) => {
   // TODO Use params for setup instead of test setup
-  const rpcURL = 'https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud';
+  const rpcURL =  EthNodeProvider
   const ethersProvider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(rpcURL || '');
   const network = 'mainnet';
 
