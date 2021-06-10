@@ -19,12 +19,10 @@ import { ISynth, IToken, ILiquidityPool, AssetGroupModel, AssetModel, DevMiningC
 
 /// @dev Imports for APR calculation
 import moment from 'moment';
-import { AbiItem } from 'web3-utils';
 import Assets from '../assets/assets.json';
 import UNIContract from '../../abi/uni.json';
 import EMPContract from '../../abi/emp.json';
 import erc20 from '../../abi/erc20.json';
-import Web3 from 'web3';
 import { ExternalProvider, Web3Provider } from '@ethersproject/providers';
 
 let currentTime = new Date();
@@ -377,8 +375,7 @@ export const getMiningRewards = async (
   tokenCount: number,
 ) => {
   // TODO Use params for setup instead of test setup
-  const rpcURL =  EthNodeProvider
-  const ethersProvider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(rpcURL || '');
+  const ethersProvider: ethers.providers.JsonRpcProvider =  EthNodeProvider;
   const network = 'mainnet';
 
   /// @dev Check if params are set
