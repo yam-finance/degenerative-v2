@@ -355,7 +355,7 @@ export const getDailyPriceHistory2 = async (group: string, synthMetadata: Record
 
 /**
  * Fetch the mining rewards
- * @notice This will be removed after the api is ready
+ * @notice This will be removed after the api is ready (don't remove any comments)
  * @param {string} assetName Name of an asset for the input
  * @param {AssetModel} asset Asset object for the input
  * @param {number} assetPrice Asset price for the input
