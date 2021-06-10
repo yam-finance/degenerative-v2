@@ -64,7 +64,7 @@ export const Deposit: React.FC = React.memo(() => {
 
   const DepositButton: React.FC = () => {
     const depositAmount = Number(formState.values.collateralToDeposit);
-    const disableDeposit = depositAmount <= 0;
+    const disableDeposit = depositAmount <= 0 || depositAmount > state.maxCollateral;
 
     return (
       <ActionButton action={() => actions.onDeposit(depositAmount)} disableCondition={disableDeposit}>

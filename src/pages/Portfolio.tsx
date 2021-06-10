@@ -27,7 +27,6 @@ export const Portfolio = () => {
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>
-            <div className="text-xs opacity-50">{`${cycle} ${year}`}</div>
           </div>
         </div>
         <div className="expand">
@@ -37,7 +36,7 @@ export const Portfolio = () => {
           <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">{`${collateralAmount} ${collateral}`}</div>
+          <div className="text-color-4">{`${roundDecimals(collateralAmount, 3)} ${collateral}`}</div>
         </div>
         <div className="expand">
           <div className="text-color-4">{roundDecimals(1 / utilization, 2)}</div>

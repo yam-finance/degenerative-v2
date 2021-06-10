@@ -22,7 +22,7 @@ interface ISynthGroupItem {
 type SynthTableFilter = 'Live' | 'Expired' | 'All';
 
 export const SynthGroup: React.FC = () => {
-  const { synthsInWallet, mintedPositions } = useContext(UserContext);
+  const { synthsInWallet } = useContext(UserContext);
   const { chainId } = useContext(EthereumContext);
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
   const { group } = useParams<SynthParams>();
@@ -74,9 +74,7 @@ export const SynthGroup: React.FC = () => {
     if (!isEmpty(synthMarketData)) initSynthGroups();
   }, [synthMarketData, filterSynths]);
 
-  // TODO account for different data per synth
   useEffect(() => {
-    //const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
 
     if (synthMetadata[synthInFocus] && chainId) getChartData();
@@ -88,20 +86,6 @@ export const SynthGroup: React.FC = () => {
     console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
-      //datasets: Object.entries(historicPriceData.synthPrices)
-      //  .filter(([name, prices]) => {
-      //    return name === synthInFocus || name === 'Reference';
-      //  }) // TODO
-      //  .map(([name, prices]) => ({
-      //    label: name,
-      //    data: prices,
-      //    borderColor: name === 'Reference' ? '#fff' : '#FF0099',
-      //    borderWidth: 1,
-      //    pointRadius: 0,
-      //    pointHoverRadius: 4,
-      //    pointHoverBackgroundColor: '#FF0099',
-      //    tension: 0.1,
-      //  })),
       datasets: [
         {
           name: synthInFocus,
@@ -191,7 +175,7 @@ export const SynthGroup: React.FC = () => {
 
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
     const { name, maturity, apr, balance, liquidity, price } = props;
-    const { cycle, year, group } = synthMetadata[name];
+    const { cycle, year, group, collateral } = synthMetadata[name];
 
     return (
       <Link to={`/synths/${group}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
@@ -202,10 +186,7 @@ export const SynthGroup: React.FC = () => {
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{apr}%</div>
         </div>
-        <div className="expand portrait-hide">
-          <div className="text-color-4">$0.00</div>
-          <div className="text-xs">{balance} Tokens</div>
-        </div>
+        <div className="expand portrait-hide">{balance}</div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{price}</div>
         </div>
