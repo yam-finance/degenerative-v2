@@ -142,11 +142,15 @@ export const getPoolData = async (pool: ILiquidityPool) => {
   }
 };
 
-// TODO APRs from API are wrong. Hardcoding for now.
-export const getApr = async (group: string, cycle: string): Promise<number> => {
+export const getApr = async (name: string, cr: number): Promise<number> => {
   try {
-    const res = await axios.get('https://api.yam.finance/apr/degenerative');
-    return Promise.resolve(res.data[group.toUpperCase()][cycle.toUpperCase()]);
+    console.log(cr);
+    const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`);
+    const collateralEfficiency = 1 / (1 + cr);
+    const aprMultiplier = res.data.aprMultiplier;
+
+    console.log(aprMultiplier, collateralEfficiency);
+    return Promise.resolve(aprMultiplier * collateralEfficiency);
   } catch (err) {
     console.error(err);
     return Promise.reject('Failed to get APR.');
