@@ -7,7 +7,6 @@ import {
   getPairPriceEth,
   getUsdPrice,
   getApr,
-  getMiningRewards,
   getPoolData,
   getEmpState,
   roundDecimals,
