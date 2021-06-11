@@ -5,6 +5,7 @@ import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader, Icon } from '@/components';
 import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 import chartLoader from '/src/assets/chart-loader.svg';
+import { ISynthGroup } from '@/types';
 
 interface SynthParams {
   group: string;
@@ -26,6 +27,9 @@ export const SynthGroup: React.FC = () => {
   const { chainId } = useContext(EthereumContext);
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
   const { group } = useParams<SynthParams>();
+
+  const [groupName, setGroupName] = useState<string>();
+  const [groupInfo, setGroupInfo] = useState<ISynthGroup>();
   const [synthGroup, setSynthGroup] = useState<Record<string, ISynthGroupItem>>({});
   const [historicPriceData, setHistoricPriceData] = useState<{
     labels: string[];
@@ -44,7 +48,7 @@ export const SynthGroup: React.FC = () => {
       const synths: typeof synthGroup = {};
 
       Object.entries(synthMetadata)
-        .filter((synth) => synth[1].group === group)
+        .filter(([synthName, synthInfo]) => synthInfo.group.toLowerCase() === group.toLowerCase())
         .filter(([synthName, synthInfo]) => {
           if (filterSynths === 'All') {
             return true;
@@ -73,6 +77,12 @@ export const SynthGroup: React.FC = () => {
 
     if (!isEmpty(synthMarketData)) initSynthGroups();
   }, [synthMarketData, filterSynths]);
+
+  useEffect(() => {
+    if (!isEmpty(SynthGroups[group])) {
+      setGroupInfo(SynthGroups[group]);
+    }
+  }, [group, SynthGroups]);
 
   useEffect(() => {
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
@@ -184,6 +194,7 @@ export const SynthGroup: React.FC = () => {
     const { name, maturity, apr, balance, liquidity, price } = props;
     const { cycle, year, group, collateral } = synthMetadata[name];
 
+    // TODO remove?
     const rowStyle = {
       backgroundColor: '#ec6ead',
       // TODO what to do with this?
@@ -193,6 +204,7 @@ export const SynthGroup: React.FC = () => {
       //boxShadow:
       //  'inset 0 0 8px 4px #ec6ead, 0 8px 16px -4px rgba(236, 110, 173, 0.2), 0 16px 32px -8px rgba(236, 110, 173, 0.2)',
     };
+
     return (
       <Link
         to={`/synths/${group}/${cycle}${year}`}
@@ -200,22 +212,22 @@ export const SynthGroup: React.FC = () => {
         className="hover-scale table-row margin-y-2 w-inline-block relative"
       >
         <div className="expand">
-          <div className="margin-right-1 text-color-4 weight-bold">{name}</div>
+          <div className="margin-right-1 text-color-4">{name}</div>
           <div className="text-xs opacity-50">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
         </div>
-        <div className="expand portrait-hide weight-bold">{balance}</div>
+        <div className="expand portrait-hide">{balance}</div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4 weight-bold">
+          <div className="text-color-4">
             {price} {collateral}
           </div>
           <div className="text-xs opacity-50 hide portrait-block">Price</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4 weight-bold">{apr}%</div>
+          <div className="text-color-4">{apr}%</div>
           <div className="text-xs opacity-50 hide portrait-block">APR</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4 weight-bold">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
+          <div className="text-color-4">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
           <div className="text-xs opacity-50 hide portrait-block">Liquidity</div>
         </div>
         <div className="width-8 height-8 absolute-right margin-top-5 margin-right-5 radius-full padding-1 background-color-white">
@@ -278,7 +290,7 @@ export const SynthGroup: React.FC = () => {
       <Navbar />
       <MainDisplay>
         <MainHeading className="margin-bottom-1">{group}</MainHeading>
-        <div className="padding-x-8 flex-align-baseline">{SynthGroups[group].description}</div>
+        {groupInfo && <div className="padding-x-8 flex-align-baseline">{groupInfo.description}</div>}
         <div className="padding-x-8 padding-y-1 flex-row portrait-flex-column portrait-flex-align-start">
           <ChartSelector />
         </div>
@@ -302,22 +314,26 @@ export const SynthGroup: React.FC = () => {
         </Table>
       </MainDisplay>
       <SideDisplay>
-        <div className="flex-align-center">
-          <img src={`/images/${SynthGroups[group].image}.png`} className="width-16 margin-right-4" />
-          <div>
-            <h5 className="margin-bottom-1">{group}</h5>
-            <h6 className="margin-0">By {SynthGroups[group].creator}</h6>
-          </div>
-        </div>
-        <p className="text-small margin-top-2">{SynthGroups[group].description}</p>
-        <div>
-          <a href="#" className="button-secondary button-small margin-right-4 w-button">
-            Learn more
-          </a>
-          <a href="#" className="text-small weight-bold">
-            See tutorial
-          </a>
-        </div>
+        {groupInfo && (
+          <>
+            <div className="flex-align-center">
+              <img src={`/images/${groupInfo.image}.png`} className="width-16 margin-right-4" />
+              <div>
+                <h5 className="margin-bottom-1">{group}</h5>
+                <h6 className="margin-0">By {groupInfo.creator}</h6>
+              </div>
+            </div>
+            <p className="text-small margin-top-2">{groupInfo.description}</p>
+            <div>
+              <a href="#" className="button-secondary button-small margin-right-4 w-button">
+                Learn more
+              </a>
+              <a href="#" className="text-small weight-bold">
+                See tutorial
+              </a>
+            </div>
+          </>
+        )}
       </SideDisplay>
     </Page>
   );
