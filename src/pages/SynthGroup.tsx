@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader } from '@/components';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader, Icon } from '@/components';
 import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 import chartLoader from '/src/assets/chart-loader.svg';
 
@@ -92,6 +92,8 @@ export const SynthGroup: React.FC = () => {
           data: historicPriceData.synthPrices,
           borderColor: '#FF0099',
           borderWidth: 1,
+          backgroundColor: '#FF0099',
+          fill: false,
           pointRadius: 0,
           pointHoverRadius: 4,
           pointHoverBackgroundColor: '#FF0099',
@@ -101,7 +103,9 @@ export const SynthGroup: React.FC = () => {
           label: 'Reference',
           data: historicPriceData.referencePrices,
           borderColor: '#FFF',
-          borderWidth: 1,
+          borderWidth: 2,
+          backgroundColor: '#FFF',
+          fill: false,
           pointRadius: 0,
           pointHoverRadius: 4,
           pointHoverBackgroundColor: '#FF0099',
@@ -180,23 +184,42 @@ export const SynthGroup: React.FC = () => {
     const { name, maturity, apr, balance, liquidity, price } = props;
     const { cycle, year, group, collateral } = synthMetadata[name];
 
+    const rowStyle = {
+      backgroundColor: '#ec6ead',
+      // TODO what to do with this?
+      //backgroundImage:
+      //  '-webkit-gradient(linear, left top, left bottom, from(rgba(243, 85, 201, 0)), color stop(5%, #ff8a97), color-stop(46%, #ec6ead), to(#ce34aa))',
+      //backgroundImage: 'linear-gradient(180deg, rgba(243, 85, 201, 0), #ff8a97 5%, #ec6ead 46%, #ce34aa)',
+      //boxShadow:
+      //  'inset 0 0 8px 4px #ec6ead, 0 8px 16px -4px rgba(236, 110, 173, 0.2), 0 16px 32px -8px rgba(236, 110, 173, 0.2)',
+    };
     return (
-      <Link to={`/synths/${group}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
+      <Link
+        to={`/synths/${group}/${cycle}${year}`}
+        //style={rowStyle}
+        className="hover-scale table-row margin-y-2 w-inline-block relative"
+      >
         <div className="expand">
-          <div className="margin-right-1 text-color-4">{name}</div>
+          <div className="margin-right-1 text-color-4 weight-bold">{name}</div>
           <div className="text-xs opacity-50">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
         </div>
-        <div className="expand portrait-hide">{balance}</div>
+        <div className="expand portrait-hide weight-bold">{balance}</div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">
+          <div className="text-color-4 weight-bold">
             {price} {collateral}
           </div>
+          <div className="text-xs opacity-50 hide portrait-block">Price</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{apr}%</div>
+          <div className="text-color-4 weight-bold">{apr}%</div>
+          <div className="text-xs opacity-50 hide portrait-block">APR</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
+          <div className="text-color-4 weight-bold">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
+          <div className="text-xs opacity-50 hide portrait-block">Liquidity</div>
+        </div>
+        <div className="width-8 height-8 absolute-right margin-top-5 margin-right-5 radius-full padding-1 background-color-white">
+          <Icon name="ChevronRight" className="icon opacity-100 text-color-1 margin-0" />
         </div>
       </Link>
     );
