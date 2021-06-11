@@ -189,14 +189,14 @@ export const SynthGroup: React.FC = () => {
       // TODO what to do with this?
       //backgroundImage:
       //  '-webkit-gradient(linear, left top, left bottom, from(rgba(243, 85, 201, 0)), color stop(5%, #ff8a97), color-stop(46%, #ec6ead), to(#ce34aa))',
-      backgroundImage: 'linear-gradient(180deg, rgba(243, 85, 201, 0), #ff8a97 5%, #ec6ead 46%, #ce34aa)',
-      boxShadow:
-        'inset 0 0 8px 4px #ec6ead, 0 8px 16px -4px rgba(236, 110, 173, 0.2), 0 16px 32px -8px rgba(236, 110, 173, 0.2)',
+      //backgroundImage: 'linear-gradient(180deg, rgba(243, 85, 201, 0), #ff8a97 5%, #ec6ead 46%, #ce34aa)',
+      //boxShadow:
+      //  'inset 0 0 8px 4px #ec6ead, 0 8px 16px -4px rgba(236, 110, 173, 0.2), 0 16px 32px -8px rgba(236, 110, 173, 0.2)',
     };
     return (
       <Link
         to={`/synths/${group}/${cycle}${year}`}
-        style={rowStyle}
+        //style={rowStyle}
         className="hover-scale table-row margin-y-2 w-inline-block relative"
       >
         <div className="expand">
