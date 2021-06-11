@@ -92,7 +92,7 @@ export const SynthGroup: React.FC = () => {
           data: historicPriceData.synthPrices,
           borderColor: '#FF0099',
           borderWidth: 1,
-          backgroundColor: "#FF0099",
+          backgroundColor: '#FF0099',
           fill: false,
           pointRadius: 0,
           pointHoverRadius: 4,
@@ -183,15 +183,22 @@ export const SynthGroup: React.FC = () => {
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
     const { name, maturity, apr, balance, liquidity, price } = props;
     const { cycle, year, group, collateral } = synthMetadata[name];
-    
+
     const rowStyle = {
-      backgroundColor: "#ec6ead",
-      backgroundImage: "-webkit-gradient(linear, left top, left bottom, from(rgba(243, 85, 201, 0)), color stop(5%, #ff8a97), color-stop(46%, #ec6ead), to(#ce34aa))",
-      backgroundImage: "linear-gradient(180deg, rgba(243, 85, 201, 0), #ff8a97 5%, #ec6ead 46%, #ce34aa)",
-      boxShadow: "inset 0 0 8px 4px #ec6ead, 0 8px 16px -4px rgba(236, 110, 173, 0.2), 0 16px 32px -8px rgba(236, 110, 173, 0.2)",
-    }
+      backgroundColor: '#ec6ead',
+      // TODO what to do with this?
+      //backgroundImage:
+      //  '-webkit-gradient(linear, left top, left bottom, from(rgba(243, 85, 201, 0)), color stop(5%, #ff8a97), color-stop(46%, #ec6ead), to(#ce34aa))',
+      backgroundImage: 'linear-gradient(180deg, rgba(243, 85, 201, 0), #ff8a97 5%, #ec6ead 46%, #ce34aa)',
+      boxShadow:
+        'inset 0 0 8px 4px #ec6ead, 0 8px 16px -4px rgba(236, 110, 173, 0.2), 0 16px 32px -8px rgba(236, 110, 173, 0.2)',
+    };
     return (
-      <Link to={`/synths/${group}/${cycle}${year}`} style={rowStyle} className="hover-scale table-row margin-y-2 w-inline-block relative">
+      <Link
+        to={`/synths/${group}/${cycle}${year}`}
+        style={rowStyle}
+        className="hover-scale table-row margin-y-2 w-inline-block relative"
+      >
         <div className="expand">
           <div className="margin-right-1 text-color-4 weight-bold">{name}</div>
           <div className="text-xs opacity-50">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
@@ -212,7 +219,7 @@ export const SynthGroup: React.FC = () => {
           <div className="text-xs opacity-50 hide portrait-block">Liquidity</div>
         </div>
         <div className="width-8 height-8 absolute-right margin-top-5 margin-right-5 radius-full padding-1 background-color-white">
-          <Icon name="ChevronRight" class="icon opacity-100 text-color-1 margin-0"/>
+          <Icon name="ChevronRight" className="icon opacity-100 text-color-1 margin-0" />
         </div>
       </Link>
     );

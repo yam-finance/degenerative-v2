@@ -88,7 +88,7 @@ export const Redeem: React.FC = React.memo(() => {
       <div className="expand width-full flex-column-end">
         {!actions.synthApproval ? (
           <>
-            <h3 className="margin-top-10 text-align-center">Approve your synth to continue</h3>
+            <h3 className="margin-top-10 text-align-center">Approve synth contract to continue</h3>
             <SynthApproveButton />
           </>
         ) : (
@@ -99,36 +99,36 @@ export const Redeem: React.FC = React.memo(() => {
               <div className="margin-x-4">or</div>
               <div className="expand height-1 border-bottom-2px"></div>
             </div>
-              <div className="flex-row">
-                <div className="width-full margin-bottom-4">
-                  <div className="relative">
-                    <input
-                      {...number('tokensToRedeem')}
-                      onClick={(e) => e.currentTarget.select()}
-                      type="number"
-                      className="form-input height-24 text-large margin-0 w-input"
-                      maxLength={256}
-                      min={0}
-                      required
-                    />
-                    <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4">
-                      <div className="padding-0 flex-align-center">
-                        <p className="margin-0 text-color-4">{currentSynth}</p>
-                      </div>
-                    </div>
-                    <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
-                      <label className="opacity-60 weight-medium">Synth</label>
-                      <button onClick={() => setMaximum()} className="button-secondary button-tiny w-button">
-                        {/* TODO Find out max burnable tokens */}
-                        Max {maxRedeemableTokens}
-                      </button>
+            <div className="flex-row">
+              <div className="width-full margin-bottom-4">
+                <div className="relative">
+                  <input
+                    {...number('tokensToRedeem')}
+                    onClick={(e) => e.currentTarget.select()}
+                    type="number"
+                    className="form-input height-24 text-large margin-0 w-input"
+                    maxLength={256}
+                    min={0}
+                    required
+                  />
+                  <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4">
+                    <div className="padding-0 flex-align-center">
+                      <p className="margin-0 text-color-4">{currentSynth}</p>
                     </div>
                   </div>
-                  <div className="text-xs opacity-50 margin-top-1">
-                    Redeem a maximum of {maxRedeemableTokens} {currentSynth}
+                  <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
+                    <label className="opacity-60 weight-medium">Synth</label>
+                    <button onClick={() => setMaximum()} className="button-secondary button-tiny w-button">
+                      {/* TODO Find out max burnable tokens */}
+                      Max {maxRedeemableTokens}
+                    </button>
                   </div>
                 </div>
+                <div className="text-xs opacity-50 margin-top-1">
+                  Redeem a maximum of {maxRedeemableTokens} {currentSynth}
+                </div>
               </div>
+            </div>
             <RedeemButton />
           </>
         )}
