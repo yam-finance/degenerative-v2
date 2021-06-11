@@ -3,12 +3,13 @@ import axios from 'axios';
 import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
 import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
 import { BigNumber, ethers, utils, constants, providers } from 'ethers';
-import { EthNodeProvider } from './EmpUtils'
+import { EthNodeProvider } from './EmpUtils';
 import {
   UNISWAP_ENDPOINT,
   SUSHISWAP_ENDPOINT,
   UNISWAP_MARKET_DATA_QUERY,
   UNISWAP_DAILY_PRICE_QUERY,
+  SUSHI_DAILY_PAIR_DATA,
   getReferencePriceHistory,
   getDateString,
   getCollateralData,
@@ -25,8 +26,8 @@ import EMPContract from '../../abi/emp.json';
 import erc20 from '../../abi/erc20.json';
 import { ExternalProvider, Web3Provider } from '@ethersproject/providers';
 
-let currentTime = new Date();
-const cached = sessionStorage.getItem("timestamp");
+const currentTime = new Date();
+const cached = sessionStorage.getItem('timestamp');
 
 if (cached) {
   currentTime.setHours(currentTime.getHours() - 12);
@@ -36,7 +37,7 @@ if (cached) {
     sessionStorage.clear();
   }
 } else {
-  sessionStorage.setItem("timestamp", Math.floor(Date.now() / 1000).toString());
+  sessionStorage.setItem('timestamp', Math.floor(Date.now() / 1000).toString());
 }
 
 // Get USD price of token and cache to sessionstorage
@@ -141,11 +142,15 @@ export const getPoolData = async (pool: ILiquidityPool) => {
   }
 };
 
-// TODO APRs from API are wrong. Hardcoding for now.
-export const getApr = async (group: string, cycle: string): Promise<number> => {
+export const getApr = async (name: string, cr: number): Promise<number> => {
   try {
-    const res = await axios.get('https://api.yam.finance/apr/degenerative');
-    return Promise.resolve(res.data[group.toUpperCase()][cycle.toUpperCase()]);
+    console.log(cr);
+    const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`);
+    const collateralEfficiency = 1 / (1 + cr);
+    const aprMultiplier = res.data.aprMultiplier;
+
+    console.log(aprMultiplier, collateralEfficiency);
+    return Promise.resolve(aprMultiplier * collateralEfficiency);
   } catch (err) {
     console.error(err);
     return Promise.reject('Failed to get APR.');
@@ -196,7 +201,9 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   })();
 
   // Get pool data from subgraph
-  const poolData: { pairDayDatas: any[] } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PAIR_DATA, {
+  const endpoint = synth.pool.location === 'uni' ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
+  const query = synth.pool.location === 'uni' ? UNISWAP_DAILY_PAIR_DATA : SUSHI_DAILY_PAIR_DATA;
+  const poolData: { pairDayDatas: any[] } = await request(endpoint, query, {
     pairAddress: poolAddress,
     startingTime: startingTime,
   });
@@ -241,116 +248,6 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   };
 };
 
-/** Get labels, reference price data and all market price data for this synth type. */
-/*
-export const getDailyPriceHistory2 = async (group: string, synthMetadata: Record<string, ISynth>, chainId: number) => {
-  // Defaults to 30 days
-  const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
-
-  const relevantSynths = new Map(
-    Object.entries(synthMetadata)
-      .filter(([name, synth]) => synth.group === group)
-      .map(([name, synth]) => [synth.token.address, name])
-  );
-
-  const addressList = Array.from(relevantSynths.keys());
-
-  // TODO Consider grabbing paired data, not USD
-  const dailyPriceResponse: {
-    tokenDayDatas: PriceHistoryResponse[];
-  } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
-    tokenAddresses: addressList,
-    startingTime: startingTime,
-  });
-
-  // Use reduce to find min and max range dates
-  const [min, max] = dailyPriceResponse.tokenDayDatas
-    .map((data) => fromUnixTime(data.date))
-    .reduce((acc: Date[], val: Date) => {
-      acc[0] = acc[0] === undefined || val < acc[0] ? val : acc[0];
-      acc[1] = acc[1] === undefined || val > acc[1] ? val : acc[1];
-      return acc;
-    }, []);
-
-  // Generate array of dates from min to max, convert to ISO string
-  const dateArray = (() => {
-    if (min && max) {
-      const dates: string[] = [];
-      const currentDate = new Date(min);
-      while (currentDate <= max) {
-        dates.push(getDateString(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-      return dates;
-    } else {
-      return [];
-    }
-  })();
-
-  // Get reference index prices (USD) for each date
-  const referenceData = await (async () => {
-    const refPrices = await getReferencePriceHistory(group, chainId);
-
-    if (refPrices.length > 30) {
-      const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
-      const maxIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(max));
-      return refPrices.slice(minIndex, maxIndex).map((ref: any) => ref.price);
-    } else {
-      const returnObject: any[] = [];
-      const refMap = new Map(
-        refPrices.map(({ timestamp, price }: { timestamp: string; price: number }) => [timestamp, price])
-      );
-      console.log(refMap);
-      console.log(dateArray);
-
-      console.log(refMap.get(dateArray[10]));
-      dateArray.forEach((date) => {
-        //console.log(date);
-        refMap.get(date) ? returnObject.push(refMap.get(date)) : returnObject.push(undefined);
-      });
-
-      return returnObject;
-    }
-  })();
-
-  console.log(referenceData);
-
-  // Map price data to date for each synth for easy access
-  const priceData: Record<string, Record<string, number>> = {};
-
-  dailyPriceResponse.tokenDayDatas.forEach((dayData) => {
-    // id is concatenated with a timestamp at end. Not necessary for us since we have the date
-    const synthName = relevantSynths.get(dayData.id.split('-')[0]) ?? '';
-
-    if (!priceData[synthName]) priceData[synthName] = {};
-    const date = formatISO(fromUnixTime(dayData.date), { representation: 'date' });
-    priceData[synthName][date] = Math.round(Number(dayData.priceUSD) * 100) / 100;
-  });
-
-  // Create object of arrays for reference prices and all synth prices
-  const res: Record<string, number[]> = { Reference: referenceData };
-  dateArray.forEach((date) => {
-    Object.keys(priceData).forEach((synthName) => {
-      if (!res[synthName]) res[synthName] = [];
-
-      if (priceData[synthName][date]) {
-        res[synthName].push(priceData[synthName][date]);
-      } else {
-        // If no price for date, copy last pushed price
-        const prevIndex = res[synthName].length - 1;
-        res[synthName].push(res[synthName][prevIndex]);
-      }
-    });
-  });
-
-  console.log(res);
-
-  return {
-    labels: dateArray,
-    synthPrices: res,
-  };
-};
-
 /**** APR CALCULATION ****/
 
 /**
@@ -369,10 +266,10 @@ export const getMiningRewards = async (
   asset: ISynth,
   assetPrice: number,
   cr: number,
-  tokenCount: number,
+  tokenCount: number
 ) => {
   // TODO Use params for setup instead of test setup
-  const ethersProvider: ethers.providers.JsonRpcProvider =  EthNodeProvider;
+  const ethersProvider = EthNodeProvider;
   const network = 'mainnet';
 
   /// @dev Check if params are set
@@ -386,22 +283,16 @@ export const getMiningRewards = async (
   try {
     const contractLp = new ethers.Contract(asset.pool.address, UNIContract.abi, ethersProvider);
 
-    const [
-        jsonEmpData,
-        contractLpCall,
-        ethPrice,
-        umaPrice,
-        yamPrice
-    ] = await Promise.all([
-        getEmpData(ethersProvider, network),
-        contractLp.getReserves(),
-        getUsdPrice("weth"),
-        getUsdPrice("uma"),
-        getUsdPrice("yam-2"),
+    const [jsonEmpData, contractLpCall, ethPrice, umaPrice, yamPrice] = await Promise.all([
+      getEmpData(ethersProvider, network),
+      contractLp.getReserves(),
+      getUsdPrice('weth'),
+      getUsdPrice('uma'),
+      getUsdPrice('yam-2'),
     ]);
 
-    const jsonEmpObject = JSON.parse(jsonEmpData)
-    const { rewards, whitelistedTVM } = jsonEmpObject
+    const jsonEmpObject = JSON.parse(jsonEmpData);
+    const { rewards, whitelistedTVM } = jsonEmpObject;
 
     /// @dev Setup base variables for calculation
     let baseCollateral;
@@ -409,7 +300,7 @@ export const getMiningRewards = async (
 
     /// @dev Temporary pricing
     let tokenPrice;
-    if (asset.collateral === "USDC") {
+    if (asset.collateral === 'USDC') {
       baseCollateral = BigNumber.from(10).pow(6);
       /* @ts-ignore */
       tokenPrice = assetPrice * 1;
@@ -428,12 +319,13 @@ export const getMiningRewards = async (
     const week1UntilWeek2 = 1615665600;
     const week3UntilWeek4 = 1616961600;
     const umaRewards = rewards[asset.emp.address];
+
     let yamWeekRewards = 0;
     let umaWeekRewards = 0;
     /// @TODO Check assetName
-    if (assetName === "uPUNKS-0921") {
+    if (assetName === 'uPUNKS-0921') {
       if (current < week1UntilWeek2) {
-        umaWeekRewards += 5000
+        umaWeekRewards += 5000;
       } else if (current < week3UntilWeek4) {
         yamWeekRewards += 5000;
       }
@@ -447,45 +339,44 @@ export const getMiningRewards = async (
     const assetReserve1 = BigNumber.from(contractLpCall._reserve1).div(baseCollateral).toNumber();
 
     calcAsset = assetReserve0 * tokenPrice;
-    calcCollateral = assetReserve1 * (asset.collateral == "WETH" ? ethPrice : 1);
+    calcCollateral = assetReserve1 * (asset.collateral == 'WETH' ? ethPrice : 1);
 
     /// @dev Prepare calculation
     // console.log("assetName", assetName)
     // getEmpInfo.tokenCount
-    const _tokenCount: number = tokenCount
+    const _tokenCount: number = tokenCount;
     // console.log("_tokenCount", _tokenCount.toString())
     // getEmpInfo.tokenPrice
-    const _tokenPrice: number = tokenPrice
+    const _tokenPrice: number = tokenPrice;
     // console.log("_tokenPrice", _tokenPrice)
     // whitelistedTVM
-    const _whitelistedTVM: number = Number(whitelistedTVM)
+    const _whitelistedTVM: number = whitelistedTVM;
     // console.log("_whitelistedTVM", _whitelistedTVM)
     // 50_000
     /// @TODO Check why umaRewards != 50_000
-    const _umaRewards: number = 50_000
+    const _umaRewards: number = 50_000;
     // console.log("_umaRewards", _umaRewards)
     // umaPrice
-    const _umaPrice: number = umaPrice
+    const _umaPrice: number = umaPrice;
     // console.log("_umaPrice", _umaPrice)
     // 0.82
-    const _developerRewardsPercentage: number = 0.82
+    const _developerRewardsPercentage: number = 0.82;
     // console.log("_developerRewardsPercentage", _developerRewardsPercentage)
     // additionalWeekRewards
-    const _additionalWeekRewards: number = additionalWeekRewards
+    const _additionalWeekRewards: number = additionalWeekRewards;
     // console.log("_additionalWeekRewards", _additionalWeekRewards)
     // calcAsset
-    const _calcAsset: number = calcAsset
+    const _calcAsset: number = calcAsset;
     // console.log("_calcAsset", _calcAsset)
     // 1
-    const _one: number = 1
+    const _one: number = 1;
     // console.log("_one", _one)
     // 52
-    const _numberOfWeeksInYear: number = 52
+    const _numberOfWeeksInYear: number = 52;
     // console.log("_numberOfWeeksInYear", _numberOfWeeksInYear)
     // cr
-    const _cr: number = cr
+    const _cr: number = cr;
     // console.log("_cr", _cr)
-
 
     // @notice New calculation based on the doc
     /// @TODO Check _whitelistedTVM
@@ -514,7 +405,7 @@ export const getMiningRewards = async (
     // console.log("sponsorAmountPerDollarMintedPerWeek", sponsorAmountPerDollarMintedPerWeek.toString())
 
     // collateralEfficiency = 1 / (CR + 1)
-    const collateralEfficiency: number = 1 / (_cr + 1)
+    const collateralEfficiency: number = 1 / (_cr + 1);
     // console.log("collateralEfficiency", collateralEfficiency)
 
     // General APR = (sponsorAmountPerDollarMintedPerWeek * chosen collateralEfficiency * 52)
@@ -530,36 +421,20 @@ export const getMiningRewards = async (
 
     return generalAPR.toString();
   } catch (e) {
-    console.error("error", e);
+    console.error('error', e);
     return 0;
   }
 };
-// Get USD price of token and cache to sessionstorage
-/*
-export const getUsdPrice = async (tokenAddress: string) => {
-  const cached = sessionStorage.getItem(tokenAddress);
-  if (cached) return Promise.resolve(Number(cached));
-
-  try {
-    const res = await axios.get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${tokenAddress}&vs_currencies=usd`);
-    const price = Number(res.data[tokenAddress].usd);
-    sessionStorage.setItem(tokenAddress, price.toString());
-    return Promise.resolve(price);
-  } catch (err) {
-    return Promise.reject(err);
-  }
-};
-*/
 
 const getEmpData = async (ethersProvider: ethers.providers.JsonRpcProvider, network: string) => {
-  const cached = sessionStorage.getItem("empData");
+  const cached = sessionStorage.getItem('empData');
   if (cached) return cached;
 
   /// @dev Get dev mining emp
   const devMiningEmp = await getDevMiningEmps(network);
 
   /// @dev Construct devMiningCalculator
-  const devmining =  devMiningCalculator({
+  const devmining = devMiningCalculator({
     provider: ethersProvider,
     ethers: ethers,
     getPrice: getPriceByContract,
@@ -573,29 +448,26 @@ const getEmpData = async (ethersProvider: ethers.providers.JsonRpcProvider, netw
   // );
 
   /// @dev Get dev mining reward estimation from devMiningCalculator
-  const estimateDevMiningRewards = await devmining.estimateDevMiningRewards(
-    {
-      /* @ts-ignore */
-      totalRewards: devMiningEmp["totalReward"],
-      /* @ts-ignore */
-      empWhitelist: devMiningEmp["empWhitelist"],
-    }
-  );
+  const estimateDevMiningRewards = await devmining.estimateDevMiningRewards({
+    /* @ts-ignore */
+    totalRewards: devMiningEmp['totalReward'],
+    /* @ts-ignore */
+    empWhitelist: devMiningEmp['empWhitelist'],
+  });
 
   // TODO Object.fromEntries(estimateDevMiningRewards)
   /// @dev Structure rewards
   const rewards: any = {};
-  let whitelistedTVM: string = "";
+  let whitelistedTVM = '';
   for (let i = 0; i < estimateDevMiningRewards.length; i++) {
-    rewards[estimateDevMiningRewards[i][0]] =
-      estimateDevMiningRewards[i][1];
+    rewards[estimateDevMiningRewards[i][0]] = estimateDevMiningRewards[i][1];
     whitelistedTVM = estimateDevMiningRewards[i][2];
   }
 
-  sessionStorage.setItem("empData", JSON.stringify({ rewards, whitelistedTVM }));
+  sessionStorage.setItem('empData', JSON.stringify({ rewards, whitelistedTVM }));
 
-  return JSON.stringify({ rewards, whitelistedTVM })
-}
+  return JSON.stringify({ rewards, whitelistedTVM });
+};
 
 const mergeUnique = (arr1: any, arr2: any) => {
   return arr1.concat(
@@ -605,34 +477,32 @@ const mergeUnique = (arr1: any, arr2: any) => {
   );
 };
 
-const getDevMiningEmps = async (network: String) => {
+const getDevMiningEmps = async (network: string) => {
   /* @ts-ignore */
   const assets: AssetGroupModel = Assets[network];
+
   if (assets) {
     /* @ts-ignore */
     const data = [
       /* @ts-ignore */
-      assets["uGAS"][1].emp.address,
+      assets['uGAS'][1].emp.address,
       /* @ts-ignore */
-      assets["uGAS"][2].emp.address,
+      assets['uGAS'][2].emp.address,
       /* @ts-ignore */
-      assets["uGAS"][3].emp.address,
+      assets['uGAS'][3].emp.address,
       /* @ts-ignore */
-      assets["uSTONKS"][0].emp.address,
+      assets['uSTONKS'][0].emp.address,
       /* @ts-ignore */
-      assets["uSTONKS"][1].emp.address,
+      assets['uSTONKS'][1].emp.address,
     ];
     const umadata: any = await fetch(
       `https://raw.githubusercontent.com/UMAprotocol/protocol/master/packages/affiliates/payouts/devmining-status.json`
     );
     const umaDataJson = await umadata.json();
-    const empWhitelistUpdated = mergeUnique(
-      umaDataJson["empWhitelist"],
-      data
-    );
+    const empWhitelistUpdated = mergeUnique(umaDataJson['empWhitelist'], data);
     const umaObject = {
       empWhitelist: empWhitelistUpdated,
-      totalReward: umaDataJson["totalReward"],
+      totalReward: umaDataJson['totalReward'],
     };
 
     return umaObject;
@@ -642,9 +512,7 @@ const getDevMiningEmps = async (network: String) => {
 };
 
 const getContractInfo = async (address: string) => {
-  const data: any = await fetch(
-    `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
-  );
+  const data: any = await fetch(`https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`);
   const jsonData = await data.json();
   return jsonData;
 };
@@ -655,49 +523,29 @@ const getPriceByContract = async (address: string, toCurrency?: string) => {
   while (!result) {
     result = await getContractInfo(address);
   }
-  return (
-    result &&
-    result.market_data &&
-    result.market_data.current_price[toCurrency || "usd"]
-  );
+  return result && result.market_data && result.market_data.current_price[toCurrency || 'usd'];
 };
 
-
-export function devMiningCalculator({
-  provider,
-  ethers,
-  getPrice,
-  empAbi,
-  erc20Abi,
-}: DevMiningCalculatorParams) {
+export function devMiningCalculator({ provider, ethers, getPrice, empAbi, erc20Abi }: DevMiningCalculatorParams) {
   const { utils, BigNumber, FixedNumber } = ethers;
   const { parseEther } = utils;
-  async function getEmpInfo(address: string, toCurrency = "usd") {
+
+  async function getEmpInfo(address: string, toCurrency = 'usd') {
     const emp = new ethers.Contract(address, empAbi, provider);
     const tokenAddress = await emp.tokenCurrency();
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, provider);
     /// @dev Fetches the token price from coingecko using getPriceByContract (getPrice == getPriceByContract)
-    const tokenPrice = await getPrice(tokenAddress, toCurrency).catch(
-      () => null
-    );
+    const tokenPrice = await getPrice(tokenAddress, toCurrency).catch(() => null);
     const tokenCount = (await emp.totalTokensOutstanding()).toString();
     const tokenDecimals = (await tokenContract.decimals()).toString();
 
     const collateralAddress = await emp.collateralCurrency();
-    const collateralContract = new ethers.Contract(
-      collateralAddress,
-      erc20Abi,
-      provider
-    );
+    const collateralContract = new ethers.Contract(collateralAddress, erc20Abi, provider);
     /// @dev Fetches the collateral price from coingecko using getPriceByContract (getPrice == getPriceByContract)
-    const collateralPrice = await getPrice(collateralAddress, toCurrency).catch(
-      () => null
-    );
+    const collateralPrice = await getPrice(collateralAddress, toCurrency).catch(() => null);
     const collateralCount = (await emp.totalPositionCollateral()).toString();
     const collateralDecimals = (await collateralContract.decimals()).toString();
-    const collateralRequirement = (
-      await emp.collateralRequirement()
-    ).toString();
+    const collateralRequirement = (await emp.collateralRequirement()).toString();
 
     return {
       address,
@@ -713,6 +561,7 @@ export function devMiningCalculator({
       collateralRequirement,
     };
   }
+
   /// @dev Returns a fixed number
   function calculateEmpValue({
     tokenPrice,
@@ -739,22 +588,15 @@ export function devMiningCalculator({
     }
 
     /** @dev Theres no token price then fallback to collateral price divided by
-      * the collateralization requirement (usually 1.2) this should give a
-      * ballpack of what the total token value will be. Its still an over estimate though.
+     * the collateralization requirement (usually 1.2) this should give a
+     * ballpack of what the total token value will be. Its still an over estimate though.
      */
     if (collateralPrice) {
       const fixedPrice = FixedNumber.from(collateralPrice.toString());
-      const collFixedSize = FixedNumber.fromValue(
-        collateralCount,
-        collateralDecimals
-      );
-      return fixedPrice
-        .mulUnsafe(collFixedSize)
-        .divUnsafe(FixedNumber.fromValue(collateralRequirement, 18));
+      const collFixedSize = FixedNumber.fromValue(collateralCount, collateralDecimals);
+      return fixedPrice.mulUnsafe(collFixedSize).divUnsafe(FixedNumber.fromValue(collateralRequirement, 18));
     }
-    throw new Error(
-      "Unable to calculate emp value, no token price or collateral price"
-    );
+    throw new Error('Unable to calculate emp value, no token price or collateral price');
   }
 
   async function estimateDevMiningRewards({
@@ -764,9 +606,7 @@ export function devMiningCalculator({
     totalRewards: number;
     empWhitelist: string[];
   }) {
-    const allInfo = await Promise.all(
-      empWhitelist.map((address) => getEmpInfo(address))
-    );
+    const allInfo = await Promise.all(empWhitelist.map((address) => getEmpInfo(address)));
 
     const values: any[] = [];
     /// @dev Returns the whitelisted TVM
@@ -774,16 +614,13 @@ export function devMiningCalculator({
       const value = calculateEmpValue(info);
       values.push(value);
       return totalValue.addUnsafe(value);
-    }, FixedNumber.from("0"));
+    }, FixedNumber.from('0'));
 
     return allInfo.map((info, i): [string, string, string] => {
       return [
         info.address,
-        values[i]
-          .mulUnsafe(FixedNumber.from(totalRewards))
-          .divUnsafe(totalValue)
-          .toString(),
-        totalValue.toString()
+        values[i].mulUnsafe(FixedNumber.from(totalRewards)).divUnsafe(totalValue).toString(),
+        totalValue.toString(),
       ];
     });
   }

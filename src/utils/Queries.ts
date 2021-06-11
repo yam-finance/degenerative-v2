@@ -56,6 +56,22 @@ export const UNISWAP_DAILY_PAIR_DATA = gql`
   }
 `;
 
+export const SUSHI_DAILY_PAIR_DATA = gql`
+  query pairDayDatas($pairAddress: Bytes!, $startingTime: Int!) {
+    pairDayDatas(orderBy: date, orderDirection: asc, where: { pair: $pairAddress, date_gt: $startingTime }) {
+      date
+      token0 {
+        id
+      }
+      token1 {
+        id
+      }
+      reserve0
+      reserve1
+    }
+  }
+`;
+
 export const UNISWAP_PRICE_PER_ETH = gql`
   query token($tokenAddress: ID!) {
     token(id: $tokenAddress) {
