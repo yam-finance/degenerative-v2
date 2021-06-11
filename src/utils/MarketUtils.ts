@@ -226,8 +226,11 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   };
 };
 
-/** Get labels, reference price data and all market price data for this synth type. */
-/*
+/** Get labels, reference price data and all market price data for this synth type.
+ *  Only fetches data from mainnet. This is intentional.
+ */
+// TODO this will grab data for individual synth
+// TODO data will NOT be paired to USD
 export const getDailyPriceHistory2 = async (group: string, synthMetadata: Record<string, ISynth>, chainId: number) => {
   // Defaults to 30 days
   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
@@ -335,4 +338,3 @@ export const getDailyPriceHistory2 = async (group: string, synthMetadata: Record
     synthPrices: res,
   };
 };
-*/
