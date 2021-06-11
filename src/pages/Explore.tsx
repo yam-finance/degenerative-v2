@@ -88,11 +88,7 @@ export const Explore = () => {
         <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
-        <div className="button button-small">
-          <span className="opacity-60">Up to </span>
-          {`${aprMax}% APR`}
-        </div>{' '}
-        {/* TODO */}
+        <div className="button button-small">{`${aprMax}% APR`}</div> {/* TODO */}
         <div className="pill absolute-top-right margin-4">New</div>
       </Link>
     );
@@ -115,16 +111,13 @@ export const Explore = () => {
         </div>
         <div></div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">
-            <span className="opacity-50">Up to </span>
-            {`${aprMax}%`}
-          </div>
+          <div className="text-color-4">{`${aprMax}%`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{formatForDisplay(totalLiquidity)}</div>
+          <div className="text-color-4">${formatForDisplay(totalLiquidity)}</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{formatForDisplay(totalMarketCap)}</div>
+          <div className="text-color-4">${formatForDisplay(totalMarketCap)}</div>
         </div>
       </TableRow>
     );

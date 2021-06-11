@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader } from '@/components';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader, Icon } from '@/components';
 import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 import chartLoader from '/src/assets/chart-loader.svg';
 
@@ -29,7 +29,9 @@ export const SynthGroup: React.FC = () => {
   const [synthGroup, setSynthGroup] = useState<Record<string, ISynthGroupItem>>({});
   const [historicPriceData, setHistoricPriceData] = useState<{
     labels: string[];
-    synthPrices: Record<string, number[]>;
+    //synthPrices: Record<string, number[]>;
+    synthPrices: number[];
+    referencePrices: number[];
   }>();
   const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('Live');
   const [synthInFocus, setSynthInFocus] = useState<string>('');
@@ -72,33 +74,44 @@ export const SynthGroup: React.FC = () => {
     if (!isEmpty(synthMarketData)) initSynthGroups();
   }, [synthMarketData, filterSynths]);
 
-  // TODO account for different data per synth
   useEffect(() => {
-    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
-    //async () => await getDailyPriceHistory_new(synthMetadata[synthInFocus]);
+    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
 
-    if (chainId) getChartData();
+    if (synthMetadata[synthInFocus] && chainId) getChartData();
   }, [synthMetadata, synthInFocus]);
 
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
+    console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
-      datasets: Object.entries(historicPriceData.synthPrices)
-        .filter(([name, prices]) => {
-          return name === synthInFocus || name === 'Reference';
-        }) // TODO
-        .map(([name, prices]) => ({
-          label: name,
-          data: prices,
-          borderColor: name === 'Reference' ? '#fff' : '#FF0099',
+      datasets: [
+        {
+          label: synthInFocus,
+          data: historicPriceData.synthPrices,
+          borderColor: '#FF0099',
           borderWidth: 1,
+          backgroundColor: '#FF0099',
+          fill: false,
           pointRadius: 0,
           pointHoverRadius: 4,
           pointHoverBackgroundColor: '#FF0099',
           tension: 0.1,
-        })),
+        },
+        {
+          label: 'Reference',
+          data: historicPriceData.referencePrices,
+          borderColor: '#FFF',
+          borderWidth: 2,
+          backgroundColor: '#FFF',
+          fill: false,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: '#FF0099',
+          tension: 0.1,
+        },
+      ],
     };
 
     const options = {
@@ -158,7 +171,10 @@ export const SynthGroup: React.FC = () => {
     };
 
     const legend = {
-      display: false,
+      display: true,
+      labels: {
+        fontColor: '#FFF',
+      },
     };
 
     return <Line data={data} height={300} options={options} legend={legend} />;
@@ -166,26 +182,44 @@ export const SynthGroup: React.FC = () => {
 
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
     const { name, maturity, apr, balance, liquidity, price } = props;
-    const { cycle, year, group } = synthMetadata[name];
+    const { cycle, year, group, collateral } = synthMetadata[name];
 
+    const rowStyle = {
+      backgroundColor: '#ec6ead',
+      // TODO what to do with this?
+      //backgroundImage:
+      //  '-webkit-gradient(linear, left top, left bottom, from(rgba(243, 85, 201, 0)), color stop(5%, #ff8a97), color-stop(46%, #ec6ead), to(#ce34aa))',
+      //backgroundImage: 'linear-gradient(180deg, rgba(243, 85, 201, 0), #ff8a97 5%, #ec6ead 46%, #ce34aa)',
+      //boxShadow:
+      //  'inset 0 0 8px 4px #ec6ead, 0 8px 16px -4px rgba(236, 110, 173, 0.2), 0 16px 32px -8px rgba(236, 110, 173, 0.2)',
+    };
     return (
-      <Link to={`/synths/${group}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
+      <Link
+        to={`/synths/${group}/${cycle}${year}`}
+        //style={rowStyle}
+        className="hover-scale table-row margin-y-2 w-inline-block relative"
+      >
         <div className="expand">
-          <div className="margin-right-1 text-color-4">{name}</div>
+          <div className="margin-right-1 text-color-4 weight-bold">{name}</div>
           <div className="text-xs opacity-50">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
         </div>
+        <div className="expand portrait-hide weight-bold">{balance}</div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{apr}%</div>
-        </div>
-        <div className="expand portrait-hide">
-          <div className="text-color-4">$0.00</div>
-          <div className="text-xs">{balance} Tokens</div>
-        </div>
-        <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
+          <div className="text-color-4 weight-bold">
+            {price} {collateral}
+          </div>
+          <div className="text-xs opacity-50 hide portrait-block">Price</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">${price}</div>
+          <div className="text-color-4 weight-bold">{apr}%</div>
+          <div className="text-xs opacity-50 hide portrait-block">APR</div>
+        </div>
+        <div className="expand portrait-padding-y-2">
+          <div className="text-color-4 weight-bold">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
+          <div className="text-xs opacity-50 hide portrait-block">Liquidity</div>
+        </div>
+        <div className="width-8 height-8 absolute-right margin-top-5 margin-right-5 radius-full padding-1 background-color-white">
+          <Icon name="ChevronRight" className="icon opacity-100 text-color-1 margin-0" />
         </div>
       </Link>
     );
@@ -253,9 +287,11 @@ export const SynthGroup: React.FC = () => {
           {historicPriceData ? <Chart /> : <img className="chart-loader pulse" src={chartLoader} />}
         </div>
 
-        <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
-        <TableFilter />
-        <Table headers={['Maturity', 'APR', 'Your Balance', 'Liquidity', 'Price']}>
+        <div className="flex-align-baseline margin-top-8">
+          <h5 className="margin-left-8 text-medium">Available Synths</h5>
+          <TableFilter />
+        </div>
+        <Table headers={['Maturity', 'Your Balance', 'Price', 'APR', 'Liquidity']}>
           {Object.keys(synthGroup).length > 0 ? (
             Object.entries(synthGroup).map(([name, synth], index) => {
               return <SynthGroupRow {...synth} key={index} />;

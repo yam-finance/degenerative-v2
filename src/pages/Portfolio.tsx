@@ -13,7 +13,7 @@ export const Portfolio = () => {
   const MintedRow: React.FC<IMintedPosition> = (props) => {
     const { name, tokenAmount, collateralAmount, utilization } = props;
     const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
-    const { price, globalUtilization, liquidationPoint } = synthMarketData[name];
+    const { price, priceUsd, globalUtilization, liquidationPoint } = synthMarketData[name];
     const link = `/synths/${group}/${cycle}${year}`;
 
     const [collateralPrice, setCollateralPrice] = useState(0);
@@ -27,27 +27,23 @@ export const Portfolio = () => {
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>
-            <div className="text-xs opacity-50">{`${cycle} ${year}`}</div>
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">
-            {roundDecimals(price * tokenAmount, 2)} {collateral}
-          </div>
-          <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
+          <div className="text-color-4">{`${tokenAmount} ${name}`}</div>
+          <div className="text-xs opacity-50">${roundDecimals(priceUsd * tokenAmount, 2)}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${roundDecimals(collateralPrice * collateralAmount, 2)}</div>
-          <div className="text-xs opacity-50">{`${collateralAmount} ${collateral}`}</div>
+          <div className="text-color-4">{`${roundDecimals(collateralAmount, 3)} ${collateral}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">{utilization * 100}%</div>
+          <div className="text-color-4">{roundDecimals(1 / utilization, 2)}</div>
           <div className="gauge horizontal overflow-hidden">
             <div className="collateral" />
             <div className="debt horizontal" style={{ width: `${utilization * 100}%` }}>
               <div className="gradient horizontal" />
             </div>
-            <div className="gcr horizontal" style={{ left: `${1 / globalUtilization}%` }} />
+            <div className="gcr horizontal" style={{ left: `${globalUtilization * 100}%` }} />
             <div className="liquidation-point horizontal" style={{ left: `${liquidationPoint * 100}%` }} />
           </div>
         </div>
@@ -63,7 +59,7 @@ export const Portfolio = () => {
   const SynthsInWalletRow: React.FC<ITokensInWallet> = (props) => {
     const { name, tokenAmount } = props;
     const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
-    const { price, daysTillExpiry } = synthMarketData[name];
+    const { price, priceUsd, daysTillExpiry } = synthMarketData[name];
     const link = `/synths/${group}/${cycle}${year}`;
 
     const isExpired = daysTillExpiry < 0;
@@ -76,18 +72,19 @@ export const Portfolio = () => {
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>
-            <div className="text-xs opacity-50">{`${cycle} ${year}`}</div>
           </div>
         </div>
         <div className="expand">
           <div className="text-color-4">
-            {roundDecimals(Number(price) * tokenAmount, 2)} {collateral}
+            {tokenAmount} {name}
           </div>
-          <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
+          <div className="text-xs opacity-50">{`$${roundDecimals(priceUsd * tokenAmount, 2)}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">${price}</div>
-          <div className="height-8 width-32 w-embed w-script"></div>
+          <div className="text-color-4">
+            {price} {collateral}
+          </div>
+          <div className="text-xs opacity-50">{`$${roundDecimals(priceUsd, 2)}`}</div>
         </div>
         <div className="expand">
           <div className={`pill ${isExpired ? 'red' : 'green'}`}>{isExpired ? 'EXPIRED' : 'LIVE'}</div>
@@ -119,7 +116,7 @@ export const Portfolio = () => {
                 <TableRow>You do not have any synths in your wallet</TableRow>
               )}
             </Table>
-            <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Utilization', 'Actions']}>
+            <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Collateral Ratio', 'Actions']}>
               {mintedPositions.length > 0 ? (
                 mintedPositions.map((minted, index) => {
                   return <MintedRow {...minted} key={index} />;

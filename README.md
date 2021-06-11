@@ -2,6 +2,9 @@
 
 #### Development
 
+- General Notes:
+  - Utilization is used internally, which is 1/collateral ratio. However, Collateral ratio is shown on to the user.
+
 Generating Typechain classes:
 Typechain classes must be generated in order to run. To do so, either run `yarn prebuild` or `yarn build`.
 
@@ -23,5 +26,5 @@ For manual testing on forked mainnet, follow these steps:
 6. In Metamask, import the private key of the account found in step 4
 7. You are ready to test with 10,000 ETH in your wallet
 
-- Notes:
+- Dev Notes:
   - Be mindful to reset your wallet after running an instance of the forked chain

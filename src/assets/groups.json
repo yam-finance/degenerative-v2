@@ -1,12 +1,12 @@
 {
-  "uGas": {
+  "uGAS": {
     "description": "Tracks median Ethereum gas prices",
     "collateral": "WETH",
     "paired": "WETH",
     "image": "ugas",
     "creator": "UMA"
   },
-  "uStonks": {
+  "uSTONKS": {
     "description": "Track the top ten stocks chosen by the Wall Street Bets community",
     "collateral": "USDC",
     "paired": "USDC",
