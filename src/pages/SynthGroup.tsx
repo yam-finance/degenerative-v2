@@ -74,12 +74,10 @@ export const SynthGroup: React.FC = () => {
     if (!isEmpty(synthMarketData)) initSynthGroups();
   }, [synthMarketData, filterSynths]);
 
-  // TODO account for different data per synth
   useEffect(() => {
-    //const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(group, synthMetadata, chainId));
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
 
-    if (chainId) getChartData();
+    if (synthMetadata[synthInFocus] && chainId) getChartData();
   }, [synthMetadata, synthInFocus]);
 
   const Chart: React.FC = () => {
@@ -88,23 +86,9 @@ export const SynthGroup: React.FC = () => {
     console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
-      //datasets: Object.entries(historicPriceData.synthPrices)
-      //  .filter(([name, prices]) => {
-      //    return name === synthInFocus || name === 'Reference';
-      //  }) // TODO
-      //  .map(([name, prices]) => ({
-      //    label: name,
-      //    data: prices,
-      //    borderColor: name === 'Reference' ? '#fff' : '#FF0099',
-      //    borderWidth: 1,
-      //    pointRadius: 0,
-      //    pointHoverRadius: 4,
-      //    pointHoverBackgroundColor: '#FF0099',
-      //    tension: 0.1,
-      //  })),
       datasets: [
         {
-          name: synthInFocus,
+          label: synthInFocus,
           data: historicPriceData.synthPrices,
           borderColor: '#FF0099',
           borderWidth: 1,
@@ -114,7 +98,7 @@ export const SynthGroup: React.FC = () => {
           tension: 0.1,
         },
         {
-          name: 'Reference',
+          label: 'Reference',
           data: historicPriceData.referencePrices,
           borderColor: '#FFF',
           borderWidth: 1,
@@ -183,7 +167,10 @@ export const SynthGroup: React.FC = () => {
     };
 
     const legend = {
-      display: false,
+      display: true,
+      labels: {
+        fontColor: '#FFF',
+      },
     };
 
     return <Line data={data} height={300} options={options} legend={legend} />;
@@ -191,7 +178,7 @@ export const SynthGroup: React.FC = () => {
 
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
     const { name, maturity, apr, balance, liquidity, price } = props;
-    const { cycle, year, group } = synthMetadata[name];
+    const { cycle, year, group, collateral } = synthMetadata[name];
 
     return (
       <Link to={`/synths/${group}/${cycle}${year}`} className="table-row margin-y-2 w-inline-block">
@@ -199,15 +186,14 @@ export const SynthGroup: React.FC = () => {
           <div className="margin-right-1 text-color-4">{name}</div>
           <div className="text-xs opacity-50">{maturity <= 0 ? 'Expired' : `${maturity} days to expiry`}</div>
         </div>
+        <div className="expand portrait-hide">{balance}</div>
+        <div className="expand portrait-padding-y-2">
+          <div className="text-color-4">
+            {price} {collateral}
+          </div>
+        </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{apr}%</div>
-        </div>
-        <div className="expand portrait-hide">
-          <div className="text-color-4">$0.00</div>
-          <div className="text-xs">{balance} Tokens</div>
-        </div>
-        <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{price}</div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">${Number(liquidity) > 1 ? formatForDisplay(liquidity) : '0'}</div>
@@ -278,9 +264,11 @@ export const SynthGroup: React.FC = () => {
           {historicPriceData ? <Chart /> : <img className="chart-loader pulse" src={chartLoader} />}
         </div>
 
-        <h5 className="margin-top-8 margin-left-8 text-medium">Available Synths</h5>
-        <TableFilter />
-        <Table headers={['Maturity', 'APR', 'Your Balance', 'Price', 'Liquidity']}>
+        <div className="flex-align-baseline margin-top-8">
+          <h5 className="margin-left-8 text-medium">Available Synths</h5>
+          <TableFilter />
+        </div>
+        <Table headers={['Maturity', 'Your Balance', 'Price', 'APR', 'Liquidity']}>
           {Object.keys(synthGroup).length > 0 ? (
             Object.entries(synthGroup).map(([name, synth], index) => {
               return <SynthGroupRow {...synth} key={index} />;

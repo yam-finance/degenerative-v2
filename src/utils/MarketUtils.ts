@@ -7,6 +7,7 @@ import {
   SUSHISWAP_ENDPOINT,
   UNISWAP_MARKET_DATA_QUERY,
   UNISWAP_DAILY_PRICE_QUERY,
+  SUSHI_DAILY_PAIR_DATA,
   getReferencePriceHistory,
   getDateString,
   getCollateralData,
@@ -119,11 +120,15 @@ export const getPoolData = async (pool: ILiquidityPool) => {
   }
 };
 
-// TODO APRs from API are wrong. Hardcoding for now.
-export const getApr = async (group: string, cycle: string): Promise<number> => {
+export const getApr = async (name: string, cr: number): Promise<number> => {
   try {
-    const res = await axios.get('https://api.yam.finance/apr/degenerative');
-    return Promise.resolve(res.data[group.toUpperCase()][cycle.toUpperCase()]);
+    console.log(cr);
+    const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`);
+    const collateralEfficiency = 1 / (1 + cr);
+    const aprMultiplier = res.data.aprMultiplier;
+
+    console.log(aprMultiplier, collateralEfficiency);
+    return Promise.resolve(aprMultiplier * collateralEfficiency);
   } catch (err) {
     console.error(err);
     return Promise.reject('Failed to get APR.');
@@ -174,7 +179,9 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   })();
 
   // Get pool data from subgraph
-  const poolData: { pairDayDatas: any[] } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PAIR_DATA, {
+  const endpoint = synth.pool.location === 'uni' ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
+  const query = synth.pool.location === 'uni' ? UNISWAP_DAILY_PAIR_DATA : SUSHI_DAILY_PAIR_DATA;
+  const poolData: { pairDayDatas: any[] } = await request(endpoint, query, {
     pairAddress: poolAddress,
     startingTime: startingTime,
   });

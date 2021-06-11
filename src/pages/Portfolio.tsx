@@ -13,7 +13,7 @@ export const Portfolio = () => {
   const MintedRow: React.FC<IMintedPosition> = (props) => {
     const { name, tokenAmount, collateralAmount, utilization } = props;
     const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
-    const { price, globalUtilization, liquidationPoint } = synthMarketData[name];
+    const { price, priceUsd, globalUtilization, liquidationPoint } = synthMarketData[name];
     const link = `/synths/${group}/${cycle}${year}`;
 
     const [collateralPrice, setCollateralPrice] = useState(0);
@@ -27,17 +27,14 @@ export const Portfolio = () => {
           </div>
           <div>
             <div className="margin-right-1 text-color-4">{name}</div>
-            <div className="text-xs opacity-50">{`${cycle} ${year}`}</div>
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">
-            {roundDecimals(price * tokenAmount, 2)} {collateral}
-          </div>
-          <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
+          <div className="text-color-4">{`${tokenAmount} ${name}`}</div>
+          <div className="text-xs opacity-50">${roundDecimals(priceUsd * tokenAmount, 2)}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">{`${collateralAmount} ${collateral}`}</div>
+          <div className="text-color-4">{`${roundDecimals(collateralAmount, 3)} ${collateral}`}</div>
         </div>
         <div className="expand">
           <div className="text-color-4">{roundDecimals(1 / utilization, 2)}</div>
@@ -79,15 +76,15 @@ export const Portfolio = () => {
         </div>
         <div className="expand">
           <div className="text-color-4">
-            {roundDecimals(Number(price) * tokenAmount, 2)} {collateral}
+            {tokenAmount} {name}
           </div>
-          <div className="text-xs opacity-50">{`${tokenAmount} ${name}`}</div>
+          <div className="text-xs opacity-50">{`$${roundDecimals(priceUsd * tokenAmount, 2)}`}</div>
         </div>
         <div className="expand">
           <div className="text-color-4">
             {price} {collateral}
           </div>
-          <div className="height-8 width-32 w-embed w-script"></div>
+          <div className="text-xs opacity-50">{`$${roundDecimals(priceUsd, 2)}`}</div>
         </div>
         <div className="expand">
           <div className={`pill ${isExpired ? 'red' : 'green'}`}>{isExpired ? 'EXPIRED' : 'LIVE'}</div>

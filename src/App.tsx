@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import ContextProviders from '@/contexts';
 import './purged/degenerative.css';
-//import './webflow.css';
 import './normalize.css';
 
 import { Landing, Synth, Explore, Portfolio, SynthGroup, NotFound } from '@/pages';

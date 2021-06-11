@@ -99,9 +99,9 @@ export const MarketProvider: React.FC = ({ children }) => {
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, paired.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, paired.decimals));
 
-            //const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
-            /// @TODO Add apr api calls
-            let apr: number = 0;
+            // Grab APRs from API
+            const cr = 1 / globalUtilization;
+            const apr = await getApr(name, cr); //Number((await getMiningRewards(name, synth, priceUsd, 1.5, tokenCount)) ?? 0);
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired

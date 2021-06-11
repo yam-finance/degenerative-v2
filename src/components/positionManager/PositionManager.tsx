@@ -165,24 +165,33 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     return (
       <div className="modal">
         <div className="modal-bg w-inline-block" onClick={closeModal}></div>
-        <div className="padding-6 background-color-3 radius-large box-shadow-large width-full max-width-xl">
+        <div className="padding-6 background-color-3 radius-large box-shadow-large width-full max-width-2xl">
           <div className="modal-section">
             <div>
-              <h3 className="text-color-6 margin-0">Your collateral will be above the Global Utilization!</h3>
+              <h3 className="text-color-6 margin-0">You are initiating a slow withdrawal</h3>
               <p className="margin-top-4">
-                You will need to wait for a withdrawal period of{' '}
-                <strong className="text-color-4">{withdrawalPeriod} minutes</strong> before you can withdraw your{' '}
-                {currentCollateral}.
+                This is required if the amount of collateral you wish to withdraw lowers your collateral ratio (CR)
+                below the Global Collateral Ratio (GCR).
                 <br />
                 <br />
-                During that time your collateral could be <strong className="text-color-4">liquidated</strong> if your
-                utilization exceeds the liquidation point of{' '}
-                <strong className="text-color-4">{state.liquidationPoint * 100}%.</strong>
+                There is a <strong className="text-color-4">{withdrawalPeriod} minute</strong> withdrawal period before
+                you can make your withdrawal. Once the withdrawal liveness period has completed you will be able to
+                submit the second part of the process and withdraw the requested amount of collateral.
                 <br />
                 <br />
-                {/* TODO Add link to liquidation docs */}
-                <a href="#" className="underline">
-                  Learn more about liquidation risks.
+                Until a slow withdrawal is complete, all of your collateral is at risk of liquidation if your proposed
+                collateral ratio drops low enough to be liquidated. You should complete your withdrawal as soon as
+                possible after the liveness period has completed.
+                <br />
+                <br />
+                You can cancel your withdrawal request at any time.
+                <br />
+                <br />
+                <a
+                  href="https://docs.umaproject.org/synthetic-tokens/expiring-synthetic-tokens#slow-withdrawal"
+                  className="underline"
+                >
+                  Learn More about how Slow Withdrawals Work
                 </a>
               </p>
             </div>

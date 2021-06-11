@@ -74,15 +74,15 @@ export const Redeem: React.FC = React.memo(() => {
 
   const ClosePositionButton: React.FC = () => {
     const redeemTokens = state.sponsorTokens;
-    return <ActionButton action={() => actions.onRedeem(redeemTokens)}>{`Close Position`}</ActionButton>;
+    return <ActionButton action={() => actions.onRedeem(redeemTokens)}>Close position</ActionButton>;
   };
 
   return (
     <ActionDisplay>
       <h3 className="margin-0 text-align-center">Redeem</h3>
       <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
-        Redeem <strong className="text-color-4">{currentSynth}</strong> to lower your collateral ratio, or close your
-        entire position
+        Redeem <strong className="text-color-4">{currentSynth}</strong> to reduce <br />
+        or close your position
       </p>
       <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
 
