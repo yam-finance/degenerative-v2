@@ -7,7 +7,6 @@ import {
   getPairPriceEth,
   getUsdPrice,
   getApr,
-  getMiningRewards,
   getPoolData,
   getEmpState,
   roundDecimals,
@@ -102,6 +101,7 @@ export const MarketProvider: React.FC = ({ children }) => {
 
             //const apr = roundDecimals(Math.random() * 100, 2); // TODO get actual APR
             /// @TODO Add apr api calls
+            let apr: number = 0;
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
