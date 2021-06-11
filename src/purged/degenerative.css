@@ -615,6 +615,11 @@ a:hover {
   align-items: center;
 }
 
+.flex-align-center.padding-1.radius-full.background-color-1.padding-right-3.margin-1 {
+  margin-right: 0.15rem;
+  margin-left: 0.15rem;
+}
+
 .flex-align-center.flex-justify-center {
   -webkit-box-align: stretch;
   -webkit-align-items: stretch;
@@ -760,6 +765,10 @@ a:hover {
   margin-top: 1rem;
 }
 
+.margin-top-5 {
+  margin-top: 1.25rem;
+}
+
 .margin-top-6 {
   margin-top: 1.5rem;
 }
@@ -865,6 +874,10 @@ a:hover {
   margin-right: 1rem;
 }
 
+.margin-right-5 {
+  margin-right: 1.25rem;
+}
+
 .margin-right-8 {
   margin-right: 2rem;
 }
@@ -930,6 +943,10 @@ a:hover {
 
 .padding-0.width-4.height-4.flex-align-center.flex-justify-center {
   display: block;
+}
+
+.padding-1 {
+  padding: 0.25rem;
 }
 
 .padding-2 {
@@ -1132,6 +1149,10 @@ a:hover {
   width: 4rem;
 }
 
+.width-20 {
+  width: 5rem;
+}
+
 .width-32 {
   width: 8rem;
 }
@@ -1267,12 +1288,24 @@ a:hover {
   bottom: 0%;
 }
 
+.absolute-right {
+  position: absolute;
+  left: auto;
+  top: 0%;
+  right: 0%;
+  bottom: 0%;
+}
+
 .absolute-top {
   position: absolute;
   left: 0%;
   top: 0%;
   right: 0%;
   bottom: auto;
+}
+
+.fixed {
+  position: fixed;
 }
 
 .sticky-top-0 {
@@ -1293,6 +1326,10 @@ a:hover {
 
 .border-top-2px {
   border-top: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.border-bottom-2px {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.05);
 }
 
 .border-right-2px {
@@ -1347,6 +1384,10 @@ a:hover {
 
 .max-width-2xl {
   max-width: 40rem;
+}
+
+.height-1 {
+  height: 0.25rem;
 }
 
 .height-4 {
@@ -1841,6 +1882,10 @@ a:hover {
   -webkit-flex: 0 0 auto;
   -ms-flex: 0 0 auto;
   flex: 0 0 auto;
+}
+
+.expand.height-1 {
+  height: 0.25rem;
 }
 
 .wallet {
@@ -2845,7 +2890,7 @@ a:hover {
     padding: 1.375rem;
   }
 
-  .padding-6.background-color-3.radius-large.box-shadow-large.width-full.max-width-xl {
+  .padding-6.background-color-3.radius-large.box-shadow-large.width-full.max-width-2xl {
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0rem;
   }
@@ -3180,6 +3225,10 @@ a:hover {
     margin-top: 0.875rem;
   }
 
+  .margin-top-5 {
+    margin-top: 1rem;
+  }
+
   .margin-top-6 {
     margin-top: 1.25rem;
   }
@@ -3270,6 +3319,10 @@ a:hover {
 
   .margin-right-4 {
     margin-right: 0.875rem;
+  }
+
+  .margin-right-5 {
+    margin-right: 1rem;
   }
 
   .margin-right-8 {
