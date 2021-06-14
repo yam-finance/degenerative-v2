@@ -15,6 +15,7 @@ import {
   UNISWAP_DAILY_PAIR_DATA,
 } from '@/utils';
 import { ISynth, IToken, ILiquidityPool } from '@/types';
+import { isEmpty } from './Helpers';
 
 sessionStorage.clear();
 
@@ -186,40 +187,44 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
     startingTime: startingTime,
   });
 
-  console.log(poolData);
+  let synthPrices: number[];
 
-  // Find which token is the synth and which is paired
-  let synthId: string;
-  let pairedId: string;
-  if (poolData.pairDayDatas[0].token0.id === synthAddress) {
-    synthId = 'reserve1';
-    pairedId = 'reserve0';
-  } else {
-    synthId = 'reserve0';
-    pairedId = 'reserve1';
-  }
-
-  // Put pool price data into a map, indexed by date.
-  // Price is reserve of synth / reserve of paired
-  const dailyPairData = new Map(
-    poolData.pairDayDatas.map((dailyData) => [
-      formatISO(fromUnixTime(dailyData.date), { representation: 'date' }),
-      dailyData[synthId] / dailyData[pairedId],
-    ])
-  );
-
-  // Fill in empty spaces, since subgraph only captures price when it changes
-  let lastPrice = dailyPairData.values().next().value;
-
-  const synthPrices = dateArray.map((date) => {
-    const price = dailyPairData.get(date);
-    if (price) {
-      lastPrice = price;
-      return roundDecimals(Number(price), 4);
+  if (!isEmpty(poolData.pairDayDatas)) {
+    // Find which token is the synth and which is paired
+    let synthId: string;
+    let pairedId: string;
+    if (poolData.pairDayDatas[0].token0.id === synthAddress) {
+      synthId = 'reserve1';
+      pairedId = 'reserve0';
     } else {
-      return roundDecimals(Number(lastPrice), 4);
+      synthId = 'reserve0';
+      pairedId = 'reserve1';
     }
-  });
+
+    // Put pool price data into a map, indexed by date.
+    // Price is reserve of synth / reserve of paired
+    const dailyPairData = new Map(
+      poolData.pairDayDatas.map((dailyData) => [
+        formatISO(fromUnixTime(dailyData.date), { representation: 'date' }),
+        dailyData[synthId] / dailyData[pairedId],
+      ])
+    );
+
+    // Fill in empty spaces, since subgraph only captures price when it changes
+    let lastPrice = dailyPairData.values().next().value;
+
+    synthPrices = dateArray.map((date) => {
+      const price = dailyPairData.get(date);
+      if (price) {
+        lastPrice = price;
+        return roundDecimals(Number(price), 4);
+      } else {
+        return roundDecimals(Number(lastPrice), 4);
+      }
+    });
+  } else {
+    synthPrices = [];
+  }
 
   return {
     labels: dateArray,
