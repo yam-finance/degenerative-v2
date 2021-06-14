@@ -24,7 +24,6 @@ const initialState = {
 
 export const MarketContext = createContext(initialState);
 
-// TODO Rename to SynthContext (?)
 export const MarketProvider: React.FC = ({ children }) => {
   const [synthMarketData, setSynthMarketData] = useState(initialState.synthMarketData);
   const [synthMetadata, setSynthMetadata] = useState(initialState.synthMetadata);

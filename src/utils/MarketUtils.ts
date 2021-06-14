@@ -186,6 +186,8 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
     startingTime: startingTime,
   });
 
+  console.log(poolData);
+
   // Find which token is the synth and which is paired
   let synthId: string;
   let pairedId: string;

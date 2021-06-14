@@ -4,7 +4,7 @@ import { Line } from 'react-chartjs-2';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader, Icon } from '@/components';
 import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
-import chartLoader from '/src/assets/chart-loader.svg';
+import chartLoader from '@/assets/chart-loader.svg';
 import { ISynthGroup } from '@/types';
 
 interface SynthParams {
@@ -28,7 +28,6 @@ export const SynthGroup: React.FC = () => {
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
   const { group } = useParams<SynthParams>();
 
-  const [groupName, setGroupName] = useState<string>();
   const [groupInfo, setGroupInfo] = useState<ISynthGroup>();
   const [synthGroup, setSynthGroup] = useState<Record<string, ISynthGroupItem>>({});
   const [historicPriceData, setHistoricPriceData] = useState<{
@@ -64,7 +63,7 @@ export const SynthGroup: React.FC = () => {
           synths[synthName] = {
             name: synthName,
             maturity: maturity,
-            apr: synthMarketData[synthName].apr, //TODO
+            apr: synthMarketData[synthName].apr,
             // TODO should be showing minted positions
             balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? 0,
             liquidity: synthMarketData[synthName].liquidity, // TODO
@@ -238,11 +237,6 @@ export const SynthGroup: React.FC = () => {
   };
 
   const TableFilter: React.FC = () => {
-    const setFilter = (filter: SynthTableFilter) => {
-      setSynthInFocus('');
-      setFilterSynths(filter);
-    };
-
     return (
       <div className="padding-x-5 flex-row">
         <div className="tabs">
