@@ -39,6 +39,7 @@ export const SynthGroup: React.FC = () => {
   const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('Live');
   const [synthInFocus, setSynthInFocus] = useState<string>('');
 
+  const learnMoreLink = `https://yam.gitbook.io/synths/synthetic-tokens/${group.toLowerCase()}`;
   // TODO redirect if type does not exist
 
   useEffect(() => {
@@ -319,10 +320,20 @@ export const SynthGroup: React.FC = () => {
             </div>
             <p className="text-small margin-top-2">{groupInfo.description}</p>
             <div>
-              <a href="#" className="button-secondary button-small margin-right-4 w-button">
+              <a
+                href={learnMoreLink}
+                target="_blank"
+                rel="noreferrer"
+                className="button-secondary button-small margin-right-4 w-button"
+              >
                 Learn more
               </a>
-              <a href="#" className="text-small weight-bold">
+              <a
+                href="https://yam.gitbook.io/synths/overview/how-do-i-use-synths"
+                target="_blank"
+                rel="noreferrer"
+                className="text-small weight-bold"
+              >
                 See tutorial
               </a>
             </div>

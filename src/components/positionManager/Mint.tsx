@@ -113,7 +113,7 @@ export const Mint: React.FC = React.memo(() => {
 
     return (
       <ActionButton action={() => actions.onMint(newCollateral, newTokens)} disableCondition={disableMinting}>
-        {`Mint ${newTokens} ${currentSynth} for ${newCollateral} ${currentCollateral}`}
+        {`Mint ${newTokens} ${currentSynth} with ${newCollateral} ${currentCollateral}`}
       </ActionButton>
     );
   };
