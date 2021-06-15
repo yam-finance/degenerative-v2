@@ -14,11 +14,10 @@ import numeral from 'numeral';
 interface SynthParams {
   group: string;
   cycleYear: string;
-  action: string;
 }
 
 export const Synth: React.FC = () => {
-  const { group, cycleYear, action } = useParams<SynthParams>();
+  const { group, cycleYear } = useParams<SynthParams>();
   const { currentSynth, currentCollateral, setSynth, mintedPositions, triggerUpdate } = useContext(UserContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
   const { signer } = useContext(EthereumContext);

@@ -23,8 +23,7 @@ const App: React.FC = () => {
           <Route exact strict path="/portfolio" component={Portfolio} />
           <Route exact strict path="/synths" component={Explore} />
           <Route exact strict path="/synths/:group" component={SynthGroup} />
-          <Redirect exact strict from="/synths/:group/:cycleYear" to="/synths/:group/:cycleYear/manage" />
-          <Route exact strict path="/synths/:group/:cycleYear/:action" component={Synth} />
+          <Route exact strict path="/synths/:group/:cycleYear" component={Synth} />
           <Route component={NotFound} />
         </Switch>
       </ContextProviders>

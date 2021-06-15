@@ -21,10 +21,21 @@ export const Manage = () => {
 
   return (
     <ActionDisplay>
-      <h3 className="margin-0 text-align-center">Manage Position</h3>
-      <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
-        View or change your <strong className="text-color-4">{currentSynth}</strong> position
-      </p>
+      {state.isExpired ? (
+        <>
+          <h3 className="margin-0 text-align-center">Synth Expired</h3>
+          <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
+            Settle any <strong className="text-color-4">{currentSynth}</strong> tokens below
+          </p>
+        </>
+      ) : (
+        <>
+          <h3 className="margin-0 text-align-center">Manage Position</h3>
+          <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
+            View or change your <strong className="text-color-4">{currentSynth}</strong> position
+          </p>
+        </>
+      )}
       <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
 
       <div className="flex-column width-full">

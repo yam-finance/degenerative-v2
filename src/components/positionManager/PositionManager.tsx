@@ -19,7 +19,10 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
 
   useEffect(() => {
     const initMinterState = async () => {
-      const collateralBalance = await setCollateralBalance(collateralData[currentCollateral]);
+      const { collateralBalance, synthBalance } = await setTokenBalances(
+        collateralData[currentCollateral],
+        synthMetadata[currentSynth].token
+      );
 
       const image = synthMetadata[currentSynth].imgLocation;
       const marketData = synthMarketData[currentSynth];
@@ -87,27 +90,31 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   // Set an event listener to update when collateral balance changes
   useEffect(() => {
     provider?.on('block', () => {
-      if (!isEmpty(collateralData) && currentCollateral) {
-        setCollateralBalance(collateralData[currentCollateral]);
+      if (!isEmpty(collateralData[currentCollateral]) && !isEmpty(synthMetadata[currentSynth])) {
+        setTokenBalances(collateralData[currentCollateral], synthMetadata[currentSynth].token);
       }
     });
     return () => {
       provider?.removeAllListeners('block');
     };
-  }, [collateralData, currentCollateral]);
+  }, []);
 
-  const setCollateralBalance = async (collateral: IToken) => {
-    const rawBalance = (await erc20.getBalance(collateral.address)) ?? BigNumber.from(0);
-    const collateralBalance = Number(utils.formatUnits(rawBalance, collateral.decimals));
+  const setTokenBalances = async (collateral: IToken, synth: IToken) => {
+    const rawCollateralBalance = (await erc20.getBalance(collateral.address)) ?? BigNumber.from(0);
+    const collateralBalance = Number(utils.formatUnits(rawCollateralBalance, collateral.decimals));
+
+    const rawSynthBalance = (await erc20.getBalance(synth.address)) ?? BigNumber.from(0);
+    const synthBalance = Number(utils.formatUnits(rawSynthBalance, synth.decimals));
 
     dispatch({
       type: 'UPDATE_MAX_COLLATERAL',
       payload: {
         collateral: collateralBalance,
+        synths: synthBalance,
       },
     });
 
-    return collateralBalance;
+    return { collateralBalance, synthBalance };
   };
 
   interface GaugeLabelProps {
