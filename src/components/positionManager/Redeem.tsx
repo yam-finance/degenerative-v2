@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 
 import { Icon, ActionDisplay, ActionButton, BackButton } from '@/components';
-import { PositionManagerContainer, useSynthActions } from '@/hooks';
+import { PositionManagerContainer } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
 
@@ -11,10 +11,9 @@ interface RedeemFormFields {
 }
 
 export const Redeem: React.FC = React.memo(() => {
-  const { state, dispatch } = PositionManagerContainer.useContainer();
+  const { actions, state, dispatch } = PositionManagerContainer.useContainer();
   const { currentSynth, mintedPositions } = useContext(UserContext);
 
-  const actions = useSynthActions();
   const maxRedeemableTokens = state.sponsorTokens - state.minTokens;
 
   const [formState, { number }] = useFormState<RedeemFormFields>(

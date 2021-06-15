@@ -81,6 +81,7 @@ export const getUsdPrice = async (cgId: string) => {
     const res = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${cgId}&vs_currencies=usd`);
     const price = Number(res.data[cgId].usd);
     sessionStorage.setItem(cgId, price.toString());
+
     return Promise.resolve(price);
   } catch (err) {
     return Promise.reject(err);
@@ -121,14 +122,19 @@ export const getPoolData = async (pool: ILiquidityPool) => {
   }
 };
 
+// Get APR multiplier.
 export const getApr = async (name: string, cr: number): Promise<number> => {
-  try {
-    console.log(cr);
-    const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`);
-    const collateralEfficiency = 1 / (1 + cr);
-    const aprMultiplier = res.data.aprMultiplier;
+  const collateralEfficiency = 1 / (1 + cr);
 
-    console.log(aprMultiplier, collateralEfficiency);
+  // Return cached value if present
+  const cached = sessionStorage.getItem(name);
+  if (cached) return Promise.resolve(Number(cached) * collateralEfficiency);
+
+  try {
+    const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`);
+    const aprMultiplier = res.data.aprMultiplier;
+    sessionStorage.setItem(name, aprMultiplier);
+
     return Promise.resolve(aprMultiplier * collateralEfficiency);
   } catch (err) {
     console.error(err);

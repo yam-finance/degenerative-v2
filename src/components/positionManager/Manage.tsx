@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import clsx from 'clsx';
-import { ActionDisplay, ActionButton } from '@/components';
-import { PositionManagerContainer, MinterAction, useSynthActions } from '@/hooks';
+import { ActionDisplay } from '@/components';
+import { PositionManagerContainer, MinterAction } from '@/hooks';
 import { UserContext } from '@/contexts';
 
 export const Manage = () => {
-  const { state, dispatch } = PositionManagerContainer.useContainer();
+  const { actions, state, dispatch } = PositionManagerContainer.useContainer();
   const { currentSynth, currentCollateral } = useContext(UserContext);
 
   const changeAction = (action: MinterAction) => {
@@ -47,26 +47,17 @@ export const Manage = () => {
           >
             Withdraw
           </button>
-          {/* 
-          <button
-            disabled={noPosition || !state.isExpired}
-            className={clsx(
-              styles,
-              (noPosition || !state.isExpired) && 'opacity-10',
-              state.action === 'SETTLE' && 'selected'
-            )}
-            onClick={() => changeAction('SETTLE')}
-          >
-            Settle
-          </button>
-         */}
         </div>
         <div className="margin-top-6 flex-space-between all-caps text-xs weight-bold letters-looser">
           <span>Synth</span>
           <span className="text-color-4 text-small">{currentSynth}</span>
         </div>
         <div className="flex-row flex-wrap margin-top-2">
-          <button className={clsx(styles, activeWithdrawalRequest && 'disabled')} onClick={() => changeAction('MINT')}>
+          <button
+            disabled={activeWithdrawalRequest || state.isExpired}
+            className={clsx(styles, (activeWithdrawalRequest || state.isExpired) && 'disabled')}
+            onClick={() => changeAction('MINT')}
+          >
             Mint
           </button>
           <button
@@ -85,13 +76,15 @@ export const Manage = () => {
           Redeem
         </button>
         <button
-          disabled={!state.isExpired}
+          disabled={!state.isExpired || noPosition}
+          // TODO can you settle with active withdrawal request?
           className={clsx(
             styles,
             (noPosition || activeWithdrawalRequest || !state.isExpired) && 'disabled',
             'width-full margin-top-2'
           )}
-          onClick={() => changeAction('REDEEM')}
+          // TODO Allow settle if synths in wallet
+          onClick={() => actions.onSettle()}
         >
           Settle
         </button>

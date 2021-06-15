@@ -2,6 +2,7 @@ import React, { useContext, useReducer } from 'react';
 import { createContainer } from 'unstated-next';
 
 import { roundDecimals } from '@/utils';
+import { useSynthActions } from './useSynthActions';
 
 export type MinterAction = 'MANAGE' | 'MINT' | 'DEPOSIT' | 'BURN' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
 
@@ -139,8 +140,9 @@ const calculateUtilization = (collateral: number, tokens: number, price: number)
 
 const usePositionManager = () => {
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
+  const actions = useSynthActions();
 
-  return { state, dispatch };
+  return { actions, state, dispatch };
 };
 
 export const PositionManagerContainer = createContainer(usePositionManager);

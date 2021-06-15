@@ -161,7 +161,7 @@ export const MarketProvider: React.FC = ({ children }) => {
     }
 
     setLoading(false);
-  }, [provider, chainId, account]);
+  }, [provider, chainId]);
 
   return (
     <MarketContext.Provider

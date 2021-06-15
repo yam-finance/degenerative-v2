@@ -24,10 +24,7 @@ export const Synth: React.FC = () => {
   const { signer } = useContext(EthereumContext);
 
   const [synth, setSynthInfo] = useState({} as ISynth);
-  const [
-    { isExpired, daysTillExpiry, priceUsd, collateralPriceUsd, globalUtilization, liquidationPoint, minTokens },
-    setMarketData,
-  ] = useState({} as ISynthMarketData);
+  const [marketData, setMarketData] = useState({} as ISynthMarketData);
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
   const [withdrawalMinutesLeft, setWithdrawalMinutesLeft] = useState(0);
 
@@ -171,7 +168,9 @@ export const Synth: React.FC = () => {
           <div className="width-2 radius-full background-color-white margin-right-2 blue" />
           <div className="text-small">
             <strong>
-              {isExpired ? `${currentSynth} has expired.` : `${currentSynth} will expire in ${daysTillExpiry} days.`}
+              {marketData.isExpired
+                ? `${currentSynth} has expired.`
+                : `${currentSynth} will expire in ${marketData.daysTillExpiry} days.`}
             </strong>
           </div>
         </div>
@@ -267,32 +266,34 @@ export const Synth: React.FC = () => {
                 <div className="expand flex-align-center text-small">
                   <div>{currentSynth} price</div>
                 </div>
-                <div className="weight-medium text-color-4">${numeral(priceUsd).format('0,0')}</div>
+                <div className="weight-medium text-color-4">${numeral(marketData.priceUsd).format('0,0')}</div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
                   <div>{currentCollateral} price</div>
                 </div>
-                <div className="weight-medium text-color-4">${numeral(collateralPriceUsd).format('0,0')}</div>
+                <div className="weight-medium text-color-4">
+                  ${numeral(marketData.collateralPriceUsd).format('0,0')}
+                </div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
                   <div>Global Collateral Ratio</div>
                 </div>
-                <div className="weight-medium text-color-4">{roundDecimals(1 / globalUtilization, 2)}</div>
+                <div className="weight-medium text-color-4">{roundDecimals(1 / marketData.globalUtilization, 2)}</div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
                   <div>Liquidation</div>
                 </div>
-                <div className="weight-medium text-color-4">{roundDecimals(1 / liquidationPoint, 2)}</div>
+                <div className="weight-medium text-color-4">{roundDecimals(1 / marketData.liquidationPoint, 2)}</div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
                   <div>Minimum position</div>
                 </div>
                 <div className="weight-medium text-color-4">
-                  {minTokens} {currentSynth}
+                  {marketData.minTokens} {currentSynth}
                 </div>
               </div>
             </div>

@@ -3,7 +3,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 
-import { Dropdown, Icon, Loader, Action } from '@/components';
+import { Dropdown, Icon, Loader, ActionSelector } from '@/components';
 import { UserContext, EthereumContext, MarketContext } from '@/contexts';
 import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from '@/hooks';
 import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
@@ -221,7 +221,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   return (
     <>
       <div className="flex-align-center flex-justify-center margin-top-8 landscape-flex-column-centered">
-        <Action />
+        <ActionSelector />
 
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
           <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4"></div>
