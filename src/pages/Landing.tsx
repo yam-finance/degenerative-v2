@@ -215,31 +215,56 @@ export const Landing: React.FC = () => {
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Help</h6>
-              <a href="https://yam.gitbook.io/synths/" className="block margin-bottom-2">
+              <a
+                href="https://yam.gitbook.io/synths/"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 Documentation
               </a>
-              <a href="https://yam.gitbook.io/synths/overview/faq" className="block margin-bottom-2">
+              <a
+                href="https://yam.gitbook.io/synths/overview/faq"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 FAQs
               </a>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Community</h6>
-              <a href="https://twitter.com/YamFinance" className="block margin-bottom-2">
+              <a
+                href="https://twitter.com/YamFinance"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 Twitter
               </a>
-              <a href="https://discord.com/invite/fbHX7NRa52" className="block margin-bottom-2">
+              <a
+                href="https://discord.com/invite/fbHX7NRa52"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 Discord
               </a>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Information</h6>
-              <a href="https://yambrief.substack.com/" className="block margin-bottom-2">
+              <a
+                href="https://yambrief.substack.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 Blog
               </a>
-              <a href="https://yam.finance/" className="block margin-bottom-2">
+              <a href="https://yam.finance/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
                 Visit Yam
               </a>
-              <a href="https://umaproject.org/" className="block margin-bottom-2">
+              <a href="https://umaproject.org/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
                 Visit UMA
               </a>
             </div>

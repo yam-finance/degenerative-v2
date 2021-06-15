@@ -78,9 +78,6 @@ export const Synth: React.FC = () => {
     return (
       <div className="padding-x-8 flex-row">
         <div className="tabs margin-right-2">
-          <NavLink to={`/synths/${group}/${cycleYear}/manage`} className="tab large" activeClassName="active">
-            Manage
-          </NavLink>
           <a href={tradeLink} target="_blank" rel="noreferrer" className="tab large">
             Trade
           </a>
@@ -283,7 +280,7 @@ export const Synth: React.FC = () => {
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">
-                  <div>Liquidation</div>
+                  <div>Liquidation Ratio</div>
                 </div>
                 <div className="weight-medium text-color-4">{roundDecimals(1 / marketData.liquidationPoint, 2)}</div>
               </div>
