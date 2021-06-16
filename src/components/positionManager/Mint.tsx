@@ -34,9 +34,9 @@ export const Mint: React.FC = React.memo(() => {
         if (oldCollateral !== collateralToAdd) {
           newCollateral = Number(collateralToAdd);
 
-          const newresultingCollateral = newCollateral + state.sponsorCollateral;
+          const newResultingCollateral = newCollateral + state.sponsorCollateral;
 
-          newTokens = adjustToGcr ? getTokensAtGcr(newresultingCollateral) - state.sponsorTokens : Number(tokensToAdd);
+          newTokens = adjustToGcr ? getTokensAtGcr(newResultingCollateral) - state.sponsorTokens : Number(tokensToAdd);
         } else {
           newTokens = Number(tokensToAdd);
 
@@ -45,7 +45,7 @@ export const Mint: React.FC = React.memo(() => {
             : Number(collateralToAdd);
         }
 
-        setFormInputs(roundDecimals(newCollateral, 3), roundDecimals(newTokens, 3));
+        setFormInputs(newCollateral, newTokens);
       },
     }
   );
@@ -67,8 +67,8 @@ export const Mint: React.FC = React.memo(() => {
     });
   };
 
-  const getTokensAtGcr = (collateral: number) => collateral * (state.globalUtilization / state.tokenPrice);
-  const getCollateralAtGcr = (tokens: number) => (tokens * state.tokenPrice) / state.globalUtilization;
+  const getTokensAtGcr = (collateral: number) => collateral * state.globalUtilization;
+  const getCollateralAtGcr = (tokens: number) => tokens / state.globalUtilization;
 
   const setMaximum = () => {
     const newTokens = adjustToGcr ? getTokensAtGcr(state.maxCollateral) : Number(formState.values.tokensToAdd);
@@ -104,10 +104,9 @@ export const Mint: React.FC = React.memo(() => {
 
     const disableMinting =
       newTokens <= 0 ||
-      (positionExists && newCollateral < 0) ||
-      (!positionExists && newCollateral <= 0) ||
-      state.resultingUtilization > state.globalUtilization ||
-      state.resultingUtilization > state.liquidationPoint;
+      newCollateral <= 0 ||
+      (!positionExists && state.resultingUtilization > state.globalUtilization) ||
+      state.resultingUtilization < state.liquidationPoint;
 
     return (
       <ActionButton action={() => actions.onMint(newCollateral, newTokens)} disableCondition={disableMinting}>

@@ -94,11 +94,11 @@ export const MarketProvider: React.FC = ({ children }) => {
               pricePerPaired = pool.token1Price;
             }
 
-            const globalUtilization = rawGlobalUtilization * pricePerPaired;
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, paired.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, paired.decimals));
 
             // Grab APRs from API
+            const globalUtilization = rawGlobalUtilization * pricePerPaired;
             const cr = 1 / globalUtilization;
             const apr = !isExpired ? await getApr(name, cr) : 0; //Number((await getMiningRewards(name, synth, priceUsd, 1.5, tokenCount)) ?? 0);
 
@@ -111,7 +111,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               tvl: tvlUsd,
               marketCap: Math.trunc(marketCap),
               volume24h: 0, // TODO need to get from subgraph
-              globalUtilization: roundDecimals(globalUtilization, 4),
+              globalUtilization: roundDecimals(rawGlobalUtilization, 4),
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
               withdrawalPeriod: withdrawalPeriod / 60, // Convert to minutes

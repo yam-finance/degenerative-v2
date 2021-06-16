@@ -90,7 +90,7 @@ export const UserProvider: React.FC = ({ children }) => {
         // tokenPrice: await (await getPrice(synth.token, collateral)).price,
         collateralAmount: collateral,
         // collateralPrice:
-        utilization: roundDecimals((tokens / collateral) * price, 4),
+        utilization: roundDecimals(tokens / collateral, 4),
         withdrawalRequestAmount: withdrawalRequest,
         withdrawalRequestTimestamp: withdrawalRequestTimestamp,
       };

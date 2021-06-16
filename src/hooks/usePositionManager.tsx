@@ -136,7 +136,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
   }
 };
 
-const calculateUtilization = (collateral: number, tokens: number, price: number) => (tokens * price) / collateral;
+const calculateUtilization = (collateral: number, tokens: number, price: number) => tokens / collateral;
 
 const usePositionManager = () => {
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
