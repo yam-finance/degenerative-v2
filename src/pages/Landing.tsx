@@ -108,14 +108,14 @@ export const Landing: React.FC = () => {
             <SynthBlock
               name="uGAS"
               image="ugas"
-              url="/synths/uGas"
+              url="/synths/uGAS"
               description={SynthGroups['uGAS'].description}
               apr={50}
             />
             <SynthBlock
               name="uSTONKS"
               image="ustonks_zombie"
-              url="/synths/uStonks"
+              url="/synths/uSTONKS"
               description={SynthGroups['uSTONKS'].description}
               apr={50}
             />
