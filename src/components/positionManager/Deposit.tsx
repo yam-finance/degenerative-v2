@@ -101,12 +101,12 @@ export const Deposit: React.FC = React.memo(() => {
                 <label className="opacity-60 weight-medium">Collateral</label>
                 <button onClick={(e) => setMaximum(e)} className="button-secondary button-tiny w-button">
                   {/* TODO Find out max burnable tokens */}
-                  Max {state.maxCollateral}
+                  Max {roundDecimals(state.maxCollateral, 3)}
                 </button>
               </div>
             </div>
             <div className="text-xs opacity-50 margin-top-1">
-              Deposit a maximum of {state.maxCollateral} {currentCollateral}
+              Deposit a maximum of {roundDecimals(state.maxCollateral, 3)} {currentCollateral}
             </div>
           </div>
         </div>

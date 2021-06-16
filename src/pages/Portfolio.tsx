@@ -16,6 +16,9 @@ export const Portfolio = () => {
     const { price, priceUsd, globalUtilization, liquidationPoint } = synthMarketData[name];
     const link = `/synths/${group}/${cycle}${year}`;
 
+    const pricedUtilization = price * utilization;
+    const pricedGlobalUtil = price * globalUtilization;
+
     const [collateralPrice, setCollateralPrice] = useState(0);
     (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
 
@@ -37,18 +40,18 @@ export const Portfolio = () => {
           <div className="text-color-4">{`${roundDecimals(collateralAmount, 3)} ${collateral}`}</div>
         </div>
         <div className="expand">
-          <div className="text-color-4">{roundDecimals(1 / utilization, 2)}</div>
+          <div className="text-color-4">{roundDecimals(1 / pricedUtilization, 2)}</div>
           <div className="gauge horizontal overflow-hidden">
             <div className="collateral" />
-            <div className="debt horizontal" style={{ width: `${utilization * 100}%` }}>
+            <div className="debt horizontal" style={{ width: `${pricedUtilization * 100}%` }}>
               <div className="gradient horizontal" />
             </div>
-            <div className="gcr horizontal" style={{ left: `${globalUtilization * 100}%` }} />
+            <div className="gcr horizontal" style={{ left: `${pricedGlobalUtil * 100}%` }} />
             <div className="liquidation-point horizontal" style={{ left: `${liquidationPoint * 100}%` }} />
           </div>
         </div>
         <div className="expand flex-align-baseline">
-          <Link to={`${link}/manage`} className="button button-small">
+          <Link to={link} className="button button-small">
             Manage
           </Link>
         </div>
@@ -90,7 +93,7 @@ export const Portfolio = () => {
           <div className={`pill ${isExpired ? 'red' : 'green'}`}>{isExpired ? 'EXPIRED' : 'LIVE'}</div>
         </div>
         <div className="expand flex-align-baseline">
-          <Link to={`${link}/manage`} className="button button-small">
+          <Link to={link} className="button button-small">
             Manage
           </Link>
         </div>
