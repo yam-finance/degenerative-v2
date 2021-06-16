@@ -5,7 +5,7 @@ import { useFormState } from 'react-use-form-state';
 
 import { PositionManagerContainer, useSynthActions, useToken } from '@/hooks';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, Icon, MainDisplay, MainHeading, NewMinter, PositionManager, SideDisplay } from '@/components';
+import { Page, Navbar, Icon, MainDisplay, MainHeading, PositionManager, SideDisplay } from '@/components';
 import { ISynth, ISynthMarketData } from '@/types';
 import { utils } from 'ethers';
 import { isEmpty, roundDecimals } from '@/utils';
