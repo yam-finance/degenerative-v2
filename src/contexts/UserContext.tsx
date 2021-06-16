@@ -24,7 +24,7 @@ const initialState = {
 export const UserContext = createContext(initialState);
 
 export const UserProvider: React.FC = ({ children }) => {
-  const { signer } = useContext(EthereumContext);
+  const { account } = useContext(EthereumContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
 
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);
@@ -44,12 +44,12 @@ export const UserProvider: React.FC = ({ children }) => {
   }, [currentSynth, synthMetadata]);
 
   useEffect(() => {
-    if (forceUpdate || (signer && synthMetadata && synthMarketData && collateralData)) {
+    if (forceUpdate || (account && synthMetadata && synthMarketData && collateralData)) {
       updateMintedPositions();
       updateSynthsInWallet();
       setForceUpdate(false);
     }
-  }, [signer, synthMetadata, synthMarketData, collateralData, forceUpdate]);
+  }, [account, synthMetadata, synthMarketData, collateralData, forceUpdate]);
 
   const setSynth = (synthName: string) => {
     setCurrentSynth(synthName);

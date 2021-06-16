@@ -2,17 +2,8 @@ import React, { useContext, useReducer } from 'react';
 import { createContainer } from 'unstated-next';
 
 import { roundDecimals } from '@/utils';
+import { useSynthActions } from './useSynthActions';
 
-/* The component's state is the actual sponsor position. The form is the pending position. */
-
-/* 
-  - Mint: Create new position OR add synths to existing position.
-  - Burn: Removes synths from position. Must have synths in wallet to do so.
-  - Deposit: Adds collateral to position, reducing utilization.
-  - Withdraw: Removes collateral from position, increasing utilization. May have to request
-  - Redeem: Repays debt AND removes collateral to maintain same utilization.
-  - Settle: Settles sponsor position AFTER expiry.
-*/
 export type MinterAction = 'MANAGE' | 'MINT' | 'DEPOSIT' | 'BURN' | 'REDEEM' | 'WITHDRAW' | 'SETTLE';
 
 const initialMinterState = {
@@ -28,7 +19,7 @@ const initialMinterState = {
   liquidationPoint: 0,
   tokenPrice: 0,
   minTokens: 0,
-  maxCollateral: 0, // TODO replace with synthInWallet item
+  maxCollateral: 0,
   isExpired: false,
 
   resultingCollateral: 0,
@@ -46,7 +37,6 @@ type Action =
   | 'INIT_SPONSOR_POSITION'
   | 'UPDATE_SPONSOR_POSITION'
   | 'UPDATE_RESULTING_POSITION'
-  | 'UPDATE_PENDING_UTILIZATION'
   | 'CHANGE_ACTION'
   | 'TOGGLE_WITHDRAWAL_MODAL'
   | 'UPDATE_MAX_COLLATERAL'
@@ -87,16 +77,6 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         utilization: calculateUtilization(resultingCollateral, resultingTokens, state.tokenPrice),
       };
     }
-    // TODO Remove
-    case 'UPDATE_PENDING_UTILIZATION': {
-      const { resultingCollateral, resultingTokens } = action.payload;
-      const util = calculateUtilization(resultingCollateral, resultingTokens, state.tokenPrice);
-
-      return {
-        ...state,
-        resultingUtilization: util > 0 && util !== Infinity ? roundDecimals(util, 2) : 0,
-      };
-    }
     case 'UPDATE_RESULTING_POSITION': {
       const { resultingCollateral, resultingTokens } = action.payload;
 
@@ -134,13 +114,6 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         action: action.payload,
       };
     }
-    //case 'UPDATE_WITHDRAWAL_REQUEST_GAUGE': {
-    //  return {
-    //    ...state,
-    //    resultingCollateral: state.sponsorCollateral - state.withdrawalRequestAmount,
-    //    resultingTokens: state.
-    //  }
-    //}
     case 'TOGGLE_WITHDRAWAL_MODAL': {
       const { withdrawalAmount } = action.payload;
 
@@ -167,8 +140,9 @@ const calculateUtilization = (collateral: number, tokens: number, price: number)
 
 const usePositionManager = () => {
   const [state, dispatch] = useReducer(Reducer, initialMinterState);
+  const actions = useSynthActions();
 
-  return { state, dispatch };
+  return { actions, state, dispatch };
 };
 
 export const PositionManagerContainer = createContainer(usePositionManager);

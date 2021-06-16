@@ -10,7 +10,6 @@ export * from './NavbarButton';
 export * from './NewMinter';
 export * from './SearchForm';
 export * from './Table';
-export * from './Tooltip';
 export * from './layouts/MainDisplay';
 export * from './layouts/Navbar';
 export * from './layouts/Page';

@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers';
 import numeral from 'numeral';
 
 // Check if object is empty
-export const isEmpty = (obj: any) => (obj ? Object.keys(obj).length === 0 : true);
+export const isEmpty = (obj: Record<any, any>) => (obj ? Object.keys(obj).length === 0 : true);
 
 export const getDateString = (date: Date) => formatISO(date, { representation: 'date' });
 

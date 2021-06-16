@@ -24,14 +24,13 @@ const initialState = {
 
 export const MarketContext = createContext(initialState);
 
-// TODO Rename to SynthContext (?)
 export const MarketProvider: React.FC = ({ children }) => {
   const [synthMarketData, setSynthMarketData] = useState(initialState.synthMarketData);
   const [synthMetadata, setSynthMetadata] = useState(initialState.synthMetadata);
   const [collateralData, setCollateralData] = useState(initialState.collateralData);
   const [loading, setLoading] = useState(false);
 
-  const { chainId, provider } = useContext(EthereumContext);
+  const { chainId, provider, account } = useContext(EthereumContext);
 
   useEffect(() => {
     const initializeMarketData = async (
@@ -101,7 +100,7 @@ export const MarketProvider: React.FC = ({ children }) => {
 
             // Grab APRs from API
             const cr = 1 / globalUtilization;
-            const apr = await getApr(name, cr); //Number((await getMiningRewards(name, synth, priceUsd, 1.5, tokenCount)) ?? 0);
+            const apr = !isExpired ? await getApr(name, cr) : 0; //Number((await getMiningRewards(name, synth, priceUsd, 1.5, tokenCount)) ?? 0);
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired

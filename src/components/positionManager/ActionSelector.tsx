@@ -2,7 +2,7 @@ import React from 'react';
 import { PositionManagerContainer } from '@/hooks';
 import { Manage, Mint, Burn, Deposit, Withdraw, Redeem } from '@/components';
 
-export const Action = () => {
+export const ActionSelector = () => {
   const { state, dispatch } = PositionManagerContainer.useContainer();
 
   switch (state.action) {
