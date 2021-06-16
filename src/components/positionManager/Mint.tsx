@@ -67,17 +67,14 @@ export const Mint: React.FC = React.memo(() => {
     });
   };
 
-  const getTokensAtGcr = (collateral: number) =>
-    roundDecimals(collateral * (state.globalUtilization / state.tokenPrice), 3);
-
-  const getCollateralAtGcr = (tokens: number) =>
-    roundDecimals((tokens * state.tokenPrice) / state.globalUtilization, 3);
+  const getTokensAtGcr = (collateral: number) => collateral * (state.globalUtilization / state.tokenPrice);
+  const getCollateralAtGcr = (tokens: number) => (tokens * state.tokenPrice) / state.globalUtilization;
 
   const setMaximum = () => {
     const newTokens = adjustToGcr ? getTokensAtGcr(state.maxCollateral) : Number(formState.values.tokensToAdd);
 
     // Update form and then component state to match form
-    setFormInputs(state.maxCollateral, roundDecimals(newTokens, 3));
+    setFormInputs(state.maxCollateral, newTokens);
   };
 
   // Sets 'synth' field by calculating resulting tokens, then subtracting existing sponsor tokens
@@ -103,11 +100,12 @@ export const Mint: React.FC = React.memo(() => {
   const MintButton: React.FC = () => {
     const newCollateral = Number(formState.values.collateralToAdd);
     const newTokens = Number(formState.values.tokensToAdd);
+    const positionExists = state.sponsorCollateral > 0;
 
     const disableMinting =
       newTokens <= 0 ||
-      newCollateral <= 0 ||
-      (state.sponsorCollateral && newCollateral > state.sponsorCollateral) ||
+      (positionExists && newCollateral < 0) ||
+      (!positionExists && newCollateral <= 0) ||
       state.resultingUtilization > state.globalUtilization ||
       state.resultingUtilization > state.liquidationPoint;
 
@@ -123,8 +121,8 @@ export const Mint: React.FC = React.memo(() => {
       <h3 className="margin-0 text-align-center">Mint</h3>
       <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
         Deposit <strong className="text-color-4">{currentCollateral}</strong> at or above{' '}
-        <span className="weight-bold text-color-4">{state.globalUtilization * 100}%</span> utilization to mint{' '}
-        <strong className="text-color-4">{currentSynth}</strong>
+        <span className="weight-bold text-color-4">{roundDecimals(1 / state.globalUtilization, 3)}</span> collateral
+        ratio to mint <strong className="text-color-4">{currentSynth}</strong>
       </p>
       <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
 

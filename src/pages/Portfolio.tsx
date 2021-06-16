@@ -48,7 +48,7 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand flex-align-baseline">
-          <Link to={`${link}/manage`} className="button button-small">
+          <Link to={link} className="button button-small">
             Manage
           </Link>
         </div>
@@ -90,7 +90,7 @@ export const Portfolio = () => {
           <div className={`pill ${isExpired ? 'red' : 'green'}`}>{isExpired ? 'EXPIRED' : 'LIVE'}</div>
         </div>
         <div className="expand flex-align-baseline">
-          <Link to={`${link}/manage`} className="button button-small">
+          <Link to={link} className="button button-small">
             Manage
           </Link>
         </div>
