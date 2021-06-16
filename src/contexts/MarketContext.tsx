@@ -94,13 +94,13 @@ export const MarketProvider: React.FC = ({ children }) => {
               pricePerPaired = pool.token1Price;
             }
 
-            const globalUtilization = rawGlobalUtilization * pricePerPaired;
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, paired.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, paired.decimals));
 
             // Grab APRs from API
-            const cr = 1 / globalUtilization;
-            const apr = !isExpired ? await getApr(name, cr) : 0; //Number((await getMiningRewards(name, synth, priceUsd, 1.5, tokenCount)) ?? 0);
+            const pricedGlobalUtil = rawGlobalUtilization * pricePerPaired;
+            const aprAtGcr = !isExpired ? await getApr(name, 1 / pricedGlobalUtil) : 0;
+            const aprAt2 = !isExpired ? await getApr(name, 2) : 0; // 2 is a reasonably safe ratio that is more practical than GCR
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
@@ -111,11 +111,12 @@ export const MarketProvider: React.FC = ({ children }) => {
               tvl: tvlUsd,
               marketCap: Math.trunc(marketCap),
               volume24h: 0, // TODO need to get from subgraph
-              globalUtilization: roundDecimals(globalUtilization, 4),
+              globalUtilization: roundDecimals(rawGlobalUtilization, 4),
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
               withdrawalPeriod: withdrawalPeriod / 60, // Convert to minutes
-              apr: roundDecimals(apr, 2),
+              apr: roundDecimals(aprAtGcr, 2),
+              aprAt2: roundDecimals(aprAt2, 2),
               daysTillExpiry: daysTillExpiry,
               isExpired: isExpired,
             };
@@ -138,6 +139,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               liquidationPoint: 0.01,
               withdrawalPeriod: 0,
               apr: 0,
+              aprAt2: 0,
               daysTillExpiry: 69,
               isExpired: false,
             };

@@ -74,7 +74,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         ...state,
         sponsorCollateral: resultingCollateral,
         sponsorTokens: resultingTokens,
-        utilization: calculateUtilization(resultingCollateral, resultingTokens, state.tokenPrice),
+        utilization: calculateUtilization(resultingCollateral, resultingTokens),
       };
     }
     case 'UPDATE_RESULTING_POSITION': {
@@ -84,7 +84,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       const newTokens = resultingTokens;
 
       const util = (() => {
-        const util = calculateUtilization(newCollateral, newTokens, state.tokenPrice);
+        const util = calculateUtilization(newCollateral, newTokens);
         return util > 0 && util !== Infinity ? roundDecimals(util, 4) : 0;
       })();
 
@@ -136,7 +136,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
   }
 };
 
-const calculateUtilization = (collateral: number, tokens: number, price: number) => (tokens * price) / collateral;
+const calculateUtilization = (collateral: number, tokens: number) => tokens / collateral;
 
 const usePositionManager = () => {
   const [state, dispatch] = useReducer(Reducer, initialMinterState);

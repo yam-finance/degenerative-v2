@@ -38,6 +38,7 @@ export interface ISynthMarketData {
   collateralPriceUsd: number;
   tvl: number;
   apr: number;
+  aprAt2: number;
   volume24h: number;
   marketCap: number;
   totalSupply: number;

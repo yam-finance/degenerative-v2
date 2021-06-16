@@ -5,7 +5,7 @@ import { useFormState } from 'react-use-form-state';
 
 import { PositionManagerContainer, useSynthActions, useToken } from '@/hooks';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, Icon, MainDisplay, MainHeading, NewMinter, PositionManager, SideDisplay } from '@/components';
+import { Page, Navbar, Icon, MainDisplay, MainHeading, PositionManager, SideDisplay } from '@/components';
 import { ISynth, ISynthMarketData } from '@/types';
 import { utils } from 'ethers';
 import { isEmpty, roundDecimals } from '@/utils';
@@ -276,7 +276,9 @@ export const Synth: React.FC = () => {
                 <div className="expand flex-align-center text-small">
                   <div>Global Collateral Ratio</div>
                 </div>
-                <div className="weight-medium text-color-4">{roundDecimals(1 / marketData.globalUtilization, 2)}</div>
+                <div className="weight-medium text-color-4">
+                  {roundDecimals(1 / (marketData.globalUtilization * marketData.price), 2)}
+                </div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">
                 <div className="expand flex-align-center text-small">

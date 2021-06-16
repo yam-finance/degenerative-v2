@@ -40,7 +40,7 @@ export const Redeem: React.FC = React.memo(() => {
 
     if (tokens <= state.sponsorTokens) {
       resultingTokens = state.sponsorTokens - tokens;
-      resultingCollateral = (resultingTokens / state.utilization) * state.tokenPrice;
+      resultingCollateral = resultingTokens / state.utilization;
       console.log(resultingCollateral, resultingTokens);
     }
 

@@ -17,6 +17,10 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   const { state, dispatch } = PositionManagerContainer.useContainer();
   const erc20 = useToken();
 
+  const pricedUtilization = state.utilization * state.tokenPrice;
+  const pricedGlobalUtil = state.globalUtilization * state.tokenPrice;
+  const pricedResultingUtil = state.resultingUtilization * state.tokenPrice;
+
   useEffect(() => {
     const initMinterState = async () => {
       const { collateralBalance, synthBalance } = await setTokenBalances(
@@ -153,7 +157,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
       <div>
         <div className="gauge horizontal large overflow-hidden">
           <div className={`collateral large ${utilization === 0 && 'empty'}`}>
-            <div className="gcr horizontal large" style={{ left: `${state.globalUtilization * 100}%` }} />
+            <div className="gcr horizontal large" style={{ left: `${pricedGlobalUtil * 100}%` }} />
             <div className="liquidation-point horizontal large" style={{ left: `${state.liquidationPoint * 100}%` }} />
           </div>
           <div className="debt horizontal large" style={{ width: `${utilization * 100}%` }}>
@@ -239,10 +243,10 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                   <div className="flex-align-center flex-space-between">
                     <h6 className="margin-bottom-0">Current Position</h6>
                     <GaugeLabel
-                      label={`${(1 / state.utilization).toFixed(2)} CR`}
+                      label={`${(1 / pricedUtilization).toFixed(2)} CR`}
                       tooltip={`This is your current sponsor position. You have minted ${
                         state.sponsorTokens
-                      } ${currentSynth}, using ${state.utilization * 100}% of your deposited ${
+                      } ${currentSynth}, using ${pricedUtilization * 100}% of your deposited ${
                         state.sponsorCollateral
                       } ${currentCollateral}.`}
                       className="flex-align-center"
@@ -264,7 +268,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                       <div className="weight-medium text-color-4">{state.sponsorTokens}</div>
                     </div>
                   </div>
-                  <HorizontalGauge utilization={state.utilization} />
+                  <HorizontalGauge utilization={pricedUtilization} />
                 </div>
               )}
 
@@ -272,10 +276,10 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                 <div className="flex-align-center flex-space-between">
                   <h6 className="margin-bottom-0">Resulting position</h6>
                   <GaugeLabel
-                    label={`${state.resultingUtilization > 0 ? (1 / state.resultingUtilization).toFixed(2) : '0'} CR`}
+                    label={`${state.resultingUtilization > 0 ? (1 / pricedResultingUtil).toFixed(2) : '0'} CR`}
                     tooltip={`This is what your position will look like after minting. You will mint ${
                       state.resultingTokens
-                    } ${currentSynth}, utilizing ${state.resultingUtilization ? state.utilization * 100 : 0}% of your ${
+                    } ${currentSynth}, utilizing ${pricedResultingUtil ? pricedUtilization * 100 : 0}% of your ${
                       state.resultingCollateral
                     } ${currentCollateral}`}
                     className="flex-align-center"
@@ -297,7 +301,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                     <div className="weight-medium text-color-4">{state.resultingTokens}</div>
                   </div>
                 </div>
-                <HorizontalGauge utilization={state.resultingUtilization} />
+                <HorizontalGauge utilization={pricedResultingUtil} />
               </div>
 
               {/* 
@@ -329,7 +333,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                     />
                   </div>
                   <p className="text-xs margin-0">
-                    {(1 / state.globalUtilization).toFixed(2)}
+                    {(1 / pricedGlobalUtil).toFixed(2)}
                     {/*({roundDecimals(state.globalUtilization * 100, 2)}%
                     utilization)*/}
                   </p>
