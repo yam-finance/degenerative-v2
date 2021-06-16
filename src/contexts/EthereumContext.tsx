@@ -1,7 +1,20 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
 import { providers, Signer, utils } from 'ethers';
-
+import { Degenerative } from "degenerative-sdk";
 import { MetamaskProvider } from '@/types';
+import Web3 from 'web3';
+import { Web3Provider } from "@ethersproject/providers";
+
+
+const web3Provider = new Web3('https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud')
+const provider = (new Web3Provider(web3Provider as any)).provider;
+
+/* @ts-ignore */
+const degenerative = await new Degenerative({
+  provider: web3Provider,
+  network: "mainnet",
+  account: "0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be",
+});
 
 const initialEthereumState = {
   ethereum: undefined as MetamaskProvider | undefined,
