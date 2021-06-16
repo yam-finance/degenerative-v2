@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useFormState } from 'react-use-form-state';
 
 import { ActionDisplay, ActionButton, BackButton } from '@/components';
-import { PositionManagerContainer, useSynthActions } from '@/hooks';
+import { PositionManagerContainer } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
 
@@ -11,10 +11,8 @@ interface DepositFormFields {
 }
 
 export const Deposit: React.FC = React.memo(() => {
-  const { state, dispatch } = PositionManagerContainer.useContainer();
+  const { actions, state, dispatch } = PositionManagerContainer.useContainer();
   const { currentCollateral, mintedPositions } = useContext(UserContext);
-
-  const actions = useSynthActions();
 
   const [formState, { number }] = useFormState<DepositFormFields>(
     {

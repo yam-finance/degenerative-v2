@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 
 import { Icon, ActionDisplay, ActionButton, BackButton } from '@/components';
-import { PositionManagerContainer, useSynthActions } from '@/hooks';
+import { PositionManagerContainer } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
 
@@ -12,11 +12,10 @@ interface MintFormFields {
 }
 
 export const Mint: React.FC = React.memo(() => {
-  const { state, dispatch } = PositionManagerContainer.useContainer();
+  const { actions, state, dispatch } = PositionManagerContainer.useContainer();
   const { currentSynth, currentCollateral, mintedPositions } = useContext(UserContext);
 
   const [adjustToGcr, setAdjustToGcr] = useState(!state.sponsorCollateral);
-  const actions = useSynthActions();
 
   const [formState, { number }] = useFormState<MintFormFields>(
     {
@@ -114,7 +113,7 @@ export const Mint: React.FC = React.memo(() => {
 
     return (
       <ActionButton action={() => actions.onMint(newCollateral, newTokens)} disableCondition={disableMinting}>
-        {`Mint ${newTokens} ${currentSynth} for ${newCollateral} ${currentCollateral}`}
+        {`Mint ${newTokens} ${currentSynth} with ${newCollateral} ${currentCollateral}`}
       </ActionButton>
     );
   };

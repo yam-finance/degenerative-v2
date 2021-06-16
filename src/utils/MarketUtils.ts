@@ -15,6 +15,7 @@ import {
   UNISWAP_DAILY_PAIR_DATA,
 } from '@/utils';
 import { ISynth, IToken, ILiquidityPool } from '@/types';
+import { isEmpty } from './Helpers';
 
 sessionStorage.clear();
 
@@ -80,6 +81,7 @@ export const getUsdPrice = async (cgId: string) => {
     const res = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${cgId}&vs_currencies=usd`);
     const price = Number(res.data[cgId].usd);
     sessionStorage.setItem(cgId, price.toString());
+
     return Promise.resolve(price);
   } catch (err) {
     return Promise.reject(err);
@@ -120,14 +122,19 @@ export const getPoolData = async (pool: ILiquidityPool) => {
   }
 };
 
+// Get APR multiplier.
 export const getApr = async (name: string, cr: number): Promise<number> => {
-  try {
-    console.log(cr);
-    const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`);
-    const collateralEfficiency = 1 / (1 + cr);
-    const aprMultiplier = res.data.aprMultiplier;
+  const collateralEfficiency = 1 / (1 + cr);
 
-    console.log(aprMultiplier, collateralEfficiency);
+  // Return cached value if present
+  const cached = sessionStorage.getItem(name);
+  if (cached) return Promise.resolve(Number(cached) * collateralEfficiency);
+
+  try {
+    const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`);
+    const aprMultiplier = res.data.aprMultiplier;
+    sessionStorage.setItem(name, aprMultiplier);
+
     return Promise.resolve(aprMultiplier * collateralEfficiency);
   } catch (err) {
     console.error(err);
@@ -186,38 +193,44 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
     startingTime: startingTime,
   });
 
-  // Find which token is the synth and which is paired
-  let synthId: string;
-  let pairedId: string;
-  if (poolData.pairDayDatas[0].token0.id === synthAddress) {
-    synthId = 'reserve1';
-    pairedId = 'reserve0';
-  } else {
-    synthId = 'reserve0';
-    pairedId = 'reserve1';
-  }
+  let synthPrices: number[];
 
-  // Put pool price data into a map, indexed by date.
-  // Price is reserve of synth / reserve of paired
-  const dailyPairData = new Map(
-    poolData.pairDayDatas.map((dailyData) => [
-      formatISO(fromUnixTime(dailyData.date), { representation: 'date' }),
-      dailyData[synthId] / dailyData[pairedId],
-    ])
-  );
-
-  // Fill in empty spaces, since subgraph only captures price when it changes
-  let lastPrice = dailyPairData.values().next().value;
-
-  const synthPrices = dateArray.map((date) => {
-    const price = dailyPairData.get(date);
-    if (price) {
-      lastPrice = price;
-      return roundDecimals(Number(price), 4);
+  if (!isEmpty(poolData.pairDayDatas)) {
+    // Find which token is the synth and which is paired
+    let synthId: string;
+    let pairedId: string;
+    if (poolData.pairDayDatas[0].token0.id === synthAddress) {
+      synthId = 'reserve1';
+      pairedId = 'reserve0';
     } else {
-      return roundDecimals(Number(lastPrice), 4);
+      synthId = 'reserve0';
+      pairedId = 'reserve1';
     }
-  });
+
+    // Put pool price data into a map, indexed by date.
+    // Price is reserve of synth / reserve of paired
+    const dailyPairData = new Map(
+      poolData.pairDayDatas.map((dailyData) => [
+        formatISO(fromUnixTime(dailyData.date), { representation: 'date' }),
+        dailyData[synthId] / dailyData[pairedId],
+      ])
+    );
+
+    // Fill in empty spaces, since subgraph only captures price when it changes
+    let lastPrice = dailyPairData.values().next().value;
+
+    synthPrices = dateArray.map((date) => {
+      const price = dailyPairData.get(date);
+      if (price) {
+        lastPrice = price;
+        return roundDecimals(Number(price), 4);
+      } else {
+        return roundDecimals(Number(lastPrice), 4);
+      }
+    });
+  } else {
+    synthPrices = [];
+  }
 
   return {
     labels: dateArray,

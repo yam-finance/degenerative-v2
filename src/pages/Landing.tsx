@@ -85,71 +85,6 @@ export const Landing: React.FC = () => {
       </div>
       <div className="section-in-base padding-top-0">
         <div className="container-1140 landscape-overflow-hidden w-container">
-          {/* TODO Not doing yield party on launch
-          <a href="/yield-party" className="block w-inline-block">
-            <div className="callout-container">
-              <div className="emoji-container-1">
-                <img
-                  src="/images/yam.png"
-                  loading="lazy"
-                  sizes="(max-width: 479px) 100vw, (max-width: 767px) 28vw, (max-width: 991px) 18vw, 14vw"
-                  srcSet="images/SweetPotatoRender_1-p-500.png 500w, images/SweetPotatoRender_1-p-800.png 800w, images/SweetPotatoRender_1.png 1000w"
-                  alt=""
-                  className="width-32 drift-1"
-                />
-                <img
-                  src="images/WhaleRender_1.png"
-                  loading="lazy"
-                  sizes="(max-width: 767px) 136.61703491210938px, (max-width: 991px) 18vw, 14vw"
-                  srcSet="images/WhaleRender_1-p-500.png 500w, images/WhaleRender_1-p-800.png 800w, images/WhaleRender_1.png 1000w"
-                  alt=""
-                  className="width-32 drift-2 move-up"
-                />
-                <img
-                  src="images/CornRender_1.png"
-                  loading="lazy"
-                  sizes="(max-width: 479px) 100vw, (max-width: 767px) 28vw, (max-width: 991px) 18vw, 14vw"
-                  srcSet="images/CornRender_1-p-500.png 500w, images/CornRender_1-p-800.png 800w, images/CornRender_1.png 1000w"
-                  alt=""
-                  className="width-32 drift-1"
-                />
-              </div>
-              <div className="callout drift-3">
-                <h5 className="text-color-1 margin-right-8 margin-bottom-0 break-no-wrap">Announcing Yield Party!</h5>
-                <div className="text-color-1 opacity-60 margin-right-2 break-no-wrap">Join the party</div>
-                <div className="radius-full background-color-5 padding-2 fix-size">
-                  <img src="images/" loading="lazy" data-feather="arrow-right" alt="" className="icon opacity-100" />
-                </div>
-              </div>
-              <div className="emoji-container-2">
-                <img
-                  src="images/UnicornRender_1.png"
-                  loading="lazy"
-                  sizes="(max-width: 479px) 100vw, (max-width: 767px) 136.61703491210938px, (max-width: 991px) 18vw, 14vw"
-                  srcSet="images/UnicornRender_1-p-500.png 500w, images/UnicornRender_1-p-800.png 800w, images/UnicornRender_1.png 1000w"
-                  alt=""
-                  className="width-32 drift-1"
-                />
-                <img
-                  src="images/SushiRender_1.png"
-                  loading="lazy"
-                  sizes="(max-width: 479px) 100vw, (max-width: 767px) 28vw, (max-width: 991px) 18vw, 14vw"
-                  srcSet="images/SushiRender_1-p-500.png 500w, images/SushiRender_1-p-800.png 800w, images/SushiRender_1.png 1000w"
-                  alt=""
-                  className="width-32 drift-2"
-                />
-                <img
-                  src="images/OwlRender_1.png"
-                  loading="lazy"
-                  sizes="(max-width: 479px) 100vw, (max-width: 767px) 136.61700439453125px, (max-width: 991px) 136.6170654296875px, 14vw"
-                  srcSet="images/OwlRender_1-p-500.png 500w, images/OwlRender_1-p-800.png 800w, images/OwlRender_1.png 1000w"
-                  alt=""
-                  className="width-32 drift-3 move-up"
-                />
-              </div>
-            </div>
-          </a> */}
-
           <h1 className="text-align-center margin-bottom-4 text-5xl">Trade, hedge, & earn with Yam Synths</h1>
           <p className="text-large text-color-4 text-align-center">
             Yam Synths is your portal to the powerful world of synthetic derivatives
@@ -280,31 +215,56 @@ export const Landing: React.FC = () => {
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Help</h6>
-              <a href="https://yam.gitbook.io/synths/" className="block margin-bottom-2">
+              <a
+                href="https://yam.gitbook.io/synths/"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 Documentation
               </a>
-              <a href="https://yam.gitbook.io/synths/overview/faq" className="block margin-bottom-2">
+              <a
+                href="https://yam.gitbook.io/synths/overview/faq"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 FAQs
               </a>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Community</h6>
-              <a href="https://twitter.com/YamFinance" className="block margin-bottom-2">
+              <a
+                href="https://twitter.com/YamFinance"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 Twitter
               </a>
-              <a href="https://discord.com/invite/fbHX7NRa52" className="block margin-bottom-2">
+              <a
+                href="https://discord.com/invite/fbHX7NRa52"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 Discord
               </a>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Information</h6>
-              <a href="https://yambrief.substack.com/" className="block margin-bottom-2">
+              <a
+                href="https://yambrief.substack.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="block margin-bottom-2"
+              >
                 Blog
               </a>
-              <a href="https://yam.finance/" className="block margin-bottom-2">
+              <a href="https://yam.finance/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
                 Visit Yam
               </a>
-              <a href="https://umaproject.org/" className="block margin-bottom-2">
+              <a href="https://umaproject.org/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
                 Visit UMA
               </a>
             </div>
