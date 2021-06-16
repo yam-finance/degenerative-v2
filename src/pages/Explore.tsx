@@ -46,13 +46,20 @@ export const Explore = () => {
               image: '',
             };
 
+            let aprMin = currentData.aprMin;
+            let aprMax = currentData.aprMax;
+            if (marketData.apr >= currentData.aprMax) {
+              aprMin = marketData.apr;
+              aprMax = marketData.aprAt2;
+            }
+
             aggregateData[group] = {
-              aprMin: Math.min(currentData.aprMin, Number(marketData.apr)),
-              aprMax: Math.max(currentData.aprMax, Number(marketData.apr)),
-              totalLiquidity: currentData.totalLiquidity + Number(marketData.liquidity),
-              totalMarketCap: currentData.totalMarketCap + Number(marketData.marketCap),
-              totalTvl: currentData.totalTvl + Number(marketData.tvl),
-              totalVolume24h: currentData.totalVolume24h + Number(marketData.volume24h),
+              aprMin: aprMin,
+              aprMax: aprMax,
+              totalLiquidity: currentData.totalLiquidity + marketData.liquidity,
+              totalMarketCap: currentData.totalMarketCap + marketData.marketCap,
+              totalTvl: currentData.totalTvl + marketData.tvl,
+              totalVolume24h: currentData.totalVolume24h + marketData.volume24h,
               numSynths: currentData.numSynths + 1,
               image: `/images/${SynthGroups[group].image}.png`,
             };
@@ -88,7 +95,7 @@ export const Explore = () => {
         <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
-        <div className="button button-small">{`${aprMax}% APR`}</div> {/* TODO */}
+        <div className="button button-small">{`${aprMin}% - ${aprMax}% APR`}</div>
         <div className="pill absolute-top-right margin-4">New</div>
       </Link>
     );
@@ -111,7 +118,7 @@ export const Explore = () => {
         </div>
         <div></div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{`${aprMax}%`}</div>
+          <div className="text-color-4">{`${aprMin}% - ${aprMax}%`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">${formatForDisplay(totalLiquidity)}</div>
