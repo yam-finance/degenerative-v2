@@ -82,7 +82,7 @@ export const Withdraw: React.FC = React.memo(() => {
       withdrawalAmount <= 0 ||
       withdrawalAmount >= state.sponsorCollateral ||
       state.withdrawalRequestMinutesLeft !== 0 ||
-      state.resultingUtilization >= state.liquidationPoint;
+      state.resultingUtilization <= state.liquidationPoint;
 
     if (state.resultingUtilization > state.globalUtilization) {
       // Show Withdrawal Request modal
