@@ -138,7 +138,7 @@ export const getApr = async (name: string, cr: number): Promise<number> => {
     return Promise.resolve(aprMultiplier * collateralEfficiency);
   } catch (err) {
     console.error(err);
-    return Promise.reject('Failed to get APR.');
+    return Promise.resolve(0); // TODO temporary fix to prevent UI from breaking
   }
 };
 
