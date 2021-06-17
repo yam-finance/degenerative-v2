@@ -11,7 +11,7 @@ const provider = (new Web3Provider(web3Provider as any)).provider;
 
 /* @ts-ignore */
 const degenerative = await new Degenerative({
-  provider: web3Provider,
+  provider: provider,
   network: "mainnet",
   account: "0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be",
 });
