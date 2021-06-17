@@ -43,16 +43,14 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   };
 
   const fetchUpunks = async (collateral: string, chainId: number) => {
-    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
     const res = await axios.get('https://api.yam.finance/degenerative/upunks/price-history');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
-      const usdPriceCollateral = collateralUsd.get(dateString) ?? 1;
 
       return {
         timestamp: dateString,
-        price: roundDecimals(price * usdPriceCollateral, 2),
+        price: price,
       };
     });
   };
