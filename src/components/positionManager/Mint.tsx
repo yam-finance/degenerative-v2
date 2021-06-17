@@ -36,7 +36,10 @@ export const Mint: React.FC = React.memo(() => {
 
           const newResultingCollateral = newCollateral + state.sponsorCollateral;
 
-          newTokens = adjustToGcr ? getTokensAtGcr(newResultingCollateral) - state.sponsorTokens : Number(tokensToAdd);
+          // NOTE: the '- 0.01' is to account for math differences between JS and the smart contract.
+          newTokens = adjustToGcr
+            ? getTokensAtGcr(newResultingCollateral) - state.sponsorTokens - 0.01
+            : Number(tokensToAdd);
         } else {
           newTokens = Number(tokensToAdd);
 
