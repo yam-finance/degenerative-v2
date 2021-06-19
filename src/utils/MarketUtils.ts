@@ -199,12 +199,22 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
     // Find which token is the synth and which is paired
     let synthId: string;
     let pairedId: string;
-    if (poolData.pairDayDatas[0].token0.id === synthAddress) {
-      synthId = 'reserve1';
-      pairedId = 'reserve0';
+    if (synth.pool.location === 'uni') {
+      if (poolData.pairDayDatas[0].token0.id === synthAddress) {
+        synthId = 'reserve1';
+        pairedId = 'reserve0';
+      } else {
+        synthId = 'reserve0';
+        pairedId = 'reserve1';
+      }
     } else {
-      synthId = 'reserve0';
-      pairedId = 'reserve1';
+      if (poolData.pairDayDatas[0].token0.id === synthAddress) {
+        synthId = 'reserve0';
+        pairedId = 'reserve1';
+      } else {
+        synthId = 'reserve1';
+        pairedId = 'reserve0';
+      }
     }
 
     // Put pool price data into a map, indexed by date.
