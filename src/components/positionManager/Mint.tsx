@@ -27,9 +27,7 @@ export const Mint: React.FC = React.memo(() => {
         const { collateralToAdd: oldCollateral, tokensToAdd: oldTokens } = stateValues; // Old form state
         const { collateralToAdd, tokensToAdd } = nextStateValues; // New form state
 
-        // Figure out which input changed. If adjustToGcr is true, set other field to GCR.
         const resultingCollateral = Number(collateralToAdd) + state.sponsorCollateral;
-
         const newTokens = adjustToGcr ? getTokensAtGcr(resultingCollateral) - state.sponsorTokens : Number(tokensToAdd);
 
         setFormInputs(Number(collateralToAdd), newTokens);
@@ -42,19 +40,23 @@ export const Mint: React.FC = React.memo(() => {
   }, [mintedPositions]);
 
   const setFormInputs = (collateral: number, tokens: number) => {
-    formState.setField('collateralToAdd', collateral);
-    formState.setField('tokensToAdd', tokens);
+    const collateralAmount = collateral > 0 ? collateral : 0;
+    const tokenAmount = tokens > 0 ? tokens : 0;
+
+    formState.setField('collateralToAdd', collateralAmount);
+    formState.setField('tokensToAdd', tokenAmount);
 
     dispatch({
       type: 'UPDATE_RESULTING_POSITION',
       payload: {
-        resultingCollateral: collateral + state.sponsorCollateral,
-        resultingTokens: tokens + state.sponsorTokens,
+        resultingCollateral: collateralAmount + state.sponsorCollateral,
+        resultingTokens: tokenAmount + state.sponsorTokens,
       },
     });
   };
 
   const getCollateralAtGcr = (tokens: number) => tokens / state.globalUtilization;
+
   const getTokensAtGcr = (collateral: number) => {
     const tokens = collateral * state.globalUtilization;
     // Adjusting to GCR fails due to math differences between JS and Solidity. Account for this here.

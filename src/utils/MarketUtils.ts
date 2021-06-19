@@ -325,7 +325,7 @@ export const getDailyPriceHistory2 = async (group: string, synthMetadata: Record
 
     if (!priceData[synthName]) priceData[synthName] = {};
     const date = formatISO(fromUnixTime(dayData.date), { representation: 'date' });
-    priceData[synthName][date] = Math.round(Number(dayData.priceUSD) * 100) / 100;
+    priceData[synthName][date] = roundDecimals(Number(dayData.priceUSD), 2);
   });
 
   // Create object of arrays for reference prices and all synth prices
