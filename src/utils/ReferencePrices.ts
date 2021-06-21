@@ -7,8 +7,7 @@ import { fromUnixTime } from 'date-fns';
  *  of objects with keys of timestamp and price.
  */
 export const getReferencePriceHistory = async (type: string, chainId: number) => {
-  const fetchUgas = async (collateral: string, chainId: number) => {
-    const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
+  const fetchUgas = async () => {
     const res = await axios.get('https://data.yam.finance/median-history');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
@@ -22,10 +21,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
     });
   };
 
-  const fetchUstonks = async (collateral: string, chainId: number) => {
-    // TODO this part is probably unnecessary since USDC is 'stable'
-    //const collateralUsd = new Map<string, number>(await getUsdPriceHistory(collateral, chainId));
-
+  const fetchUstonks = async () => {
     // TODO !!!!!!!!!!!!
     // TODO endpoint hardcoded to jun21 for now
     // TODO !!!!!!!!!!!!
@@ -33,7 +29,6 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));
-      //const usdPriceCollateral = collateralUsd.get(dateString) ?? 1;
 
       return {
         timestamp: dateString,
@@ -42,7 +37,7 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
     });
   };
 
-  const fetchUpunks = async (collateral: string, chainId: number) => {
+  const fetchUpunks = async () => {
     const res = await axios.get('https://api.yam.finance/degenerative/upunks/price-history');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
@@ -56,17 +51,13 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
   };
 
   try {
-    // Get collateral price in USD
-    const collateral = SynthGroups[type].collateral;
-
-    console.log(type);
     switch (type) {
       case 'uGAS':
-        return await fetchUgas(collateral, chainId);
+        return await fetchUgas();
       case 'uSTONKS':
-        return await fetchUstonks(collateral, chainId);
+        return await fetchUstonks();
       case 'uPUNKS':
-        return await fetchUpunks(collateral, chainId);
+        return await fetchUpunks();
       default:
         return Promise.reject('Type not recognized');
     }
