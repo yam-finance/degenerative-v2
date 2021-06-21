@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { Breadcrumbs } from '@/components';
 
 import { EthereumContext } from '@/contexts';
+import Plug from '@/assets/plug.png';
 
 export const MainHeading: React.FC<{ className?: string }> = ({ className, children }) => {
   return <h1 className={`margin-top-8 margin-left-8 text-large ${className}`}>{children}</h1>;
@@ -18,8 +19,9 @@ export const MainDisplay: React.FC = ({ children }) => {
         {account ? (
           children
         ) : (
-          <div className="flex-align-center flex-justify-center padding-top-48 landscape-flex-column-centered">
-            Please connect your wallet
+          <div className="flex-column-middle padding-top-32 landscape-flex-column-centered">
+            <img className="width-full max-width-large" src={Plug}></img>
+            <h1 className="text-align-center">Please connect your wallet to continue</h1>
           </div>
         )}
       </div>
