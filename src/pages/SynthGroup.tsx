@@ -319,7 +319,6 @@ export const SynthGroup: React.FC = () => {
               <img src={`/images/${groupInfo.image}.png`} className="width-16 margin-right-4" />
               <div>
                 <h5 className="margin-bottom-1">{group}</h5>
-                <h6 className="margin-0">By {groupInfo.creator}</h6>
               </div>
             </div>
             <p className="text-small margin-top-2">{groupInfo.description}</p>

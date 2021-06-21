@@ -47,13 +47,13 @@ export const Redeem: React.FC = React.memo(() => {
     dispatch({
       type: 'UPDATE_RESULTING_POSITION',
       payload: {
-        resultingCollateral: roundDecimals(resultingCollateral, 3),
-        resultingTokens: roundDecimals(resultingTokens, 3),
+        resultingCollateral: resultingCollateral,
+        resultingTokens: resultingTokens,
       },
     });
   };
 
-  const setMaximum = () => setFormInputs(roundDecimals(maxRedeemableTokens, 3));
+  const setMaximum = () => setFormInputs(maxRedeemableTokens);
 
   const SynthApproveButton: React.FC = () => {
     return <ActionButton action={() => actions.onApproveSynth()}>Approve {currentSynth}</ActionButton>;

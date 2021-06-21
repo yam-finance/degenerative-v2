@@ -27,28 +27,10 @@ export const Mint: React.FC = React.memo(() => {
         const { collateralToAdd: oldCollateral, tokensToAdd: oldTokens } = stateValues; // Old form state
         const { collateralToAdd, tokensToAdd } = nextStateValues; // New form state
 
-        let newCollateral: number;
-        let newTokens: number;
+        const resultingCollateral = Number(collateralToAdd) + state.sponsorCollateral;
+        const newTokens = adjustToGcr ? getTokensAtGcr(resultingCollateral) - state.sponsorTokens : Number(tokensToAdd);
 
-        // Figure out which input changed. If adjustToGcr is true, set other field to GCR.
-        if (oldCollateral !== collateralToAdd) {
-          newCollateral = Number(collateralToAdd);
-
-          const newResultingCollateral = newCollateral + state.sponsorCollateral;
-
-          // NOTE: the '- 0.01' is to account for math differences between JS and the smart contract.
-          newTokens = adjustToGcr
-            ? getTokensAtGcr(newResultingCollateral) - state.sponsorTokens - 0.01
-            : Number(tokensToAdd);
-        } else {
-          newTokens = Number(tokensToAdd);
-
-          newCollateral = adjustToGcr
-            ? getCollateralAtGcr(newTokens + state.sponsorTokens) - state.sponsorCollateral
-            : Number(collateralToAdd);
-        }
-
-        setFormInputs(newCollateral, newTokens);
+        setFormInputs(Number(collateralToAdd), newTokens);
       },
     }
   );
@@ -58,20 +40,30 @@ export const Mint: React.FC = React.memo(() => {
   }, [mintedPositions]);
 
   const setFormInputs = (collateral: number, tokens: number) => {
-    formState.setField('collateralToAdd', collateral);
-    formState.setField('tokensToAdd', tokens);
+    const collateralAmount = collateral > 0 ? collateral : 0;
+    const tokenAmount = tokens > 0 ? tokens : 0;
+
+    formState.setField('collateralToAdd', collateralAmount);
+    formState.setField('tokensToAdd', tokenAmount);
 
     dispatch({
       type: 'UPDATE_RESULTING_POSITION',
       payload: {
-        resultingCollateral: collateral + state.sponsorCollateral,
-        resultingTokens: tokens + state.sponsorTokens,
+        resultingCollateral: collateralAmount + state.sponsorCollateral,
+        resultingTokens: tokenAmount + state.sponsorTokens,
       },
     });
   };
 
-  const getTokensAtGcr = (collateral: number) => collateral * state.globalUtilization;
   const getCollateralAtGcr = (tokens: number) => tokens / state.globalUtilization;
+
+  const getTokensAtGcr = (collateral: number) => {
+    const tokens = collateral * state.globalUtilization;
+    // Adjusting to GCR fails due to math differences between JS and Solidity. Account for this here.
+    const difference = tokens * 0.0001;
+
+    return roundDecimals(tokens - difference, 6);
+  };
 
   const setMaximum = () => {
     const newTokens = adjustToGcr ? getTokensAtGcr(state.maxCollateral) : Number(formState.values.tokensToAdd);
@@ -123,8 +115,10 @@ export const Mint: React.FC = React.memo(() => {
       <h3 className="margin-0 text-align-center">Mint</h3>
       <p className="text-align-center margin-top-2 landscape-margin-bottom-20">
         Deposit <strong className="text-color-4">{currentCollateral}</strong> at or above{' '}
-        <span className="weight-bold text-color-4">{roundDecimals(1 / state.globalUtilization, 3)}</span> collateral
-        ratio to mint <strong className="text-color-4">{currentSynth}</strong>
+        <span className="weight-bold text-color-4">
+          {roundDecimals(1 / (state.globalUtilization * state.tokenPrice), 3)}
+        </span>{' '}
+        collateral ratio to mint <strong className="text-color-4">{currentSynth}</strong>
       </p>
       <img src={state.image} loading="lazy" alt="" className="width-32 height-32 margin-bottom-8" />
 
