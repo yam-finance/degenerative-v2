@@ -819,6 +819,10 @@ a:hover {
   margin-left: 0.5rem;
 }
 
+.margin-left-4 {
+  margin-left: 1rem;
+}
+
 .margin-left-6 {
   margin-left: 1.5rem;
 }
@@ -1156,6 +1160,10 @@ a:hover {
 
 .width-full.padding-2.radius-large.background-color-2 {
   background-color: #4347bd;
+}
+
+.width-viewport-full {
+  width: 100vw;
 }
 
 .text-xs {
@@ -1917,6 +1925,11 @@ a:hover {
 
 .dropdown-list.top-right.w--open {
   right: 0px;
+  bottom: 100%;
+}
+
+.dropdown-list.top-left.w--open {
+  left: 0px;
   bottom: 100%;
 }
 
@@ -2764,6 +2777,10 @@ a:hover {
     margin-left: 0px;
   }
 
+  .tablet-margin-left-2 {
+    margin-left: 0.5rem;
+  }
+
   .tablet-margin-left-3 {
     margin-left: 0.75rem;
   }
@@ -3159,6 +3176,10 @@ a:hover {
     margin-left: 0.375rem;
   }
 
+  .margin-left-4 {
+    margin-left: 0.875rem;
+  }
+
   .margin-left-6 {
     margin-left: 1.25rem;
   }
@@ -3260,6 +3281,14 @@ a:hover {
 
   .landscape-margin-bottom-20 {
     margin-bottom: 5rem;
+  }
+
+  .landscape-margin-left-0 {
+    margin-left: 0px;
+  }
+
+  .landscape-margin-left-2 {
+    margin-left: 0.5rem;
   }
 
   .padding-2 {
@@ -3592,6 +3621,14 @@ a:hover {
 
   .portrait-margin-bottom-2 {
     margin-bottom: 0.5rem;
+  }
+
+  .portrait-margin-left-0 {
+    margin-left: 0px;
+  }
+
+  .portrait-margin-left-2 {
+    margin-left: 0.5rem;
   }
 
   .padding-6 {
