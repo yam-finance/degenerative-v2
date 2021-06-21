@@ -32,7 +32,7 @@ export const Navbar = () => {
 
   const Navigation: React.FC = () => {
     return (
-      <div className="flex-column expand padding-right-3 tablet-padding-x-4 tablet-padding-y-8 min-height-full">
+      <div className="flex-column expand padding-right-3 tablet-width-full tablet-padding-x-4 tablet-padding-y-8 min-height-full">
         <div className="margin-left-8 margin-top-10 tablet-margin-0 width-56 portrait-margin-0 landscape-margin-0"></div>
         <NavbarButton text="Explore Synths" icon="Globe" to="/synths" />
         <NavbarButton text="Portfolio" icon="User" to="/portfolio" />
@@ -86,12 +86,11 @@ export const Navbar = () => {
           </div>
         </div>
 
-        <div className="margin-left-6 tablet-hide relative w-dropdown">
-
+        <div className="margin-left-6 tablet-margin-left-0 landscape-margin-left-0 portrait-margin-left-0 relative w-dropdown">
           <div onClick={(e) => {
             e.preventDefault();
             toggleLegalMenu();
-          }} className="flex-align-center cursor-pointer text-small margin-left-4 opacity-50 margin-y-2">Legal
+          }} className="flex-align-center cursor-pointer text-small margin-left-4 tablet-margin-left-2 tablet-margin-top-8 landscape-margin-top-6 portrait-margin-top-6 landscape-margin-left-2 portrait-margin-left-2 opacity-50 margin-y-2">Legal
             <Icon name="ChevronDown" className="icon medium" />
           </div>
           <Dropdown
@@ -165,7 +164,7 @@ export const Navbar = () => {
             >
               <Icon name="Menu" className="icon opacity-100" />
             </div>
-            <Dropdown className="menu background-color-1 border-1px blur sheen w-dropdown-list" openDropdown={openMenu}>
+            <Dropdown className="menu background-color-1 border-1px blur sheen" openDropdown={openMenu}>
               <Navigation />
             </Dropdown>
           </div>
