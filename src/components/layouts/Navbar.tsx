@@ -12,6 +12,7 @@ export const Navbar = () => {
   const { account, disconnectWallet, chainId } = useContext(EthereumContext);
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
   const [openWalletMenu, setWalletMenu] = useState(false);
+  const [openLegalMenu, setLegalMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   // const { t } = useTranslation();
 
@@ -24,7 +25,10 @@ export const Navbar = () => {
   }, [account]);
 
   const toggleDisconnectMenu = () => setWalletMenu(!openWalletMenu);
+  const toggleLegalMenu = () => setLegalMenu(!openLegalMenu);
   const toggleMenu = () => setOpenMenu(!openMenu);
+
+
 
   const Navigation: React.FC = () => {
     return (
@@ -80,6 +84,23 @@ export const Navbar = () => {
               <img src={discord} loading="lazy" alt="Discord logo" className="icon discord in-button" />
             </a>
           </div>
+        </div>
+
+        <div className="margin-left-6 tablet-hide relative w-dropdown">
+
+          <div onClick={(e) => {
+            e.preventDefault();
+            toggleLegalMenu();
+          }} className="flex-align-center cursor-pointer text-small margin-left-4 opacity-50 margin-y-2">Legal
+            <Icon name="ChevronDown" className="icon medium" />
+          </div>
+          <Dropdown
+            className="dropdown-list box-shadow-medium text-small radius-large w-dropdown-list top-left"
+            openDropdown={openLegalMenu}
+          >
+            <Link to="/legal/privacy" className=" block break-no-wrap margin-bottom-2">Privacy Policy</Link>
+            <Link to="/legal/terms" className="block break-no-wrap">Terms & Conditions</Link>
+          </Dropdown>
         </div>
       </div>
     );

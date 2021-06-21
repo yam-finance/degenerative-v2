@@ -819,6 +819,10 @@ a:hover {
   margin-left: 0.5rem;
 }
 
+.margin-left-4 {
+  margin-left: 1rem;
+}
+
 .margin-left-6 {
   margin-left: 1.5rem;
 }
@@ -1917,6 +1921,11 @@ a:hover {
 
 .dropdown-list.top-right.w--open {
   right: 0px;
+  bottom: 100%;
+}
+
+.dropdown-list.top-left.w--open {
+  left: 0px;
   bottom: 100%;
 }
 
@@ -3157,6 +3166,10 @@ a:hover {
 
   .margin-left-2 {
     margin-left: 0.375rem;
+  }
+
+  .margin-left-4 {
+    margin-left: 0.875rem;
   }
 
   .margin-left-6 {
