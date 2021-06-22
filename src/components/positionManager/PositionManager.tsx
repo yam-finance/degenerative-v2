@@ -244,11 +244,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                     <h6 className="margin-bottom-0">Current Position</h6>
                     <GaugeLabel
                       label={`${(1 / pricedUtilization).toFixed(2)} CR`}
-                      tooltip={`This is your current sponsor position. You have minted ${
-                        state.sponsorTokens
-                      } ${currentSynth}, using ${pricedUtilization * 100}% of your deposited ${
-                        state.sponsorCollateral
-                      } ${currentCollateral}.`}
+                      tooltip={`Collateral Ratio = (synth amount / collateral amount) * synth price`}
                       className="flex-align-center"
                       emphasized
                     />
@@ -277,11 +273,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                   <h6 className="margin-bottom-0">Resulting position</h6>
                   <GaugeLabel
                     label={`${state.resultingUtilization > 0 ? (1 / pricedResultingUtil).toFixed(2) : '0'} CR`}
-                    tooltip={`This is what your position will look like after minting. You will mint ${
-                      state.resultingTokens
-                    } ${currentSynth}, utilizing ${pricedResultingUtil ? pricedUtilization * 100 : 0}% of your ${
-                      state.resultingCollateral
-                    } ${currentCollateral}`}
+                    tooltip={`Collateral Ratio = (synth amount / collateral amount) * synth price`}
                     className="flex-align-center"
                     emphasized
                   />
@@ -344,7 +336,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                     <div className="liquidation-point horizontal in-legend margin-right-2" />
                     <GaugeLabel
                       label="Liquidation"
-                      tooltip="Position is at risk of liquidation at this point."
+                      tooltip="Ratio at which position is at risk of liquidation at this point."
                       className="flex-align-center"
                       emphasized
                     />
