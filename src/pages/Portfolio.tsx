@@ -33,8 +33,8 @@ export const Portfolio = () => {
           </div>
         </div>
         <div className="expand">
-          <div className="text-color-4">{`${tokenAmount} ${name}`}</div>
-          <div className="text-xs opacity-50">${roundDecimals(priceUsd * tokenAmount, 2)}</div>
+          <div className="text-color-4">{`${roundDecimals(tokenAmount, 3)} ${name}`}</div>
+          <div className="text-xs opacity-50">${roundDecimals(priceUsd * tokenAmount, 3)}</div>
         </div>
         <div className="expand">
           <div className="text-color-4">{`${roundDecimals(collateralAmount, 3)} ${collateral}`}</div>
@@ -81,13 +81,13 @@ export const Portfolio = () => {
           <div className="text-color-4">
             {tokenAmount} {name}
           </div>
-          <div className="text-xs opacity-50">{`$${roundDecimals(priceUsd * tokenAmount, 2)}`}</div>
+          <div className="text-xs opacity-50">{`$${roundDecimals(priceUsd * tokenAmount, 3)}`}</div>
         </div>
         <div className="expand">
           <div className="text-color-4">
             {price} {collateral}
           </div>
-          <div className="text-xs opacity-50">{`$${roundDecimals(priceUsd, 2)}`}</div>
+          <div className="text-xs opacity-50">{`$${roundDecimals(priceUsd, 3)}`}</div>
         </div>
         <div className="expand">
           <div className={`pill ${isExpired ? 'red' : 'green'}`}>{isExpired ? 'EXPIRED' : 'LIVE'}</div>
