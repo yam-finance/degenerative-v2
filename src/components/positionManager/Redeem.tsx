@@ -30,7 +30,7 @@ export const Redeem: React.FC = React.memo(() => {
 
   useEffect(() => {
     formState.reset();
-  }, [mintedPositions]);
+  }, [state.sponsorTokens]);
 
   const setFormInputs = (tokens: number) => {
     formState.setField('tokensToRedeem', tokens);

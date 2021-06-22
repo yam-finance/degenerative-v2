@@ -29,7 +29,7 @@ export const Burn: React.FC = React.memo(() => {
 
   useEffect(() => {
     formState.reset();
-  }, [mintedPositions]);
+  }, [state.utilization]);
 
   const setFormInputs = (tokens: number) => {
     formState.setField('tokensToBurn', tokens);

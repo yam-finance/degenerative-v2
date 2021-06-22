@@ -35,7 +35,7 @@ export const Deposit: React.FC = React.memo(() => {
 
   useEffect(() => {
     formState.reset();
-  }, [mintedPositions]);
+  }, [state.utilization]);
 
   // Update form and then component state to match form
   const setFormInputs = (collateral: number) => {

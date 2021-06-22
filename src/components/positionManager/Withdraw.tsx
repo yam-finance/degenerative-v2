@@ -49,7 +49,7 @@ export const Withdraw: React.FC = React.memo(() => {
 
   useEffect(() => {
     formState.reset();
-  }, [mintedPositions]);
+  }, [state.utilization]);
 
   const setFormInputs = (collateral: number) => {
     formState.setField('collateralToWithdraw', collateral);
