@@ -91,7 +91,7 @@ export const Explore = () => {
 
     if (isEmpty(synthMarketData)) return <div className={style}>Loading...</div>;
     return (
-      <Link to={`/synths/${group}`} className={style} onMouseEnter={() => setSidebarData(group)}>
+      <Link to={`/explore/${group}`} className={style} onMouseEnter={() => setSidebarData(group)}>
         <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
@@ -106,7 +106,7 @@ export const Explore = () => {
     const { description } = SynthGroups[group];
 
     return (
-      <TableRow to={`/synths/${group}`} onMouseEnter={() => setSidebarData(group)}>
+      <TableRow to={`/explore/${group}`} onMouseEnter={() => setSidebarData(group)}>
         <div className="flex-align-center portrait-width-full width-1-2">
           <div className="width-10 height-10 flex-align-center flex-justify-center radius-full background-white-50 margin-right-2">
             <img src={image} loading="lazy" className="margin-1 radius-full" />

@@ -19,13 +19,19 @@ export const SearchForm: React.FC<SearchFormProps> = ({ className, setSearch }) 
     },
   });
 
-  const handleSubmit = () => <Redirect to={`/synths?search=${formState.values.search}`} />;
+  const handleSubmit = () => <Redirect to={`/explore?search=${formState.values.search}`} />;
 
   return (
     <div className={className}>
       <form onSubmit={handleSubmit}>
         <div className="relative">
-          <input {...text('search')} className="form-input margin-0 has-icon w-input" maxLength={256} placeholder="Search synths" required />
+          <input
+            {...text('search')}
+            className="form-input margin-0 has-icon w-input"
+            maxLength={256}
+            placeholder="Search synths"
+            required
+          />
           <SearchIcon className="absolute-top-left icon margin-3" />
         </div>
       </form>

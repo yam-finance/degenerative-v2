@@ -14,7 +14,7 @@ export const Portfolio = () => {
     const { name, tokenAmount, collateralAmount, utilization } = props;
     const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
     const { price, priceUsd, globalUtilization, liquidationPoint } = synthMarketData[name];
-    const link = `/synths/${group}/${cycle}${year}`;
+    const link = `/explore/${group}/${cycle}${year}`;
 
     const pricedUtilization = price * utilization;
     const pricedGlobalUtil = price * globalUtilization;
@@ -63,7 +63,7 @@ export const Portfolio = () => {
     const { name, tokenAmount } = props;
     const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
     const { price, priceUsd, daysTillExpiry } = synthMarketData[name];
-    const link = `/synths/${group}/${cycle}${year}`;
+    const link = `/explore/${group}/${cycle}${year}`;
 
     const isExpired = daysTillExpiry < 0;
 

@@ -40,7 +40,7 @@ export const SynthGroup: React.FC = () => {
   const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('Live');
   const [synthInFocus, setSynthInFocus] = useState<string>('');
 
-  const learnMoreLink = `https://yam.gitbook.io/synths/synthetic-tokens/${group.toLowerCase()}`;
+  const learnMoreLink = `https://yam.gitbook.io/explore/synthetic-tokens/${group.toLowerCase()}`;
   // TODO redirect if type does not exist
 
   useEffect(() => {
@@ -209,7 +209,7 @@ export const SynthGroup: React.FC = () => {
 
     return (
       <Link
-        to={`/synths/${group}/${cycle}${year}`}
+        to={`/explore/${group}/${cycle}${year}`}
         //style={rowStyle}
         className="hover-scale table-row margin-y-2 w-inline-block relative"
       >
@@ -332,7 +332,7 @@ export const SynthGroup: React.FC = () => {
                 Learn more
               </a>
               <a
-                href="https://yam.gitbook.io/synths/overview/how-do-i-use-synths"
+                href="https://yam.gitbook.io/explore/overview/how-do-i-use-synths"
                 target="_blank"
                 rel="noreferrer"
                 className="text-small weight-bold"

@@ -21,9 +21,9 @@ const App: React.FC = () => {
         <Switch>
           <Route exact strict path="/" component={Landing} />
           <Route exact strict path="/portfolio" component={Portfolio} />
-          <Route exact strict path="/synths" component={Explore} />
-          <Route exact strict path="/synths/:group" component={SynthGroup} />
-          <Route exact strict path="/synths/:group/:cycleYear" component={Synth} />
+          <Route exact strict path="/explore" component={Explore} />
+          <Route exact strict path="/explore/:group" component={SynthGroup} />
+          <Route exact strict path="/explore/:group/:cycleYear" component={Synth} />
           <Route component={NotFound} />
         </Switch>
       </ContextProviders>
