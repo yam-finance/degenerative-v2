@@ -77,6 +77,14 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
             resultingTokens: resultingTokens,
           },
         });
+      } else {
+        dispatch({
+          type: 'UPDATE_RESULTING_POSITION',
+          payload: {
+            resultingCollateral: 0,
+            resultingTokens: 0,
+          },
+        });
       }
     };
 
