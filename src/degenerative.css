@@ -6125,6 +6125,11 @@ a:hover {
   bottom: 100%;
 }
 
+.dropdown-list.top-left.w--open {
+  left: 0px;
+  bottom: 100%;
+}
+
 .dropdown-link {
   display: -webkit-box;
   display: -webkit-flex;
