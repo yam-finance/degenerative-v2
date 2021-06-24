@@ -221,6 +221,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
               <button
                 onClick={async () => {
                   await actions.onRequestWithdraw(state.modalWithdrawalAmount);
+                  triggerUpdate();
                   closeModal();
                 }}
                 className="button w-button"

@@ -63,21 +63,9 @@ export const Withdraw: React.FC = React.memo(() => {
     });
   };
 
-  const setMaximum = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    // TODO Withdraw max tokens
-
-    // Update form and then component state to match form
-    //setFormInputs(newCollateral, roundDecimals(newTokens, 2));
-  };
-
-  const CollateralApproveButton: React.FC = () => {
-    return <ActionButton action={() => actions.onApproveCollateral()}>Approve {currentCollateral}</ActionButton>;
-  };
-
   const WithdrawButton: React.FC = () => {
     const withdrawalAmount = Number(formState.values.collateralToWithdraw);
+
     const disableWithdrawal =
       withdrawalAmount <= 0 ||
       withdrawalAmount >= state.sponsorCollateral ||

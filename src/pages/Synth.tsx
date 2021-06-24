@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, NavLink } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import { useFormState } from 'react-use-form-state';
 
-import { PositionManagerContainer, useSynthActions, useToken } from '@/hooks';
+import { PositionManagerContainer, useSynthActions } from '@/hooks';
 import { UserContext, MarketContext, EthereumContext } from '@/contexts';
 import { Page, Navbar, Icon, MainDisplay, MainHeading, PositionManager, SideDisplay } from '@/components';
 import { ISynth, ISynthMarketData } from '@/types';
@@ -42,11 +42,6 @@ export const Synth: React.FC = () => {
   }, [currentSynth, synthMetadata, synthMarketData]);
 
   useEffect(() => {
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++');
-    console.log(currentSynth);
-    console.log(mintedPositions);
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++');
-
     const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
 
     if (sponsorPosition) {
@@ -55,6 +50,7 @@ export const Synth: React.FC = () => {
         const withdrawalDate = fromUnixTime(sponsorPosition.withdrawalRequestTimestamp);
         withdrawalRequestMinutesLeft = differenceInMinutes(withdrawalDate, new Date());
       }
+
       setWithdrawalMinutesLeft(withdrawalRequestMinutesLeft);
       setWithdrawalAmount(sponsorPosition.withdrawalRequestAmount);
     }
@@ -121,8 +117,8 @@ export const Synth: React.FC = () => {
                   onClick={async () => {
                     setWaiting(true);
                     await actions.onCancelWithdraw();
-                    triggerUpdate();
                     setWaiting(false);
+                    triggerUpdate();
                   }}
                   className="button-secondary button-tiny"
                   disabled={waiting}
@@ -141,8 +137,8 @@ export const Synth: React.FC = () => {
                   onClick={async () => {
                     setWaiting(true);
                     await actions.onWithdrawPassedRequest();
-                    triggerUpdate();
                     setWaiting(false);
+                    triggerUpdate();
                   }}
                   className="button-secondary button-tiny margin-right-1"
                   disabled={waiting}
