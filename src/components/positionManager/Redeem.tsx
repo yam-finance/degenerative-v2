@@ -12,7 +12,7 @@ interface RedeemFormFields {
 
 export const Redeem: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, mintedPositions } = useContext(UserContext);
+  const { currentSynth } = useContext(UserContext);
 
   const maxRedeemableTokens = state.sponsorTokens - state.minTokens;
 
@@ -30,7 +30,7 @@ export const Redeem: React.FC = React.memo(() => {
 
   useEffect(() => {
     formState.reset();
-  }, [mintedPositions]);
+  }, [state.sponsorTokens]);
 
   const setFormInputs = (tokens: number) => {
     formState.setField('tokensToRedeem', tokens);

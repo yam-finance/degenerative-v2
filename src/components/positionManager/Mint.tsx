@@ -13,7 +13,7 @@ interface MintFormFields {
 
 export const Mint: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, currentCollateral, mintedPositions } = useContext(UserContext);
+  const { currentSynth, currentCollateral } = useContext(UserContext);
 
   const [adjustToGcr, setAdjustToGcr] = useState(!state.sponsorCollateral);
 
@@ -24,8 +24,7 @@ export const Mint: React.FC = React.memo(() => {
     },
     {
       onChange: (e, stateValues, nextStateValues) => {
-        const { collateralToAdd: oldCollateral, tokensToAdd: oldTokens } = stateValues; // Old form state
-        const { collateralToAdd, tokensToAdd } = nextStateValues; // New form state
+        const { collateralToAdd, tokensToAdd } = nextStateValues;
 
         const resultingCollateral = Number(collateralToAdd) + state.sponsorCollateral;
         const newTokens = adjustToGcr ? getTokensAtGcr(resultingCollateral) - state.sponsorTokens : Number(tokensToAdd);
@@ -37,7 +36,7 @@ export const Mint: React.FC = React.memo(() => {
 
   useEffect(() => {
     formState.reset();
-  }, [mintedPositions]);
+  }, [state.utilization]);
 
   const setFormInputs = (collateral: number, tokens: number) => {
     const collateralAmount = collateral > 0 ? collateral : 0;
@@ -59,7 +58,8 @@ export const Mint: React.FC = React.memo(() => {
 
   const getTokensAtGcr = (collateral: number) => {
     const tokens = collateral * state.globalUtilization;
-    // Adjusting to GCR fails due to math differences between JS and Solidity. Account for this here.
+    // Adjusting to GCR fails in smart contract due to math differences between JS and Solidity.
+    // Account for this here.
     const difference = tokens * 0.0001;
 
     return roundDecimals(tokens - difference, 6);
@@ -67,8 +67,6 @@ export const Mint: React.FC = React.memo(() => {
 
   const setMaximum = () => {
     const newTokens = adjustToGcr ? getTokensAtGcr(state.maxCollateral) : Number(formState.values.tokensToAdd);
-
-    // Update form and then component state to match form
     setFormInputs(state.maxCollateral, newTokens);
   };
 

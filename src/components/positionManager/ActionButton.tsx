@@ -19,6 +19,13 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
     triggerUpdate();
   };
 
+  const callOnClick = async (onClick: (...args: any) => Promise<void>) => {
+    setWaiting(true);
+    await onClick();
+    setWaiting(false);
+    triggerUpdate();
+  };
+
   const baseStyle = clsx('button', 'width-full', 'button-large', disableCondition && 'disabled');
 
   if (waiting) {
@@ -36,7 +43,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
           await callAction(action);
         }
         if (onClick) {
-          onClick();
+          await callOnClick(onClick);
         }
       }}
       className={baseStyle}

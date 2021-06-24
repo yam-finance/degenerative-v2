@@ -34,18 +34,18 @@ export const Navbar = () => {
     return (
       <div className="flex-column expand padding-right-3 tablet-width-full tablet-padding-x-4 tablet-padding-y-8 min-height-full">
         <div className="margin-left-8 margin-top-10 tablet-margin-0 width-56 portrait-margin-0 landscape-margin-0"></div>
-        <NavbarButton text="Explore Synths" icon="Globe" to="/synths" />
+        <NavbarButton text="Explore Synths" icon="Globe" to="/explore" />
         <NavbarButton text="Portfolio" icon="User" to="/portfolio" />
         <div className="nav-divider margin-y-5"></div>
         <h6 className="margin-left-8 padding-left-3 tablet-padding-left-0 tablet-margin-left-3">Learn</h6>
-        <NavbarButton text="Docs" icon="Book" to="https://yam.gitbook.io/synths/" external />
+        <NavbarButton text="Docs" icon="Book" to="https://yam.gitbook.io/explore/" external />
         <NavbarButton
           text="Tutorial"
           icon="FileText"
-          to="https://yam.gitbook.io/synths/overview/how-do-i-use-synths"
+          to="https://yam.gitbook.io/explore/overview/how-do-i-use-synths"
           external
         />
-        <NavbarButton text="FAQs" icon="HelpCircle" to="https://yam.gitbook.io/synths/overview/faq" external />
+        <NavbarButton text="FAQs" icon="HelpCircle" to="https://yam.gitbook.io/explore/overview/faq" external />
         <NavbarButton text="Support" icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
         <div className="expand"></div>
         <div className="nav-divider margin-y-5"></div>

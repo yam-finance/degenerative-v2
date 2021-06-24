@@ -17,8 +17,6 @@ const initialState = {
   currentSynth: '',
   currentCollateral: '',
   triggerUpdate: () => {},
-  actions: {} as ReturnType<typeof useSynthActions>,
-  //emp: {} as ReturnType<typeof useEmp>,
 };
 
 export const UserContext = createContext(initialState);
@@ -33,8 +31,9 @@ export const UserProvider: React.FC = ({ children }) => {
   const [currentCollateral, setCurrentCollateral] = useState('');
   const [forceUpdate, setForceUpdate] = useState(false);
 
+  const initialized = account && synthMetadata && synthMarketData && collateralData;
+
   const emp = useEmp();
-  const actions = useSynthActions();
   const erc20 = useToken();
 
   useEffect(() => {
@@ -44,16 +43,14 @@ export const UserProvider: React.FC = ({ children }) => {
   }, [currentSynth, synthMetadata]);
 
   useEffect(() => {
-    if (forceUpdate || (account && synthMetadata && synthMarketData && collateralData)) {
+    if (forceUpdate || initialized) {
       updateMintedPositions();
       updateSynthsInWallet();
       setForceUpdate(false);
     }
-  }, [account, synthMetadata, synthMarketData, collateralData, forceUpdate]);
+  }, [initialized, forceUpdate]);
 
-  const setSynth = (synthName: string) => {
-    setCurrentSynth(synthName);
-  };
+  const setSynth = (synthName: string) => setCurrentSynth(synthName);
 
   const updateMintedPositions = () => {
     const minted: IMintedPosition[] = [];
@@ -76,12 +73,11 @@ export const UserProvider: React.FC = ({ children }) => {
       withdrawalRequestPassTimeStamp,
       withdrawalRequestAmount,
     } = await emp.getUserPosition(synth);
-    const { price } = synthMarketData[synthName];
 
     if (rawCollateral.gt(0) || tokensOutstanding.gt(0)) {
       const tokens = Number(utils.formatUnits(tokensOutstanding, synth.token.decimals));
       const collateral = Number(utils.formatUnits(rawCollateral, synth.token.decimals));
-      const withdrawalRequest = Number(utils.formatUnits(withdrawalRequestAmount, synth.token.decimals));
+      const withdrawalRequestNum = Number(utils.formatUnits(withdrawalRequestAmount, synth.token.decimals));
       const withdrawalRequestTimestamp = withdrawalRequestPassTimeStamp.toNumber();
 
       const mintedPosition: IMintedPosition = {
@@ -91,7 +87,7 @@ export const UserProvider: React.FC = ({ children }) => {
         collateralAmount: collateral,
         // collateralPrice:
         utilization: roundDecimals(tokens / collateral, 4),
-        withdrawalRequestAmount: withdrawalRequest,
+        withdrawalRequestAmount: withdrawalRequestNum,
         withdrawalRequestTimestamp: withdrawalRequestTimestamp,
       };
 
@@ -136,7 +132,6 @@ export const UserProvider: React.FC = ({ children }) => {
         setSynth,
         getSponsorPosition,
         triggerUpdate,
-        actions,
       }}
     >
       {children}
