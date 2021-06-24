@@ -42,8 +42,12 @@ export const Synth: React.FC = () => {
   }, [currentSynth, synthMetadata, synthMarketData]);
 
   useEffect(() => {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++');
+    console.log(currentSynth);
+    console.log(mintedPositions);
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++');
+
     const sponsorPosition = mintedPositions.find((position) => position.name == currentSynth);
-    if (sponsorPosition) console.log(sponsorPosition);
 
     if (sponsorPosition) {
       let withdrawalRequestMinutesLeft = 0;
@@ -54,7 +58,7 @@ export const Synth: React.FC = () => {
       setWithdrawalMinutesLeft(withdrawalRequestMinutesLeft);
       setWithdrawalAmount(sponsorPosition.withdrawalRequestAmount);
     }
-  }, [currentSynth, mintedPositions]);
+  }, [currentSynth, JSON.stringify(mintedPositions)]);
 
   const LinkBar: React.FC = () => {
     const collateral = collateralData[currentCollateral];

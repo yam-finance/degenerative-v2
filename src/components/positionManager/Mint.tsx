@@ -13,7 +13,7 @@ interface MintFormFields {
 
 export const Mint: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, currentCollateral, mintedPositions } = useContext(UserContext);
+  const { currentSynth, currentCollateral } = useContext(UserContext);
 
   const [adjustToGcr, setAdjustToGcr] = useState(!state.sponsorCollateral);
 

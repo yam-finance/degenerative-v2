@@ -11,7 +11,7 @@ interface WithdrawFormFields {
 
 export const Withdraw: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentCollateral, mintedPositions } = useContext(UserContext);
+  const { currentCollateral } = useContext(UserContext);
 
   const [formState, { number }] = useFormState<WithdrawFormFields>(
     {
@@ -161,13 +161,7 @@ export const Withdraw: React.FC = React.memo(() => {
           </div>
         </div>
 
-        {!actions.collateralApproval ? (
-          <CollateralApproveButton />
-        ) : state.withdrawalRequestAmount > 0 ? (
-          <WithdrawRequestButton />
-        ) : (
-          <WithdrawButton />
-        )}
+        {state.withdrawalRequestAmount > 0 ? <WithdrawRequestButton /> : <WithdrawButton />}
         <BackButton />
       </div>
     </ActionDisplay>
