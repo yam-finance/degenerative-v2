@@ -40,7 +40,7 @@ export const SynthGroup: React.FC = () => {
   const [filterSynths, setFilterSynths] = useState<SynthTableFilter>('Live');
   const [synthInFocus, setSynthInFocus] = useState<string>('');
 
-  const learnMoreLink = `https://yam.gitbook.io/explore/synthetic-tokens/${group.toLowerCase()}`;
+  const learnMoreLink = `https://docs.synths.yam.xyz/synthetic-tokens/${group.toLowerCase()}`;
   // TODO redirect if type does not exist
 
   useEffect(() => {
@@ -196,17 +196,6 @@ export const SynthGroup: React.FC = () => {
     const { name, maturity, apr, aprAt2, balance, liquidity, price } = props;
     const { cycle, year, group, collateral } = synthMetadata[name];
 
-    // TODO remove?
-    const rowStyle = {
-      backgroundColor: '#ec6ead',
-      // TODO what to do with this?
-      //backgroundImage:
-      //  '-webkit-gradient(linear, left top, left bottom, from(rgba(243, 85, 201, 0)), color stop(5%, #ff8a97), color-stop(46%, #ec6ead), to(#ce34aa))',
-      //backgroundImage: 'linear-gradient(180deg, rgba(243, 85, 201, 0), #ff8a97 5%, #ec6ead 46%, #ce34aa)',
-      //boxShadow:
-      //  'inset 0 0 8px 4px #ec6ead, 0 8px 16px -4px rgba(236, 110, 173, 0.2), 0 16px 32px -8px rgba(236, 110, 173, 0.2)',
-    };
-
     return (
       <Link
         to={`/explore/${group}/${cycle}${year}`}
@@ -332,7 +321,7 @@ export const SynthGroup: React.FC = () => {
                 Learn more
               </a>
               <a
-                href="https://yam.gitbook.io/explore/overview/how-do-i-use-synths"
+                href="https://docs.synths.yam.xyz/overview/how-do-i-use-synths"
                 target="_blank"
                 rel="noreferrer"
                 className="text-small weight-bold"

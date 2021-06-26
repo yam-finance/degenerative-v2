@@ -49,7 +49,7 @@ export const Landing: React.FC = () => {
           </a>
           <div role="navigation" className="margin-left-auto flex-align-center">
             <a
-              href="https://yam.gitbook.io/explore/"
+              href="https://docs.synths.yam.xyz/"
               target="_blank"
               rel="noreferrer"
               className="text-color-4 tablet-hide w-nav-link"
@@ -73,7 +73,7 @@ export const Landing: React.FC = () => {
               className="margin-top-10 background-color-2 absolute-top-right box-shadow-large radius-large padding-3 w-dropdown-list"
               openDropdown={openMenu}
             >
-              <Link to="https://yam.gitbook.io/explore/" className="dropdown-link width-full margin-bottom-2">
+              <Link to="https://docs.synths.yam.xyz/" className="dropdown-link width-full margin-bottom-2">
                 <div className="width-full text-align-center">Learn</div>
               </Link>
               <Link to="/explore" className="button width-full w-button break-no-wrap">
@@ -100,22 +100,16 @@ export const Landing: React.FC = () => {
             <SynthBlock
               name="uPUNKS"
               image="cryptopunk"
-              url="/explore/uPUNKS"
+              url="/uPUNKS"
               description={SynthGroups['uPUNKS'].description}
               apr={50}
               isNew
             />
-            <SynthBlock
-              name="uGAS"
-              image="ugas"
-              url="/explore/uGAS"
-              description={SynthGroups['uGAS'].description}
-              apr={50}
-            />
+            <SynthBlock name="uGAS" image="ugas" url="/uGAS" description={SynthGroups['uGAS'].description} apr={50} />
             <SynthBlock
               name="uSTONKS"
               image="ustonks_zombie"
-              url="/explore/uSTONKS"
+              url="/uSTONKS"
               description={SynthGroups['uSTONKS'].description}
               apr={50}
             />
@@ -215,16 +209,11 @@ export const Landing: React.FC = () => {
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Help</h6>
-              <a
-                href="https://yam.gitbook.io/explore/"
-                target="_blank"
-                rel="noreferrer"
-                className="block margin-bottom-2"
-              >
+              <a href="https://docs.synths.yam.xyz/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
                 Documentation
               </a>
               <a
-                href="https://yam.gitbook.io/explore/overview/faq"
+                href="https://docs.synths.yam.xyz/overview/faq"
                 target="_blank"
                 rel="noreferrer"
                 className="block margin-bottom-2"
@@ -261,7 +250,7 @@ export const Landing: React.FC = () => {
               >
                 Blog
               </a>
-              <a href="https://yam.finance/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
+              <a href="https://yam.xyz/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
                 Visit Yam
               </a>
               <a href="https://umaproject.org/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
@@ -278,7 +267,9 @@ export const Landing: React.FC = () => {
               </p>
             </div>
             <div className="flex-row text-small opacity-50 margin-top-8">
-              <Link to="/legal/privacy" className="margin-right-4">Privacy Policy</Link>
+              <Link to="/legal/privacy" className="margin-right-4">
+                Privacy Policy
+              </Link>
               <Link to="/legal/terms">Terms & Conditions</Link>
             </div>
           </div>
