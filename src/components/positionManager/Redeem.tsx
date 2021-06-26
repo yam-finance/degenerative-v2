@@ -92,12 +92,16 @@ export const Redeem: React.FC = React.memo(() => {
           </>
         ) : (
           <>
-            <ClosePositionButton />
+            <div className="background-color-3 padding-6 radius-large">
+              <h4 className="text-align-center">Fully redeem and close your position</h4>
+              <ClosePositionButton />
+            </div>
             <div className="flex-align-center margin-y-4">
               <div className="expand height-1 border-bottom-2px"></div>
               <div className="margin-x-4">or</div>
               <div className="expand height-1 border-bottom-2px"></div>
             </div>
+            <h4 className="text-align-center">Redeem some of your position</h4>
             <div className="flex-row">
               <div className="width-full margin-bottom-4">
                 <div className="relative">
