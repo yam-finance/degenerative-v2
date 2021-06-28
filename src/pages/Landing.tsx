@@ -256,7 +256,7 @@ export const Landing: React.FC = () => {
               >
                 Blog
               </a>
-              <a href="https://yam.xyz/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
+              <a href="https://yam.finance/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
                 Visit Yam
               </a>
               <a href="https://umaproject.org/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
