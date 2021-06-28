@@ -100,16 +100,22 @@ export const Landing: React.FC = () => {
             <SynthBlock
               name="uPUNKS"
               image="cryptopunk"
-              url="/uPUNKS"
+              url="/explore/uPUNKS"
               description={SynthGroups['uPUNKS'].description}
               apr={50}
               isNew
             />
-            <SynthBlock name="uGAS" image="ugas" url="/uGAS" description={SynthGroups['uGAS'].description} apr={50} />
+            <SynthBlock
+              name="uGAS"
+              image="ugas"
+              url="/explore/uGAS"
+              description={SynthGroups['uGAS'].description}
+              apr={50}
+            />
             <SynthBlock
               name="uSTONKS"
               image="ustonks_zombie"
-              url="/uSTONKS"
+              url="/explore/uSTONKS"
               description={SynthGroups['uSTONKS'].description}
               apr={50}
             />
