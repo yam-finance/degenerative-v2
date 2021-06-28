@@ -12,6 +12,7 @@ export const Navbar = () => {
   const { account, disconnectWallet, chainId } = useContext(EthereumContext);
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
   const [openWalletMenu, setWalletMenu] = useState(false);
+  const [openLegalMenu, setLegalMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   // const { t } = useTranslation();
 
@@ -24,24 +25,25 @@ export const Navbar = () => {
   }, [account]);
 
   const toggleDisconnectMenu = () => setWalletMenu(!openWalletMenu);
+  const toggleLegalMenu = () => setLegalMenu(!openLegalMenu);
   const toggleMenu = () => setOpenMenu(!openMenu);
 
   const Navigation: React.FC = () => {
     return (
-      <div className="flex-column expand padding-right-3 tablet-padding-x-4 tablet-padding-y-8 min-height-full">
+      <div className="flex-column expand padding-right-3 tablet-width-full tablet-padding-x-4 tablet-padding-y-8 min-height-full">
         <div className="margin-left-8 margin-top-10 tablet-margin-0 width-56 portrait-margin-0 landscape-margin-0"></div>
-        <NavbarButton text="Explore Synths" icon="Globe" to="/synths" />
+        <NavbarButton text="Explore Synths" icon="Globe" to="/explore" />
         <NavbarButton text="Portfolio" icon="User" to="/portfolio" />
         <div className="nav-divider margin-y-5"></div>
         <h6 className="margin-left-8 padding-left-3 tablet-padding-left-0 tablet-margin-left-3">Learn</h6>
-        <NavbarButton text="Docs" icon="Book" to="https://yam.gitbook.io/synths/" external />
+        <NavbarButton text="Docs" icon="Book" to="https://docs.synths.yam.xyz/" external />
         <NavbarButton
           text="Tutorial"
           icon="FileText"
-          to="https://yam.gitbook.io/synths/overview/how-do-i-use-synths"
+          to="https://docs.synths.yam.xyz/overview/how-do-i-use-synths"
           external
         />
-        <NavbarButton text="FAQs" icon="HelpCircle" to="https://yam.gitbook.io/synths/overview/faq" external />
+        <NavbarButton text="FAQs" icon="HelpCircle" to="https://docs.synths.yam.xyz/overview/faq" external />
         <NavbarButton text="Support" icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
         <div className="expand"></div>
         <div className="nav-divider margin-y-5"></div>
@@ -80,6 +82,30 @@ export const Navbar = () => {
               <img src={discord} loading="lazy" alt="Discord logo" className="icon discord in-button" />
             </a>
           </div>
+        </div>
+
+        <div className="margin-left-6 tablet-margin-left-0 landscape-margin-left-0 portrait-margin-left-0 relative w-dropdown">
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              toggleLegalMenu();
+            }}
+            className="flex-align-center cursor-pointer text-small margin-left-4 tablet-margin-left-2 tablet-margin-top-8 landscape-margin-top-6 portrait-margin-top-6 landscape-margin-left-2 portrait-margin-left-2 opacity-50 margin-y-2"
+          >
+            Legal
+            <Icon name="ChevronDown" className="icon medium" />
+          </div>
+          <Dropdown
+            className="dropdown-list box-shadow-medium text-small radius-large w-dropdown-list top-left"
+            openDropdown={openLegalMenu}
+          >
+            <Link to="/legal/privacy" className=" block break-no-wrap margin-bottom-2">
+              Privacy Policy
+            </Link>
+            <Link to="/legal/terms" className="block break-no-wrap">
+              Terms & Conditions
+            </Link>
+          </Dropdown>
         </div>
       </div>
     );
@@ -144,7 +170,7 @@ export const Navbar = () => {
             >
               <Icon name="Menu" className="icon opacity-100" />
             </div>
-            <Dropdown className="menu background-color-1 border-1px blur sheen w-dropdown-list" openDropdown={openMenu}>
+            <Dropdown className="menu background-color-1 border-1px blur sheen" openDropdown={openMenu}>
               <Navigation />
             </Dropdown>
           </div>

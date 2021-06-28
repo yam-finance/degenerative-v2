@@ -12,7 +12,7 @@ interface DepositFormFields {
 
 export const Deposit: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentCollateral, mintedPositions } = useContext(UserContext);
+  const { currentCollateral } = useContext(UserContext);
 
   const [formState, { number }] = useFormState<DepositFormFields>(
     {
@@ -35,7 +35,7 @@ export const Deposit: React.FC = React.memo(() => {
 
   useEffect(() => {
     formState.reset();
-  }, [mintedPositions]);
+  }, [state.utilization]);
 
   // Update form and then component state to match form
   const setFormInputs = (collateral: number) => {

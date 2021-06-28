@@ -11,7 +11,7 @@ interface WithdrawFormFields {
 
 export const Withdraw: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentCollateral, mintedPositions } = useContext(UserContext);
+  const { currentCollateral } = useContext(UserContext);
 
   const [formState, { number }] = useFormState<WithdrawFormFields>(
     {
@@ -49,7 +49,7 @@ export const Withdraw: React.FC = React.memo(() => {
 
   useEffect(() => {
     formState.reset();
-  }, [mintedPositions]);
+  }, [state.utilization]);
 
   const setFormInputs = (collateral: number) => {
     formState.setField('collateralToWithdraw', collateral);
@@ -63,21 +63,9 @@ export const Withdraw: React.FC = React.memo(() => {
     });
   };
 
-  const setMaximum = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    // TODO Withdraw max tokens
-
-    // Update form and then component state to match form
-    //setFormInputs(newCollateral, roundDecimals(newTokens, 2));
-  };
-
-  const CollateralApproveButton: React.FC = () => {
-    return <ActionButton action={() => actions.onApproveCollateral()}>Approve {currentCollateral}</ActionButton>;
-  };
-
   const WithdrawButton: React.FC = () => {
     const withdrawalAmount = Number(formState.values.collateralToWithdraw);
+
     const disableWithdrawal =
       withdrawalAmount <= 0 ||
       withdrawalAmount >= state.sponsorCollateral ||
@@ -161,13 +149,7 @@ export const Withdraw: React.FC = React.memo(() => {
           </div>
         </div>
 
-        {!actions.collateralApproval ? (
-          <CollateralApproveButton />
-        ) : state.withdrawalRequestAmount > 0 ? (
-          <WithdrawRequestButton />
-        ) : (
-          <WithdrawButton />
-        )}
+        {state.withdrawalRequestAmount > 0 ? <WithdrawRequestButton /> : <WithdrawButton />}
         <BackButton />
       </div>
     </ActionDisplay>

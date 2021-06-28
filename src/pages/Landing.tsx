@@ -49,14 +49,14 @@ export const Landing: React.FC = () => {
           </a>
           <div role="navigation" className="margin-left-auto flex-align-center">
             <a
-              href="https://yam.gitbook.io/synths/"
+              href="https://docs.synths.yam.xyz/"
               target="_blank"
               rel="noreferrer"
               className="text-color-4 tablet-hide w-nav-link"
             >
               Learn
             </a>
-            <Link to="/synths" className="tablet-hide button w-button">
+            <Link to="/explore" className="tablet-hide button w-button">
               Explore Synths
             </Link>
           </div>
@@ -73,10 +73,10 @@ export const Landing: React.FC = () => {
               className="margin-top-10 background-color-2 absolute-top-right box-shadow-large radius-large padding-3 w-dropdown-list"
               openDropdown={openMenu}
             >
-              <Link to="https://yam.gitbook.io/synths/" className="dropdown-link width-full margin-bottom-2">
+              <Link to="https://docs.synths.yam.xyz/" className="dropdown-link width-full margin-bottom-2">
                 <div className="width-full text-align-center">Learn</div>
               </Link>
-              <Link to="/synths" className="button width-full w-button break-no-wrap">
+              <Link to="/explore" className="button width-full w-button break-no-wrap">
                 Explore Synths
               </Link>
             </Dropdown>
@@ -91,7 +91,7 @@ export const Landing: React.FC = () => {
           </p>
           <div className="flex-space-between flex-align-baseline margin-top-16">
             <h4>Explore Yam Synths</h4>
-            <Link to="/synths" className="text-color-5">
+            <Link to="/explore" className="text-color-5">
               View all
             </Link>
           </div>
@@ -100,7 +100,7 @@ export const Landing: React.FC = () => {
             <SynthBlock
               name="uPUNKS"
               image="cryptopunk"
-              url="/synths/uPUNKS"
+              url="/explore/uPUNKS"
               description={SynthGroups['uPUNKS'].description}
               apr={50}
               isNew
@@ -108,14 +108,14 @@ export const Landing: React.FC = () => {
             <SynthBlock
               name="uGAS"
               image="ugas"
-              url="/synths/uGAS"
+              url="/explore/uGAS"
               description={SynthGroups['uGAS'].description}
               apr={50}
             />
             <SynthBlock
               name="uSTONKS"
               image="ustonks_zombie"
-              url="/synths/uSTONKS"
+              url="/explore/uSTONKS"
               description={SynthGroups['uSTONKS'].description}
               apr={50}
             />
@@ -169,7 +169,7 @@ export const Landing: React.FC = () => {
           </div>
           <img src={gloop} className="absolute-top-right width-64 tablet-hide"></img>
           <Link
-            to="/synths"
+            to="/explore"
             className="button-secondary absolute-bottom-right margin-12 margin-12 tablet-relative tablet-margin-0 landscape-margin-0 portrait-margin-0"
           >
             Explore Synths
@@ -215,16 +215,11 @@ export const Landing: React.FC = () => {
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
               <h6 className="margin-top-4">Help</h6>
-              <a
-                href="https://yam.gitbook.io/synths/"
-                target="_blank"
-                rel="noreferrer"
-                className="block margin-bottom-2"
-              >
+              <a href="https://docs.synths.yam.xyz/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
                 Documentation
               </a>
               <a
-                href="https://yam.gitbook.io/synths/overview/faq"
+                href="https://docs.synths.yam.xyz/overview/faq"
                 target="_blank"
                 rel="noreferrer"
                 className="block margin-bottom-2"
@@ -276,6 +271,12 @@ export const Landing: React.FC = () => {
               <p className="margin-top-4 tablet-margin-top-8 landscape-margin-top-8 portrait-margin-top-8 text-small">
                 © 2021 Yam Synths. All rights reserved.
               </p>
+            </div>
+            <div className="flex-row text-small opacity-50 margin-top-8">
+              <Link to="/legal/privacy" className="margin-right-4">
+                Privacy Policy
+              </Link>
+              <Link to="/legal/terms">Terms & Conditions</Link>
             </div>
           </div>
         </div>

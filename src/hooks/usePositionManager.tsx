@@ -44,11 +44,11 @@ type Action =
 
 // TODO Reducer has no type checking currently. Need to change.
 const Reducer = (state: State, action: { type: Action; payload: any }) => {
-  console.log(action.type);
+  //console.log(action.type);
   switch (action.type) {
     case 'INIT_SPONSOR_POSITION': {
       const initialized = action.payload;
-      console.log(initialized);
+      //console.log(initialized);
 
       return {
         ...state,
@@ -87,11 +87,6 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         const util = calculateUtilization(newCollateral, newTokens);
         return util > 0 && util !== Infinity ? roundDecimals(util, 4) : 0;
       })();
-
-      console.log('---------');
-      console.log(newCollateral);
-      console.log(newTokens);
-      console.log(util);
 
       return {
         ...state,

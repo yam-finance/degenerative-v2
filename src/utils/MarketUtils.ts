@@ -208,6 +208,7 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
         pairedId = 'reserve1';
       }
     } else {
+      // NOTE: Sushi is opposite of UNI
       if (poolData.pairDayDatas[0].token0.id === synthAddress) {
         synthId = 'reserve0';
         pairedId = 'reserve1';
