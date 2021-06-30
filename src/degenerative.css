@@ -1247,7 +1247,6 @@ textarea.w-select {
   position: absolute;
   background: #dddddd;
   display: none;
-  max-width: 200px;
 }
 .w-dropdown-list.w--open {
   display: inline-block;
