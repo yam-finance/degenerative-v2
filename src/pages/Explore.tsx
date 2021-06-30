@@ -95,7 +95,11 @@ export const Explore = () => {
         <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
-        <div className="button button-small">{`${aprMin}% - ${aprMax}% APR`}</div>
+        {aprMin == aprMax ? (
+          <div className="button button-small">{`${aprMax}% APR`}</div>
+        ) : (
+          <div className="button button-small">{`${aprMin}% - ${aprMax}% APR`}</div>
+        )}
         <div className="pill absolute-top-right margin-4">New</div>
       </Link>
     );
