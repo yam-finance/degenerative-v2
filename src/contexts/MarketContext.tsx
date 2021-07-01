@@ -93,7 +93,6 @@ export const MarketProvider: React.FC = ({ children }) => {
               priceUsd = pool.token1Price * collateralPriceUsd;
               pricePerPaired = pool.token1Price;
             }
-
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, paired.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, paired.decimals));
 

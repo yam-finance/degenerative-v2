@@ -100,7 +100,7 @@ export const Explore = () => {
         ) : (
           <div className="button button-small">{`${aprMin}% - ${aprMax}% APR`}</div>
         )}
-        <div className="pill absolute-top-right margin-4">New</div>
+        {/*<div className="pill absolute-top-right margin-4">New</div>*/}
       </Link>
     );
   };

@@ -1,5 +1,77 @@
 {
   "mainnet": {
+    "uPUNKS": [
+      {
+        "name": "September",
+        "cycle": "09",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x86140A763077155964754968B6F6e243fE809cBe",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0xF8eF02C10C473CA5E48b10c62ba4d46115dd2288"
+        },
+        "pool": {
+          "address": "0x6e01db46b183593374a49c0025e42c4bb7ee3ffa",
+          "location": "sushi"
+        }
+      }
+    ],
+    "uSTONKS": [
+      {
+        "name": "April",
+        "cycle": "APR",
+        "year": "21",
+        "collateral": "USDC",
+        "token": {
+          "address": "0xec58d3aefc9aaa2e0036fa65f70d569f49d9d1ed",
+          "decimals": 6
+        },
+        "emp": {
+          "address": "0x4f1424cef6ace40c0ae4fc64d74b734f1eaf153c"
+        },
+        "pool": {
+          "address": "0xedf187890af846bd59f560827ebd2091c49b75df",
+          "location": "uni"
+        }
+      },
+      {
+        "name": "June",
+        "cycle": "JUN",
+        "year": "21",
+        "collateral": "USDC",
+        "token": {
+          "address": "0x20f8d43672cfd78c471972c737134b5dcb700dd8",
+          "decimals": 6
+        },
+        "emp": {
+          "address": "0xb1a3e5a8d642534840bfc50c6417f9566e716cc7"
+        },
+        "pool": {
+          "address": "0x360acfeb5c1548bad3583c559a646d803077236d",
+          "location": "uni"
+        }
+      },
+      {
+        "name": "September",
+        "cycle": "09",
+        "year": "21",
+        "collateral": "USDC",
+        "token": {
+          "address": "0xad4353347f05438ace12aef7acef6cb2b4186c00",
+          "decimals": 6
+        },
+        "emp": {
+          "address": "0x799c9518ea434bbda03d4c0eaa58d644b768d3ab"
+        },
+        "pool": {
+          "address": "0xb9292b40cab08e5208b863ea9c4c4927a2308eee",
+          "location": "sushi"
+        }
+      }
+    ],
     "uGAS": [
       {
         "name": "January",
@@ -67,78 +139,6 @@
         "pool": {
           "address": "0x2b5dfb7874f685bea30b7d8426c9643a4bcf5873",
           "location": "uni"
-        }
-      }
-    ],
-    "uSTONKS": [
-      {
-        "name": "April",
-        "cycle": "APR",
-        "year": "21",
-        "collateral": "USDC",
-        "token": {
-          "address": "0xec58d3aefc9aaa2e0036fa65f70d569f49d9d1ed",
-          "decimals": 6
-        },
-        "emp": {
-          "address": "0x4f1424cef6ace40c0ae4fc64d74b734f1eaf153c"
-        },
-        "pool": {
-          "address": "0xedf187890af846bd59f560827ebd2091c49b75df",
-          "location": "uni"
-        }
-      },
-      {
-        "name": "June",
-        "cycle": "JUN",
-        "year": "21",
-        "collateral": "USDC",
-        "token": {
-          "address": "0x20f8d43672cfd78c471972c737134b5dcb700dd8",
-          "decimals": 6
-        },
-        "emp": {
-          "address": "0xb1a3e5a8d642534840bfc50c6417f9566e716cc7"
-        },
-        "pool": {
-          "address": "0x360acfeb5c1548bad3583c559a646d803077236d",
-          "location": "uni"
-        }
-      },
-      {
-        "name": "September",
-        "cycle": "09",
-        "year": "21",
-        "collateral": "USDC",
-        "token": {
-          "address": "0xad4353347f05438ace12aef7acef6cb2b4186c00",
-          "decimals": 6
-        },
-        "emp": {
-          "address": "0x799c9518ea434bbda03d4c0eaa58d644b768d3ab"
-        },
-        "pool": {
-          "address": "0xb9292b40cab08e5208b863ea9c4c4927a2308eee",
-          "location": "sushi"
-        }
-      }
-    ],
-    "uPUNKS": [
-      {
-        "name": "September",
-        "cycle": "09",
-        "year": "21",
-        "collateral": "WETH",
-        "token": {
-          "address": "0x86140A763077155964754968B6F6e243fE809cBe",
-          "decimals": 18
-        },
-        "emp": {
-          "address": "0xF8eF02C10C473CA5E48b10c62ba4d46115dd2288"
-        },
-        "pool": {
-          "address": "0x6e01db46b183593374a49c0025e42c4bb7ee3ffa",
-          "location": "sushi"
         }
       }
     ]
