@@ -131,7 +131,9 @@ export const getApr = async (name: string, cr: number): Promise<number> => {
   if (cached) return Promise.resolve(Number(cached) * collateralEfficiency);
 
   try {
-    const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`);
+    const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`, {
+      timeout: 2000,
+    });
     const aprMultiplier = res.data.aprMultiplier;
     sessionStorage.setItem(name, aprMultiplier);
 
@@ -152,7 +154,6 @@ interface PriceHistoryResponse {
  *  Only fetches data from mainnet. This is intentional.
  */
 // TODO this will grab data for individual synth
-// TODO data will NOT be paired to USD
 export const getDailyPriceHistory = async (synth: ISynth) => {
   const synthAddress = synth.token.address;
   const poolAddress = synth.pool.address;
