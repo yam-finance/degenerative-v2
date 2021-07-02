@@ -64,7 +64,7 @@ export const Synth: React.FC = () => {
     switch (synth.pool.location) {
       case 'uni':
         tradeLink = `https://app.uniswap.org/#/swap?inputCurrency=${collateralData[currentCollateral].address}&outputCurrency=${synth.token.address}&use=V2`;
-        lpLink = `https://app.uniswap.org/#/add/v2/${collateralData[currentCollateral].address}-${synth.token.address}`;
+        lpLink = `https://app.uniswap.org/#/add/v2/${collateralData[currentCollateral].address}/${synth.token.address}`;
         break;
       case 'sushi':
         tradeLink = `https://app.sushi.com/swap?inputCurrency=${collateral.address}&outputCurrency=${synth.token.address}`;

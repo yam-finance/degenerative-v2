@@ -96,7 +96,7 @@ export const Navbar = () => {
             <Icon name="ChevronDown" className="icon medium" />
           </div>
           <Dropdown
-            className="dropdown-list box-shadow-medium text-small radius-large w-dropdown-list top-left"
+            className="dropdown-list box-shadow-medium text-small radius-large top-left"
             openDropdown={openLegalMenu}
           >
             <Link to="/legal/privacy" className=" block break-no-wrap margin-bottom-2">
@@ -170,7 +170,10 @@ export const Navbar = () => {
             >
               <Icon name="Menu" className="icon opacity-100" />
             </div>
-            <Dropdown className="menu background-color-1 border-1px blur sheen" openDropdown={openMenu}>
+            <Dropdown
+              className="menu background-color-1 border-1px blur sheen width-viewport-full"
+              openDropdown={openMenu}
+            >
               <Navigation />
             </Dropdown>
           </div>

@@ -62,12 +62,12 @@ export const SynthGroup: React.FC = () => {
         .forEach(([synthName, synthInfo]) => {
           if (!selectedSynth) selectedSynth = synthName;
           const maturity = synthMarketData[synthName].daysTillExpiry;
+
           synths[synthName] = {
             name: synthName,
             maturity: maturity,
             apr: synthMarketData[synthName].apr,
             aprAt2: synthMarketData[synthName].aprAt2,
-            // TODO should be showing minted positions
             balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? 0,
             liquidity: synthMarketData[synthName].liquidity, // TODO
             price: synthMarketData[synthName].price, // TODO
@@ -82,9 +82,11 @@ export const SynthGroup: React.FC = () => {
 
   useEffect(() => {
     if (!isEmpty(SynthGroups[group])) {
-      setGroupInfo(SynthGroups[group]);
+      const groupInfo = SynthGroups[group];
+      setGroupInfo(groupInfo);
+      setFilterSynths(groupInfo.active ? 'Live' : 'Expired');
     }
-  }, [group, SynthGroups]);
+  }, [group]);
 
   useEffect(() => {
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
