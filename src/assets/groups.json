@@ -1,37 +1,42 @@
 {
   "uGAS": {
-    "description": "Tracks median Ethereum gas prices",
+    "description": "New 1559-compatible uGAS contract coming soon",
     "collateral": "WETH",
     "paired": "WETH",
     "image": "ugas",
-    "creator": "UMA"
+    "creator": "UMA",
+    "active": false
   },
   "uSTONKS": {
     "description": "Track the top ten stocks chosen by the Wall Street Bets community",
     "collateral": "USDC",
     "paired": "USDC",
     "image": "ustonks_zombie",
-    "creator": "UMA"
+    "creator": "UMA",
+    "active": true
   },
   "uVolBtc": {
     "description": "Speculate on the volatility of BTC",
     "collateral": "USDC",
     "paired": "USDC",
     "image": "btc_corn",
-    "creator": "UMA"
+    "creator": "UMA",
+    "active": true
   },
   "yamDollar": {
     "description": "Mint a stablecoin synth using your YAM tokens",
     "collateral": "YAM",
     "paired": "USDC",
     "image": "yield_dollar",
-    "creator": "Yam"
+    "creator": "Yam",
+    "active": true
   },
   "uPUNKS": {
     "description": "Speculate on the value of Cryptopunks",
     "collateral": "WETH",
     "paired": "WETH",
     "image": "cryptopunk",
-    "creator": "UMA"
+    "creator": "UMA",
+    "active": true
   }
 }

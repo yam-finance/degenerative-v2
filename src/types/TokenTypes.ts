@@ -30,6 +30,7 @@ export interface ISynthGroup {
   paired: string;
   image: string;
   creator: string;
+  active: boolean;
 }
 
 export interface ISynthMarketData {

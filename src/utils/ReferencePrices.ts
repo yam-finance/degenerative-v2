@@ -23,9 +23,9 @@ export const getReferencePriceHistory = async (type: string, chainId: number) =>
 
   const fetchUstonks = async () => {
     // TODO !!!!!!!!!!!!
-    // TODO endpoint hardcoded to jun21 for now
+    // TODO endpoint hardcoded to 09-21 for now
     // TODO !!!!!!!!!!!!
-    const res = await axios.get('https://data.yam.finance/ustonks/index-history-daily/jun21');
+    const res = await axios.get('https://api.yam.finance/synths/ustonks-0921/index-history');
 
     return res.data.map(({ timestamp, price }: { timestamp: number; price: number }) => {
       const dateString = getDateString(fromUnixTime(timestamp));

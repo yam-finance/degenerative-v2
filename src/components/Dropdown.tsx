@@ -7,9 +7,5 @@ interface DropdownProps {
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({ openDropdown, className, children, ...other }) => {
-  return (
-    <nav className={clsx('width-viewport-full', 'w-dropdown-list', openDropdown && 'w--open', className)}>
-      {children}
-    </nav>
-  );
+  return <nav className={clsx('w-dropdown-list', openDropdown && 'w--open', className)}>{children}</nav>;
 };
