@@ -96,7 +96,7 @@ export const Explore = () => {
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
         {aprMin == aprMax ? (
-          <div className="button button-small">{`${aprMax}% APR`}</div>
+          <div className="button button-small">{`Coming Soon`}</div>
         ) : (
           <div className="button button-small">{`${aprMin}% - ${aprMax}% APR`}</div>
         )}
