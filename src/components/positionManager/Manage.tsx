@@ -6,7 +6,9 @@ import { UserContext } from '@/contexts';
 
 export const Manage = () => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, currentCollateral } = useContext(UserContext);
+  const { currentSynth, currentCollateral, synthsInWallet } = useContext(UserContext);
+
+  const ownsSynth = !!synthsInWallet.find((synth) => synth.name === currentSynth);
 
   const changeAction = (action: MinterAction) => {
     dispatch({
@@ -87,11 +89,11 @@ export const Manage = () => {
           Redeem
         </button>
         <button
-          disabled={!state.isExpired || noPosition}
+          disabled={!state.isExpired || !ownsSynth}
           // TODO can you settle with active withdrawal request?
           className={clsx(
             styles,
-            (noPosition || activeWithdrawalRequest || !state.isExpired) && 'disabled',
+            (activeWithdrawalRequest || !state.isExpired || !ownsSynth) && 'disabled',
             'width-full margin-top-2'
           )}
           // TODO Allow settle if synths in wallet
