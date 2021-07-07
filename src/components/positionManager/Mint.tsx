@@ -94,13 +94,8 @@ export const Mint: React.FC = React.memo(() => {
     const newCollateral = Number(formState.values.collateralToAdd);
     const newTokens = Number(formState.values.tokensToAdd);
     const positionExists = state.sponsorCollateral > 0;
-
     const isPositionInvalid = !positionExists && state.resultingUtilization > state.globalUtilization;
-
-    const disableMinting =
-      newTokens <= 0 || newCollateral <= 0 || isPositionInvalid || state.resultingUtilization < state.liquidationPoint;
-
-    console.log(state);
+    const disableMinting = newTokens <= 0 || newCollateral <= 0 || isPositionInvalid;
 
     return (
       <ActionButton action={() => actions.onMint(newCollateral, newTokens)} disableCondition={disableMinting}>
