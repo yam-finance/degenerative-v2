@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
-import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader, Icon } from '@/components';
-import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
+import { EthereumContext, MarketContext, UserContext } from '@/contexts';
+import { Icon, MainDisplay, MainHeading, Navbar, Page, SideDisplay, Table } from '@/components';
+import { formatForDisplay, getDailyPriceHistory, isEmpty, SynthGroups } from '@/utils';
 import chartLoader from '@/assets/chart-loader.svg';
-import { ISynthGroup } from '@/types';
+import { ISynth, ISynthGroup } from '@/types';
 
 interface SynthParams {
   group: string;
@@ -24,9 +24,9 @@ interface ISynthGroupItem {
 type SynthTableFilter = 'Live' | 'Expired' | 'All';
 
 export const SynthGroup: React.FC = () => {
-  const { synthsInWallet } = useContext(UserContext);
-  const { chainId } = useContext(EthereumContext);
-  const { synthMetadata, synthMarketData } = useContext(MarketContext);
+  const { synthsInWallet = [] } = useContext(UserContext) ?? {};
+  const { chainId } = useContext(EthereumContext) ?? {};
+  const { synthMetadata = [], synthMarketData } = useContext(MarketContext) ?? {};
   const { group } = useParams<SynthParams>();
 
   const [groupInfo, setGroupInfo] = useState<ISynthGroup>();
@@ -48,36 +48,38 @@ export const SynthGroup: React.FC = () => {
       let selectedSynth: string | undefined;
       const synths: typeof synthGroup = {};
 
-      Object.entries(synthMetadata)
-        .filter(([synthName, synthInfo]) => synthInfo.group.toLowerCase() === group.toLowerCase())
-        .filter(([synthName, synthInfo]) => {
+      Object.entries(synthMetadata ?? {})
+        .filter(([, synthInfo]) => synthInfo.group.toLowerCase() === group.toLowerCase())
+        .filter(([synthName]) => {
           if (filterSynths === 'All') {
             return true;
           } else if (filterSynths === 'Live') {
-            return !synthMarketData[synthName].isExpired;
+            return synthMarketData && !synthMarketData[synthName].isExpired;
           } else {
-            return synthMarketData[synthName].isExpired;
+            return synthMarketData && synthMarketData[synthName].isExpired;
           }
         })
-        .forEach(([synthName, synthInfo]) => {
+        .forEach(([synthName]) => {
           if (!selectedSynth) selectedSynth = synthName;
-          const maturity = synthMarketData[synthName].daysTillExpiry;
 
-          synths[synthName] = {
-            name: synthName,
-            maturity: maturity,
-            apr: synthMarketData[synthName].apr,
-            aprAt2: synthMarketData[synthName].aprAt2,
-            balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? 0,
-            liquidity: synthMarketData[synthName].liquidity, // TODO
-            price: synthMarketData[synthName].price, // TODO
-          };
+          if (synthMarketData) {
+            const maturity = synthMarketData[synthName].daysTillExpiry;
+            synths[synthName] = {
+              name: synthName,
+              maturity: maturity,
+              apr: synthMarketData[synthName].apr,
+              aprAt2: synthMarketData[synthName].aprAt2,
+              balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? 0,
+              liquidity: synthMarketData[synthName].liquidity, // TODO
+              price: synthMarketData[synthName].price, // TODO
+            };
+          }
         });
       if (selectedSynth) setSynthInFocus(selectedSynth);
       setSynthGroup(synths);
     };
 
-    if (!isEmpty(synthMarketData)) initSynthGroups();
+    if (synthMarketData) initSynthGroups();
   }, [synthMarketData, filterSynths]);
 
   useEffect(() => {
@@ -89,9 +91,13 @@ export const SynthGroup: React.FC = () => {
   }, [group]);
 
   useEffect(() => {
-    const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
+    const getChartData = async () =>
+      setHistoricPriceData(
+        await getDailyPriceHistory(synthMetadata[synthInFocus as keyof typeof synthMetadata] as ISynth)
+      );
 
-    if (synthMetadata[synthInFocus] && chainId && !historicPriceData) getChartData();
+    if (synthMetadata[synthInFocus as keyof typeof synthMetadata] && chainId && !historicPriceData)
+      getChartData().then(() => {});
   }, [synthMetadata, synthInFocus]);
 
   const Chart: React.FC = () => {
@@ -196,7 +202,7 @@ export const SynthGroup: React.FC = () => {
 
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
     const { name, maturity, apr, aprAt2, balance, liquidity, price } = props;
-    const { cycle, year, group, collateral } = synthMetadata[name];
+    const { cycle, year, group, collateral } = synthMetadata[name as keyof typeof synthMetadata] as ISynth;
 
     return (
       <Link
@@ -295,7 +301,7 @@ export const SynthGroup: React.FC = () => {
         </div>
         <Table headers={['Maturity', 'Your Balance', 'Price', 'APR', 'Liquidity']}>
           {Object.keys(synthGroup).length > 0 ? (
-            Object.entries(synthGroup).map(([name, synth], index) => {
+            Object.entries(synthGroup).map(([, synth], index) => {
               return <SynthGroupRow {...synth} key={index} />;
             })
           ) : (

@@ -7,12 +7,12 @@ interface ConnectWalletProps {
 }
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ className }) => {
-  const { setEthereum } = useContext(EthereumContext);
+  const { setEthereum } = useContext(EthereumContext) ?? {};
 
   const onPress = async () => {
     if (window.ethereum && window.ethereum.request) {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
-      setEthereum(window.ethereum);
+      setEthereum && setEthereum(window.ethereum);
       console.log('Eth provider set');
     } else {
       console.error('No Ethereum provider available');

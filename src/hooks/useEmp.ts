@@ -1,12 +1,12 @@
-import { useContext, useCallback } from 'react';
-import { Signer, BigNumber } from 'ethers';
+import { useCallback, useContext } from "react";
+import { Signer } from "ethers";
 
-import { EthereumContext } from '@/contexts/EthereumContext';
-import { Empv2__factory, Unsigned, IEmpState, IUserPositions, ISynth } from '@/types';
+import { EthereumContext } from "@/contexts/EthereumContext";
+import { Empv2__factory, ISynth, IUserPositions, Unsigned } from "@/types";
 
 // Stateless hook for EMP contract helper functions
 export const useEmp = () => {
-  const { account, signer, provider } = useContext(EthereumContext);
+  const { account, signer } = (useContext(EthereumContext)) ?? {};
 
   const mint = useCallback(
     async (synth: ISynth, collateral: number, tokens: number) => {
@@ -19,18 +19,17 @@ export const useEmp = () => {
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
       try {
-        console.log('COLLATERAL: ' + collateralAmount.rawValue);
-        console.log('TOKEN : ' + tokenAmount.rawValue);
+        console.log("COLLATERAL: " + collateralAmount.rawValue);
+        console.log("TOKEN : " + tokenAmount.rawValue);
         const gasLimit = await empContract.estimateGas.create(collateralAmount, tokenAmount);
         const tx = await empContract.create(collateralAmount, tokenAmount, {
-          gasLimit: gasLimit,
+          gasLimit: gasLimit
         });
-        const receipt = tx.wait();
-        return receipt;
+        return tx.wait();
         // TODO log transaction to analytics service
       } catch (err) {
         console.error(err);
-        return Promise.reject('Mint failed.');
+        return Promise.reject("Mint failed.");
       }
     },
     [signer]
@@ -43,12 +42,12 @@ export const useEmp = () => {
       try {
         const gasLimit = await empContract.estimateGas.deposit(collateralAmount);
         const tx = await empContract.deposit(collateralAmount, {
-          gasLimit: gasLimit,
+          gasLimit: gasLimit
         });
         return tx.wait();
       } catch (err) {
         console.error(err);
-        return Promise.reject('Deposit failed');
+        return Promise.reject("Deposit failed");
       }
     },
     [signer]
@@ -61,12 +60,12 @@ export const useEmp = () => {
       try {
         const gasLimit = await empContract.estimateGas.redeem(tokenAmount);
         const tx = await empContract.redeem(tokenAmount, {
-          gasLimit: gasLimit,
+          gasLimit: gasLimit
         });
         return tx.wait();
       } catch (err) {
         console.error(err);
-        return Promise.reject('Redeem failed.');
+        return Promise.reject("Redeem failed.");
       }
     },
     [signer]
@@ -80,12 +79,12 @@ export const useEmp = () => {
       try {
         const gasLimit = await empContract.estimateGas.repay(tokenAmount);
         const tx = await empContract.repay(tokenAmount, {
-          gasLimit: gasLimit,
+          gasLimit: gasLimit
         });
         return await tx.wait();
       } catch (err) {
         console.error(err);
-        return Promise.reject('Redeem failed.');
+        return Promise.reject("Redeem failed.");
       }
     },
     [signer]
@@ -97,12 +96,12 @@ export const useEmp = () => {
       try {
         const gasLimit = await empContract.estimateGas.settleExpired();
         const tx = await empContract.settleExpired({
-          gasLimit: gasLimit,
+          gasLimit: gasLimit
         });
         return tx.wait();
       } catch (err) {
         console.error(err);
-        return Promise.reject('Settle failed.');
+        return Promise.reject("Settle failed.");
       }
     },
     [signer]
@@ -117,12 +116,12 @@ export const useEmp = () => {
       try {
         const gasLimit = await empContract.estimateGas.withdraw(collateralAmount);
         const tx = await empContract.withdraw(collateralAmount, {
-          gasLimit: gasLimit,
+          gasLimit: gasLimit
         });
         return tx.wait();
       } catch (err) {
         console.error(err);
-        return Promise.reject('Withdraw failed.');
+        return Promise.reject("Withdraw failed.");
       }
     },
     [signer]
@@ -136,12 +135,12 @@ export const useEmp = () => {
       try {
         const gasLimit = await empContract.estimateGas.requestWithdrawal(collateralAmount);
         const tx = await empContract.requestWithdrawal(collateralAmount, {
-          gasLimit: gasLimit,
+          gasLimit: gasLimit
         });
         return tx.wait();
       } catch (err) {
         console.error(err);
-        return Promise.reject('Request withdraw failed.');
+        return Promise.reject("Request withdraw failed.");
       }
     },
     [signer]
@@ -154,12 +153,12 @@ export const useEmp = () => {
       try {
         const gasLimit = await empContract.estimateGas.withdrawPassedRequest();
         const tx = await empContract.withdrawPassedRequest({
-          gasLimit: gasLimit,
+          gasLimit: gasLimit
         });
         return tx.wait();
       } catch (err) {
         console.error(err);
-        return Promise.reject('Withdraw passed request failed.');
+        return Promise.reject("Withdraw passed request failed.");
       }
     },
     [signer]
@@ -172,12 +171,12 @@ export const useEmp = () => {
       try {
         const gasLimit = await empContract.estimateGas.cancelWithdrawal();
         const tx = await empContract.cancelWithdrawal({
-          gasLimit: gasLimit,
+          gasLimit: gasLimit
         });
         return tx.wait();
       } catch (err) {
         console.error(err);
-        return Promise.reject('Cancel withdrawal failed.');
+        return Promise.reject("Cancel withdrawal failed.");
       }
     },
     [signer]
@@ -185,7 +184,7 @@ export const useEmp = () => {
 
   const getUserPosition = useCallback(
     async (synth: ISynth) => {
-      if (!account) return Promise.reject('Wallet not connected');
+      if (!account) return Promise.reject("Wallet not connected");
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
       try {
         const userPositions = await empContract.positions(account as string);
@@ -195,11 +194,11 @@ export const useEmp = () => {
           withdrawalRequestPassTimeStamp: userPositions[1],
           withdrawalRequestAmount: userPositions[2].rawValue,
           rawCollateral: userPositions[3].rawValue,
-          transferPositionRequestPassTimestamp: userPositions[4],
+          transferPositionRequestPassTimestamp: userPositions[4]
         } as IUserPositions;
       } catch (err) {
         console.error(err);
-        return Promise.reject('User position retrieval failed');
+        return Promise.reject("User position retrieval failed");
       }
     },
     [signer, account]
@@ -215,6 +214,6 @@ export const useEmp = () => {
     initWithdrawalRequest,
     withdrawPassedRequest,
     cancelWithdrawalRequest,
-    getUserPosition,
+    getUserPosition
   };
 };

@@ -1,13 +1,13 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Signer, utils } from 'ethers';
 
 import { EthereumContext, MarketContext } from '@/contexts';
-import { Weth__factory, Weth } from '@/types/contracts';
-import { isEmpty } from '@/utils';
+import { Weth, Weth__factory } from '@/types/contracts';
+import { isEmpty } from "@/utils";
 
 export const useWrapEth = () => {
-  const { collateralData } = useContext(MarketContext);
-  const { signer } = useContext(EthereumContext);
+  const { collateralData={} } = useContext(MarketContext) ?? {};
+  const { signer } = useContext(EthereumContext) ?? {};
 
   const [wethContract, setWethContract] = useState<Weth>();
 
@@ -18,11 +18,9 @@ export const useWrapEth = () => {
     }
   }, [signer, collateralData]);
 
-  const wrapEth = async (ethAmount: number) => {
+  return async (ethAmount: number) => {
     const amount = utils.parseEther(ethAmount.toString());
     const tx = await wethContract?.deposit({ value: amount });
     return tx?.wait();
   };
-
-  return wrapEth;
 };

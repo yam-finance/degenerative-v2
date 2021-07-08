@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Icon, Dropdown } from '@/components';
+import { Dropdown, Icon } from '@/components';
 import { SynthGroups } from '@/utils';
 import yamIcon from '@/assets/yamIcon.png';
-import ethIcon from '@/assets/ethIcon.png';
 import mintLp from '@/assets/mintLp.png';
 import hold from '@/assets/hold.png';
 import short from '@/assets/short.png';
 import hero from '@/assets/degen-hero.png';
 import gloop from '@/assets/gloop.png';
-import umaLogo from '@/assets/uma_logo.png';
 
 export const Landing: React.FC = () => {
   interface SynthBlockProps {
@@ -25,7 +23,7 @@ export const Landing: React.FC = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const toggleMenu = () => setOpenMenu(!openMenu);
 
-  const SynthBlock: React.FC<SynthBlockProps> = ({ name, image, url, description, apr, isNew }) => {
+  const SynthBlock: React.FC<SynthBlockProps> = ({ name, image, url, description, isNew }) => {
     return (
       <Link
         to={url}
@@ -122,7 +120,7 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
-      <img className="width-full hero-img" src={hero}></img>
+      <img className="width-full hero-img" src={hero}/>
       {/*
       <div className="contains-rings">
         <div className="margin-y-48 relative flex-column-centered container-1140 w-container">
@@ -167,7 +165,7 @@ export const Landing: React.FC = () => {
             </div>
             <p className="text-color-4 margin-0 text-medium">Execute novel trading and hedging strategies</p>
           </div>
-          <img src={gloop} className="absolute-top-right width-64 tablet-hide"></img>
+          <img src={gloop} className="absolute-top-right width-64 tablet-hide"/>
           <Link
             to="/explore"
             className="button-secondary absolute-bottom-right margin-12 margin-12 tablet-relative tablet-margin-0 landscape-margin-0 portrait-margin-0"

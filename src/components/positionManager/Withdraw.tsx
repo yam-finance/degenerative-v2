@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useFormState } from 'react-use-form-state';
 
-import { ActionDisplay, ActionButton, BackButton } from '@/components';
+import { ActionButton, ActionDisplay, BackButton } from '@/components';
 import { PositionManagerContainer } from '@/hooks';
 import { UserContext } from '@/contexts';
 
@@ -11,7 +11,7 @@ interface WithdrawFormFields {
 
 export const Withdraw: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentCollateral } = useContext(UserContext);
+  const { currentCollateral } = useContext(UserContext) ?? {};
 
   const [formState, { number }] = useFormState<WithdrawFormFields>(
     {
@@ -51,17 +51,17 @@ export const Withdraw: React.FC = React.memo(() => {
     formState.reset();
   }, [state.utilization]);
 
-  const setFormInputs = (collateral: number) => {
-    formState.setField('collateralToWithdraw', collateral);
-
-    dispatch({
-      type: 'UPDATE_RESULTING_POSITION',
-      payload: {
-        resultingCollateral: collateral,
-        resultingTokens: state.sponsorTokens,
-      },
-    });
-  };
+  // const setFormInputs = (collateral: number) => {
+  //   formState.setField('collateralToWithdraw', collateral);
+  //
+  //   dispatch({
+  //     type: 'UPDATE_RESULTING_POSITION',
+  //     payload: {
+  //       resultingCollateral: collateral,
+  //       resultingTokens: state.sponsorTokens,
+  //     },
+  //   });
+  // };
 
   const WithdrawButton: React.FC = () => {
     const withdrawalAmount = Number(formState.values.collateralToWithdraw);
@@ -76,7 +76,7 @@ export const Withdraw: React.FC = React.memo(() => {
       // Show Withdrawal Request modal
       return (
         <ActionButton
-          onClick={() => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { withdrawalAmount: withdrawalAmount } })}
+          onClick={() => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { modalWithdrawalAmount: withdrawalAmount } })}
           disableCondition={disableWithdrawal}
         >
           {`Request withdrawal for ${withdrawalAmount} ${currentCollateral}`}

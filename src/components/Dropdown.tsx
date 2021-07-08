@@ -6,6 +6,6 @@ interface DropdownProps {
   className: string;
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({ openDropdown, className, children, ...other }) => {
+export const Dropdown: React.FC<DropdownProps> = ({ openDropdown, className, children }) => {
   return <nav className={clsx('w-dropdown-list', openDropdown && 'w--open', className)}>{children}</nav>;
 };

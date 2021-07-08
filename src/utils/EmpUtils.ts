@@ -1,5 +1,5 @@
-import { BigNumber, providers, utils } from 'ethers';
-import { ISynth, Empv2__factory } from '@/types';
+import { providers, utils } from 'ethers';
+import { Empv2__factory, ISynth } from '@/types';
 import { getCollateralData, roundDecimals } from '@/utils';
 
 export const EthNodeProvider = new providers.JsonRpcProvider(

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useFormState } from 'react-use-form-state';
 
-import { Icon, ActionDisplay, ActionButton, BackButton } from '@/components';
+import { ActionButton, ActionDisplay, BackButton, Icon } from '@/components';
 import { PositionManagerContainer } from '@/hooks';
 import { UserContext } from '@/contexts';
 import { roundDecimals } from '@/utils';
@@ -13,7 +13,7 @@ interface MintFormFields {
 
 export const Mint: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, currentCollateral } = useContext(UserContext);
+  const { currentSynth, currentCollateral } = useContext(UserContext) ?? {};
 
   const [adjustToGcr, setAdjustToGcr] = useState(!state.sponsorCollateral);
 
@@ -54,8 +54,6 @@ export const Mint: React.FC = React.memo(() => {
     });
   };
 
-  const getCollateralAtGcr = (tokens: number) => tokens / state.globalUtilization;
-
   const getTokensAtGcr = (collateral: number) => {
     const tokens = collateral * state.globalUtilization;
     // Adjusting to GCR fails in smart contract due to math differences between JS and Solidity.
@@ -72,7 +70,7 @@ export const Mint: React.FC = React.memo(() => {
 
   // Sets 'synth' field by calculating resulting tokens, then subtracting existing sponsor tokens
   const toggleAdjustToGcr = () => {
-    const shouldAdjust = !adjustToGcr === true;
+    const shouldAdjust = !adjustToGcr;
 
     if (shouldAdjust) {
       const newCollateral = Number(formState.values.collateralToAdd);
@@ -129,7 +127,7 @@ export const Mint: React.FC = React.memo(() => {
                 min={0}
                 required
               />
-              <div className="border-bottom-1px"></div>
+              <div className="border-bottom-1px" />
               <div className="margin-0 absolute-bottom-right padding-right-3 padding-bottom-4 w-dropdown">
                 <div className="padding-0 flex-align-center w-dropdown-toggle">
                   <p className="margin-0 text-color-4">{currentCollateral}</p>
@@ -163,7 +161,13 @@ export const Mint: React.FC = React.memo(() => {
               </div>
               <div className="flex-align-baseline flex-space-between absolute-top padding-x-3 padding-top-3">
                 <label className="opacity-60 weight-medium">Synth</label>
-                <button className="button-secondary button-tiny flex-align-center" onClick={(e) => toggleAdjustToGcr()}>
+                <button
+                  className="button-secondary button-tiny flex-align-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleAdjustToGcr();
+                  }}
+                >
                   <span className="margin-right-1">Adjust To GCR</span>
                   <input type="checkbox" checked={adjustToGcr} onChange={() => toggleAdjustToGcr()} />
                 </button>

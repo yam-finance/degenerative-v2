@@ -1,5 +1,4 @@
 import { BigNumber } from 'ethers';
-import { Unsigned } from '@/types';
 
 export interface IEmpState {
   expirationTimestamp: BigNumber | undefined;

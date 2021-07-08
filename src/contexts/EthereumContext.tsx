@@ -1,20 +1,20 @@
-import React, { createContext, useState, useEffect, useRef } from 'react';
-import { providers, Signer, utils } from 'ethers';
+import React, { createContext, useEffect, useState } from 'react';
+import { providers, Signer } from 'ethers';
 
 import { MetamaskProvider } from '@/types';
 
-const initialEthereumState = {
-  ethereum: undefined as MetamaskProvider | undefined,
-  setEthereum: (ethereum: MetamaskProvider | undefined) => {},
-  disconnectWallet: () => {},
-  provider: undefined as providers.Web3Provider | undefined,
-  signer: undefined as Signer | undefined,
-  chainId: 0 as number,
-  account: undefined as string | undefined,
+type EthereumState = {
+  ethereum: MetamaskProvider | undefined;
+  setEthereum: (ethereum: MetamaskProvider | undefined) => void;
+  disconnectWallet: () => void;
+  provider: providers.Web3Provider | undefined;
+  signer: Signer | undefined;
+  chainId: number;
+  account: string | undefined;
 };
 
 // TODO Add in web3-react + web3modal
-export const EthereumContext = createContext(initialEthereumState);
+export const EthereumContext = createContext<EthereumState | undefined>(undefined);
 
 export const EthereumProvider: React.FC = ({ children }) => {
   const [ethereum, setEthereum] = useState<MetamaskProvider | undefined>(window.ethereum);

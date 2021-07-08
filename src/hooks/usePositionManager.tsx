@@ -1,4 +1,4 @@
-import React, { useContext, useReducer } from 'react';
+import { useReducer } from 'react';
 import { createContainer } from 'unstated-next';
 
 import { roundDecimals } from '@/utils';
@@ -30,20 +30,21 @@ const initialMinterState = {
 
   showWithdrawalModal: false,
   modalWithdrawalAmount: 0,
+  synths: 0,
 };
 
 type State = typeof initialMinterState;
 type Action =
-  | 'INIT_SPONSOR_POSITION'
-  | 'UPDATE_SPONSOR_POSITION'
-  | 'UPDATE_RESULTING_POSITION'
-  | 'CHANGE_ACTION'
-  | 'TOGGLE_WITHDRAWAL_MODAL'
-  | 'UPDATE_MAX_COLLATERAL'
-  | 'RESET_RESULTING_POSITION';
+  | { type: 'INIT_SPONSOR_POSITION'; payload: Partial<State> }
+  | { type: 'UPDATE_SPONSOR_POSITION'; payload: Partial<State> }
+  | { type: 'UPDATE_RESULTING_POSITION'; payload: Partial<State> }
+  | { type: 'CHANGE_ACTION'; payload: Partial<State> }
+  | { type: 'TOGGLE_WITHDRAWAL_MODAL'; payload: Partial<State> }
+  | { type: 'UPDATE_MAX_COLLATERAL'; payload: Partial<State> }
+  | { type: 'RESET_RESULTING_POSITION'; payload: Partial<State> };
 
 // TODO Reducer has no type checking currently. Need to change.
-const Reducer = (state: State, action: { type: Action; payload: any }) => {
+const reducer = (state: State, action: Action) => {
   //console.log(action.type);
   switch (action.type) {
     case 'INIT_SPONSOR_POSITION': {
@@ -74,7 +75,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
         ...state,
         sponsorCollateral: resultingCollateral,
         sponsorTokens: resultingTokens,
-        utilization: calculateUtilization(resultingCollateral, resultingTokens),
+        utilization: calculateUtilization(resultingCollateral ?? 0, resultingTokens ?? 0),
       };
     }
     case 'UPDATE_RESULTING_POSITION': {
@@ -84,7 +85,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       const newTokens = resultingTokens;
 
       const util = (() => {
-        const util = calculateUtilization(newCollateral, newTokens);
+        const util = calculateUtilization(newCollateral ?? 0, newTokens ?? 0);
         return util > 0 && util !== Infinity ? roundDecimals(util, 4) : 0;
       })();
 
@@ -110,7 +111,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       };
     }
     case 'TOGGLE_WITHDRAWAL_MODAL': {
-      const { withdrawalAmount } = action.payload;
+      const { withdrawalAmount } = (action.payload as unknown) as Record<string, number>;
 
       return {
         ...state,
@@ -119,7 +120,7 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
       };
     }
     case 'UPDATE_MAX_COLLATERAL': {
-      const { collateral } = action.payload;
+      const { collateral } = (action.payload as unknown) as Record<string, number>;
 
       return {
         ...state,
@@ -134,10 +135,11 @@ const Reducer = (state: State, action: { type: Action; payload: any }) => {
 const calculateUtilization = (collateral: number, tokens: number) => tokens / collateral;
 
 const usePositionManager = () => {
-  const [state, dispatch] = useReducer(Reducer, initialMinterState);
+  const [state, dispatch] = useReducer<typeof reducer>(reducer, initialMinterState as never);
   const actions = useSynthActions();
+  const exportedState = (state as unknown) as State;
 
-  return { actions, state, dispatch };
+  return { actions, state: exportedState, dispatch };
 };
 
 export const PositionManagerContainer = createContainer(usePositionManager);

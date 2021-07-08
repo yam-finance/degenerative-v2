@@ -1,23 +1,28 @@
 import { request } from 'graphql-request';
 import axios from 'axios';
-import { sub, getUnixTime, fromUnixTime, formatISO, parseISO } from 'date-fns';
-import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
+import { formatISO, fromUnixTime, getUnixTime, parseISO, sub } from 'date-fns';
 import {
-  UNISWAP_ENDPOINT,
-  SUSHISWAP_ENDPOINT,
-  UNISWAP_MARKET_DATA_QUERY,
-  UNISWAP_DAILY_PRICE_QUERY,
-  SUSHI_DAILY_PAIR_DATA,
-  getReferencePriceHistory,
   getDateString,
-  getCollateralData,
+  getReferencePriceHistory,
   roundDecimals,
+  SUSHI_DAILY_PAIR_DATA,
+  SUSHISWAP_ENDPOINT,
   UNISWAP_DAILY_PAIR_DATA,
+  UNISWAP_ENDPOINT,
+  UNISWAP_MARKET_DATA_QUERY,
 } from '@/utils';
-import { ISynth, IToken, ILiquidityPool } from '@/types';
+import { ILiquidityPool, ISynth, IToken } from '@/types';
 import { isEmpty } from './Helpers';
 
 sessionStorage.clear();
+
+type PairDayData = {
+  date: number,
+  reserve0: string,
+  reserve1: string
+  token0: Record<"id", string>
+  token1: Record<"id", string>
+}
 
 // Get USD price of token and cache to sessionstorage
 /*
@@ -38,18 +43,18 @@ export const getUsdPrice = async (tokenAddress: string) => {
 
 export const getReferenceSpotPrice = async (synth: ISynth) => {
   switch (synth.group) {
-    case 'uGAS': {
-      const res = await axios.get('https://data.yam.finance/median');
+    case "uGAS": {
+      const res = await axios.get("https://data.yam.finance/median");
       console.log(res.data);
       return;
     }
-    case 'uSTONKS': {
-      const res = await axios.get('https://data.yam.finance/ustonks/index/jun21');
+    case "uSTONKS": {
+      const res = await axios.get("https://data.yam.finance/ustonks/index/jun21");
       console.log(res.data);
       return;
     }
-    case 'uPUNKS': {
-      const res = await axios.get('https://api.yam.finance/degenerative/upunks/price');
+    case "uPUNKS": {
+      const res = await axios.get("https://api.yam.finance/degenerative/upunks/price");
       console.log(res.data);
       return;
     }
@@ -65,7 +70,7 @@ export const getPairPriceEth = async (token: IToken) => {
     const res = await axios.get(
       `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${token1Address}&vs_currencies=eth`
     );
-    const price = Number(res.data[token1Address]['eth']);
+    const price = Number(res.data[token1Address]["eth"]);
     return Promise.resolve(price);
   } catch (err) {
     return Promise.reject(err);
@@ -88,31 +93,31 @@ export const getUsdPrice = async (cgId: string) => {
   }
 };
 
-// Get USD price history of token from Coingecko
-export const getUsdPriceHistory = async (tokenName: string, chainId: number) => {
-  const collateral = getCollateralData(chainId);
-  const cgId = collateral[tokenName].coingeckoId;
-
-  try {
-    const res = await axios.get(
-      `https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`
-    );
-    const prices = res.data.prices;
-    const priceHistory = prices.map(([timestamp, price]: number[]) => {
-      const newTimestamp = timestamp.toString().substring(0, timestamp.toString().length - 3);
-      const date = getDateString(fromUnixTime(Number(newTimestamp)));
-      return [date, price];
-    });
-
-    return Promise.resolve(priceHistory);
-  } catch (err) {
-    return Promise.reject(err);
-  }
-};
+// // Get USD price history of token from Coingecko
+// export const getUsdPriceHistory = async (tokenName: string, chainId: number) => {
+//   const collateral = getCollateralData(chainId);
+//   const cgId = collateral[tokenName].coingeckoId;
+//
+//   try {
+//     const res = await axios.get(
+//       `https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`
+//     );
+//     const prices = res.data.prices;
+//     const priceHistory = prices.map(([timestamp, price]: number[]) => {
+//       const newTimestamp = timestamp.toString().substring(0, timestamp.toString().length - 3);
+//       const date = getDateString(fromUnixTime(Number(newTimestamp)));
+//       return [date, price];
+//     });
+//
+//     return Promise.resolve(priceHistory);
+//   } catch (err) {
+//     return Promise.reject(err);
+//   }
+// };
 
 // Get Uniswap pool data
 export const getPoolData = async (pool: ILiquidityPool) => {
-  const endpoint = pool.location === 'uni' ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
+  const endpoint = pool.location === "uni" ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
   try {
     const data = await request(endpoint, UNISWAP_MARKET_DATA_QUERY, { poolAddress: pool.address });
     return data.pair;
@@ -132,7 +137,7 @@ export const getApr = async (name: string, cr: number): Promise<number> => {
 
   try {
     const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`, {
-      timeout: 2000,
+      timeout: 2000
     });
     const aprMultiplier = res.data.aprMultiplier;
     sessionStorage.setItem(name, aprMultiplier);
@@ -144,11 +149,11 @@ export const getApr = async (name: string, cr: number): Promise<number> => {
   }
 };
 
-interface PriceHistoryResponse {
-  date: number;
-  id: string;
-  priceUSD: string;
-}
+// interface PriceHistoryResponse {
+//   date: number;
+//   id: string;
+//   priceUSD: string;
+// }
 
 /** Get labels, reference price data and all market price data for this synth type.
  *  Only fetches data from mainnet. This is intentional.
@@ -174,48 +179,50 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   })();
 
   // Get reference index prices for each date
-  const referencePrices = await (async () => {
-    const refPrices = await getReferencePriceHistory(synth.group, 1); // TODO
+  const referencePrices: number = await (async () => {
+    const refPrices = await getReferencePriceHistory(synth.group); // TODO
 
     // If API gives too much data, filter to find relevant data.
     if (refPrices.length > 30) {
-      const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
-      return refPrices.slice(minIndex).map((ref: any) => ref.price);
+      const minIndex = refPrices.findIndex((ref: { timestamp: string }) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
+      return refPrices.slice(minIndex).map((ref: { price: number }) => ref.price);
     } else {
-      return refPrices.map((ref: any) => ref.price);
+      return refPrices.map((ref: { price: number }) => ref.price);
     }
   })();
 
   // Get pool data from subgraph
-  const endpoint = synth.pool.location === 'uni' ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
-  const query = synth.pool.location === 'uni' ? UNISWAP_DAILY_PAIR_DATA : SUSHI_DAILY_PAIR_DATA;
-  const poolData: { pairDayDatas: any[] } = await request(endpoint, query, {
+  const endpoint = synth.pool.location === "uni" ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
+  const query = synth.pool.location === "uni" ? UNISWAP_DAILY_PAIR_DATA : SUSHI_DAILY_PAIR_DATA;
+  const poolData: { pairDayDatas: Array<PairDayData> } = await request(endpoint, query, {
     pairAddress: poolAddress,
-    startingTime: startingTime,
+    startingTime: startingTime
   });
+
+  console.log(poolData.pairDayDatas[0]);
 
   let synthPrices: number[];
 
   if (!isEmpty(poolData.pairDayDatas)) {
     // Find which token is the synth and which is paired
-    let synthId: string;
-    let pairedId: string;
-    if (synth.pool.location === 'uni') {
+    let synthId: "reserve0" | "reserve1";
+    let pairedId: "reserve0" | "reserve1";
+    if (synth.pool.location === "uni") {
       if (poolData.pairDayDatas[0].token0.id === synthAddress) {
-        synthId = 'reserve1';
-        pairedId = 'reserve0';
+        synthId = "reserve1";
+        pairedId = "reserve0";
       } else {
-        synthId = 'reserve0';
-        pairedId = 'reserve1';
+        synthId = "reserve0";
+        pairedId = "reserve1";
       }
     } else {
       // NOTE: Sushi is opposite of UNI
       if (poolData.pairDayDatas[0].token0.id === synthAddress) {
-        synthId = 'reserve0';
-        pairedId = 'reserve1';
+        synthId = "reserve0";
+        pairedId = "reserve1";
       } else {
-        synthId = 'reserve1';
-        pairedId = 'reserve0';
+        synthId = "reserve1";
+        pairedId = "reserve0";
       }
     }
 
@@ -223,8 +230,8 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
     // Price is reserve of synth / reserve of paired
     const dailyPairData = new Map(
       poolData.pairDayDatas.map((dailyData) => [
-        formatISO(fromUnixTime(dailyData.date), { representation: 'date' }),
-        dailyData[synthId] / dailyData[pairedId],
+        formatISO(fromUnixTime(dailyData.date), { representation: "date" }),
+        parseFloat(dailyData[synthId]) / parseFloat(dailyData[pairedId])
       ])
     );
 
@@ -247,7 +254,7 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   return {
     labels: dateArray,
     referencePrices: referencePrices,
-    synthPrices: synthPrices,
+    synthPrices: synthPrices
   };
 };
 
@@ -256,110 +263,110 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
  */
 // TODO this will grab data for individual synth
 // TODO data will NOT be paired to USD
-export const getDailyPriceHistory2 = async (group: string, synthMetadata: Record<string, ISynth>, chainId: number) => {
-  // Defaults to 30 days
-  const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
-
-  const relevantSynths = new Map(
-    Object.entries(synthMetadata)
-      .filter(([name, synth]) => synth.group === group)
-      .map(([name, synth]) => [synth.token.address, name])
-  );
-
-  const addressList = Array.from(relevantSynths.keys());
-
-  // TODO Consider grabbing paired data, not USD
-  const dailyPriceResponse: {
-    tokenDayDatas: PriceHistoryResponse[];
-  } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
-    tokenAddresses: addressList,
-    startingTime: startingTime,
-  });
-
-  // Use reduce to find min and max range dates
-  const [min, max] = dailyPriceResponse.tokenDayDatas
-    .map((data) => fromUnixTime(data.date))
-    .reduce((acc: Date[], val: Date) => {
-      acc[0] = acc[0] === undefined || val < acc[0] ? val : acc[0];
-      acc[1] = acc[1] === undefined || val > acc[1] ? val : acc[1];
-      return acc;
-    }, []);
-
-  // Generate array of dates from min to max, convert to ISO string
-  const dateArray = (() => {
-    if (min && max) {
-      const dates: string[] = [];
-      const currentDate = new Date(min);
-      while (currentDate <= max) {
-        dates.push(getDateString(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-      return dates;
-    } else {
-      return [];
-    }
-  })();
-
-  // Get reference index prices (USD) for each date
-  const referenceData = await (async () => {
-    const refPrices = await getReferencePriceHistory(group, chainId);
-
-    if (refPrices.length > 30) {
-      const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
-      const maxIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(max));
-      return refPrices.slice(minIndex, maxIndex).map((ref: any) => ref.price);
-    } else {
-      const returnObject: any[] = [];
-      const refMap = new Map(
-        refPrices.map(({ timestamp, price }: { timestamp: string; price: number }) => [timestamp, price])
-      );
-      console.log(refMap);
-      console.log(dateArray);
-
-      console.log(refMap.get(dateArray[10]));
-      dateArray.forEach((date) => {
-        //console.log(date);
-        refMap.get(date) ? returnObject.push(refMap.get(date)) : returnObject.push(undefined);
-      });
-
-      return returnObject;
-    }
-  })();
-
-  console.log(referenceData);
-
-  // Map price data to date for each synth for easy access
-  const priceData: Record<string, Record<string, number>> = {};
-
-  dailyPriceResponse.tokenDayDatas.forEach((dayData) => {
-    // id is concatenated with a timestamp at end. Not necessary for us since we have the date
-    const synthName = relevantSynths.get(dayData.id.split('-')[0]) ?? '';
-
-    if (!priceData[synthName]) priceData[synthName] = {};
-    const date = formatISO(fromUnixTime(dayData.date), { representation: 'date' });
-    priceData[synthName][date] = roundDecimals(Number(dayData.priceUSD), 2);
-  });
-
-  // Create object of arrays for reference prices and all synth prices
-  const res: Record<string, number[]> = { Reference: referenceData };
-  dateArray.forEach((date) => {
-    Object.keys(priceData).forEach((synthName) => {
-      if (!res[synthName]) res[synthName] = [];
-
-      if (priceData[synthName][date]) {
-        res[synthName].push(priceData[synthName][date]);
-      } else {
-        // If no price for date, copy last pushed price
-        const prevIndex = res[synthName].length - 1;
-        res[synthName].push(res[synthName][prevIndex]);
-      }
-    });
-  });
-
-  console.log(res);
-
-  return {
-    labels: dateArray,
-    synthPrices: res,
-  };
-};
+// export const getDailyPriceHistory2 = async (group: string, synthMetadata: Record<string, ISynth>) => {
+//   // Defaults to 30 days
+//   const startingTime = getUnixTime(sub(new Date(), { days: 30 }));
+//
+//   const relevantSynths = new Map(
+//     Object.entries(synthMetadata)
+//       .filter(([, synth]) => synth.group === group)
+//       .map(([name, synth]) => [synth.token.address, name])
+//   );
+//
+//   const addressList = Array.from(relevantSynths.keys());
+//
+//   // TODO Consider grabbing paired data, not USD
+//   const dailyPriceResponse: {
+//     tokenDayDatas: PriceHistoryResponse[];
+//   } = await request(UNISWAP_ENDPOINT, UNISWAP_DAILY_PRICE_QUERY, {
+//     tokenAddresses: addressList,
+//     startingTime: startingTime,
+//   });
+//
+//   // Use reduce to find min and max range dates
+//   const [min, max] = dailyPriceResponse.tokenDayDatas
+//     .map((data) => fromUnixTime(data.date))
+//     .reduce((acc: Date[], val: Date) => {
+//       acc[0] = acc[0] === undefined || val < acc[0] ? val : acc[0];
+//       acc[1] = acc[1] === undefined || val > acc[1] ? val : acc[1];
+//       return acc;
+//     }, []);
+//
+//   // Generate array of dates from min to max, convert to ISO string
+//   const dateArray = (() => {
+//     if (min && max) {
+//       const dates: string[] = [];
+//       const currentDate = new Date(min);
+//       while (currentDate <= max) {
+//         dates.push(getDateString(currentDate));
+//         currentDate.setDate(currentDate.getDate() + 1);
+//       }
+//       return dates;
+//     } else {
+//       return [];
+//     }
+//   })();
+//
+//   // Get reference index prices (USD) for each date
+//   const referenceData = await (async () => {
+//     const refPrices = await getReferencePriceHistory(group);
+//
+//     if (refPrices.length > 30) {
+//       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
+//       const maxIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(max));
+//       return refPrices.slice(minIndex, maxIndex).map((ref: any) => ref.price);
+//     } else {
+//       const returnObject: any[] = [];
+//       const refMap = new Map(
+//         refPrices.map(({ timestamp, price }: { timestamp: string; price: number }) => [timestamp, price])
+//       );
+//       console.log(refMap);
+//       console.log(dateArray);
+//
+//       console.log(refMap.get(dateArray[10]));
+//       dateArray.forEach((date) => {
+//         //console.log(date);
+//         refMap.get(date) ? returnObject.push(refMap.get(date)) : returnObject.push(undefined);
+//       });
+//
+//       return returnObject;
+//     }
+//   })();
+//
+//   console.log(referenceData);
+//
+//   // Map price data to date for each synth for easy access
+//   const priceData: Record<string, Record<string, number>> = {};
+//
+//   dailyPriceResponse.tokenDayDatas.forEach((dayData) => {
+//     // id is concatenated with a timestamp at end. Not necessary for us since we have the date
+//     const synthName = relevantSynths.get(dayData.id.split('-')[0]) ?? '';
+//
+//     if (!priceData[synthName]) priceData[synthName] = {};
+//     const date = formatISO(fromUnixTime(dayData.date), { representation: 'date' });
+//     priceData[synthName][date] = roundDecimals(Number(dayData.priceUSD), 2);
+//   });
+//
+//   // Create object of arrays for reference prices and all synth prices
+//   const res: Record<string, number[]> = { Reference: referenceData };
+//   dateArray.forEach((date) => {
+//     Object.keys(priceData).forEach((synthName) => {
+//       if (!res[synthName]) res[synthName] = [];
+//
+//       if (priceData[synthName][date]) {
+//         res[synthName].push(priceData[synthName][date]);
+//       } else {
+//         // If no price for date, copy last pushed price
+//         const prevIndex = res[synthName].length - 1;
+//         res[synthName].push(res[synthName][prevIndex]);
+//       }
+//     });
+//   });
+//
+//   console.log(res);
+//
+//   return {
+//     labels: dateArray,
+//     synthPrices: res,
+//   };
+// };

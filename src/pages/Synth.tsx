@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fromUnixTime, differenceInMinutes } from 'date-fns';
+import { differenceInMinutes, fromUnixTime } from 'date-fns';
 import { useFormState } from 'react-use-form-state';
 
 import { PositionManagerContainer, useSynthActions } from '@/hooks';
-import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, Icon, MainDisplay, MainHeading, PositionManager, SideDisplay } from '@/components';
+import { EthereumContext, MarketContext, UserContext } from '@/contexts';
+import { Icon, MainDisplay, MainHeading, Navbar, Page, PositionManager, SideDisplay } from '@/components';
 import { ISynth, ISynthMarketData } from '@/types';
 import { utils } from 'ethers';
 import { isEmpty, roundDecimals } from '@/utils';
@@ -18,9 +18,10 @@ interface SynthParams {
 
 export const Synth: React.FC = () => {
   const { group, cycleYear } = useParams<SynthParams>();
-  const { currentSynth, currentCollateral, setSynth, mintedPositions, triggerUpdate } = useContext(UserContext);
-  const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
-  const { signer } = useContext(EthereumContext);
+  const { currentSynth, currentCollateral = '', setSynth = () => {}, mintedPositions = [], triggerUpdate = () => {} } =
+    useContext(UserContext) ?? {};
+  const { synthMetadata = {}, synthMarketData = {}, collateralData = {} } = useContext(MarketContext) ?? {};
+  const { signer } = useContext(EthereumContext) ?? {};
 
   const [synth, setSynthInfo] = useState({} as ISynth);
   const [marketData, setMarketData] = useState({} as ISynthMarketData);
@@ -99,7 +100,7 @@ export const Synth: React.FC = () => {
           <Icon name="AlertOctagon" className="icon medium blue" />
         </div>
         <div className="flex-row">
-          <div className="width-2 radius-full background-color-white margin-right-2 blue"></div>
+          <div className="width-2 radius-full background-color-white margin-right-2 blue" />
           {withdrawalMinutesLeft > 0 ? (
             <div>
               <div className="text-small">
@@ -254,7 +255,7 @@ export const Synth: React.FC = () => {
       <SideDisplay>
         {synth.collateral === 'WETH' && <WrapEthDialog />}
         {withdrawalAmount > 0 && <WithdrawalRequestDialog />}
-        {!isEmpty(synthMarketData) && (
+        {!isEmpty(synthMarketData) && !isEmpty(marketData) && (
           <>
             <SettleDialog />
             <div>
@@ -277,7 +278,7 @@ export const Synth: React.FC = () => {
                   <div>Global Collateral Ratio</div>
                 </div>
                 <div className="weight-medium text-color-4">
-                  {roundDecimals(1 / (marketData.globalUtilization * marketData.price), 2)}
+                  { roundDecimals(1 / (marketData.globalUtilization * marketData.price), 2)}
                 </div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">

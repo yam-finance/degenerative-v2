@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { MarketContext, UserContext } from '@/contexts';
-import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow, Loader } from '@/components';
+import { Loader, MainDisplay, MainHeading, Navbar, Page, SideDisplay, Table, TableRow } from '@/components';
 import { IMintedPosition, ITokensInWallet } from '@/types';
-import { getUsdPrice, roundDecimals, isEmpty } from '@/utils';
+import { getUsdPrice, roundDecimals } from '@/utils';
 
 export const Portfolio = () => {
-  const { mintedPositions, synthsInWallet } = useContext(UserContext);
-  const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
+  const { mintedPositions, synthsInWallet } = useContext(UserContext) ?? {};
+  const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext) ?? {};
 
   const MintedRow: React.FC<IMintedPosition> = (props) => {
+    if (!synthMetadata || !synthMarketData || !collateralData) return <div />; // maybe error?
     const { name, tokenAmount, collateralAmount, utilization } = props;
     const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
     const { price, priceUsd, globalUtilization, liquidationPoint } = synthMarketData[name];
@@ -19,7 +20,7 @@ export const Portfolio = () => {
     const pricedUtilization = price * utilization;
     const pricedGlobalUtil = price * globalUtilization;
 
-    const [collateralPrice, setCollateralPrice] = useState(0);
+    const [, setCollateralPrice] = useState(0);
     (async () => setCollateralPrice(await getUsdPrice(collateralData[collateral].coingeckoId)))();
 
     return (
@@ -60,6 +61,8 @@ export const Portfolio = () => {
   };
 
   const SynthsInWalletRow: React.FC<ITokensInWallet> = (props) => {
+    if (!synthMetadata || !synthMarketData || !collateralData) return <div />; // maybe error?
+
     const { name, tokenAmount } = props;
     const { imgLocation, collateral, group, cycle, year } = synthMetadata[name];
     const { price, priceUsd, daysTillExpiry } = synthMarketData[name];
@@ -106,7 +109,7 @@ export const Portfolio = () => {
       <Navbar />
       <MainDisplay>
         <MainHeading>Portfolio</MainHeading>
-        {isEmpty(synthMarketData) ? (
+        {!synthMarketData ? (
           <Loader className="flex-align-center flex-justify-center padding-top-48" />
         ) : (
           <>
@@ -120,7 +123,7 @@ export const Portfolio = () => {
               )}
             </Table>
             <Table title="Synths Minted" headers={['Token', 'Balance', 'Collateral', 'Collateral Ratio', 'Actions']}>
-              {mintedPositions.length > 0 ? (
+              {mintedPositions ? (
                 mintedPositions.map((minted, index) => {
                   return <MintedRow {...minted} key={index} />;
                 })
@@ -132,7 +135,7 @@ export const Portfolio = () => {
         )}
         {/* TODO Add pool positions */}
       </MainDisplay>
-      <SideDisplay></SideDisplay>
+      <SideDisplay />
     </Page>
   );
 };

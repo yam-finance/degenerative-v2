@@ -1,19 +1,19 @@
 import React, { useContext } from 'react';
 import clsx from 'clsx';
 import { ActionDisplay } from '@/components';
-import { PositionManagerContainer, MinterAction } from '@/hooks';
+import { MinterAction, PositionManagerContainer } from '@/hooks';
 import { UserContext } from '@/contexts';
 
 export const Manage = () => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, currentCollateral, synthsInWallet } = useContext(UserContext);
+  const { currentSynth, currentCollateral, synthsInWallet = [] } = useContext(UserContext) ?? {};
 
-  const ownsSynth = !!synthsInWallet.find((synth) => synth.name === currentSynth);
+  const ownsSynth = !!synthsInWallet.find((synth: { name: string }) => synth.name === currentSynth);
 
   const changeAction = (action: MinterAction) => {
     dispatch({
       type: 'CHANGE_ACTION',
-      payload: action,
+      payload: { action },
     });
   };
 

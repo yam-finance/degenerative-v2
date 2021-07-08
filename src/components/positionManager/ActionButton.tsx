@@ -1,29 +1,29 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import clsx from 'clsx';
 import { UserContext } from '@/contexts';
 
 interface ActionButtonProps {
   disableCondition?: boolean;
-  action?: (...args: any[]) => Promise<void>; // This is for SC calls
-  onClick?: (...args: any[]) => any; // This is for everything else
+  action?: () => Promise<void>; // This is for SC calls
+  onClick?: () => never; // This is for everything else
 }
 
 export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, action, onClick, children }) => {
-  const { triggerUpdate } = useContext(UserContext);
+  const { triggerUpdate } = useContext(UserContext) ?? {};
   const [waiting, setWaiting] = useState(false);
 
-  const callAction = async (action: (...args: any[]) => Promise<void>) => {
+  const callAction = async (action: () => Promise<void>) => {
     setWaiting(true);
     await action();
     setWaiting(false);
-    triggerUpdate();
+    triggerUpdate && triggerUpdate();
   };
 
-  const callOnClick = async (onClick: (...args: any) => Promise<void>) => {
+  const callOnClick = async (onClick: () => Promise<void>) => {
     setWaiting(true);
     await onClick();
     setWaiting(false);
-    triggerUpdate();
+    triggerUpdate && triggerUpdate();
   };
 
   const baseStyle = clsx('button', 'width-full', 'button-large', disableCondition && 'disabled');

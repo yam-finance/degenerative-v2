@@ -10,5 +10,5 @@ export type IconProps = {
 
 export const Icon: React.FC<IconProps> = ({ name, ...rest }) => {
   const IconComponent = icons[name];
-  return <IconComponent {...(rest as any)} />;
+  return <IconComponent {...(rest as never)} />;
 };

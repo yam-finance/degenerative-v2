@@ -1,18 +1,17 @@
-/* eslint-disable react/display-name */
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { BigNumber, utils } from 'ethers';
-import { fromUnixTime, differenceInMinutes } from 'date-fns';
+import { differenceInMinutes, fromUnixTime } from 'date-fns';
 
-import { Dropdown, Icon, Loader, ActionSelector } from '@/components';
-import { UserContext, EthereumContext, MarketContext } from '@/contexts';
-import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from '@/hooks';
-import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
-import { IToken, ISynthMarketData } from '@/types';
+import { ActionSelector, Dropdown, Icon, Loader } from '@/components';
+import { EthereumContext, MarketContext, UserContext } from '@/contexts';
+import { ISynthActions, PositionManagerContainer, useToken } from '@/hooks';
+import { isEmpty } from '@/utils';
+import { IToken } from '@/types';
 
 export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(({ actions }) => {
-  const { account, provider } = useContext(EthereumContext);
-  const { currentSynth, currentCollateral, mintedPositions, triggerUpdate } = useContext(UserContext);
-  const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
+  const { account, provider } = useContext(EthereumContext) ?? {};
+  const { currentSynth, currentCollateral, mintedPositions = [], triggerUpdate } = useContext(UserContext) ?? {};
+  const { synthMetadata = {}, synthMarketData = {}, collateralData = {} } = useContext(MarketContext) ?? {};
 
   const { state, dispatch } = PositionManagerContainer.useContainer();
   const erc20 = useToken();
@@ -23,7 +22,16 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
 
   useEffect(() => {
     const initMinterState = async () => {
-      const { collateralBalance, synthBalance } = await setTokenBalances(
+      if (
+        !currentSynth ||
+        !currentCollateral ||
+        isEmpty(collateralData) ||
+        isEmpty(synthMarketData[currentSynth]) ||
+        isEmpty(synthMetadata[currentSynth])
+      ) {
+        return;
+      }
+      const { collateralBalance } = await setTokenBalances(
         collateralData[currentCollateral],
         synthMetadata[currentSynth].token
       );
@@ -68,13 +76,11 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
 
       if (withdrawalRequestAmount > 0) {
         const resultingCollateral = sponsorCollateral - withdrawalRequestAmount;
-        const resultingTokens = sponsorTokens;
-
         dispatch({
           type: 'UPDATE_RESULTING_POSITION',
           payload: {
             resultingCollateral: resultingCollateral,
-            resultingTokens: resultingTokens,
+            resultingTokens: sponsorTokens,
           },
         });
       } else {
@@ -102,8 +108,8 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   // Set an event listener to update when collateral balance changes
   useEffect(() => {
     provider?.on('block', () => {
-      if (!isEmpty(collateralData[currentCollateral]) && !isEmpty(synthMetadata[currentSynth])) {
-        setTokenBalances(collateralData[currentCollateral], synthMetadata[currentSynth].token);
+      if (!isEmpty(collateralData[currentCollateral ?? ""]) && !isEmpty(synthMetadata[currentSynth ??""])) {
+        setTokenBalances(collateralData[currentCollateral ?? ""], synthMetadata[currentSynth ?? ""].token).then(() => {});
       }
     });
     return () => {
@@ -121,7 +127,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
     dispatch({
       type: 'UPDATE_MAX_COLLATERAL',
       payload: {
-        collateral: collateralBalance,
+        maxCollateral: collateralBalance,
         synths: synthBalance,
       },
     });
@@ -177,13 +183,13 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   };
 
   const WithdrawalConfirmationModal: React.FC = () => {
-    const withdrawalPeriod = synthMarketData[currentSynth].withdrawalPeriod;
+    const withdrawalPeriod = synthMarketData[currentSynth ?? ""]?.withdrawalPeriod;
 
-    const closeModal = () => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { withdrawalAmount: 0 } });
+    const closeModal = () => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { modalWithdrawalAmount: 0 } });
 
     return (
       <div className="modal">
-        <div className="modal-bg w-inline-block" onClick={closeModal}></div>
+        <div className="modal-bg w-inline-block" onClick={closeModal} />
         <div className="padding-6 background-color-3 radius-large box-shadow-large width-full max-width-2xl">
           <div className="modal-section">
             <div>
@@ -221,7 +227,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
               <button
                 onClick={async () => {
                   await actions.onRequestWithdraw(state.modalWithdrawalAmount);
-                  triggerUpdate();
+                  triggerUpdate && triggerUpdate();
                   closeModal();
                 }}
                 className="button w-button"
@@ -244,7 +250,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
         <ActionSelector />
 
         <div className="background-color-light radius-left-xl margin-y-8 width-full max-width-xs portrait-max-width-full box-shadow-large sheen flex-column landscape-margin-top-0 landscape-radius-top-0">
-          <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4"></div>
+          <div className="flex-justify-end padding-right-2 padding-top-2 landscape-padding-top-4" />
           <div className="padding-8 padding-top-0 tablet-padding-top-0 landscape-padding-top-0 portrait-padding-top-0 flex-column expand">
             <div className="margin-top-8">
               {!!state.utilization && (
@@ -258,7 +264,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                       emphasized
                     />
                   </div>
-                  <div className="divider margin-y-2"></div>
+                  <div className="divider margin-y-2" />
                   <div className="text-small">
                     <div className="flex-align-baseline margin-bottom-2">
                       <div className="expand flex-align-center">
@@ -287,7 +293,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
                     emphasized
                   />
                 </div>
-                <div className="divider margin-y-2"></div>
+                <div className="divider margin-y-2" />
                 <div className="text-small">
                   <div className="flex-align-baseline margin-bottom-2">
                     <div className="expand flex-align-center">

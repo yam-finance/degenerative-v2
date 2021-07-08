@@ -1,29 +1,30 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { IMintedPosition, ITokensInWallet, IPoolPosition } from '@/types';
+import { IMintedPosition, ITokensInWallet } from '@/types';
 
-import { useEmp, useToken, useSynthActions } from '@/hooks';
+import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, utils } from "ethers";
 import { MarketContext } from './MarketContext';
-import { isEmpty, roundDecimals } from '@/utils';
+import { roundDecimals } from '@/utils';
 
-const initialState = {
-  mintedPositions: [] as IMintedPosition[],
-  synthsInWallet: [] as ITokensInWallet[],
-  //poolPositions: [] as IPoolPosition[],
-  setSynth: (synthName: string) => {},
-  getSponsorPosition: (synthName: string) => {},
-  currentSynth: '',
-  currentCollateral: '',
-  triggerUpdate: () => {},
+type UserContext = {
+  mintedPositions: Array<IMintedPosition>;
+  synthsInWallet: Array<ITokensInWallet>;
+  setSynth: (synthName: string) => void;
+  getSponsorPosition: (synthName: string) => void;
+  currentSynth: string;
+  currentCollateral: string;
+  triggerUpdate: () => void;
 };
 
-export const UserContext = createContext(initialState);
+export const UserContext = createContext<UserContext | undefined>(undefined);
 
 export const UserProvider: React.FC = ({ children }) => {
-  const { account } = useContext(EthereumContext);
-  const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
+  const ethereumContext = useContext(EthereumContext);
+  const account = ethereumContext?.account;
+  const marketContext = useContext(MarketContext);
+  const { synthMetadata, synthMarketData, collateralData } = marketContext ?? {};
 
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);
   const [synthsInWallet, setSynthsInWallet] = useState<ITokensInWallet[]>([]);
@@ -37,7 +38,7 @@ export const UserProvider: React.FC = ({ children }) => {
   const erc20 = useToken();
 
   useEffect(() => {
-    if (currentSynth && !isEmpty(synthMetadata)) {
+    if (currentSynth && synthMetadata) {
       setCurrentCollateral(synthMetadata[currentSynth].collateral);
     }
   }, [currentSynth, synthMetadata]);
@@ -54,7 +55,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const updateMintedPositions = () => {
     const minted: IMintedPosition[] = [];
-    Object.keys(synthMetadata).forEach(async (name) => {
+    Object.keys(synthMetadata ?? {}).forEach(async (name) => {
       try {
         const mintedPosition = await getSponsorPosition(name);
         minted.push(mintedPosition);
@@ -66,6 +67,7 @@ export const UserProvider: React.FC = ({ children }) => {
   };
 
   const getSponsorPosition = async (synthName: string) => {
+    if (!synthMetadata) return Promise.reject('Synth MetaData is undefined.');
     const synth = synthMetadata[synthName];
     const {
       tokensOutstanding,
@@ -100,12 +102,12 @@ export const UserProvider: React.FC = ({ children }) => {
   const updateSynthsInWallet = () => {
     const synthsOwned: ITokensInWallet[] = [];
 
-    Object.entries(synthMetadata).forEach(async ([name, synth]) => {
-      const balance = await erc20.getBalance(synth.token.address);
+    Object.entries(synthMetadata ?? {}).forEach(async ([name, synth]) => {
+      const balance = (await erc20.getBalance(synth.token.address)) as BigNumber;
 
       if (balance.gt(0)) {
-        const synth = synthMetadata[name];
-        const tokens = Number(utils.formatUnits(balance, synth.token.decimals));
+        const synth = synthMetadata ? synthMetadata[name] : undefined;
+        const tokens = Number(utils.formatUnits(balance, synth?.token.decimals));
 
         const inWallet: ITokensInWallet = {
           name: name,

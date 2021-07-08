@@ -11,7 +11,7 @@ interface BurnFormFields {
 
 export const Burn: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth, currentCollateral } = useContext(UserContext);
+  const { currentSynth, currentCollateral } = useContext(UserContext) ?? {};
 
   const maxBurnableTokens = state.sponsorTokens - state.minTokens;
 

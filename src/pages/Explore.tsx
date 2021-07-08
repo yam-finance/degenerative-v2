@@ -1,9 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SearchForm } from '@/components';
-import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, TableRow, Loader } from '@/components';
+import { Loader, MainDisplay, MainHeading, Navbar, Page, SearchForm, SideDisplay, Table, TableRow } from '@/components';
 import { MarketContext } from '@/contexts';
-import { SynthGroups, isEmpty, formatForDisplay } from '@/utils';
+import { formatForDisplay, isEmpty, SynthGroups } from '@/utils';
 import { useQuery } from '@/hooks';
 
 interface ISynthGroupData {
@@ -16,9 +15,12 @@ interface ISynthGroupData {
   numSynths: number;
   image: string;
 }
+type SynthGroups = keyof typeof SynthGroups
 
 export const Explore = () => {
-  const { loading, synthMetadata, synthMarketData } = useContext(MarketContext);
+  const marketContext = useContext(MarketContext);
+
+  const { synthMetadata = {}, synthMarketData = {} } = marketContext ?? {};
   const query = useQuery();
 
   const [searchTerm, setSearchTerm] = useState(query.get('search') ?? '');
@@ -27,13 +29,16 @@ export const Explore = () => {
 
   useEffect(() => {
     const AggregateSynthGroupData = () => {
+      console.log(synthMetadata);
       const aggregateData: Record<string, ISynthGroupData> = {};
 
-      Object.entries(synthMetadata)
-        .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
+      Object.entries(synthMetadata ?? {})
+        .filter(([synthName]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
           const { group } = synthInfo;
+          const groupKey = group as SynthGroups
           try {
+            if (!synthMarketData) return;
             const marketData = synthMarketData[synthName];
             const currentData = aggregateData[group] ?? {
               aprMin: Infinity,
@@ -61,7 +66,7 @@ export const Explore = () => {
               totalTvl: currentData.totalTvl + marketData.tvl,
               totalVolume24h: currentData.totalVolume24h + marketData.volume24h,
               numSynths: currentData.numSynths + 1,
-              image: `/images/${SynthGroups[group].image}.png`,
+              image: `/images/${SynthGroups[groupKey].image}.png`,
             };
           } catch (err) {
             aggregateData[group] = {
@@ -83,7 +88,7 @@ export const Explore = () => {
     if (!isEmpty(synthMetadata) && !isEmpty(synthMarketData)) AggregateSynthGroupData();
   }, [synthMarketData, searchTerm]);
 
-  const SynthGroupBlock: React.FC<{ group: string }> = ({ group }) => {
+  const SynthGroupBlock: React.FC<{ group: SynthGroups }> = ({ group }) => {
     const { description } = SynthGroups[group];
     const { aprMin, aprMax, image } = synthGroupData[group];
 
@@ -105,7 +110,7 @@ export const Explore = () => {
     );
   };
 
-  const SynthGroupRow: React.FC<{ group: string }> = ({ group }) => {
+  const SynthGroupRow: React.FC<{ group: SynthGroups }> = ({ group }) => {
     const { aprMin, aprMax, totalLiquidity, totalMarketCap, image } = synthGroupData[group];
     const { description } = SynthGroups[group];
 
@@ -120,7 +125,7 @@ export const Explore = () => {
             <div className="text-xs opacity-50">{description}</div>
           </div>
         </div>
-        <div></div>
+        <div />
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">{`${aprMin}% - ${aprMax}%`}</div>
         </div>
@@ -187,12 +192,12 @@ export const Explore = () => {
           <>
             <div className="grid-3-columns margin-x-8 margin-top-4">
               {Object.keys(synthGroupData).map((group, index) => {
-                return <SynthGroupBlock group={group} key={index} />;
+                return <SynthGroupBlock group={group as SynthGroups} key={index} />;
               })}
             </div>
             <Table headers={['Synth', 'APR', 'Liquidity', 'Market Cap']} headerClass={['width-1-2', '', '', '']}>
               {Object.keys(synthGroupData).map((group, index) => {
-                return <SynthGroupRow group={group} key={index} />;
+                return <SynthGroupRow group={group as SynthGroups} key={index} />;
               })}
             </Table>
           </>

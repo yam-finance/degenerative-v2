@@ -1,10 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import { useFormState } from 'react-use-form-state';
 
-import { Icon, ActionDisplay, ActionButton, BackButton } from '@/components';
+import { ActionButton, ActionDisplay, BackButton } from '@/components';
 import { PositionManagerContainer } from '@/hooks';
 import { UserContext } from '@/contexts';
-import { roundDecimals } from '@/utils';
 
 interface RedeemFormFields {
   tokensToRedeem: number;
@@ -12,7 +11,7 @@ interface RedeemFormFields {
 
 export const Redeem: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentSynth } = useContext(UserContext);
+  const { currentSynth } = useContext(UserContext) ?? {};
 
   const maxRedeemableTokens = state.sponsorTokens - state.minTokens;
 
@@ -97,9 +96,9 @@ export const Redeem: React.FC = React.memo(() => {
               <ClosePositionButton />
             </div>
             <div className="flex-align-center margin-y-4">
-              <div className="expand height-1 border-bottom-2px"></div>
+              <div className="expand height-1 border-bottom-2px"/>
               <div className="margin-x-4">or</div>
-              <div className="expand height-1 border-bottom-2px"></div>
+              <div className="expand height-1 border-bottom-2px"/>
             </div>
             <h4 className="text-align-center">Redeem some of your position</h4>
             <div className="flex-row">

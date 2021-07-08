@@ -11,13 +11,13 @@ export const BackButton = () => {
       onClick={() => {
         dispatch({
           type: 'CHANGE_ACTION',
-          payload: 'MANAGE',
+          payload: { action: 'MANAGE' },
         });
 
         if (state.withdrawalRequestAmount <= 0) {
           dispatch({
             type: 'RESET_RESULTING_POSITION',
-            payload: null,
+            payload: {},
           });
         }
       }}

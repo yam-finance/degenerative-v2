@@ -1,21 +1,19 @@
-import { useState, useContext, useEffect, useCallback } from 'react';
-import { createContainer } from 'unstated-next';
+import { useCallback, useContext, useEffect, useState } from 'react';
 
-import { UserContext, MarketContext } from '@/contexts';
+import { MarketContext, UserContext } from '@/contexts';
 import { useEmp, useToken, useWrapEth } from '@/hooks';
-import { isEmpty } from '@/utils';
 import { ISynth } from '@/types';
 
 export const useSynthActions = () => {
-  const { currentSynth, currentCollateral } = useContext(UserContext);
-  const { synthMetadata, collateralData } = useContext(MarketContext);
+  const { currentSynth, currentCollateral } = useContext(UserContext) ?? {};
+  const { synthMetadata, collateralData } = useContext(MarketContext) ?? {};
   const emp = useEmp();
 
   const [synth, setSynth] = useState({} as ISynth);
   // TODO consolidate all synth values. Just set an ISynth object instead.
-  const [empAddress, setEmpAddress] = useState('');
-  const [synthAddress, setSynthAddress] = useState('');
-  const [collateralAddress, setCollateralAddress] = useState('');
+  const [empAddress, setEmpAddress] = useState("");
+  const [synthAddress, setSynthAddress] = useState("");
+  const [collateralAddress, setCollateralAddress] = useState("");
 
   const [collateralApproval, setCollateralApproval] = useState(false);
   const [synthApproval, setSynthApproval] = useState(false);
@@ -24,7 +22,7 @@ export const useSynthActions = () => {
   const wrapEth = useWrapEth();
 
   useEffect(() => {
-    if (currentSynth && currentCollateral && !isEmpty(synthMetadata) && !isEmpty(collateralData)) {
+    if (currentSynth && currentCollateral && synthMetadata && collateralData) {
       setEmpAddress(synthMetadata[currentSynth].emp.address);
       setCollateralAddress(collateralData[currentCollateral].address);
       setSynthAddress(synthMetadata[currentSynth].token.address);
@@ -33,11 +31,13 @@ export const useSynthActions = () => {
   }, [currentSynth, currentCollateral, synthMetadata, collateralData]);
 
   useEffect(() => {
-    checkCollateralAllowance();
+    checkCollateralAllowance().then(() => {
+    });
   }, [collateralAddress, empAddress]);
 
   useEffect(() => {
-    checkSynthAllowance();
+    checkSynthAllowance().then(() => {
+    });
   }, [synthAddress, empAddress]);
 
   const checkCollateralAllowance = async () => {
@@ -56,7 +56,8 @@ export const useSynthActions = () => {
     try {
       const tx = await erc20.approveSpender(collateralAddress, empAddress);
       await tx?.wait();
-      checkCollateralAllowance();
+      checkCollateralAllowance().then(() => {
+      });
     } catch (err) {
       console.error(err);
     }
@@ -66,7 +67,8 @@ export const useSynthActions = () => {
     try {
       const tx = await erc20.approveSpender(synthAddress, empAddress);
       await tx?.wait();
-      checkSynthAllowance();
+      checkSynthAllowance().then(() => {
+      });
     } catch (err) {
       console.error(err);
     }
@@ -83,7 +85,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.log('Collateral amount or token amount is not greater than 0.');
+        console.log("Collateral amount or token amount is not greater than 0.");
       }
     },
     [synth]
@@ -99,7 +101,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error('Invalid collateral amounts.');
+        console.error("Invalid collateral amounts.");
       }
     },
     [synth]
@@ -116,7 +118,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error('Invalid collateral amount.');
+        console.error("Invalid collateral amount.");
       }
     },
     [synth]
@@ -132,7 +134,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error('Invalid collateral amount.');
+        console.error("Invalid collateral amount.");
       }
     },
     [synth]
@@ -148,7 +150,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error('Invalid collateral amount.');
+        console.error("Invalid collateral amount.");
       }
     },
     [synth]
@@ -164,7 +166,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error('Invalid collateral amount.');
+        console.error("Invalid collateral amount.");
       }
     },
     [synth]
@@ -206,12 +208,12 @@ export const useSynthActions = () => {
         console.error(err);
       }
     } else {
-      console.error('Collateral amount or token amount is not greater than 0.');
+      console.error("Collateral amount or token amount is not greater than 0.");
     }
   };
 
   const getUserPosition = useCallback(async () => {
-    if (!synth) return Promise.reject('No synth selected');
+    if (!synth) return Promise.reject("No synth selected");
     try {
       return emp.getUserPosition(synth);
     } catch (err) {
@@ -234,11 +236,11 @@ export const useSynthActions = () => {
     onCancelWithdraw,
     onSettle,
     onWrapEth,
-    getUserPosition,
+    getUserPosition
   };
 };
 
 export type ISynthActions = ReturnType<typeof useSynthActions>;
 
 // TODO use this everywhere instead
-export const SynthActionsContainer = createContainer(useSynthActions);
+// export const SynthActionsContainer = createContainer(useSynthActions);

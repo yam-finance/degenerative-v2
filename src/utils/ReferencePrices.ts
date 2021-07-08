@@ -1,12 +1,12 @@
 // Get reference price history for each synth type
 import axios from 'axios';
-import { SynthGroups, getUsdPriceHistory, getDateString, roundDecimals } from '@/utils';
+import { getDateString, roundDecimals } from '@/utils';
 import { fromUnixTime } from 'date-fns';
 
 /** Get reference price history and transform for use in charts. Returns array
  *  of objects with keys of timestamp and price.
  */
-export const getReferencePriceHistory = async (type: string, chainId: number) => {
+export const getReferencePriceHistory = async (type: string) => {
   const fetchUgas = async () => {
     const res = await axios.get('https://data.yam.finance/median-history');
 

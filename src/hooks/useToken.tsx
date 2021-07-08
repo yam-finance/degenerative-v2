@@ -1,11 +1,11 @@
-import { useContext, useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 
-import { Signer, utils, constants } from 'ethers';
+import { constants, Signer, utils } from 'ethers';
 import { EthereumContext } from '@/contexts';
 import { Erc20__factory } from '@/types/contracts';
 
 export const useToken = () => {
-  const { signer, account } = useContext(EthereumContext);
+  const { signer, account } = useContext(EthereumContext) ?? {};
 
   //const [tokenContract, setTokenContract] = useState<Erc20>(Erc20__factory.connect(tokenAddress, signer as Signer));
 
@@ -19,11 +19,9 @@ export const useToken = () => {
         const tokenContract = Erc20__factory.connect(tokenAddress, signer as Signer);
         const amount = tokenAmount ? utils.parseEther(tokenAmount) : constants.MaxUint256;
         const gasLimit = await tokenContract.estimateGas.approve(spenderAddress, amount);
-        const tx = await tokenContract.approve(spenderAddress, amount, {
+        return await tokenContract.approve(spenderAddress, amount, {
           gasLimit: gasLimit,
         });
-
-        return tx;
       }
     },
     [signer]

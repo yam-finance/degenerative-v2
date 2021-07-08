@@ -12,7 +12,7 @@ interface DepositFormFields {
 
 export const Deposit: React.FC = React.memo(() => {
   const { actions, state, dispatch } = PositionManagerContainer.useContainer();
-  const { currentCollateral } = useContext(UserContext);
+  const { currentCollateral } = useContext(UserContext) ?? {};
 
   const [formState, { number }] = useFormState<DepositFormFields>(
     {

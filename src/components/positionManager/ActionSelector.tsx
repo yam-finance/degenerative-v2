@@ -1,9 +1,9 @@
 import React from 'react';
 import { PositionManagerContainer } from '@/hooks';
-import { Manage, Mint, Burn, Deposit, Withdraw, Redeem } from '@/components';
+import { Burn, Deposit, Manage, Mint, Redeem, Withdraw } from '@/components';
 
 export const ActionSelector = () => {
-  const { state, dispatch } = PositionManagerContainer.useContainer();
+  const { state } = PositionManagerContainer.useContainer();
 
   switch (state.action) {
     case 'MANAGE': {

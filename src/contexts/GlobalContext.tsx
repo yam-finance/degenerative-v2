@@ -1,14 +1,14 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-const initialState = {
-  setDarkMode: (toDark_: boolean) => {},
-  darkMode: false,
+type initialState = {
+  setDarkMode: (toDark_: boolean) => void;
+  darkMode: boolean;
 };
 
-export const GlobalContext = React.createContext(initialState);
+export const GlobalContext = React.createContext<initialState | undefined>(undefined);
 
 export const GlobalProvider: React.FC = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [, setDarkMode] = useState(false);
   // TODO add logic to change color scheme
 
   return (
@@ -18,7 +18,7 @@ export const GlobalProvider: React.FC = ({ children }) => {
           localStorage.setItem('dark_mode', String(toDark_));
           setDarkMode(toDark_);
         },
-        darkMode,
+        darkMode: false,
       }}
     >
       {children}
