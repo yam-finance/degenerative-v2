@@ -5,7 +5,7 @@ import { UserContext } from '@/contexts';
 interface ActionButtonProps {
   disableCondition?: boolean;
   action?: () => Promise<void>; // This is for SC calls
-  onClick?: () => never; // This is for everything else
+  onClick?: () => void; // This is for everything else
 }
 
 export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, action, onClick, children }) => {
@@ -19,7 +19,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ disableCondition, ac
     triggerUpdate && triggerUpdate();
   };
 
-  const callOnClick = async (onClick: () => Promise<void>) => {
+  const callOnClick = async (onClick: () => void) => {
     setWaiting(true);
     await onClick();
     setWaiting(false);

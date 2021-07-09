@@ -278,7 +278,7 @@ export const Synth: React.FC = () => {
                   <div>Global Collateral Ratio</div>
                 </div>
                 <div className="weight-medium text-color-4">
-                  { roundDecimals(1 / (marketData.globalUtilization * marketData.price), 2)}
+                  {roundDecimals(1 / (marketData.globalUtilization * marketData.price), 2)}
                 </div>
               </div>
               <div className="flex-align-baseline margin-bottom-2">

@@ -11,9 +11,9 @@ export const useSynthActions = () => {
 
   const [synth, setSynth] = useState({} as ISynth);
   // TODO consolidate all synth values. Just set an ISynth object instead.
-  const [empAddress, setEmpAddress] = useState("");
-  const [synthAddress, setSynthAddress] = useState("");
-  const [collateralAddress, setCollateralAddress] = useState("");
+  const [empAddress, setEmpAddress] = useState('');
+  const [synthAddress, setSynthAddress] = useState('');
+  const [collateralAddress, setCollateralAddress] = useState('');
 
   const [collateralApproval, setCollateralApproval] = useState(false);
   const [synthApproval, setSynthApproval] = useState(false);
@@ -31,13 +31,11 @@ export const useSynthActions = () => {
   }, [currentSynth, currentCollateral, synthMetadata, collateralData]);
 
   useEffect(() => {
-    checkCollateralAllowance().then(() => {
-    });
+    checkCollateralAllowance().then(() => {});
   }, [collateralAddress, empAddress]);
 
   useEffect(() => {
-    checkSynthAllowance().then(() => {
-    });
+    checkSynthAllowance().then(() => {});
   }, [synthAddress, empAddress]);
 
   const checkCollateralAllowance = async () => {
@@ -56,8 +54,7 @@ export const useSynthActions = () => {
     try {
       const tx = await erc20.approveSpender(collateralAddress, empAddress);
       await tx?.wait();
-      checkCollateralAllowance().then(() => {
-      });
+      checkCollateralAllowance().then(() => {});
     } catch (err) {
       console.error(err);
     }
@@ -67,8 +64,7 @@ export const useSynthActions = () => {
     try {
       const tx = await erc20.approveSpender(synthAddress, empAddress);
       await tx?.wait();
-      checkSynthAllowance().then(() => {
-      });
+      checkSynthAllowance().then(() => {});
     } catch (err) {
       console.error(err);
     }
@@ -85,7 +81,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.log("Collateral amount or token amount is not greater than 0.");
+        console.log('Collateral amount or token amount is not greater than 0.');
       }
     },
     [synth]
@@ -101,7 +97,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error("Invalid collateral amounts.");
+        console.error('Invalid collateral amounts.');
       }
     },
     [synth]
@@ -118,7 +114,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error("Invalid collateral amount.");
+        console.error('Invalid collateral amount.');
       }
     },
     [synth]
@@ -134,7 +130,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error("Invalid collateral amount.");
+        console.error('Invalid collateral amount.');
       }
     },
     [synth]
@@ -150,7 +146,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error("Invalid collateral amount.");
+        console.error('Invalid collateral amount.');
       }
     },
     [synth]
@@ -166,7 +162,7 @@ export const useSynthActions = () => {
           console.error(err);
         }
       } else {
-        console.error("Invalid collateral amount.");
+        console.error('Invalid collateral amount.');
       }
     },
     [synth]
@@ -208,12 +204,12 @@ export const useSynthActions = () => {
         console.error(err);
       }
     } else {
-      console.error("Collateral amount or token amount is not greater than 0.");
+      console.error('Collateral amount or token amount is not greater than 0.');
     }
   };
 
   const getUserPosition = useCallback(async () => {
-    if (!synth) return Promise.reject("No synth selected");
+    if (!synth) return Promise.reject('No synth selected');
     try {
       return emp.getUserPosition(synth);
     } catch (err) {
@@ -236,7 +232,7 @@ export const useSynthActions = () => {
     onCancelWithdraw,
     onSettle,
     onWrapEth,
-    getUserPosition
+    getUserPosition,
   };
 };
 

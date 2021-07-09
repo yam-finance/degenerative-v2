@@ -17,12 +17,12 @@ import { isEmpty } from './Helpers';
 sessionStorage.clear();
 
 type PairDayData = {
-  date: number,
-  reserve0: string,
-  reserve1: string
-  token0: Record<"id", string>
-  token1: Record<"id", string>
-}
+  date: number;
+  reserve0: string;
+  reserve1: string;
+  token0: Record<'id', string>;
+  token1: Record<'id', string>;
+};
 
 // Get USD price of token and cache to sessionstorage
 /*
@@ -43,18 +43,18 @@ export const getUsdPrice = async (tokenAddress: string) => {
 
 export const getReferenceSpotPrice = async (synth: ISynth) => {
   switch (synth.group) {
-    case "uGAS": {
-      const res = await axios.get("https://data.yam.finance/median");
+    case 'uGAS': {
+      const res = await axios.get('https://data.yam.finance/median');
       console.log(res.data);
       return;
     }
-    case "uSTONKS": {
-      const res = await axios.get("https://data.yam.finance/ustonks/index/jun21");
+    case 'uSTONKS': {
+      const res = await axios.get('https://data.yam.finance/ustonks/index/jun21');
       console.log(res.data);
       return;
     }
-    case "uPUNKS": {
-      const res = await axios.get("https://api.yam.finance/degenerative/upunks/price");
+    case 'uPUNKS': {
+      const res = await axios.get('https://api.yam.finance/degenerative/upunks/price');
       console.log(res.data);
       return;
     }
@@ -70,7 +70,7 @@ export const getPairPriceEth = async (token: IToken) => {
     const res = await axios.get(
       `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${token1Address}&vs_currencies=eth`
     );
-    const price = Number(res.data[token1Address]["eth"]);
+    const price = Number(res.data[token1Address]['eth']);
     return Promise.resolve(price);
   } catch (err) {
     return Promise.reject(err);
@@ -117,7 +117,7 @@ export const getUsdPrice = async (cgId: string) => {
 
 // Get Uniswap pool data
 export const getPoolData = async (pool: ILiquidityPool) => {
-  const endpoint = pool.location === "uni" ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
+  const endpoint = pool.location === 'uni' ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
   try {
     const data = await request(endpoint, UNISWAP_MARKET_DATA_QUERY, { poolAddress: pool.address });
     return data.pair;
@@ -137,7 +137,7 @@ export const getApr = async (name: string, cr: number): Promise<number> => {
 
   try {
     const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`, {
-      timeout: 2000
+      timeout: 2000,
     });
     const aprMultiplier = res.data.aprMultiplier;
     sessionStorage.setItem(name, aprMultiplier);
@@ -184,7 +184,9 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
 
     // If API gives too much data, filter to find relevant data.
     if (refPrices.length > 30) {
-      const minIndex = refPrices.findIndex((ref: { timestamp: string }) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
+      const minIndex = refPrices.findIndex(
+        (ref: { timestamp: string }) => getDateString(parseISO(ref.timestamp)) === getDateString(min)
+      );
       return refPrices.slice(minIndex).map((ref: { price: number }) => ref.price);
     } else {
       return refPrices.map((ref: { price: number }) => ref.price);
@@ -192,11 +194,11 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   })();
 
   // Get pool data from subgraph
-  const endpoint = synth.pool.location === "uni" ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
-  const query = synth.pool.location === "uni" ? UNISWAP_DAILY_PAIR_DATA : SUSHI_DAILY_PAIR_DATA;
+  const endpoint = synth.pool.location === 'uni' ? UNISWAP_ENDPOINT : SUSHISWAP_ENDPOINT;
+  const query = synth.pool.location === 'uni' ? UNISWAP_DAILY_PAIR_DATA : SUSHI_DAILY_PAIR_DATA;
   const poolData: { pairDayDatas: Array<PairDayData> } = await request(endpoint, query, {
     pairAddress: poolAddress,
-    startingTime: startingTime
+    startingTime: startingTime,
   });
 
   console.log(poolData.pairDayDatas[0]);
@@ -205,24 +207,24 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
 
   if (!isEmpty(poolData.pairDayDatas)) {
     // Find which token is the synth and which is paired
-    let synthId: "reserve0" | "reserve1";
-    let pairedId: "reserve0" | "reserve1";
-    if (synth.pool.location === "uni") {
+    let synthId: 'reserve0' | 'reserve1';
+    let pairedId: 'reserve0' | 'reserve1';
+    if (synth.pool.location === 'uni') {
       if (poolData.pairDayDatas[0].token0.id === synthAddress) {
-        synthId = "reserve1";
-        pairedId = "reserve0";
+        synthId = 'reserve1';
+        pairedId = 'reserve0';
       } else {
-        synthId = "reserve0";
-        pairedId = "reserve1";
+        synthId = 'reserve0';
+        pairedId = 'reserve1';
       }
     } else {
       // NOTE: Sushi is opposite of UNI
       if (poolData.pairDayDatas[0].token0.id === synthAddress) {
-        synthId = "reserve0";
-        pairedId = "reserve1";
+        synthId = 'reserve0';
+        pairedId = 'reserve1';
       } else {
-        synthId = "reserve1";
-        pairedId = "reserve0";
+        synthId = 'reserve1';
+        pairedId = 'reserve0';
       }
     }
 
@@ -230,8 +232,8 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
     // Price is reserve of synth / reserve of paired
     const dailyPairData = new Map(
       poolData.pairDayDatas.map((dailyData) => [
-        formatISO(fromUnixTime(dailyData.date), { representation: "date" }),
-        parseFloat(dailyData[synthId]) / parseFloat(dailyData[pairedId])
+        formatISO(fromUnixTime(dailyData.date), { representation: 'date' }),
+        parseFloat(dailyData[synthId]) / parseFloat(dailyData[pairedId]),
       ])
     );
 
@@ -254,7 +256,7 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   return {
     labels: dateArray,
     referencePrices: referencePrices,
-    synthPrices: synthPrices
+    synthPrices: synthPrices,
   };
 };
 

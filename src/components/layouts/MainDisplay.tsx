@@ -20,7 +20,7 @@ export const MainDisplay: React.FC = ({ children }) => {
           children
         ) : (
           <div className="flex-column-middle padding-top-32 landscape-flex-column-centered">
-            <img className="width-full max-width-large" src={Plug}/>
+            <img className="width-full max-width-large" src={Plug} />
             <h1 className="text-align-center">Please connect your wallet to continue</h1>
           </div>
         )}

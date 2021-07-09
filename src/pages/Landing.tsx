@@ -120,7 +120,7 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </div>
-      <img className="width-full hero-img" src={hero}/>
+      <img className="width-full hero-img" src={hero} />
       {/*
       <div className="contains-rings">
         <div className="margin-y-48 relative flex-column-centered container-1140 w-container">
@@ -165,7 +165,7 @@ export const Landing: React.FC = () => {
             </div>
             <p className="text-color-4 margin-0 text-medium">Execute novel trading and hedging strategies</p>
           </div>
-          <img src={gloop} className="absolute-top-right width-64 tablet-hide"/>
+          <img src={gloop} className="absolute-top-right width-64 tablet-hide" />
           <Link
             to="/explore"
             className="button-secondary absolute-bottom-right margin-12 margin-12 tablet-relative tablet-margin-0 landscape-margin-0 portrait-margin-0"

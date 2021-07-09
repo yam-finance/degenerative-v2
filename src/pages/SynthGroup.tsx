@@ -83,18 +83,19 @@ export const SynthGroup: React.FC = () => {
   }, [synthMarketData, filterSynths]);
 
   useEffect(() => {
-    if (!isEmpty(SynthGroups[group])) {
-      const groupInfo = SynthGroups[group];
+    if (!isEmpty(SynthGroups[group as keyof typeof SynthGroups])) {
+      const groupInfo = SynthGroups[group as keyof typeof SynthGroups];
       setGroupInfo(groupInfo);
       setFilterSynths(groupInfo.active ? 'Live' : 'Expired');
     }
   }, [group]);
 
   useEffect(() => {
-    const getChartData = async () =>
-      setHistoricPriceData(
-        await getDailyPriceHistory(synthMetadata[synthInFocus as keyof typeof synthMetadata] as ISynth)
-      );
+    const getChartData = async () => {
+      const synth = synthMetadata[synthInFocus as keyof typeof synthMetadata] as ISynth;
+      const historicData = await getDailyPriceHistory(synth);
+      setHistoricPriceData(historicData as never);
+    };
 
     if (synthMetadata[synthInFocus as keyof typeof synthMetadata] && chainId && !historicPriceData)
       getChartData().then(() => {});

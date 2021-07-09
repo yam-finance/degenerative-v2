@@ -3,10 +3,10 @@ import { Signer, utils } from 'ethers';
 
 import { EthereumContext, MarketContext } from '@/contexts';
 import { Weth, Weth__factory } from '@/types/contracts';
-import { isEmpty } from "@/utils";
+import { isEmpty } from '@/utils';
 
 export const useWrapEth = () => {
-  const { collateralData={} } = useContext(MarketContext) ?? {};
+  const { collateralData = {} } = useContext(MarketContext) ?? {};
   const { signer } = useContext(EthereumContext) ?? {};
 
   const [wethContract, setWethContract] = useState<Weth>();

@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { utils } from "ethers";
-import { EthereumContext } from "@/contexts";
-import { ISynth, ISynthMarketData, IToken } from "@/types";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { utils } from 'ethers';
+import { EthereumContext } from '@/contexts';
+import { ISynth, ISynthMarketData, IToken } from '@/types';
 import {
   getApr,
   getCollateralData,
@@ -10,8 +10,8 @@ import {
   getSynthMetadata,
   getUsdPrice,
   roundDecimals,
-  SynthGroups
-} from "@/utils";
+  SynthGroups,
+} from '@/utils';
 
 // const initialState = {
 //   synthMarketData: {} as Record<string, ISynthMarketData>,
@@ -21,9 +21,9 @@ import {
 // };
 
 type SynthName = string;
-type SynthMarketData = Record<SynthName, ISynthMarketData>
-type SynthMetadata = Record<SynthName, ISynth>
-type CollateralData = Record<SynthName, IToken>
+type SynthMarketData = Record<SynthName, ISynthMarketData>;
+type SynthMetadata = Record<SynthName, ISynth>;
+type CollateralData = Record<SynthName, IToken>;
 
 type MarketContext = {
   synthMarketData: SynthMarketData | undefined;
@@ -32,7 +32,7 @@ type MarketContext = {
   loading: boolean;
 };
 
-type SynthGroups = keyof typeof SynthGroups
+type SynthGroups = keyof typeof SynthGroups;
 
 export const MarketContext = createContext<MarketContext | undefined>(undefined);
 
@@ -45,13 +45,9 @@ export const MarketProvider: React.FC = ({ children }) => {
   const ethereumContext = useContext(EthereumContext);
   const { chainId = 0, provider } = ethereumContext ?? {};
 
-
   useEffect(() => {
     (async () => {
-      const initializeMarketData = async (
-        synthMetadata: SynthMetadata,
-        collateralData: CollateralData
-      ) => {
+      const initializeMarketData = async (synthMetadata: SynthMetadata, collateralData: CollateralData) => {
         const data: SynthMarketData = {};
 
         try {
@@ -66,8 +62,8 @@ export const MarketProvider: React.FC = ({ children }) => {
               collateral,
               paired,
               getEmpState(synth, chainId, provider),
-              getUsdPrice(collateral.coingeckoId ?? ""),
-              getPoolData(synth.pool)
+              getUsdPrice(collateral.coingeckoId ?? ''),
+              getPoolData(synth.pool),
             ]);
           });
           const resolved = await Promise.all(requests);
@@ -86,10 +82,10 @@ export const MarketProvider: React.FC = ({ children }) => {
                 rawGlobalUtilization,
                 minTokens,
                 liquidationPoint,
-                withdrawalPeriod
+                withdrawalPeriod,
               },
               collateralPriceUsd,
-              pool
+              pool,
             ] = synthData;
 
             try {
@@ -132,11 +128,11 @@ export const MarketProvider: React.FC = ({ children }) => {
                 apr: roundDecimals(aprAtGcr, 2),
                 aprAt2: roundDecimals(aprAt2, 2),
                 daysTillExpiry: daysTillExpiry,
-                isExpired: isExpired
+                isExpired: isExpired,
               };
             } catch (err0) {
               console.error(err0);
-              console.error("Could not retrieve market data this synth");
+              console.error('Could not retrieve market data this synth');
 
               // TODO is this necessary?
               data[name] = {
@@ -155,7 +151,7 @@ export const MarketProvider: React.FC = ({ children }) => {
                 apr: 0,
                 aprAt2: 0,
                 daysTillExpiry: 69,
-                isExpired: false
+                isExpired: false,
               };
             }
           }
@@ -184,7 +180,7 @@ export const MarketProvider: React.FC = ({ children }) => {
         loading,
         synthMarketData,
         synthMetadata,
-        collateralData
+        collateralData,
       }}
     >
       {children}

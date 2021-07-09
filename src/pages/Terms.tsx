@@ -23,7 +23,7 @@ export const Terms = () => {
             <h4>How to customize formatting for each rich text</h4>
             <p>
               Headings, paragraphs, blockquotes, figures, images, and figure captions can all be styled after a class is
-              added to the rich text element using the  &quot;When inside of&quot; nested selector system.
+              added to the rich text element using the &quot;When inside of&quot; nested selector system.
             </p>
           </div>
         </div>

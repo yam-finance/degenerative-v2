@@ -12,7 +12,7 @@ export const getEmpState = async (synth: ISynth, chainId: number, provider = Eth
   const synthDecimals = synth.token.decimals ?? 18;
   const collateralName = synth.collateral;
   const collateralData = getCollateralData(chainId);
-  const collateralDecimals = collateralData[collateralName].decimals; // TODO this might always be equal to synth decimals
+  const collateralDecimals = collateralData[collateralName as keyof typeof collateralData].decimals; // TODO this might always be equal to synth decimals
 
   try {
     const empContract = Empv2__factory.connect(empAddress, provider);

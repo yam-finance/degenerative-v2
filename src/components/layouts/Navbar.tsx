@@ -31,10 +31,10 @@ export const Navbar = () => {
   const Navigation: React.FC = () => {
     return (
       <div className="flex-column expand padding-right-3 tablet-width-full tablet-padding-x-4 tablet-padding-y-8 min-height-full">
-        <div className="margin-left-8 margin-top-10 tablet-margin-0 width-56 portrait-margin-0 landscape-margin-0"/>
+        <div className="margin-left-8 margin-top-10 tablet-margin-0 width-56 portrait-margin-0 landscape-margin-0" />
         <NavbarButton text="Explore Synths" icon="Globe" to="/explore" />
         <NavbarButton text="Portfolio" icon="User" to="/portfolio" />
-        <div className="nav-divider margin-y-5"/>
+        <div className="nav-divider margin-y-5" />
         <h6 className="margin-left-8 padding-left-3 tablet-padding-left-0 tablet-margin-left-3">Learn</h6>
         <NavbarButton text="Docs" icon="Book" to="https://docs.synths.yam.xyz/" external />
         <NavbarButton
@@ -45,8 +45,8 @@ export const Navbar = () => {
         />
         <NavbarButton text="FAQs" icon="HelpCircle" to="https://docs.synths.yam.xyz/overview/faq" external />
         <NavbarButton text="Support" icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
-        <div className="expand"/>
-        <div className="nav-divider margin-y-5"/>
+        <div className="expand" />
+        <div className="nav-divider margin-y-5" />
         <div className="hide tablet-block landscape-block portrait-block">
           <a
             href="#"
@@ -59,7 +59,7 @@ export const Navbar = () => {
             <Icon name="LogOut" className="icon margin-right-3" />
             <div>Disconnect Wallet</div>
           </a>
-          <div className="nav-divider margin-y-5"/>
+          <div className="nav-divider margin-y-5" />
         </div>
         <NavbarButton text="YAM" icon="ExternalLink" to="https://yam.finance/" external />
         <NavbarButton text="UMA" icon="ExternalLink" to="https://umaproject.org/" external />
@@ -128,7 +128,7 @@ export const Navbar = () => {
           <img src={`data:image/svg+xml;utf8,${picasso(account)}`} className="avatar margin-right-2" />
           <div className="expand relative">
             <div className="flex-align-center">
-              <div className={`height-4 pill ${chainId !== 1 && "red"}`}/>
+              <div className={`height-4 pill ${chainId !== 1 && 'red'}`} />
               <div className="text-xs margin-left-1">
                 {chainId === 1 ? 'Mainnet' : chainId === 42 ? 'Kovan' : 'Wrong network'}
               </div>
@@ -177,7 +177,7 @@ export const Navbar = () => {
               <Navigation />
             </Dropdown>
           </div>
-          <div className="overlay blur radius-full"/>
+          <div className="overlay blur radius-full" />
         </div>
       ) : (
         <ConnectWallet

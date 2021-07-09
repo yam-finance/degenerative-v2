@@ -1,5 +1,5 @@
-import { EventType, Listener } from "@ethersproject/abstract-provider";
-import { providers } from "ethers";
+import { EventType, Listener } from '@ethersproject/abstract-provider';
+import { providers } from 'ethers';
 
 // interface RequestArguments {
 //   method: string;

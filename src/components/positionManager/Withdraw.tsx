@@ -76,7 +76,9 @@ export const Withdraw: React.FC = React.memo(() => {
       // Show Withdrawal Request modal
       return (
         <ActionButton
-          onClick={() => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { modalWithdrawalAmount: withdrawalAmount } })}
+          onClick={() =>
+            dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { modalWithdrawalAmount: withdrawalAmount } })
+          }
           disableCondition={disableWithdrawal}
         >
           {`Request withdrawal for ${withdrawalAmount} ${currentCollateral}`}

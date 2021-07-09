@@ -15,7 +15,7 @@ interface ISynthGroupData {
   numSynths: number;
   image: string;
 }
-type SynthGroups = keyof typeof SynthGroups
+type SynthGroups = keyof typeof SynthGroups;
 
 export const Explore = () => {
   const marketContext = useContext(MarketContext);
@@ -36,7 +36,7 @@ export const Explore = () => {
         .filter(([synthName]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
           const { group } = synthInfo;
-          const groupKey = group as SynthGroups
+          const groupKey = group as SynthGroups;
           try {
             if (!synthMarketData) return;
             const marketData = synthMarketData[synthName];

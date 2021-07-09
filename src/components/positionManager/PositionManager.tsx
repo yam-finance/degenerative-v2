@@ -108,8 +108,11 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   // Set an event listener to update when collateral balance changes
   useEffect(() => {
     provider?.on('block', () => {
-      if (!isEmpty(collateralData[currentCollateral ?? ""]) && !isEmpty(synthMetadata[currentSynth ??""])) {
-        setTokenBalances(collateralData[currentCollateral ?? ""], synthMetadata[currentSynth ?? ""].token).then(() => {});
+      if (!isEmpty(collateralData[currentCollateral ?? '']) && !isEmpty(synthMetadata[currentSynth ?? ''])) {
+        setTokenBalances(
+          collateralData[currentCollateral ?? ''],
+          synthMetadata[currentSynth ?? ''].token
+        ).then(() => {});
       }
     });
     return () => {
@@ -183,7 +186,7 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
   };
 
   const WithdrawalConfirmationModal: React.FC = () => {
-    const withdrawalPeriod = synthMarketData[currentSynth ?? ""]?.withdrawalPeriod;
+    const withdrawalPeriod = synthMarketData[currentSynth ?? '']?.withdrawalPeriod;
 
     const closeModal = () => dispatch({ type: 'TOGGLE_WITHDRAWAL_MODAL', payload: { modalWithdrawalAmount: 0 } });
 
