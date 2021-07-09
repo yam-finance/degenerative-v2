@@ -45,7 +45,7 @@ export const EthereumProvider: React.FC = ({ children }) => {
       };
 
       const onChainChanged = async () => {
-        setChain(provider);
+        await setChain(provider);
       };
 
       const onDisconnect = () => {
@@ -53,8 +53,8 @@ export const EthereumProvider: React.FC = ({ children }) => {
         setEthereum(undefined);
       };
 
-      onAccountsChanged();
-      onChainChanged();
+      onAccountsChanged().then(() => {});
+      onChainChanged().then(() => {});
 
       // Must listen on `ethereum` object due to Metamask specific events
       ethereum.addListener('accountsChanged', onAccountsChanged);

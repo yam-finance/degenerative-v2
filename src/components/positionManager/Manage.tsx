@@ -13,7 +13,7 @@ export const Manage = () => {
   const changeAction = (action: MinterAction) => {
     dispatch({
       type: 'CHANGE_ACTION',
-      payload: { action },
+      payload: action,
     });
   };
 

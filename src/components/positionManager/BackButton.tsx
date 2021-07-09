@@ -11,7 +11,7 @@ export const BackButton = () => {
       onClick={() => {
         dispatch({
           type: 'CHANGE_ACTION',
-          payload: { action: 'MANAGE' },
+          payload: 'MANAGE',
         });
 
         if (state.withdrawalRequestAmount <= 0) {

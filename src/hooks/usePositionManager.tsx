@@ -38,7 +38,7 @@ type Action =
   | { type: 'INIT_SPONSOR_POSITION'; payload: Partial<State> }
   | { type: 'UPDATE_SPONSOR_POSITION'; payload: Partial<State> }
   | { type: 'UPDATE_RESULTING_POSITION'; payload: Partial<State> }
-  | { type: 'CHANGE_ACTION'; payload: Partial<State> }
+  | { type: 'CHANGE_ACTION'; payload: string }
   | { type: 'TOGGLE_WITHDRAWAL_MODAL'; payload: Partial<State> }
   | { type: 'UPDATE_MAX_COLLATERAL'; payload: Partial<State> }
   | { type: 'RESET_RESULTING_POSITION'; payload: Partial<State> };
@@ -111,20 +111,20 @@ const reducer = (state: State, action: Action) => {
       };
     }
     case 'TOGGLE_WITHDRAWAL_MODAL': {
-      const { withdrawalAmount } = (action.payload as unknown) as Record<string, number>;
+      const { modalWithdrawalAmount } = action.payload;
 
       return {
         ...state,
         showWithdrawalModal: !state.showWithdrawalModal,
-        modalWithdrawalAmount: withdrawalAmount,
+        modalWithdrawalAmount: modalWithdrawalAmount,
       };
     }
     case 'UPDATE_MAX_COLLATERAL': {
-      const { collateral } = (action.payload as unknown) as Record<string, number>;
+      const { maxCollateral } = action.payload;
 
       return {
         ...state,
-        maxCollateral: collateral,
+        maxCollateral: maxCollateral,
       };
     }
     default:
