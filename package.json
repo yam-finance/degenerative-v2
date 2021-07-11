@@ -56,6 +56,8 @@
     "@typescript-eslint/parser": "^4.16.1",
     "@vitejs/plugin-react-refresh": "^1.1.0",
     "eslint": "^7.21.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.22.0",
     "graphql": "^15.5.0",
     "hardhat": "^2.0.10",
