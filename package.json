@@ -9,7 +9,8 @@
     "prebuild": "typechain --target=ethers-v5 'abi/*.json' --outDir src/types/contracts",
     "typecheck": "tsc --noEmit",
     "prettier": "yarn prettier --write src/",
-    "purge": "purgecss --css src/degenerative.css --content *.html src/**/*.tsx src/**/**/*.tsx src/**/*.ts --output src/purged"
+    "purge": "purgecss --css src/degenerative.css --content *.html src/**/*.tsx src/**/**/*.tsx src/**/*.ts --output src/purged",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@reactchartjs/react-chart.js": "^1.0.0-rc.3",
