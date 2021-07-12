@@ -18,7 +18,10 @@ export const Table: React.FC<TableProps> = ({ title, headers, headerClass, class
       <div className={`flex-align-baseline text-xs padding-x-4 margin-x-4 margin-top-4 margin-bottom-3 ${className}`}>
         {headers.map((header, index) => {
           return (
-            <div className={headerClass && headerClass[index] ? headerClass[index] : 'expand flex-align-center'} key={index}>
+            <div
+              className={headerClass && headerClass[index] ? headerClass[index] : 'expand flex-align-center'}
+              key={index}
+            >
               <div className="margin-right-1">{header}</div>
             </div>
           );
