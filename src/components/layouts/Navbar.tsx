@@ -128,7 +128,7 @@ export const Navbar = () => {
           <img src={`data:image/svg+xml;utf8,${picasso(account)}`} className="avatar margin-right-2" />
           <div className="expand relative">
             <div className="flex-align-center">
-              <div className={`height-4 pill ${chainId !== 1 && 'red'}`} />
+              <div className={`height-4 pill ${chainId !== 1 && 'red'}`}></div>
               <div className="text-xs margin-left-1">
                 {chainId === 1 ? 'Mainnet' : chainId === 42 ? 'Kovan' : 'Wrong network'}
               </div>
