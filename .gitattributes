@@ -1,0 +1,6 @@
+* text=auto
+*.ts    eol=lf
+*.tsx   eol=lf
+*.sol   eol=lf
+*.json  eol=lf
+*.svg   eol=lf
