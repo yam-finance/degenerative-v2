@@ -8,7 +8,7 @@
     "fork": "hardhat node",
     "prebuild": "typechain --target=ethers-v5 'abi/*.json' --outDir src/types/contracts",
     "typecheck": "tsc --noEmit",
-    "prettier": "yarn prettier --write .",
+    "pretty": "yarn prettier --write .",
     "purge": "purgecss --css src/degenerative.css --content *.html src/**/*.tsx src/**/**/*.tsx src/**/*.ts --output src/purged",
     "lint": "eslint ."
   },
