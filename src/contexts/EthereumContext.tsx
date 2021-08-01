@@ -3,12 +3,6 @@ import { ethers, providers, Signer } from 'ethers';
 import Synths from "synths-sdk";
 import { MetamaskProvider } from '@/types';
 
-const provider = new ethers.providers.JsonRpcProvider('https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud');
-
-const synthsSDK = await Synths.create({
-  ethersProvider: provider,
-});
-
 const initialEthereumState = {
   ethereum: undefined as MetamaskProvider | undefined,
   setEthereum: (ethereum: MetamaskProvider | undefined) => {},
@@ -37,6 +31,7 @@ export const EthereumProvider: React.FC = ({ children }) => {
       setSigner(web3Signer);
       setProvider(web3);
       setChain(web3);
+      setSDK(web3);
     }
   }, [ethereum, chainId]);
 
@@ -79,6 +74,14 @@ export const EthereumProvider: React.FC = ({ children }) => {
     const network = await provider.getNetwork();
     setChainId(network.chainId);
   };
+
+  const setSDK = async (web3: any) => {
+    const ethersProvider = new ethers.providers.Web3Provider(web3);
+
+    const synthsSDK = await Synths.create({
+      ethersProvider: ethersProvider,
+    });
+  }
 
   const disconnectWallet = () => ethereum?.emit('disconnect');
 
