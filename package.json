@@ -8,8 +8,9 @@
     "fork": "hardhat node",
     "prebuild": "typechain --target=ethers-v5 'abi/*.json' --outDir src/types/contracts",
     "typecheck": "tsc --noEmit",
-    "prettier": "yarn prettier --write src/",
-    "purge": "purgecss --css src/degenerative.css --content *.html src/**/*.tsx src/**/**/*.tsx src/**/*.ts --output src/purged"
+    "pretty": "yarn prettier --write .",
+    "purge": "purgecss --css src/degenerative.css --content *.html src/**/*.tsx src/**/**/*.tsx src/**/*.ts --output src/purged",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@reactchartjs/react-chart.js": "^1.0.0-rc.3",
@@ -44,8 +45,10 @@
   "devDependencies": {
     "@testing-library/react-hooks": "^5.1.0",
     "@typechain/ethers-v5": "^6.0.0",
+    "@types/babel__core": "^7.1.15",
     "@types/chart.js": "^2.9.31",
     "@types/classnames": "^2.2.11",
+    "@types/eslint": "^7.2.14",
     "@types/numeral": "^2.0.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
@@ -55,6 +58,8 @@
     "@typescript-eslint/parser": "^4.16.1",
     "@vitejs/plugin-react-refresh": "^1.1.0",
     "eslint": "^7.21.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.22.0",
     "graphql": "^15.5.0",
     "hardhat": "^2.0.10",

@@ -7,13 +7,7 @@
     "patch": 0
   },
   "logoURI": "",
-  "keywords": [
-    "degenerative",
-    "yam",
-    "uma",
-    "default",
-    "list"
-  ],
+  "keywords": ["degenerative", "yam", "uma", "default", "list"],
   "tokens": [
     {
       "address": "0x3d995510f8d82c2ea341845932b5ddde0bead9a3",
@@ -47,5 +41,5 @@
       "decimals": 18,
       "logoURI": ""
     }
- ]
+  ]
 }
