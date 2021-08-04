@@ -17,7 +17,7 @@ export const Breadcrumbs = () => {
           <Link
             to={match.url}
             className={`${idx < breadcrumbs.length - 1 && 'opacity-50'}`}
-            aria-current={idx == breadcrumbs.length - 1 ? 'location' : undefined}
+            aria-current={idx == breadcrumbs.length - 1 ? 'page' : undefined}
           >
             {breadcrumb}
           </Link>
