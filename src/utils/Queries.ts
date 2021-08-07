@@ -15,6 +15,7 @@ export const UNISWAP_MARKET_DATA_QUERY = gql`
         symbol
       }
       token1Price
+      volumeUSD
     }
   }
 `;
