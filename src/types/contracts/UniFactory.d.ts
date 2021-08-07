@@ -9,11 +9,13 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
+} from "ethers";
+import {
   Contract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "ethers";
+} from "@ethersproject/contracts";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
@@ -141,13 +143,13 @@ export class UniFactory extends Contract {
     createPair(
       tokenA: string,
       tokenB: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "createPair(address,address)"(
       tokenA: string,
       tokenB: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     feeTo(overrides?: CallOverrides): Promise<[string]>;
@@ -172,22 +174,22 @@ export class UniFactory extends Contract {
 
     setFeeTo(
       _feeTo: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "setFeeTo(address)"(
       _feeTo: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     setFeeToSetter(
       _feeToSetter: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "setFeeToSetter(address)"(
       _feeToSetter: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
   };
 
@@ -205,13 +207,13 @@ export class UniFactory extends Contract {
   createPair(
     tokenA: string,
     tokenB: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "createPair(address,address)"(
     tokenA: string,
     tokenB: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   feeTo(overrides?: CallOverrides): Promise<string>;
@@ -234,24 +236,21 @@ export class UniFactory extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  setFeeTo(
-    _feeTo: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  setFeeTo(_feeTo: string, overrides?: Overrides): Promise<ContractTransaction>;
 
   "setFeeTo(address)"(
     _feeTo: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   setFeeToSetter(
     _feeToSetter: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "setFeeToSetter(address)"(
     _feeToSetter: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -343,13 +342,13 @@ export class UniFactory extends Contract {
     createPair(
       tokenA: string,
       tokenB: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "createPair(address,address)"(
       tokenA: string,
       tokenB: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     feeTo(overrides?: CallOverrides): Promise<BigNumber>;
@@ -372,24 +371,21 @@ export class UniFactory extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    setFeeTo(
-      _feeTo: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    setFeeTo(_feeTo: string, overrides?: Overrides): Promise<BigNumber>;
 
     "setFeeTo(address)"(
       _feeTo: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     setFeeToSetter(
       _feeToSetter: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "setFeeToSetter(address)"(
       _feeToSetter: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
   };
 
@@ -413,13 +409,13 @@ export class UniFactory extends Contract {
     createPair(
       tokenA: string,
       tokenB: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "createPair(address,address)"(
       tokenA: string,
       tokenB: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     feeTo(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -444,22 +440,22 @@ export class UniFactory extends Contract {
 
     setFeeTo(
       _feeTo: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "setFeeTo(address)"(
       _feeTo: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     setFeeToSetter(
       _feeToSetter: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "setFeeToSetter(address)"(
       _feeToSetter: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
   };
 }

@@ -9,11 +9,13 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
+} from "ethers";
+import {
   Contract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "ethers";
+} from "@ethersproject/contracts";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
@@ -567,21 +569,15 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<[number] & { decimals: number }>;
 
-    cancelTransferPosition(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    cancelTransferPosition(overrides?: Overrides): Promise<ContractTransaction>;
 
     "cancelTransferPosition()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    cancelWithdrawal(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    cancelWithdrawal(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "cancelWithdrawal()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    "cancelWithdrawal()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     collateralCurrency(overrides?: CallOverrides): Promise<[string]>;
 
@@ -602,13 +598,13 @@ export class Empv2 extends Contract {
     create(
       collateralAmount: { rawValue: BigNumberish },
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "create((uint256),(uint256))"(
       collateralAmount: { rawValue: BigNumberish },
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     createLiquidation(
@@ -617,7 +613,7 @@ export class Empv2 extends Contract {
       maxCollateralPerToken: { rawValue: BigNumberish },
       maxTokensToLiquidate: { rawValue: BigNumberish },
       deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "createLiquidation(address,(uint256),(uint256),(uint256),uint256)"(
@@ -626,7 +622,7 @@ export class Empv2 extends Contract {
       maxCollateralPerToken: { rawValue: BigNumberish },
       maxTokensToLiquidate: { rawValue: BigNumberish },
       deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     cumulativeFeeMultiplier(
@@ -639,36 +635,36 @@ export class Empv2 extends Contract {
 
     deposit(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "deposit((uint256))"(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     depositTo(
       sponsor: string,
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "depositTo(address,(uint256))"(
       sponsor: string,
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     dispute(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "dispute(uint256,address)"(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     disputeBondPercentage(
@@ -687,25 +683,17 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { rawValue: BigNumber }>;
 
-    emergencyShutdown(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    emergencyShutdown(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "emergencyShutdown()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    "emergencyShutdown()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     expirationTimestamp(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     "expirationTimestamp()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    expire(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    expire(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "expire()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    "expire()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     expiryPrice(
       overrides?: CallOverrides
@@ -885,13 +873,9 @@ export class Empv2 extends Contract {
       }
     >;
 
-    gulp(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    gulp(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "gulp()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    "gulp()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     liquidationLiveness(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -969,13 +953,9 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { rawValue: BigNumber }>;
 
-    payRegularFees(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    payRegularFees(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "payRegularFees()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    "payRegularFees()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     pfc(
       overrides?: CallOverrides
@@ -1045,67 +1025,59 @@ export class Empv2 extends Contract {
 
     redeem(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "redeem((uint256))"(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    remargin(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    remargin(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "remargin()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    "remargin()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     repay(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "repay((uint256))"(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     requestTransferPosition(
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "requestTransferPosition()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     requestWithdrawal(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "requestWithdrawal((uint256))"(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     setCurrentTime(
       time: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "setCurrentTime(uint256)"(
       time: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    settleExpired(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    settleExpired(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "settleExpired()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    "settleExpired()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     sponsorDisputeRewardPercentage(
       overrides?: CallOverrides
@@ -1141,12 +1113,12 @@ export class Empv2 extends Contract {
 
     transferPositionPassedRequest(
       newSponsorAddress: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "transferPositionPassedRequest(address)"(
       newSponsorAddress: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     transformCollateralRequirement(
@@ -1183,32 +1155,30 @@ export class Empv2 extends Contract {
 
     withdraw(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "withdraw((uint256))"(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     withdrawLiquidation(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     "withdrawLiquidation(uint256,address)"(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    withdrawPassedRequest(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    withdrawPassedRequest(overrides?: Overrides): Promise<ContractTransaction>;
 
     "withdrawPassedRequest()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     withdrawalLiveness(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -1226,21 +1196,15 @@ export class Empv2 extends Contract {
     overrides?: CallOverrides
   ): Promise<number>;
 
-  cancelTransferPosition(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  cancelTransferPosition(overrides?: Overrides): Promise<ContractTransaction>;
 
   "cancelTransferPosition()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  cancelWithdrawal(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  cancelWithdrawal(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "cancelWithdrawal()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  "cancelWithdrawal()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   collateralCurrency(overrides?: CallOverrides): Promise<string>;
 
@@ -1257,13 +1221,13 @@ export class Empv2 extends Contract {
   create(
     collateralAmount: { rawValue: BigNumberish },
     numTokens: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "create((uint256),(uint256))"(
     collateralAmount: { rawValue: BigNumberish },
     numTokens: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   createLiquidation(
@@ -1272,7 +1236,7 @@ export class Empv2 extends Contract {
     maxCollateralPerToken: { rawValue: BigNumberish },
     maxTokensToLiquidate: { rawValue: BigNumberish },
     deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "createLiquidation(address,(uint256),(uint256),(uint256),uint256)"(
@@ -1281,7 +1245,7 @@ export class Empv2 extends Contract {
     maxCollateralPerToken: { rawValue: BigNumberish },
     maxTokensToLiquidate: { rawValue: BigNumberish },
     deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   cumulativeFeeMultiplier(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1290,36 +1254,36 @@ export class Empv2 extends Contract {
 
   deposit(
     collateralAmount: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "deposit((uint256))"(
     collateralAmount: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   depositTo(
     sponsor: string,
     collateralAmount: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "depositTo(address,(uint256))"(
     sponsor: string,
     collateralAmount: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   dispute(
     liquidationId: BigNumberish,
     sponsor: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "dispute(uint256,address)"(
     liquidationId: BigNumberish,
     sponsor: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   disputeBondPercentage(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1334,25 +1298,17 @@ export class Empv2 extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  emergencyShutdown(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  emergencyShutdown(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "emergencyShutdown()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  "emergencyShutdown()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   expirationTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
   "expirationTimestamp()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-  expire(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  expire(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "expire()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  "expire()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   expiryPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1472,13 +1428,9 @@ export class Empv2 extends Contract {
     }
   >;
 
-  gulp(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  gulp(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "gulp()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  "gulp()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   liquidationLiveness(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1552,13 +1504,9 @@ export class Empv2 extends Contract {
 
   "minSponsorTokens()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-  payRegularFees(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  payRegularFees(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "payRegularFees()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  "payRegularFees()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   pfc(
     overrides?: CallOverrides
@@ -1620,67 +1568,57 @@ export class Empv2 extends Contract {
 
   redeem(
     numTokens: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "redeem((uint256))"(
     numTokens: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  remargin(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  remargin(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "remargin()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  "remargin()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   repay(
     numTokens: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "repay((uint256))"(
     numTokens: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  requestTransferPosition(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  requestTransferPosition(overrides?: Overrides): Promise<ContractTransaction>;
 
   "requestTransferPosition()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   requestWithdrawal(
     collateralAmount: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "requestWithdrawal((uint256))"(
     collateralAmount: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   setCurrentTime(
     time: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "setCurrentTime(uint256)"(
     time: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  settleExpired(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  settleExpired(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "settleExpired()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  "settleExpired()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   sponsorDisputeRewardPercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1710,12 +1648,12 @@ export class Empv2 extends Contract {
 
   transferPositionPassedRequest(
     newSponsorAddress: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "transferPositionPassedRequest(address)"(
     newSponsorAddress: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   transformCollateralRequirement(
@@ -1752,32 +1690,30 @@ export class Empv2 extends Contract {
 
   withdraw(
     collateralAmount: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "withdraw((uint256))"(
     collateralAmount: { rawValue: BigNumberish },
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   withdrawLiquidation(
     liquidationId: BigNumberish,
     sponsor: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   "withdrawLiquidation(uint256,address)"(
     liquidationId: BigNumberish,
     sponsor: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  withdrawPassedRequest(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  withdrawPassedRequest(overrides?: Overrides): Promise<ContractTransaction>;
 
   "withdrawPassedRequest()"(
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   withdrawalLiveness(overrides?: CallOverrides): Promise<BigNumber>;
@@ -2600,21 +2536,13 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    cancelTransferPosition(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    cancelTransferPosition(overrides?: Overrides): Promise<BigNumber>;
 
-    "cancelTransferPosition()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "cancelTransferPosition()"(overrides?: Overrides): Promise<BigNumber>;
 
-    cancelWithdrawal(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    cancelWithdrawal(overrides?: Overrides): Promise<BigNumber>;
 
-    "cancelWithdrawal()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "cancelWithdrawal()"(overrides?: Overrides): Promise<BigNumber>;
 
     collateralCurrency(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2631,13 +2559,13 @@ export class Empv2 extends Contract {
     create(
       collateralAmount: { rawValue: BigNumberish },
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "create((uint256),(uint256))"(
       collateralAmount: { rawValue: BigNumberish },
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     createLiquidation(
@@ -2646,7 +2574,7 @@ export class Empv2 extends Contract {
       maxCollateralPerToken: { rawValue: BigNumberish },
       maxTokensToLiquidate: { rawValue: BigNumberish },
       deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "createLiquidation(address,(uint256),(uint256),(uint256),uint256)"(
@@ -2655,7 +2583,7 @@ export class Empv2 extends Contract {
       maxCollateralPerToken: { rawValue: BigNumberish },
       maxTokensToLiquidate: { rawValue: BigNumberish },
       deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     cumulativeFeeMultiplier(overrides?: CallOverrides): Promise<BigNumber>;
@@ -2664,36 +2592,36 @@ export class Empv2 extends Contract {
 
     deposit(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "deposit((uint256))"(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     depositTo(
       sponsor: string,
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "depositTo(address,(uint256))"(
       sponsor: string,
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     dispute(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "dispute(uint256,address)"(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     disputeBondPercentage(overrides?: CallOverrides): Promise<BigNumber>;
@@ -2708,25 +2636,17 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    emergencyShutdown(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    emergencyShutdown(overrides?: Overrides): Promise<BigNumber>;
 
-    "emergencyShutdown()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "emergencyShutdown()"(overrides?: Overrides): Promise<BigNumber>;
 
     expirationTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     "expirationTimestamp()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    expire(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    expire(overrides?: Overrides): Promise<BigNumber>;
 
-    "expire()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "expire()"(overrides?: Overrides): Promise<BigNumber>;
 
     expiryPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2774,13 +2694,9 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    gulp(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    gulp(overrides?: Overrides): Promise<BigNumber>;
 
-    "gulp()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "gulp()"(overrides?: Overrides): Promise<BigNumber>;
 
     liquidationLiveness(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2802,13 +2718,9 @@ export class Empv2 extends Contract {
 
     "minSponsorTokens()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    payRegularFees(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    payRegularFees(overrides?: Overrides): Promise<BigNumber>;
 
-    "payRegularFees()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "payRegularFees()"(overrides?: Overrides): Promise<BigNumber>;
 
     pfc(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2837,67 +2749,55 @@ export class Empv2 extends Contract {
 
     redeem(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "redeem((uint256))"(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
-    remargin(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    remargin(overrides?: Overrides): Promise<BigNumber>;
 
-    "remargin()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "remargin()"(overrides?: Overrides): Promise<BigNumber>;
 
     repay(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "repay((uint256))"(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
-    requestTransferPosition(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    requestTransferPosition(overrides?: Overrides): Promise<BigNumber>;
 
-    "requestTransferPosition()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "requestTransferPosition()"(overrides?: Overrides): Promise<BigNumber>;
 
     requestWithdrawal(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "requestWithdrawal((uint256))"(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     setCurrentTime(
       time: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "setCurrentTime(uint256)"(
       time: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
-    settleExpired(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    settleExpired(overrides?: Overrides): Promise<BigNumber>;
 
-    "settleExpired()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "settleExpired()"(overrides?: Overrides): Promise<BigNumber>;
 
     sponsorDisputeRewardPercentage(
       overrides?: CallOverrides
@@ -2925,12 +2825,12 @@ export class Empv2 extends Contract {
 
     transferPositionPassedRequest(
       newSponsorAddress: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "transferPositionPassedRequest(address)"(
       newSponsorAddress: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     transformCollateralRequirement(
@@ -2967,33 +2867,29 @@ export class Empv2 extends Contract {
 
     withdraw(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "withdraw((uint256))"(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     withdrawLiquidation(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
     "withdrawLiquidation(uint256,address)"(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<BigNumber>;
 
-    withdrawPassedRequest(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    withdrawPassedRequest(overrides?: Overrides): Promise<BigNumber>;
 
-    "withdrawPassedRequest()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    "withdrawPassedRequest()"(overrides?: Overrides): Promise<BigNumber>;
 
     withdrawalLiveness(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -3012,20 +2908,16 @@ export class Empv2 extends Contract {
     ): Promise<PopulatedTransaction>;
 
     cancelTransferPosition(
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "cancelTransferPosition()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    cancelWithdrawal(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    cancelWithdrawal(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "cancelWithdrawal()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    "cancelWithdrawal()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     collateralCurrency(
       overrides?: CallOverrides
@@ -3050,13 +2942,13 @@ export class Empv2 extends Contract {
     create(
       collateralAmount: { rawValue: BigNumberish },
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "create((uint256),(uint256))"(
       collateralAmount: { rawValue: BigNumberish },
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     createLiquidation(
@@ -3065,7 +2957,7 @@ export class Empv2 extends Contract {
       maxCollateralPerToken: { rawValue: BigNumberish },
       maxTokensToLiquidate: { rawValue: BigNumberish },
       deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "createLiquidation(address,(uint256),(uint256),(uint256),uint256)"(
@@ -3074,7 +2966,7 @@ export class Empv2 extends Contract {
       maxCollateralPerToken: { rawValue: BigNumberish },
       maxTokensToLiquidate: { rawValue: BigNumberish },
       deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     cumulativeFeeMultiplier(
@@ -3087,36 +2979,36 @@ export class Empv2 extends Contract {
 
     deposit(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "deposit((uint256))"(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     depositTo(
       sponsor: string,
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "depositTo(address,(uint256))"(
       sponsor: string,
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     dispute(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "dispute(uint256,address)"(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     disputeBondPercentage(
@@ -3135,13 +3027,9 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    emergencyShutdown(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    emergencyShutdown(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "emergencyShutdown()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    "emergencyShutdown()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     expirationTimestamp(
       overrides?: CallOverrides
@@ -3151,13 +3039,9 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    expire(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    expire(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "expire()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    "expire()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     expiryPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -3211,13 +3095,9 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    gulp(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    gulp(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "gulp()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    "gulp()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     liquidationLiveness(
       overrides?: CallOverrides
@@ -3245,13 +3125,9 @@ export class Empv2 extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    payRegularFees(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    payRegularFees(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "payRegularFees()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    "payRegularFees()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     pfc(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -3291,67 +3167,59 @@ export class Empv2 extends Contract {
 
     redeem(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "redeem((uint256))"(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    remargin(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    remargin(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "remargin()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    "remargin()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     repay(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "repay((uint256))"(
       numTokens: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     requestTransferPosition(
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "requestTransferPosition()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     requestWithdrawal(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "requestWithdrawal((uint256))"(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     setCurrentTime(
       time: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "setCurrentTime(uint256)"(
       time: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    settleExpired(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    settleExpired(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "settleExpired()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    "settleExpired()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     sponsorDisputeRewardPercentage(
       overrides?: CallOverrides
@@ -3387,12 +3255,12 @@ export class Empv2 extends Contract {
 
     transferPositionPassedRequest(
       newSponsorAddress: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "transferPositionPassedRequest(address)"(
       newSponsorAddress: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     transformCollateralRequirement(
@@ -3429,32 +3297,30 @@ export class Empv2 extends Contract {
 
     withdraw(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "withdraw((uint256))"(
       collateralAmount: { rawValue: BigNumberish },
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     withdrawLiquidation(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     "withdrawLiquidation(uint256,address)"(
       liquidationId: BigNumberish,
       sponsor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    withdrawPassedRequest(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    withdrawPassedRequest(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     "withdrawPassedRequest()"(
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     withdrawalLiveness(
