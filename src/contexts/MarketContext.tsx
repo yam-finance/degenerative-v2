@@ -99,7 +99,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             // Grab APRs from API
             const pricedGlobalUtil = rawGlobalUtilization * pricePerPaired;
             const aprAtGcr = !isExpired ? await getApr(name, 1 / pricedGlobalUtil) : 0;
-            const aprAt2 = !isExpired ? await getApr(name, 2) : 0; // 2 is a reasonably safe ratio that is more practical than GCR
+            const aprAt125 = !isExpired ? await getApr(name, 1.25) : 0; // 1.25 is common liquidation ratio
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
@@ -109,13 +109,13 @@ export const MarketProvider: React.FC = ({ children }) => {
               totalSupply: roundDecimals(Number(utils.formatUnits(totalSupply, paired.decimals)), 2),
               tvl: tvlUsd,
               marketCap: Math.trunc(marketCap),
-              volume24h: 0, // TODO need to get from subgraph
+              volume24h: Math.trunc(pool.volumeUSD),
               globalUtilization: roundDecimals(rawGlobalUtilization, 4),
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
               withdrawalPeriod: withdrawalPeriod / 60, // Convert to minutes
               apr: roundDecimals(aprAtGcr, 2),
-              aprAt2: roundDecimals(aprAt2, 2),
+              aprAt125: roundDecimals(aprAt125, 2),
               daysTillExpiry: daysTillExpiry,
               isExpired: isExpired,
             };
@@ -138,7 +138,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               liquidationPoint: 0.01,
               withdrawalPeriod: 0,
               apr: 0,
-              aprAt2: 0,
+              aprAt125: 0,
               daysTillExpiry: 69,
               isExpired: false,
             };

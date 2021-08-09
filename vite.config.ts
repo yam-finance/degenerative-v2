@@ -5,7 +5,7 @@ import eslint from '@rollup/plugin-eslint';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [reactRefresh(), { ...eslint({ include: 'src/**/*.+(js|jsx|ts|tsx)' }), enforce: 'pre' }],
+  plugins: [{ ...eslint({ include: 'src/**/*.+(js|jsx|ts|tsx)' }), enforce: 'pre' }, reactRefresh()],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),

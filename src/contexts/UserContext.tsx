@@ -1,10 +1,10 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
-import { IMintedPosition, ITokensInWallet, IPoolPosition } from '@/types';
+import { IMintedPosition, ITokensInWallet } from '@/types';
 
-import { useEmp, useToken, useSynthActions } from '@/hooks';
+import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
-import { BigNumber, utils } from 'ethers';
+import { utils } from 'ethers';
 import { MarketContext } from './MarketContext';
 import { isEmpty, roundDecimals } from '@/utils';
 
