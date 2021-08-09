@@ -50,7 +50,7 @@ export const Explore = () => {
             let aprMax = currentData.aprMax;
             if (marketData.apr >= currentData.aprMax) {
               aprMin = marketData.apr;
-              aprMax = marketData.aprAt2;
+              aprMax = marketData.aprAt125;
             }
 
             aggregateData[group] = {

@@ -1,10 +1,10 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
-import { IMintedPosition, ITokensInWallet, IPoolPosition } from '@/types';
+import { IMintedPosition, ITokensInWallet } from '@/types';
 
-import { useEmp, useToken, useSynthActions } from '@/hooks';
+import { useEmp, useToken } from '@/hooks';
 import { EthereumContext } from './EthereumContext';
-import { BigNumber, utils } from 'ethers';
+import { utils } from 'ethers';
 import { MarketContext } from './MarketContext';
 import { isEmpty, roundDecimals } from '@/utils';
 
@@ -67,8 +67,12 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const getSponsorPosition = async (synthName: string) => {
     const synth = synthMetadata[synthName];
-    const { tokensOutstanding, rawCollateral, withdrawalRequestPassTimeStamp, withdrawalRequestAmount } =
-      await emp.getUserPosition(synth);
+    const {
+      tokensOutstanding,
+      rawCollateral,
+      withdrawalRequestPassTimeStamp,
+      withdrawalRequestAmount,
+    } = await emp.getUserPosition(synth);
 
     if (rawCollateral.gt(0) || tokensOutstanding.gt(0)) {
       const tokens = Number(utils.formatUnits(tokensOutstanding, synth.token.decimals));
