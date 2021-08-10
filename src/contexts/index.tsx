@@ -1,10 +1,10 @@
 import React from 'react';
 import { EthereumProvider } from './EthereumContext';
 import { UserProvider } from './UserContext';
-import { GlobalProvider } from './GlobalContext';
 import { MarketProvider } from './MarketContext';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { Web3ReactProvider } from '@web3-react/core';
+import { ChainId, DAppProvider, Config, MULTICALL_ADDRESSES } from '@usedapp/core';
+import { EthNodeUrl } from '@/utils';
 import { providers } from 'ethers';
 
 const queryClient = new QueryClient();
@@ -15,22 +15,29 @@ const getLibrary = (provider: any): providers.Web3Provider => {
   return library;
 };
 
+const config: Config = {
+  multicallAddresses: {
+    ...MULTICALL_ADDRESSES,
+  },
+  readOnlyChainId: ChainId.Mainnet,
+  readOnlyUrls: {
+    [ChainId.Mainnet]: EthNodeUrl,
+  },
+};
+
 const ContextProviders: React.FC = ({ children }) => {
   return (
-    <GlobalProvider>
-      <QueryClientProvider client={queryClient}>
-        <EthereumProvider>
-          <MarketProvider>
-            <UserProvider>{children}</UserProvider>
-          </MarketProvider>
-        </EthereumProvider>
-      </QueryClientProvider>
-    </GlobalProvider>
+    <QueryClientProvider client={queryClient}>
+      <DAppProvider config={config}>
+        <MarketProvider>
+          <UserProvider>{children}</UserProvider>
+        </MarketProvider>
+      </DAppProvider>
+    </QueryClientProvider>
   );
 };
 
 export * from './EthereumContext';
 export * from './UserContext';
 export * from './MarketContext';
-export * from './GlobalContext';
 export default ContextProviders;
