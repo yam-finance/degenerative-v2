@@ -2,9 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Signer } from "ethers";
+import { Signer, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import { Contract, ContractFactory, Overrides } from "@ethersproject/contracts";
 
 import type { Erc20 } from "../Erc20";
 
@@ -13,13 +12,17 @@ export class Erc20__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(name: string, symbol: string, overrides?: Overrides): Promise<Erc20> {
+  deploy(
+    name: string,
+    symbol: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<Erc20> {
     return super.deploy(name, symbol, overrides || {}) as Promise<Erc20>;
   }
   getDeployTransaction(
     name: string,
     symbol: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): TransactionRequest {
     return super.getDeployTransaction(name, symbol, overrides || {});
   }
