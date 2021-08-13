@@ -1,33 +1,16 @@
-import React, { useContext } from 'react';
-
-import { EthereumContext } from '@/contexts';
+import React from 'react';
+import { useEthers } from '@usedapp/core';
 
 interface ConnectWalletProps {
   className?: string;
 }
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ className }) => {
-  const { setEthereum } = useContext(EthereumContext);
-
-  const onPress = async () => {
-    if (window.ethereum && window.ethereum.request) {
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-      setEthereum(window.ethereum);
-      console.log('Eth provider set');
-    } else {
-      console.error('No Ethereum provider available');
-    }
-  };
+  const { activateBrowserWallet, account } = useEthers();
 
   return (
-    <div
-      onClick={(e) => {
-        e.preventDefault();
-        onPress();
-      }}
-      className={className}
-    >
+    <button onClick={() => activateBrowserWallet()} className={className}>
       Connect Wallet
-    </div>
+    </button>
   );
 };

@@ -1,17 +1,12 @@
-import { useContext, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { Signer, utils, constants } from 'ethers';
-import { EthereumContext } from '@/contexts';
+import { useEthers } from '@usedapp/core';
 import { Erc20__factory } from '@/types/contracts';
 
 export const useToken = () => {
-  const { signer, account } = useContext(EthereumContext);
-
-  //const [tokenContract, setTokenContract] = useState<Erc20>(Erc20__factory.connect(tokenAddress, signer as Signer));
-
-  //useEffect(() => {
-  //  setTokenContract(Erc20__factory.connect(tokenAddress, signer as Signer));
-  //}, [signer, tokenAddress]);
+  const { account, library } = useEthers();
+  const signer = library?.getSigner();
 
   const approveSpender = useCallback(
     async (tokenAddress: string, spenderAddress: string, tokenAmount?: string) => {

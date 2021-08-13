@@ -17,7 +17,6 @@ module.exports = {
       forking: {
         url: 'https://fee7372b6e224441b747bf1fde15b2bd.eth.rpc.rivet.cloud',
       },
-      chainId: 1337,
     },
   },
 };

@@ -1,22 +1,22 @@
-import { useContext, useCallback } from 'react';
-import { Signer, BigNumber } from 'ethers';
+import { useCallback } from 'react';
+import { Signer } from 'ethers';
 
-import { EthereumContext } from '@/contexts/EthereumContext';
-import { Empv2__factory, Unsigned, IEmpState, IUserPositions, ISynth } from '@/types';
+import { useEthers } from '@usedapp/core';
+import { Empv2__factory, Unsigned, IUserPositions, ISynth } from '@/types';
 
 // Stateless hook for EMP contract helper functions
 export const useEmp = () => {
-  const { account, signer, provider } = useContext(EthereumContext);
+  const { account, library } = useEthers();
+  const signer = library?.getSigner();
 
   const mint = useCallback(
     async (synth: ISynth, collateral: number, tokens: number) => {
-      console.log(synth);
+      if (!signer) return;
+
       const decimals = synth.token.decimals; // Token and collateral have same decimals
       const [collateralAmount, tokenAmount] = [new Unsigned(collateral, decimals), new Unsigned(tokens, decimals)];
-      console.log(decimals);
-      console.log(collateralAmount);
-      console.log(tokenAmount);
-      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
+
+      const empContract = Empv2__factory.connect(synth.emp.address, signer);
 
       try {
         console.log('COLLATERAL: ' + collateralAmount.rawValue);
@@ -33,13 +33,16 @@ export const useEmp = () => {
         return Promise.reject('Mint failed.');
       }
     },
-    [signer]
+    [library]
   );
 
   const deposit = useCallback(
     async (synth: ISynth, collateral: number) => {
+      if (!signer) return;
+
       const collateralAmount = new Unsigned(collateral, synth.token.decimals);
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
+
       try {
         const gasLimit = await empContract.estimateGas.deposit(collateralAmount);
         const tx = await empContract.deposit(collateralAmount, {
@@ -56,8 +59,11 @@ export const useEmp = () => {
 
   const redeem = useCallback(
     async (synth: ISynth, tokens: number) => {
+      if (!signer) return;
+
       const tokenAmount = new Unsigned(tokens, synth.token.decimals);
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
+
       try {
         const gasLimit = await empContract.estimateGas.redeem(tokenAmount);
         const tx = await empContract.redeem(tokenAmount, {
@@ -75,8 +81,11 @@ export const useEmp = () => {
   // TODO Repay is not implemented on old EMP contracts. Figure out wtf to do!
   const repay = useCallback(
     async (synth: ISynth, tokens: number) => {
+      if (!signer) return;
+
       const tokenAmount = new Unsigned(tokens, synth.token.decimals);
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
+
       try {
         const gasLimit = await empContract.estimateGas.repay(tokenAmount);
         const tx = await empContract.repay(tokenAmount, {
@@ -93,7 +102,10 @@ export const useEmp = () => {
 
   const settle = useCallback(
     async (synth: ISynth) => {
+      if (!signer) return;
+
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
+
       try {
         const gasLimit = await empContract.estimateGas.settleExpired();
         const tx = await empContract.settleExpired({
@@ -111,6 +123,8 @@ export const useEmp = () => {
   // NOTE: Only works up to GCR. Otherwise will fail.
   const withdraw = useCallback(
     async (synth: ISynth, collateral: number) => {
+      if (!signer) return;
+
       const collateralAmount = new Unsigned(collateral, synth.token.decimals);
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
@@ -130,6 +144,8 @@ export const useEmp = () => {
 
   const initWithdrawalRequest = useCallback(
     async (synth: ISynth, collateral: number) => {
+      if (!signer) return;
+
       const collateralAmount = new Unsigned(collateral, synth.token.decimals);
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
@@ -149,6 +165,8 @@ export const useEmp = () => {
 
   const withdrawPassedRequest = useCallback(
     async (synth: ISynth) => {
+      if (!signer) return;
+
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
       try {
@@ -167,6 +185,8 @@ export const useEmp = () => {
 
   const cancelWithdrawalRequest = useCallback(
     async (synth: ISynth) => {
+      if (!signer) return;
+
       const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
 
       try {
@@ -186,7 +206,9 @@ export const useEmp = () => {
   const getUserPosition = useCallback(
     async (synth: ISynth) => {
       if (!account) return Promise.reject('Wallet not connected');
-      const empContract = Empv2__factory.connect(synth.emp.address, signer as Signer);
+      if (!signer) return Promise.reject('No signer available');
+
+      const empContract = Empv2__factory.connect(synth.emp.address, signer);
       try {
         const userPositions = await empContract.positions(account as string);
 

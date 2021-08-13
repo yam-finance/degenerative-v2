@@ -2,15 +2,16 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
+import { useEthers } from '@usedapp/core';
 
 import { Dropdown, Icon, Loader, ActionSelector } from '@/components';
-import { UserContext, EthereumContext, MarketContext } from '@/contexts';
-import { useToken, ISynthActions, PositionManagerContainer, MinterAction } from '@/hooks';
-import { roundDecimals, isEmpty, getCollateralData } from '@/utils';
-import { IToken, ISynthMarketData } from '@/types';
+import { UserContext, MarketContext } from '@/contexts';
+import { useToken, ISynthActions, PositionManagerContainer } from '@/hooks';
+import { isEmpty } from '@/utils';
+import { IToken } from '@/types';
 
 export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(({ actions }) => {
-  const { account, provider } = useContext(EthereumContext);
+  const { account, library } = useEthers();
   const { currentSynth, currentCollateral, mintedPositions, triggerUpdate } = useContext(UserContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
 
@@ -101,13 +102,13 @@ export const PositionManager: React.FC<{ actions: ISynthActions }> = React.memo(
 
   // Set an event listener to update when collateral balance changes
   useEffect(() => {
-    provider?.on('block', () => {
+    library?.on('block', () => {
       if (!isEmpty(collateralData[currentCollateral]) && !isEmpty(synthMetadata[currentSynth])) {
         setTokenBalances(collateralData[currentCollateral], synthMetadata[currentSynth].token);
       }
     });
     return () => {
-      provider?.removeAllListeners('block');
+      library?.removeAllListeners('block');
     };
   }, []);
 

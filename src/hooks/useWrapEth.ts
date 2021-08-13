@@ -1,20 +1,22 @@
 import { useContext, useState, useEffect } from 'react';
-import { Signer, utils } from 'ethers';
+import { utils } from 'ethers';
+import { useEthers } from '@usedapp/core';
 
-import { EthereumContext, MarketContext } from '@/contexts';
+import { MarketContext } from '@/contexts';
 import { Weth__factory, Weth } from '@/types/contracts';
 import { isEmpty } from '@/utils';
 
 export const useWrapEth = () => {
   const { collateralData } = useContext(MarketContext);
-  const { signer } = useContext(EthereumContext);
+  const { library } = useEthers();
+  const signer = library?.getSigner();
 
   const [wethContract, setWethContract] = useState<Weth>();
 
   useEffect(() => {
-    if (!isEmpty(collateralData)) {
+    if (!isEmpty(collateralData) && signer) {
       const wethAddress = collateralData['WETH'].address;
-      setWethContract(Weth__factory.connect(wethAddress, signer as Signer));
+      setWethContract(Weth__factory.connect(wethAddress, signer));
     }
   }, [signer, collateralData]);
 

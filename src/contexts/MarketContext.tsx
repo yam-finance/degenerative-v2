@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { BigNumber } from 'ethers';
-import { EthereumContext } from '@/contexts';
+import { useEthers } from '@usedapp/core';
 import { ISynthMarketData, ISynth, IToken } from '@/types';
 import {
   getSynthMetadata,
@@ -30,7 +29,7 @@ export const MarketProvider: React.FC = ({ children }) => {
   const [collateralData, setCollateralData] = useState(initialState.collateralData);
   const [loading, setLoading] = useState(false);
 
-  const { chainId, provider, account } = useContext(EthereumContext);
+  const { chainId, library } = useEthers();
 
   useEffect(() => {
     const initializeMarketData = async (
@@ -50,7 +49,7 @@ export const MarketProvider: React.FC = ({ children }) => {
             synth,
             collateral,
             paired,
-            getEmpState(synth, chainId, provider),
+            getEmpState(synth, chainId ?? 1, library),
             getUsdPrice(collateral.coingeckoId ?? ''),
             getPoolData(synth.pool),
           ]);
@@ -153,7 +152,7 @@ export const MarketProvider: React.FC = ({ children }) => {
 
     setLoading(true);
 
-    if (chainId !== 0) {
+    if (library && chainId) {
       const metadata = getSynthMetadata(chainId);
       const collateral = getCollateralData(chainId);
       initializeMarketData(metadata, collateral);
@@ -162,7 +161,7 @@ export const MarketProvider: React.FC = ({ children }) => {
     }
 
     setLoading(false);
-  }, [provider, chainId]);
+  }, [library, chainId]);
 
   return (
     <MarketContext.Provider

@@ -16,8 +16,8 @@ const App: React.FC = () => {
   }, [i18n, i18n.language]);
 
   return (
-    <Router>
-      <ContextProviders>
+    <ContextProviders>
+      <Router>
         <Switch>
           <Route exact strict path="/" component={Landing} />
           <Route exact strict path="/portfolio" component={Portfolio} />
@@ -28,8 +28,8 @@ const App: React.FC = () => {
           <Route exact strict path="/legal/terms" component={Terms} />
           <Route component={NotFound} />
         </Switch>
-      </ContextProviders>
-    </Router>
+      </Router>
+    </ContextProviders>
   );
 };
 

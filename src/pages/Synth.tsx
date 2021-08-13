@@ -2,14 +2,16 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
 import { useFormState } from 'react-use-form-state';
+import { useEthers } from '@usedapp/core';
+import { utils } from 'ethers';
+import numeral from 'numeral';
 
 import { PositionManagerContainer, useSynthActions } from '@/hooks';
-import { UserContext, MarketContext, EthereumContext } from '@/contexts';
+import { UserContext, MarketContext } from '@/contexts';
+
 import { Page, Navbar, Icon, MainDisplay, MainHeading, PositionManager, SideDisplay } from '@/components';
 import { ISynth, ISynthMarketData } from '@/types';
-import { utils } from 'ethers';
 import { isEmpty, roundDecimals } from '@/utils';
-import numeral from 'numeral';
 
 interface SynthParams {
   group: string;
@@ -20,7 +22,8 @@ export const Synth: React.FC = () => {
   const { group, cycleYear } = useParams<SynthParams>();
   const { currentSynth, currentCollateral, setSynth, mintedPositions, triggerUpdate } = useContext(UserContext);
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
-  const { signer } = useContext(EthereumContext);
+  const { library } = useEthers();
+  const signer = library?.getSigner();
 
   const [synth, setSynthInfo] = useState({} as ISynth);
   const [marketData, setMarketData] = useState({} as ISynthMarketData);

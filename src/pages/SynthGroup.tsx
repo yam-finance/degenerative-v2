@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
-import { UserContext, MarketContext, EthereumContext } from '@/contexts';
-import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Loader, Icon } from '@/components';
+import { useEthers } from '@usedapp/core';
+import { UserContext, MarketContext } from '@/contexts';
+import { Page, Navbar, MainDisplay, MainHeading, SideDisplay, Table, Icon } from '@/components';
 import { SynthGroups, isEmpty, getDailyPriceHistory, formatForDisplay } from '@/utils';
 import chartLoader from '@/assets/chart-loader.svg';
 import { ISynthGroup } from '@/types';
@@ -25,7 +26,7 @@ type SynthTableFilter = 'Live' | 'Expired' | 'All';
 
 export const SynthGroup: React.FC = () => {
   const { synthsInWallet } = useContext(UserContext);
-  const { chainId } = useContext(EthereumContext);
+  const { chainId } = useEthers();
   const { synthMetadata, synthMarketData } = useContext(MarketContext);
   const { group } = useParams<SynthParams>();
 

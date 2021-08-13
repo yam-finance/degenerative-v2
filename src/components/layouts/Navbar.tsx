@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SearchForm, NavbarButton, Icon, Dropdown, ConnectWallet, LanguageSwitcher } from '@/components';
-import { EthereumContext } from '@/contexts';
+import { NavbarButton, Icon, Dropdown, ConnectWallet } from '@/components';
+import { useEthers } from '@usedapp/core';
 // import { useTranslation } from 'react-i18next';
 import { picasso } from '@/utils';
 
@@ -9,7 +9,8 @@ import yamIcon from '@/assets/yamIcon.png';
 import discord from '@/assets/discord.svg';
 
 export const Navbar = () => {
-  const { account, disconnectWallet, chainId } = useContext(EthereumContext);
+  const { account, deactivate, chainId } = useEthers();
+
   const [accountDisplay, setAccountDisplay] = useState('Not Connected');
   const [openWalletMenu, setWalletMenu] = useState(false);
   const [openLegalMenu, setLegalMenu] = useState(false);
@@ -52,7 +53,7 @@ export const Navbar = () => {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              disconnectWallet();
+              deactivate();
             }}
             className="nav-link width-full"
           >
@@ -150,9 +151,9 @@ export const Navbar = () => {
               openDropdown={openWalletMenu}
             >
               <div
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.preventDefault();
-                  disconnectWallet();
+                  await deactivate();
                 }}
                 className="dropdown-link w-dropdown-link"
               >

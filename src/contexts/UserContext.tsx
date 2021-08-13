@@ -1,10 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
+import { utils } from 'ethers';
+import { useEthers } from '@usedapp/core';
+
 import { IMintedPosition, ITokensInWallet } from '@/types';
 
 import { useEmp, useToken } from '@/hooks';
-import { EthereumContext } from './EthereumContext';
-import { utils } from 'ethers';
 import { MarketContext } from './MarketContext';
 import { isEmpty, roundDecimals } from '@/utils';
 
@@ -22,7 +23,7 @@ const initialState = {
 export const UserContext = createContext(initialState);
 
 export const UserProvider: React.FC = ({ children }) => {
-  const { account } = useContext(EthereumContext);
+  const { account } = useEthers();
   const { synthMetadata, synthMarketData, collateralData } = useContext(MarketContext);
 
   const [mintedPositions, setMintedPositions] = useState<IMintedPosition[]>([]);

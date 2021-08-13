@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import { Breadcrumbs } from '@/components';
+import { useEthers } from '@usedapp/core';
 
-import { EthereumContext } from '@/contexts';
 import Plug from '@/assets/plug.png';
 
 export const MainHeading: React.FC<{ className?: string }> = ({ className, children }) => {
@@ -10,7 +10,7 @@ export const MainHeading: React.FC<{ className?: string }> = ({ className, child
 };
 
 export const MainDisplay: React.FC = ({ children }) => {
-  const { account } = useContext(EthereumContext);
+  const { account } = useEthers();
 
   return (
     <div className="expand flex-column">
@@ -22,6 +22,7 @@ export const MainDisplay: React.FC = ({ children }) => {
           <div className="flex-column-middle padding-top-32 landscape-flex-column-centered">
             <img className="width-full max-width-large" src={Plug}></img>
             <h1 className="text-align-center">Please connect your wallet to continue</h1>
+            {/**<button onClick={() => activateBrowserWallet((err) => console.log(err), true)}>Connect</button>*/}
           </div>
         )}
       </div>
