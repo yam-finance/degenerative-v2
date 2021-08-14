@@ -1,6 +1,16 @@
 import React from 'react';
 import { useEthers } from '@usedapp/core';
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
+
+const providerOptions = {
+  walletconnect: {
+    package: WalletConnectProvider,
+    options: {
+      1: 
+    }
+  }
+}
 interface ConnectWalletProps {
   className?: string;
 }

@@ -98,7 +98,6 @@ export const SynthGroup: React.FC = () => {
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
-    console.log(historicPriceData);
     const data = {
       labels: historicPriceData.labels,
       datasets: [

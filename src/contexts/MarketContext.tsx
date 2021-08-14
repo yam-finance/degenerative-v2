@@ -3,7 +3,6 @@ import { useEthers } from '@usedapp/core';
 import { ISynthMarketData, ISynth, IToken } from '@/types';
 import {
   getSynthMetadata,
-  getPairPriceEth,
   getUsdPrice,
   getApr,
   getPoolData,
