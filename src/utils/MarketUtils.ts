@@ -131,13 +131,14 @@ export const getApr = async (name: string): Promise<number> => {
     const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`, {
       timeout: 2000,
     });
-    console.log(res.data);
+    //console.log(res.data);
+
     // TODO temporary name until API changes field to `apr`
     const apr = res.data.aprMultiplier;
     sessionStorage.setItem(name, apr);
 
-    console.log(apr);
-    return Promise.resolve(apr);
+    //console.log(apr);
+    return Promise.resolve(Number(apr));
   } catch (err) {
     console.error(err);
     return Promise.resolve(0); // TODO temporary fix to prevent UI from breaking

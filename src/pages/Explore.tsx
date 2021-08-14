@@ -28,6 +28,8 @@ export const Explore = () => {
     const AggregateSynthGroupData = () => {
       const aggregateData: Record<string, ISynthGroupData> = {};
 
+      console.log(synthMarketData);
+
       Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
@@ -53,9 +55,9 @@ export const Explore = () => {
             //if (marketData.apr >= currentData.apr) {
             //  apr = marketData.apr;
             //}
-            console.log(group);
-            console.log(marketData.apr);
-            console.log(currentData.apr);
+            //console.log(group);
+            //console.log(marketData.apr);
+            //console.log(currentData.apr);
             const apr = marketData.apr >= currentData.apr ? marketData.apr : currentData.apr;
 
             aggregateData[group] = {
