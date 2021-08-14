@@ -122,21 +122,22 @@ export const getPoolData = async (pool: ILiquidityPool) => {
 };
 
 // Get APR multiplier.
-export const getApr = async (name: string, cr: number): Promise<number> => {
-  const collateralEfficiency = 1 / (1 + cr);
-
+export const getApr = async (name: string): Promise<number> => {
   // Return cached value if present
   const cached = sessionStorage.getItem(name);
-  if (cached) return Promise.resolve(Number(cached) * collateralEfficiency);
+  if (cached) return Promise.resolve(Number(cached));
 
   try {
     const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`, {
       timeout: 2000,
     });
-    const aprMultiplier = res.data.aprMultiplier;
-    sessionStorage.setItem(name, aprMultiplier);
+    console.log(res.data);
+    // TODO temporary name until API changes field to `apr`
+    const apr = res.data.aprMultiplier;
+    sessionStorage.setItem(name, apr);
 
-    return Promise.resolve(aprMultiplier * collateralEfficiency);
+    console.log(apr);
+    return Promise.resolve(apr);
   } catch (err) {
     console.error(err);
     return Promise.resolve(0); // TODO temporary fix to prevent UI from breaking

@@ -98,8 +98,9 @@ export const MarketProvider: React.FC = ({ children }) => {
 
             // Grab APRs from API
             const pricedGlobalUtil = rawGlobalUtilization * pricePerPaired;
-            const aprAtGcr = !isExpired ? await getApr(name, 1 / pricedGlobalUtil) : 0;
-            const aprAt125 = !isExpired ? await getApr(name, 1.25) : 0; // 1.25 is common liquidation ratio
+            const apr = !isExpired ? await getApr(name) : 0;
+            console.log(name);
+            console.log(apr);
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
@@ -114,8 +115,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
               withdrawalPeriod: withdrawalPeriod / 60, // Convert to minutes
-              apr: roundDecimals(aprAtGcr, 2),
-              aprAt125: roundDecimals(aprAt125, 2),
+              apr: roundDecimals(apr, 2),
               daysTillExpiry: daysTillExpiry,
               isExpired: isExpired,
             };
@@ -138,7 +138,6 @@ export const MarketProvider: React.FC = ({ children }) => {
               liquidationPoint: 0.01,
               withdrawalPeriod: 0,
               apr: 0,
-              aprAt125: 0,
               daysTillExpiry: 69,
               isExpired: false,
             };
