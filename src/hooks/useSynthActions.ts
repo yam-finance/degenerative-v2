@@ -78,7 +78,7 @@ export const useSynthActions = () => {
       if (collateralAmount >= 0 && tokenAmount > 0) {
         try {
           const txReceipt = await emp.mint(synth, collateralAmount, tokenAmount);
-          console.log(txReceipt.transactionHash);
+          console.log(txReceipt?.transactionHash);
         } catch (err) {
           console.error(err);
         }
@@ -94,7 +94,7 @@ export const useSynthActions = () => {
       if (collateralAmount > 0) {
         try {
           const txReceipt = await emp.deposit(synth, collateralAmount);
-          console.log(txReceipt.transactionHash);
+          console.log(txReceipt?.transactionHash);
         } catch (err) {
           console.error(err);
         }
@@ -111,7 +111,7 @@ export const useSynthActions = () => {
       if (tokenAmount > 0) {
         try {
           const txReceipt = await emp.repay(synth, tokenAmount);
-          console.log(txReceipt.transactionHash);
+          console.log(txReceipt?.transactionHash);
         } catch (err) {
           console.error(err);
         }
@@ -127,7 +127,7 @@ export const useSynthActions = () => {
       if (tokenAmount > 0) {
         try {
           const txReceipt = await emp.redeem(synth, tokenAmount);
-          console.log(txReceipt.transactionHash);
+          console.log(txReceipt?.transactionHash);
         } catch (err) {
           console.error(err);
         }
@@ -143,7 +143,7 @@ export const useSynthActions = () => {
       if (collateralAmount > 0) {
         try {
           const txReceipt = await emp.withdraw(synth, collateralAmount);
-          console.log(txReceipt.transactionHash);
+          console.log(txReceipt?.transactionHash);
         } catch (err) {
           console.error(err);
         }
@@ -159,7 +159,7 @@ export const useSynthActions = () => {
       if (collateralAmount > 0) {
         try {
           const txReceipt = await emp.initWithdrawalRequest(synth, collateralAmount);
-          console.log(txReceipt.transactionHash);
+          console.log(txReceipt?.transactionHash);
         } catch (err) {
           console.error(err);
         }
@@ -173,7 +173,7 @@ export const useSynthActions = () => {
   const onWithdrawPassedRequest = useCallback(async () => {
     try {
       const txReceipt = await emp.withdrawPassedRequest(synth);
-      console.log(txReceipt.transactionHash);
+      console.log(txReceipt?.transactionHash);
     } catch (err) {
       console.error(err);
     }
@@ -182,7 +182,7 @@ export const useSynthActions = () => {
   const onCancelWithdraw = useCallback(async () => {
     try {
       const txReceipt = await emp.cancelWithdrawalRequest(synth);
-      console.log(txReceipt.transactionHash);
+      console.log(txReceipt?.transactionHash);
     } catch (err) {
       console.error(err);
     }
@@ -191,7 +191,7 @@ export const useSynthActions = () => {
   const onSettle = useCallback(async () => {
     try {
       const txReceipt = await emp.settle(synth);
-      console.log(txReceipt.transactionHash);
+      console.log(txReceipt?.transactionHash);
     } catch (err) {
       console.error(err);
     }

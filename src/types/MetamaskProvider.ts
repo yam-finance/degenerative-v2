@@ -15,6 +15,6 @@ export interface MetamaskProvider {
 
 declare global {
   interface Window {
-    ethereum?: providers.ExternalProvider & MetamaskProvider;
+    ethereum: providers.ExternalProvider & MetamaskProvider;
   }
 }
