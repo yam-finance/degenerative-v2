@@ -3,6 +3,7 @@ import reactRefresh from '@vitejs/plugin-react-refresh';
 import { resolve } from 'path';
 import eslint from '@rollup/plugin-eslint';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
+import shimReactPdf from 'vite-plugin-shim-react-pdf';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -12,6 +13,7 @@ export default defineConfig({
       enforce: 'pre',
     },
     reactRefresh(),
+    shimReactPdf(),
     //nodePolyfills(),
   ],
   resolve: {

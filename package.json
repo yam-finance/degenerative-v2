@@ -44,6 +44,7 @@
     "ts-generator": "^0.1.1",
     "unstated-next": "^1.1.0",
     "use-react-router-breadcrumbs": "^2.0.0",
+    "vite-plugin-shim-react-pdf": "^1.0.3",
     "web3modal": "^1.9.4"
   },
   "devDependencies": {
