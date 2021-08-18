@@ -15,6 +15,11 @@ const App: React.FC = () => {
     document.dir = i18n.dir();
   }, [i18n, i18n.language]);
 
+  /**
+   * <Route exact strict path="/legal/privacy" component={PrivacyPolicy} />
+   * <Route exact strict path="/legal/terms" component={Terms} />
+   */
+
   return (
     <Router>
       <ContextProviders>
@@ -24,8 +29,6 @@ const App: React.FC = () => {
           <Route exact strict path="/explore" component={Explore} />
           <Route exact strict path="/explore/:group" component={SynthGroup} />
           <Route exact strict path="/explore/:group/:cycleYear" component={Synth} />
-          <Route exact strict path="/legal/privacy" component={PrivacyPolicy} />
-          <Route exact strict path="/legal/terms" component={Terms} />
           <Route component={NotFound} />
         </Switch>
       </ContextProviders>
