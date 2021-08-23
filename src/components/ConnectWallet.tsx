@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
-
 import { EthereumContext } from '@/contexts';
+
+import { useTranslation } from 'react-i18next';
 
 interface ConnectWalletProps {
   className?: string;
@@ -8,6 +9,7 @@ interface ConnectWalletProps {
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ className }) => {
   const { setEthereum } = useContext(EthereumContext);
+  const { t } = useTranslation();
 
   const onPress = async () => {
     if (window.ethereum && window.ethereum.request) {
@@ -21,13 +23,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ className }) => {
 
   return (
     <div
-      onClick={(e) => {
+      onClick={async (e) => {
         e.preventDefault();
-        onPress();
+        await onPress();
       }}
       className={className}
     >
-      Connect Wallet
+      {t('menu-L-connect')}
     </div>
   );
 };

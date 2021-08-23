@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 import { Icon, Dropdown } from '@/components';
 import { SynthGroups } from '@/utils';
+import { useTranslation } from 'react-i18next';
+
 import yamIcon from '@/assets/yamIcon.png';
 import ethIcon from '@/assets/ethIcon.png';
 import mintLp from '@/assets/mintLp.png';
@@ -12,15 +14,17 @@ import hero from '@/assets/degen-hero.png';
 import gloop from '@/assets/gloop.png';
 import umaLogo from '@/assets/uma_logo.png';
 
+interface SynthBlockProps {
+  name: string;
+  image: string;
+  url: string;
+  description: string;
+  apr: number;
+  isNew?: boolean;
+}
+
 export const Landing: React.FC = () => {
-  interface SynthBlockProps {
-    name: string;
-    image: string;
-    url: string;
-    description: string;
-    apr: number;
-    isNew?: boolean;
-  }
+  const { t } = useTranslation();
 
   const [openMenu, setOpenMenu] = useState(false);
   const toggleMenu = () => setOpenMenu(!openMenu);
@@ -54,10 +58,10 @@ export const Landing: React.FC = () => {
               rel="noreferrer"
               className="text-color-4 tablet-hide w-nav-link"
             >
-              Learn
+              {t('menu-top-link-1')}
             </a>
             <Link to="/explore" className="tablet-hide button w-button">
-              Explore Synths
+              {t('menu-top-btn')}
             </Link>
           </div>
 
@@ -85,14 +89,12 @@ export const Landing: React.FC = () => {
       </div>
       <div className="section-in-base padding-top-0">
         <div className="container-1140 landscape-overflow-hidden w-container">
-          <h1 className="text-align-center margin-bottom-4 text-5xl">Trade, hedge, & earn with Yam Synths</h1>
-          <p className="text-large text-color-4 text-align-center">
-            Yam Synths is your portal to the powerful world of synthetic derivatives
-          </p>
+          <h1 className="text-align-center margin-bottom-4 text-5xl">{t('home-text1-h1')}</h1>
+          <p className="text-large text-color-4 text-align-center">{t('home-text1-info')}</p>
           <div className="flex-space-between flex-align-baseline margin-top-16">
-            <h4>Explore Yam Synths</h4>
+            <h4>{t('home-text1a-info')}</h4>
             <Link to="/explore" className="text-color-5">
-              View all
+              {t('home-text1b-link')}
             </Link>
           </div>
           <div className="grid-3-columns">
@@ -147,58 +149,62 @@ export const Landing: React.FC = () => {
       <div className="section-in-base">
         <div className="margin-y-48 radius-xl background-color-4 padding-12 box-shadow-large sheen margin-y-0 relative container-1140 w-container overflow-hidden">
           <h2 className="width-1-2 tablet-width-full z-1 margin-bottom-8">
-            Yam Synths brings you <span className="text-color-1">new opportunities</span>
+            {t('home-text3-h2')}
+            {/*Yam Synths brings you <span className="text-color-1">new opportunities</span>*/}
           </h2>
           <div className="flex-align-center margin-top-4">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
-            <p className="text-color-4 margin-0 text-medium">Yield farm on an extensive list of collateral tokens</p>
+            <p className="text-color-4 margin-0 text-medium">{t('home-text3a-info')}</p>
           </div>
           <div className="flex-align-center margin-top-4 z-1">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
-            <p className="text-color-4 margin-0 text-medium">Access exotic synths pushing the boundaries of DeFi</p>
+            <p className="text-color-4 margin-0 text-medium">{t('home-text3b-info')}</p>
           </div>
           <div className="flex-align-center margin-top-4 tablet-margin-bottom-12">
             <div className="width-8 height-8 background-color-1 radius-full flex-align-center flex-justify-center margin-right-2">
               <Icon name="Check" className="icon opacity-100" />
             </div>
-            <p className="text-color-4 margin-0 text-medium">Execute novel trading and hedging strategies</p>
+            <p className="text-color-4 margin-0 text-medium">{t('home-text3c-info')}</p>
           </div>
           <img src={gloop} className="absolute-top-right width-64 tablet-hide"></img>
           <Link
             to="/explore"
             className="button-secondary absolute-bottom-right margin-12 margin-12 tablet-relative tablet-margin-0 landscape-margin-0 portrait-margin-0"
           >
-            Explore Synths
+            {t('home-opps-btn')}
           </Link>
         </div>
       </div>
       <div className="section-in-base">
         <div className="container-1140 w-container">
-          <h2 className="margin-bottom-10">What can you do with Yam Synths?</h2>
+          <h2 className="margin-bottom-10">{t('home-text4-h2')}</h2>
           <div className="flex-row tablet-block">
             <div className="padding-12 padding-left-0 border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0 landscape-padding-x-0 portrait-padding-x-0">
               <img src={mintLp} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
-                Provide Liquidity <br />
-                <span className="opacity-50">Earn swap fees and attractive UMA and YAM rewards.</span>
+                {t('home-text4a-info')}
+                {/*Provide Liquidity <br />
+                <span className="opacity-50">Earn swap fees and attractive UMA and YAM rewards.</span>*/}
               </h5>
             </div>
             <div className="padding-12  border-right-2px width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0 landscape-padding-x-0 portrait-padding-x-0">
               <img src={hold} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
-                Go Long <br />
-                <span className="opacity-50">Purchase and hold a synthetic asset to gain positive exposure.</span>
+                {t('home-text4b-info')}
+                {/*Go Long <br />
+                <span className="opacity-50">Purchase and hold a synthetic asset to gain positive exposure.</span>*/}
               </h5>
             </div>
             <div className="padding-12 padding-right-0 width-1-2 padding-top-0 tablet-width-full tablet-border-none tablet-padding-x-0 landscape-padding-x-0 portrait-padding-x-0">
               <img src={short} loading="lazy" className="bobacon margin-bottom-4" />
               <h5 className="line-height-1-625">
-                Go Short <br />
-                <span className="opacity-50">Mint and sell a synth to open a short position.</span>
+                {t('home-text4c-info')}
+                {/*Go Short <br />
+                <span className="opacity-50">Mint and sell a synth to open a short position.</span>*/}
               </h5>
             </div>
           </div>
@@ -209,14 +215,17 @@ export const Landing: React.FC = () => {
           <div className="flex-row flex-wrap">
             <div className="width-1-2 tablet-width-full">
               <h4>
-                <strong className="line-height-1-625">Built with love by YAM 🍠 </strong> <br />
-                <strong className="line-height-1-625">Powered by UMA 🦑</strong>
+                <strong className="line-height-1-625">{t('footer-byLine-1')}</strong>
+                {/*Built with love by YAM 🍠 */}
+                <br />
+                <strong className="line-height-1-625">{t('footer-byLine-2')}</strong>
+                {/*Powered by UMA 🦑*/}
               </h4>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
-              <h6 className="margin-top-4">Help</h6>
+              <h6 className="margin-top-4">{t('footer-menu-title-1')}</h6>
               <a href="https://docs.synths.yam.xyz/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
-                Documentation
+                {t('footer-docs-link')}
               </a>
               <a
                 href="https://docs.synths.yam.xyz/overview/faq"
@@ -224,18 +233,18 @@ export const Landing: React.FC = () => {
                 rel="noreferrer"
                 className="block margin-bottom-2"
               >
-                FAQs
+                {t('footer-faqs-link')}
               </a>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
-              <h6 className="margin-top-4">Community</h6>
+              <h6 className="margin-top-4">{t('footer-menu-title-2')}</h6>
               <a
                 href="https://twitter.com/YamFinance"
                 target="_blank"
                 rel="noreferrer"
                 className="block margin-bottom-2"
               >
-                Twitter
+                {t('footer-twitter-link')}
               </a>
               <a
                 href="https://discord.com/invite/fbHX7NRa52"
@@ -243,33 +252,34 @@ export const Landing: React.FC = () => {
                 rel="noreferrer"
                 className="block margin-bottom-2"
               >
-                Discord
+                {t('footer-discord-link')}
               </a>
             </div>
             <div className="width-1-6 tablet-width-1-3 landscape-width-full landscape-margin-top-6">
-              <h6 className="margin-top-4">Information</h6>
+              <h6 className="margin-top-4">{t('footer-menu-title-3')}</h6>
               <a
                 href="https://yambrief.substack.com/"
                 target="_blank"
                 rel="noreferrer"
                 className="block margin-bottom-2"
               >
-                Blog
+                {t('footer-blog-link')}
               </a>
               <a href="https://yam.finance/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
-                Visit Yam
+                {t('footer-yam-link')}
               </a>
               <a href="https://umaproject.org/" target="_blank" rel="noreferrer" className="block margin-bottom-2">
-                Visit UMA
+                {t('footer-uma-link')}
               </a>
             </div>
             <div className="flex-space-between width-full margin-top-8 tablet-block landscape-block portrait-block">
               <a href="#" className="flex-align-center w-inline-block">
                 <img src={yamIcon} loading="lazy" alt="Yam Synths" className="avatar margin-right-2" />
-                <h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>
+                {t('footer-logo')}
+                {/*<h5 className="margin-0 margin-right-2 expand">Yam Synths</h5>*/}
               </a>
               <p className="margin-top-4 tablet-margin-top-8 landscape-margin-top-8 portrait-margin-top-8 text-small">
-                © 2021 Yam Synths. All rights reserved.
+                © 2021 Yam Synths. All rights reserved. {/* TODO this needs a crowdin ref */}
               </p>
             </div>
             <div className="flex-row text-small opacity-50 margin-top-8">

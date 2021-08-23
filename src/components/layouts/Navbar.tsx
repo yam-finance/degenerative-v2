@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SearchForm, NavbarButton, Icon, Dropdown, ConnectWallet, LanguageSwitcher } from '@/components';
 import { EthereumContext } from '@/contexts';
-// import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { picasso } from '@/utils';
 
 import yamIcon from '@/assets/yamIcon.png';
@@ -14,7 +14,7 @@ export const Navbar = () => {
   const [openWalletMenu, setWalletMenu] = useState(false);
   const [openLegalMenu, setLegalMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (account) {
@@ -32,21 +32,26 @@ export const Navbar = () => {
     return (
       <div className="flex-column expand padding-right-3 tablet-width-full tablet-padding-x-4 tablet-padding-y-8 min-height-full">
         <div className="margin-left-8 margin-top-10 tablet-margin-0 width-56 portrait-margin-0 landscape-margin-0"></div>
-        <NavbarButton text="Explore Synths" icon="Globe" to="/explore" />
-        <NavbarButton text="Portfolio" icon="User" to="/portfolio" />
+        <NavbarButton text={t('menu-L-explore')} icon="Globe" to="/explore" />
+        <NavbarButton text={t('menu-L-portfolio')} icon="User" to="/portfolio" />
         <div className="nav-divider margin-y-5"></div>
-        <h6 className="margin-left-8 padding-left-3 tablet-padding-left-0 tablet-margin-left-3">Learn</h6>
-        <NavbarButton text="Docs" icon="Book" to="https://docs.synths.yam.xyz/" external />
+        <h6 className="margin-left-8 padding-left-3 tablet-padding-left-0 tablet-margin-left-3">{t('menu-L-title')}</h6>
+        <NavbarButton text={t('menu-L-docs-link')} icon="Book" to="https://docs.synths.yam.xyz/" external />
         <NavbarButton
-          text="Tutorial"
+          text={t('menu-L-tutorial-link')}
           icon="FileText"
           to="https://docs.synths.yam.xyz/overview/how-do-i-use-synths"
           external
         />
-        <NavbarButton text="FAQs" icon="HelpCircle" to="https://docs.synths.yam.xyz/overview/faq" external />
-        <NavbarButton text="Support" icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
-        <div className="expand"></div>
-        <div className="nav-divider margin-y-5"></div>
+        <NavbarButton
+          text={t('menu-L-faq-link')}
+          icon="HelpCircle"
+          to="https://docs.synths.yam.xyz/overview/faq"
+          external
+        />
+        <NavbarButton text={t('menu-L-support-link')} icon="LifeBuoy" to="https://discord.gg/Qk7yHHHpTU" external />
+        <div className="expand" />
+        <div className="nav-divider margin-y-5" />
         <div className="hide tablet-block landscape-block portrait-block">
           <a
             href="#"
@@ -57,12 +62,12 @@ export const Navbar = () => {
             className="nav-link width-full"
           >
             <Icon name="LogOut" className="icon margin-right-3" />
-            <div>Disconnect Wallet</div>
+            <div>{t('menu-L-disconnect')}</div>
           </a>
           <div className="nav-divider margin-y-5"></div>
         </div>
-        <NavbarButton text="YAM" icon="ExternalLink" to="https://yam.finance/" external />
-        <NavbarButton text="UMA" icon="ExternalLink" to="https://umaproject.org/" external />
+        <NavbarButton text={t('menu-L-yam-link')} icon="ExternalLink" to="https://yam.finance/" external />
+        <NavbarButton text={t('menu-L-uma-link')} icon="ExternalLink" to="https://umaproject.org/" external />
         <div className="margin-left-8 padding-3 tablet-margin-left-0">
           <div className="w-layout-grid flex-row">
             <a
@@ -156,7 +161,7 @@ export const Navbar = () => {
                 }}
                 className="dropdown-link w-dropdown-link"
               >
-                Disconnect
+                {t('menu-L-disconnect')}
               </div>
             </Dropdown>
           </div>
