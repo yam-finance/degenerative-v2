@@ -6,6 +6,8 @@ import { MarketContext } from '@/contexts';
 import { SynthGroups, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
 
+import { useTranslation } from 'react-i18next';
+
 interface ISynthGroupData {
   apr: number;
   totalLiquidity: number;
@@ -19,6 +21,7 @@ interface ISynthGroupData {
 export const Explore = () => {
   const { loading, synthMetadata, synthMarketData } = useContext(MarketContext);
   const query = useQuery();
+  const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState(query.get('search') ?? '');
   const [sidebarData, setSidebarData] = useState<string>('');
@@ -94,7 +97,7 @@ export const Explore = () => {
         {apr == 0 ? (
           <div className="button button-small">{`Coming Soon`}</div>
         ) : (
-          <div className="button button-small">{`${apr}% APR`}</div>
+          <div className="button button-small">{`${apr}% ${t('explore-promo-btn')}`}</div>
         )}
       </Link>
     );
@@ -168,7 +171,7 @@ export const Explore = () => {
     <Page>
       <Navbar />
       <MainDisplay>
-        <MainHeading>Explore Synths</MainHeading>
+        <MainHeading>{t('explore-text-h2')}</MainHeading>
         <div className="padding-x-8 flex-row margin-top-4 flex-wrap">
           <SearchForm
             setSearch={setSearchTerm}
@@ -185,7 +188,10 @@ export const Explore = () => {
                 return <SynthGroupBlock group={group} key={index} />;
               })}
             </div>
-            <Table headers={['Synth', 'APR', 'Liquidity', 'Market Cap']} headerClass={['width-1-2', '', '', '']}>
+            <Table
+              headers={[t('explore-header-1'), t('explore-header-2'), t('explore-header-3'), t('explore-header-4')]}
+              headerClass={['width-1-2', '', '', '']}
+            >
               {Object.keys(synthGroupData).map((group, index) => {
                 return <SynthGroupRow group={group} key={index} />;
               })}
