@@ -28,8 +28,7 @@ export const Explore = () => {
     const AggregateSynthGroupData = () => {
       const aggregateData: Record<string, ISynthGroupData> = {};
 
-      console.log(synthMarketData);
-
+      console.log(synthMetadata);
       Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
@@ -51,13 +50,6 @@ export const Explore = () => {
               image: '',
             };
 
-            //let apr = currentData.apr;
-            //if (marketData.apr >= currentData.apr) {
-            //  apr = marketData.apr;
-            //}
-            //console.log(group);
-            //console.log(marketData.apr);
-            //console.log(currentData.apr);
             const apr = marketData.apr >= currentData.apr ? marketData.apr : currentData.apr;
 
             aggregateData[group] = {
@@ -94,18 +86,13 @@ export const Explore = () => {
 
     const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block';
 
-    console.log(apr);
     if (isEmpty(synthMarketData)) return <div className={style}>Loading...</div>;
     return (
       <Link to={`/explore/${group}`} className={style} onMouseEnter={() => setSidebarData(group)}>
         <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
-        {apr == 0 ? (
-          <div className="button button-small">{`Coming Soon`}</div>
-        ) : (
-          <div className="button button-small">{`${apr}% APR`}</div>
-        )}
+        <div className="button button-small">{`${apr}% APR`}</div>
         {/*<div className="pill absolute-top-right margin-4">New</div>*/}
       </Link>
     );
