@@ -282,12 +282,14 @@ export const Landing: React.FC = () => {
                 © 2021 Yam Synths. All rights reserved. {/* TODO this needs a crowdin ref */}
               </p>
             </div>
-            <div className="flex-row text-small opacity-50 margin-top-8">
-              <Link to="/legal/privacy" className="margin-right-4">
-                Privacy Policy
-              </Link>
-              <Link to="/legal/terms">Terms & Conditions</Link>
-            </div>
+            {/*
+              <div className="flex-row text-small opacity-50 margin-top-8">
+                <Link to="/legal/privacy" className="margin-right-4">
+                  Privacy Policy
+                </Link>
+                <Link to="/legal/terms">Terms & Conditions</Link>
+              </div>
+            */}
           </div>
         </div>
       </div>
