@@ -1,6 +1,6 @@
 {
   "uGAS": {
-    "description": "New 1559-compatible uGAS contract coming soon",
+    "description": "Tracks median Ethereum gas prices",
     "collateral": "WETH",
     "paired": "WETH",
     "image": "ugas",

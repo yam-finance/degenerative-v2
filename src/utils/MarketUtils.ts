@@ -151,13 +151,12 @@ interface PriceHistoryResponse {
   priceUSD: string;
 }
 
-/** Get labels, reference price data and all market price data for this synth type.
+/** Get labels, reference price data and all market price data for this synth.
  *  Only fetches data from mainnet. This is intentional.
  */
-// TODO this will grab data for individual synth
 export const getDailyPriceHistory = async (synth: ISynth) => {
-  const synthAddress = synth.token.address;
-  const poolAddress = synth.pool.address;
+  const synthAddress = synth.token.address.toLowerCase();
+  const poolAddress = synth.pool.address.toLowerCase();
 
   // Defaults to 30 days
   const min = sub(new Date(), { days: 30 });
