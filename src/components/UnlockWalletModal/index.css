@@ -1,0 +1,14 @@
+.text_app {
+  color: #1e1b40;
+  padding-top: 10px;
+}
+.wallet-button {
+  display: flex;
+  width: 100%;
+  padding: 0.5rem;
+  text-align: center;
+  align-items: center;
+}
+.logo-img {
+  margin-right: 1rem;
+}

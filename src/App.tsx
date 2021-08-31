@@ -7,7 +7,6 @@ import './purged/degenerative.css';
 import './normalize.css';
 
 import { Landing, Synth, Explore, Portfolio, SynthGroup, NotFound, PrivacyPolicy, Terms } from '@/pages';
-
 const App: React.FC = () => {
   const { i18n } = useTranslation();
 
