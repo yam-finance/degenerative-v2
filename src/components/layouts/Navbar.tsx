@@ -185,6 +185,7 @@ export const Navbar = () => {
           className={
             'button connect margin-left-8 margin-right-4 text-align-center max-width-xs tablet-fixed-bottom-right tablet-margin-8'
           }
+          closeDropDown={toggleDisconnectMenu}
         />
       )}
     </div>
