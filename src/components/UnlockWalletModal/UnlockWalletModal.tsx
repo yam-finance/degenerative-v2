@@ -89,8 +89,8 @@ const UnlockWalletModal: React.FC<ModalProps> = ({ isOpen, onDismiss }) => {
 
           onClick={() => {
             setActivatingConnector(walletconnect)
-            activate(walletconnect);
-            if (onDismiss)
+            activate(walletconnect, (error: Error) => console.log(error))
+            if (onDismiss) 
               onDismiss();
           }}
         >
