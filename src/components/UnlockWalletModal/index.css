@@ -11,4 +11,9 @@
 }
 .logo-img {
   margin-right: 1rem;
+  width: 55px;
+  height: 55px;
+}
+.title {
+  color: #1e1b40;
 }

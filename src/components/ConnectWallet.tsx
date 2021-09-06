@@ -13,7 +13,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ className, closeDr
   const { activateBrowserWallet, account } = useEthers();
   const [unlockModalIsOpen, setUnlockModalIsOpen] = useState(false);
   const handleUnlockWalletClick = useCallback(() => {
-    closeDropDown();
+    if (closeDropDown)
+      closeDropDown();
     setUnlockModalIsOpen(true);
   }, [setUnlockModalIsOpen]);
   const handleDismissUnlockModal = useCallback(() => {

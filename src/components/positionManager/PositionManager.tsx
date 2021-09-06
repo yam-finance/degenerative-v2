@@ -1,4 +1,4 @@
-/* eslint-disable react/display-name */
+
 import React, { useEffect, useContext, useState } from 'react';
 import { BigNumber, utils } from 'ethers';
 import { fromUnixTime, differenceInMinutes } from 'date-fns';
