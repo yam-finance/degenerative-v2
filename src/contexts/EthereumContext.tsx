@@ -23,6 +23,7 @@ export const EthereumProvider: React.FC = ({ children }) => {
   const [signer, setSigner] = useState<Signer>();
   const [account, setAccount] = useState<string | undefined>(undefined);
   const [chainId, setChainId] = useState<number>(0);
+  const [synthsSDK, setSynthsSDK] = useState<Synths>();
 
   useEffect(() => {
     // Mainnet
@@ -80,6 +81,8 @@ export const EthereumProvider: React.FC = ({ children }) => {
     const synthsSDK = await Synths.create({
       ethersProvider: provider
     });
+
+    setSynthsSDK(synthsSDK);
 
     // Connect the sdk a synth
     const upunksAsset = await synthsSDK.connectAsset("upunks-0921");
