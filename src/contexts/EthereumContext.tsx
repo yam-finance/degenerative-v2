@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
 import { providers, Signer, utils } from 'ethers';
+import Synths from "synths-sdk";
 
 import { MetamaskProvider } from '@/types';
 
@@ -31,6 +32,7 @@ export const EthereumProvider: React.FC = ({ children }) => {
       setSigner(web3Signer);
       setProvider(web3);
       setChain(web3);
+      setSDK(web3);
     }
   }, [ethereum, chainId]);
 
@@ -73,6 +75,19 @@ export const EthereumProvider: React.FC = ({ children }) => {
     const network = await provider.getNetwork();
     setChainId(network.chainId);
   };
+
+  const setSDK = async (provider: providers.Web3Provider) => {
+    const synthsSDK = await Synths.create({
+      ethersProvider: provider
+    });
+
+    // Connect the sdk a synth
+    const upunksAsset = await synthsSDK.connectAsset("upunks-0921");
+
+    // Example method calls
+    const gcr: any = await upunksAsset.getGCR();
+    console.log("SDK TEST", gcr);
+  }
 
   const disconnectWallet = () => ethereum?.emit('disconnect');
 
