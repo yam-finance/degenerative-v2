@@ -1691,9 +1691,9 @@
   integrity sha512-N87VuQi7HEeRJkhzovao/JviiqKjDKMVKxKMfUvSKw+MbkbW8R0nA3fi/MQhhlxV2fQ+2ReM+/Nt4efdrJx3zA==
 
 "@types/node@^12.12.6":
-  version "12.20.23"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.23.tgz#d0d5885bb885ee9b1ed114a04ea586540a1b2e2a"
-  integrity sha512-FW0q7NI8UnjbKrJK8NGr6QXY69ATw9IFe6ItIo5yozPwA9DU/xkhiPddctUVyrmFXvyFYerYgQak/qu200UBDw==
+  version "12.20.24"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.24.tgz#c37ac69cb2948afb4cef95f424fa0037971a9a5c"
+  integrity sha512-yxDeaQIAJlMav7fH5AQqPH1u8YIuhYJXYBzxaQ4PifsU0GDO38MSdmEDeRlIxrKbC6NbEaaEHDanWb+y30U8SQ==
 
 "@types/node@^15.14.1":
   version "15.14.2"
@@ -7766,10 +7766,10 @@ symbol-tree@^3.2.4:
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
-synths-sdk@^1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/synths-sdk/-/synths-sdk-1.0.8.tgz#879ed66215765070f2dea2e88d699fa91af35b91"
-  integrity sha512-sK2LJ8f0qQkDxH9itehchnvSlwg28+vbdbqFLSgfGjhEwoVIMEpIhUkORbA5EqHzEHC50iyrGcDUPbKzDryfeQ==
+synths-sdk@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/synths-sdk/-/synths-sdk-1.0.9.tgz#57341440cef1235615208335a2e4ca6d12489c07"
+  integrity sha512-WMrOcIgc4BwOnzrU9cck6wqGt8mkY3308MlJcT5EmA9hcPJkXHlBPWFFL0OtDuZAnsE8e0/r50lQF6iLpUnPSw==
   dependencies:
     "@studydefi/money-legos" "^2.4.2"
     axios "^0.21.1"
