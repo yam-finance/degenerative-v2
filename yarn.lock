@@ -7314,10 +7314,10 @@ symbol-tree@^3.2.4:
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
-synths-sdk@^1.0.93:
-  version "1.0.93"
-  resolved "https://registry.yarnpkg.com/synths-sdk/-/synths-sdk-1.0.93.tgz#e9aa2aa9c3396dd2681a579824b2920ebbd87aac"
-  integrity sha512-SMYfMBAf4uYFXE78wXrBwiHQYfGgvCV5RGDoTbUYmr+prC/E25GKNztuIKkDoB8SBl2aw9cYtsq9GFc8a495+w==
+synths-sdk@^1.0.95:
+  version "1.0.95"
+  resolved "https://registry.yarnpkg.com/synths-sdk/-/synths-sdk-1.0.95.tgz#674a2a563309f856b335c8d911454d112b02b340"
+  integrity sha512-KsK53X/UFuvI6Nn9wEd97qV650Hsbg4cszaiZx8MbnfsbAKPECa8ZlMBy0GbydfKDhdfOUZ/NLJu7L6BbnrgUg==
   dependencies:
     "@studydefi/money-legos" "^2.4.2"
     axios "^0.21.1"
