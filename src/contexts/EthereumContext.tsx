@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
 import { providers, Signer, utils } from 'ethers';
+// @ts-ignore
 import Synths from "synths-sdk";
 
 import { MetamaskProvider } from '@/types';
