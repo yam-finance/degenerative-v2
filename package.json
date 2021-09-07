@@ -12,6 +12,9 @@
     "purge": "purgecss --css src/degenerative.css --content *.html src/**/*.tsx src/**/**/*.tsx src/**/*.ts --output src/purged",
     "lint": "eslint ."
   },
+  "engines": {
+    "node": "14.13.1"
+  },
   "dependencies": {
     "@reactchartjs/react-chart.js": "^1.0.0-rc.3",
     "@rollup/plugin-eslint": "^8.0.1",
