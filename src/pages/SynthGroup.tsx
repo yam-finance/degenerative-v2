@@ -95,7 +95,7 @@ export const SynthGroup: React.FC = () => {
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
-    console.log(historicPriceData);
+    console.log('historicPriceData = ', historicPriceData);
     const data = {
       labels: historicPriceData.labels,
       datasets: [
@@ -110,6 +110,7 @@ export const SynthGroup: React.FC = () => {
           pointHoverRadius: 4,
           pointHoverBackgroundColor: '#FF0099',
           tension: 0.1,
+          yAxisID: 'y-axis-1',
         },
         {
           label: 'Reference',
@@ -122,6 +123,7 @@ export const SynthGroup: React.FC = () => {
           pointHoverRadius: 4,
           pointHoverBackgroundColor: '#FF0099',
           tension: 0.1,
+          yAxisID: 'y-axis-2',
         },
       ],
     };
@@ -160,12 +162,30 @@ export const SynthGroup: React.FC = () => {
               display: true,
               fontColor: 'rgba(255,255,255,0.5)',
             },
+            position: 'left',
+            display: true,
+            type: 'linear',
             gridLines: {
               drawBorder: false,
               borderDash: [4, 4],
               color: 'rgba(255,255,255,0.1)',
               zeroLineWidth: 0,
             },
+            id: 'y-axis-1',
+          },
+          {
+            ticks: {
+              display: false,
+            },
+            position: 'right',
+            type: 'linear',
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+              drawOnArea: false,
+            },
+            id: 'y-axis-2',
           },
         ],
         xAxes: [
@@ -173,6 +193,8 @@ export const SynthGroup: React.FC = () => {
             ticks: {
               display: false,
             },
+            position: 'right',
+            display: true,
             gridLines: {
               display: false,
               drawBorder: false,

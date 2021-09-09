@@ -176,7 +176,6 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   // Get reference index prices for each date
   const referencePrices = await (async () => {
     const refPrices = await getReferencePriceHistory(synth.group, 1); // TODO
-
     // If API gives too much data, filter to find relevant data.
     if (refPrices.length > 30) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
