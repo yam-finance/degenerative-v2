@@ -234,14 +234,15 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
       const price = dailyPairData.get(date);
       if (price) {
         lastPrice = price;
-        return roundDecimals(Number(price), 4);
+        return roundDecimals(1 / Number(price), 4);
       } else {
-        return roundDecimals(Number(lastPrice), 4);
+        return roundDecimals(1 / Number(lastPrice), 4);
       }
     });
   } else {
     synthPrices = [];
   }
+ console.log("synthPrices", synthPrices);
 
   return {
     labels: dateArray,
