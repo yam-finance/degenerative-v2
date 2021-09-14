@@ -87,6 +87,7 @@ export const SynthGroup: React.FC = () => {
   }, [group]);
 
   useEffect(() => {
+    
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
 
     if (synthMetadata[synthInFocus] && chainId && !historicPriceData) getChartData();
@@ -95,7 +96,7 @@ export const SynthGroup: React.FC = () => {
   const Chart: React.FC = () => {
     if (!historicPriceData) return null;
 
-    console.log(historicPriceData);
+    console.log('historicPriceData = ', historicPriceData);
     const data = {
       labels: historicPriceData.labels,
       datasets: [
