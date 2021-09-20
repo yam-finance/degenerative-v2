@@ -16,7 +16,6 @@ interface ISynthGroupItem {
   name: string;
   maturity: number;
   apr: number;
-  aprAt125: number;
   balance: number;
   liquidity: number;
   price: number;
@@ -68,7 +67,6 @@ export const SynthGroup: React.FC = () => {
             name: synthName,
             maturity: maturity,
             apr: synthMarketData[synthName].apr,
-            aprAt125: synthMarketData[synthName].aprAt125,
             balance: synthsInWallet.find((el) => el.name === synthName)?.tokenAmount ?? 0,
             liquidity: synthMarketData[synthName].liquidity, // TODO
             price: synthMarketData[synthName].price, // TODO
@@ -90,6 +88,7 @@ export const SynthGroup: React.FC = () => {
   }, [group]);
 
   useEffect(() => {
+    
     const getChartData = async () => setHistoricPriceData(await getDailyPriceHistory(synthMetadata[synthInFocus]));
 
     if (synthMetadata[synthInFocus] && chainId && !historicPriceData) getChartData();
@@ -195,7 +194,7 @@ export const SynthGroup: React.FC = () => {
   };
 
   const SynthGroupRow: React.FC<ISynthGroupItem> = (props) => {
-    const { name, maturity, apr, aprAt125, balance, liquidity, price } = props;
+    const { name, maturity, apr, balance, liquidity, price } = props;
     const { cycle, year, group, collateral } = synthMetadata[name];
 
     return (
@@ -216,9 +215,7 @@ export const SynthGroup: React.FC = () => {
           <div className="text-xs opacity-50 hide portrait-block">Price</div>
         </div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">
-            {apr}% - {aprAt125}%
-          </div>
+          <div className="text-color-4">{apr}%</div>
           <div className="text-xs opacity-50 hide portrait-block">APR</div>
         </div>
         <div className="expand portrait-padding-y-2">

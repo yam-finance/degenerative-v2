@@ -7,8 +7,7 @@ import { SynthGroups, isEmpty, formatForDisplay } from '@/utils';
 import { useQuery } from '@/hooks';
 
 interface ISynthGroupData {
-  aprMin: number;
-  aprMax: number;
+  apr: number;
   totalLiquidity: number;
   totalMarketCap: number;
   totalTvl: number;
@@ -29,14 +28,19 @@ export const Explore = () => {
     const AggregateSynthGroupData = () => {
       const aggregateData: Record<string, ISynthGroupData> = {};
 
+      console.log(synthMetadata);
       Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
+          // Loop through all synths in group, find cumulative data for display
           const { group } = synthInfo;
+
           try {
             const marketData = synthMarketData[synthName];
+
+            // Data brought from last loop iteration
             const currentData = aggregateData[group] ?? {
-              aprMin: Infinity,
+              apr: 0,
               aprMax: 0,
               totalLiquidity: 0,
               totalMarketCap: 0,
@@ -46,16 +50,10 @@ export const Explore = () => {
               image: '',
             };
 
-            let aprMin = currentData.aprMin;
-            let aprMax = currentData.aprMax;
-            if (marketData.apr >= currentData.aprMax) {
-              aprMin = marketData.apr;
-              aprMax = marketData.aprAt125;
-            }
+            const apr = marketData.apr >= currentData.apr ? marketData.apr : currentData.apr;
 
             aggregateData[group] = {
-              aprMin: aprMin,
-              aprMax: aprMax,
+              apr: apr,
               totalLiquidity: currentData.totalLiquidity + marketData.liquidity,
               totalMarketCap: currentData.totalMarketCap + marketData.marketCap,
               totalTvl: currentData.totalTvl + marketData.tvl,
@@ -65,8 +63,7 @@ export const Explore = () => {
             };
           } catch (err) {
             aggregateData[group] = {
-              aprMin: 0,
-              aprMax: 0,
+              apr: 0,
               totalLiquidity: 0,
               totalMarketCap: 0,
               totalTvl: 0,
@@ -85,7 +82,7 @@ export const Explore = () => {
 
   const SynthGroupBlock: React.FC<{ group: string }> = ({ group }) => {
     const { description } = SynthGroups[group];
-    const { aprMin, aprMax, image } = synthGroupData[group];
+    const { apr, image } = synthGroupData[group];
 
     const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block';
 
@@ -95,18 +92,14 @@ export const Explore = () => {
         <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
-        {aprMin == aprMax ? (
-          <div className="button button-small">{`Coming Soon`}</div>
-        ) : (
-          <div className="button button-small">{`${aprMin}% - ${aprMax}% APR`}</div>
-        )}
+        <div className="button button-small">{`${apr}% APR`}</div>
         {/*<div className="pill absolute-top-right margin-4">New</div>*/}
       </Link>
     );
   };
 
   const SynthGroupRow: React.FC<{ group: string }> = ({ group }) => {
-    const { aprMin, aprMax, totalLiquidity, totalMarketCap, image } = synthGroupData[group];
+    const { apr, totalLiquidity, totalMarketCap, image } = synthGroupData[group];
     const { description } = SynthGroups[group];
 
     return (
@@ -122,7 +115,7 @@ export const Explore = () => {
         </div>
         <div></div>
         <div className="expand portrait-padding-y-2">
-          <div className="text-color-4">{`${aprMin}% - ${aprMax}%`}</div>
+          <div className="text-color-4">{`${apr}%`}</div>
         </div>
         <div className="expand portrait-padding-y-2">
           <div className="text-color-4">${formatForDisplay(totalLiquidity)}</div>

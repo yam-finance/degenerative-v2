@@ -80,34 +80,36 @@ export const Navbar = () => {
               rel="noreferrer"
               className="margin-right-0 w-inline-block"
             >
-              <img src={discord} loading="lazy" alt="Discord logo" className="icon discord in-button" />
+              <img src={discord} loading="lazy" alt="Discord logo" className="icon margin-left-2 discord in-button" />
             </a>
           </div>
         </div>
 
-        <div className="margin-left-6 tablet-margin-left-0 landscape-margin-left-0 portrait-margin-left-0 relative w-dropdown">
-          <div
-            onClick={(e) => {
-              e.preventDefault();
-              toggleLegalMenu();
-            }}
-            className="flex-align-center cursor-pointer text-small margin-left-4 tablet-margin-left-2 tablet-margin-top-8 landscape-margin-top-6 portrait-margin-top-6 landscape-margin-left-2 portrait-margin-left-2 opacity-50 margin-y-2"
-          >
-            Legal
-            <Icon name="ChevronDown" className="icon medium" />
+        {/*
+          <div className="margin-left-6 tablet-margin-left-0 landscape-margin-left-0 portrait-margin-left-0 relative w-dropdown">
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                toggleLegalMenu();
+              }}
+              className="flex-align-center cursor-pointer text-small margin-left-4 tablet-margin-left-2 tablet-margin-top-8 landscape-margin-top-6 portrait-margin-top-6 landscape-margin-left-2 portrait-margin-left-2 opacity-50 margin-y-2"
+            >
+              Legal
+              <Icon name="ChevronDown" className="icon medium" />
+            </div>
+            <Dropdown
+              className="dropdown-list box-shadow-medium text-small radius-large top-left"
+              openDropdown={openLegalMenu}
+            >
+              <Link to="/legal/privacy" className=" block break-no-wrap margin-bottom-2">
+                Privacy Policy
+              </Link>
+              <Link to="/legal/terms" className="block break-no-wrap">
+                Terms & Conditions
+              </Link>
+            </Dropdown>
           </div>
-          <Dropdown
-            className="dropdown-list box-shadow-medium text-small radius-large top-left"
-            openDropdown={openLegalMenu}
-          >
-            <Link to="/legal/privacy" className=" block break-no-wrap margin-bottom-2">
-              Privacy Policy
-            </Link>
-            <Link to="/legal/terms" className="block break-no-wrap">
-              Terms & Conditions
-            </Link>
-          </Dropdown>
-        </div>
+        */}
       </div>
     );
   };

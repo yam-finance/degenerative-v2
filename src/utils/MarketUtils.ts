@@ -122,21 +122,23 @@ export const getPoolData = async (pool: ILiquidityPool) => {
 };
 
 // Get APR multiplier.
-export const getApr = async (name: string, cr: number): Promise<number> => {
-  const collateralEfficiency = 1 / (1 + cr);
-
+export const getApr = async (name: string): Promise<number> => {
   // Return cached value if present
   const cached = sessionStorage.getItem(name);
-  if (cached) return Promise.resolve(Number(cached) * collateralEfficiency);
+  if (cached) return Promise.resolve(Number(cached));
 
   try {
     const res = await axios.get(`https://data.yam.finance/degenerative/apr/${name}`, {
       timeout: 2000,
     });
-    const aprMultiplier = res.data.aprMultiplier;
-    sessionStorage.setItem(name, aprMultiplier);
+    //console.log(res.data);
 
-    return Promise.resolve(aprMultiplier * collateralEfficiency);
+    // TODO temporary name until API changes field to `apr`
+    const apr = res.data.aprMultiplier;
+    sessionStorage.setItem(name, apr);
+
+    //console.log(apr);
+    return Promise.resolve(Number(apr));
   } catch (err) {
     console.error(err);
     return Promise.resolve(0); // TODO temporary fix to prevent UI from breaking
@@ -149,13 +151,12 @@ interface PriceHistoryResponse {
   priceUSD: string;
 }
 
-/** Get labels, reference price data and all market price data for this synth type.
+/** Get labels, reference price data and all market price data for this synth.
  *  Only fetches data from mainnet. This is intentional.
  */
-// TODO this will grab data for individual synth
 export const getDailyPriceHistory = async (synth: ISynth) => {
-  const synthAddress = synth.token.address;
-  const poolAddress = synth.pool.address;
+  const synthAddress = synth.token.address.toLowerCase();
+  const poolAddress = synth.pool.address.toLowerCase();
 
   // Defaults to 30 days
   const min = sub(new Date(), { days: 30 });
@@ -175,7 +176,6 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
   // Get reference index prices for each date
   const referencePrices = await (async () => {
     const refPrices = await getReferencePriceHistory(synth.group, 1); // TODO
-
     // If API gives too much data, filter to find relevant data.
     if (refPrices.length > 30) {
       const minIndex = refPrices.findIndex((ref: any) => getDateString(parseISO(ref.timestamp)) === getDateString(min));
@@ -234,14 +234,15 @@ export const getDailyPriceHistory = async (synth: ISynth) => {
       const price = dailyPairData.get(date);
       if (price) {
         lastPrice = price;
-        return roundDecimals(Number(price), 4);
+        return roundDecimals(1 / Number(price), 4);
       } else {
-        return roundDecimals(Number(lastPrice), 4);
+        return roundDecimals(1 / Number(lastPrice), 4);
       }
     });
   } else {
     synthPrices = [];
   }
+ console.log("synthPrices", synthPrices);
 
   return {
     labels: dateArray,
