@@ -36,6 +36,9 @@ enum ConnectorNames {
   Portis = 'Portis',
   Torus = 'Torus'
 }
+
+Modal.defaultStyles.overlay.backgroundColor = 'rgba(23,27,81,0.8)';
+
 const UnlockWalletModal: React.FC<ModalProps> = ({ isOpen, onDismiss }) => {
   const { activateBrowserWallet } = useEthers();
   //  const handleConnectMetamask =  useCallback(async() => {
@@ -51,7 +54,9 @@ const UnlockWalletModal: React.FC<ModalProps> = ({ isOpen, onDismiss }) => {
       marginRight: '-50%',
       transform: 'translate(-50%, -50%)',
       borderRadius: '20px',
-      width: '30%'
+      width: '30%',
+      backgroundColor: '#2c3286',
+      border: 'none',
     },
 
   };
@@ -80,7 +85,7 @@ const UnlockWalletModal: React.FC<ModalProps> = ({ isOpen, onDismiss }) => {
           }}
         >
           <img src={metamaskLogo} className="logo-img" />
-          <h3 className="text_app">Metamask</h3>
+          <p className="text_app">Metamask</p>
         </button>
       </div>
       <div>
@@ -90,12 +95,12 @@ const UnlockWalletModal: React.FC<ModalProps> = ({ isOpen, onDismiss }) => {
           onClick={() => {
             setActivatingConnector(walletconnect)
             activate(walletconnect)
-            if (onDismiss) 
+            if (onDismiss)
               onDismiss();
           }}
         >
           <img src={WConnect} className="logo-img" />
-          <h3 className="text_app">WalletConnect</h3>
+          <p className="text_app">WalletConnect</p>
         </button>
       </div>
       <div>
@@ -110,7 +115,7 @@ const UnlockWalletModal: React.FC<ModalProps> = ({ isOpen, onDismiss }) => {
           }}
         >
           <img src={fortmaticLogo} className="logo-img" />
-          <h3 className="text_app">Fortmatic</h3>
+          <p className="text_app">Fortmatic</p>
         </button>
       </div>
       <div>
@@ -125,7 +130,7 @@ const UnlockWalletModal: React.FC<ModalProps> = ({ isOpen, onDismiss }) => {
           }}
         >
           <img src={portisLogo} className="logo-img" />
-          <h3 className="text_app">Portis</h3>
+          <p className="text_app">Portis</p>
         </button>
       </div>
     </Modal>

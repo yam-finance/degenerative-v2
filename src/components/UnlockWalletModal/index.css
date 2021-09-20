@@ -1,19 +1,26 @@
 .text_app {
-  color: #1e1b40;
-  padding-top: 10px;
+  color: #fff;
+  font-size: 20px;
+  margin: 0;
 }
 .wallet-button {
   display: flex;
   width: 100%;
-  padding: 0.5rem;
-  text-align: center;
+  padding: 12px;
   align-items: center;
+  background-color: #393F9C;
+  border-radius: 12px;
+  margin: 4px 0;
+}
+.wallet-button:hover {
+  background-color: #4249AD;
 }
 .logo-img {
   margin-right: 1rem;
-  width: 55px;
-  height: 55px;
+  width: 32px;
+  height: 32px;
 }
 .title {
-  color: #1e1b40;
+  color: #fff;
+  font-size: 32px;
 }
