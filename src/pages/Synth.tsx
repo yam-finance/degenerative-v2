@@ -68,7 +68,7 @@ export const Synth: React.FC = () => {
         break;
       case 'sushi':
         tradeLink = `https://app.sushi.com/swap?inputCurrency=${collateral.address}&outputCurrency=${synth.token.address}`;
-        lpLink = `https://app.sushi.com/add/${collateral.address}-${synth.token.address}`;
+        lpLink = `https://app.sushi.com/add/${collateral.address}/${synth.token.address}`;
         break;
       default:
         break;
