@@ -79,6 +79,7 @@ export const SynthGroup: React.FC = () => {
   }, [synthMarketData, filterSynths]);
 
   useEffect(() => {
+    console.log("asdfasdfasdf = ", SynthGroups[group]);
     if (!isEmpty(SynthGroups[group])) {
       const groupInfo = SynthGroups[group];
       setGroupInfo(groupInfo);
