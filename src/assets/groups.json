@@ -5,7 +5,7 @@
     "paired": "WETH",
     "image": "ugas",
     "creator": "UMA",
-    "active": false
+    "active": true
   },
   "uSTONKS": {
     "description": "Track the top ten stocks chosen by the Wall Street Bets community",
