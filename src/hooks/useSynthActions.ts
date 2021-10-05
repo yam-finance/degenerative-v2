@@ -190,6 +190,10 @@ export const useSynthActions = () => {
 
   const onSettle = useCallback(async () => {
     try {
+      if (synthApproval) {
+        // allowance hasn't been set, initiate that tx first.
+        await onApproveSynth();
+      }
       const txReceipt = await emp.settle(synth);
       console.log(txReceipt.transactionHash);
     } catch (err) {
