@@ -28,13 +28,15 @@ export const Explore = () => {
     const AggregateSynthGroupData = () => {
       const aggregateData: Record<string, ISynthGroupData> = {};
 
-      console.log(synthMetadata);
+      console.log("meta = ", synthMetadata);
       Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
         .forEach(([synthName, synthInfo]) => {
           // Loop through all synths in group, find cumulative data for display
           const { group } = synthInfo;
-
+          console.log("group = ", group);
+          console.log("namer = ", synthName)
+          console.log("aggregateDataBefore = ", aggregateData);
           try {
             const marketData = synthMarketData[synthName];
 
@@ -73,7 +75,7 @@ export const Explore = () => {
             };
           }
         });
-
+        console.log("aggregateData = ", aggregateData);
       setSynthGroupData(aggregateData);
     };
 
@@ -109,7 +111,7 @@ export const Explore = () => {
             <img src={image} loading="lazy" className="margin-1 radius-full" />
           </div>
           <div>
-            <div className="margin-right-1 text-color-4">{group}</div>
+            <div className="margin-right-1 text-color-4">{group=="uSTONKS"?"LEGACY":group}</div>
             <div className="text-xs opacity-50">{description}</div>
           </div>
         </div>
@@ -180,6 +182,7 @@ export const Explore = () => {
           <>
             <div className="grid-3-columns margin-x-8 margin-top-4">
               {Object.keys(synthGroupData).map((group, index) => {
+                if(group!="uSTONKS")
                 return <SynthGroupBlock group={group} key={index} />;
               })}
             </div>
