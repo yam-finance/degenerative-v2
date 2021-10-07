@@ -190,7 +190,7 @@ export const useSynthActions = () => {
 
   const onSettle = useCallback(async () => {
     try {
-      if (synthApproval) {
+      if (!(await erc20.getAllowance(synthAddress, empAddress))) {
         // allowance hasn't been set, initiate that tx first.
         await onApproveSynth();
       }
