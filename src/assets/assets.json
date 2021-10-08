@@ -28,12 +28,15 @@
           "decimals": 18
         },
         "emp": {
-          "address": "0xf35a80e4705c56fd345e735387c3377baccd8189"
+          "address": "0xf35a80e4705c56fd345e735387c3377baccd8189",
+          "new": true,
+          "type": "finlib"
         },
         "pool": {
-          "address": "0x9469313a1702dC275015775249883cFc35Aa94d8",
-          "location": "sushi"
-        }
+          "address": "0x9469313a1702dc275015775249883cfc35aa94d8",
+          "location": "sushiswap"
+        },
+        "expired": false
       }
     ],
     "uSTONKS": [
@@ -188,12 +191,14 @@
           "decimals": 18
         },
         "emp": {
-          "address": "0x7c62e5c39b7b296f4f2244e7eb51bea57ed26e4b"
+          "address": "0x7c62e5c39b7b296f4f2244e7eb51bea57ed26e4b",
+          "new": true
         },
         "pool": {
-          "address": "0xF6E15Cdf292D36A589276C835cC576F0DF0Fe53A",
-          "location": "sushi"
-        }
+          "address": "0xf6e15cdf292d36a589276c835cc576f0df0fe53a",
+          "location": "sushiswap"
+        },
+        "expired": false
       }
     ]
   },

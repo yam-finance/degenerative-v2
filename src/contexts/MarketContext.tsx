@@ -45,6 +45,9 @@ export const MarketProvider: React.FC = ({ children }) => {
           const paired = collateralData[pairedToken];
           const collateral = collateralData[synth.collateral];
 
+
+          console.log("synth pool address", synth.pool);
+
           return Promise.all([
             name,
             synth,
