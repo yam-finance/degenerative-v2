@@ -103,7 +103,10 @@ export const MarketProvider: React.FC = ({ children }) => {
 
             // Grab APRs from API
             const pricedGlobalUtil = rawGlobalUtilization * pricePerPaired;
+
             const apr = isExpired ? 0 : await getApr(name);
+
+
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
