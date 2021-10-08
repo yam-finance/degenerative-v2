@@ -43,7 +43,7 @@ export const Explore = () => {
       console.log("synthMarketData = ", synthMarketData);
       Object.entries(synthMetadata)
         .filter(([synthName, synthInfo]) => synthName.toUpperCase().includes(searchTerm.toUpperCase()))
-        .filter(([synthName, synthInfo])=>!synthInfo?.legacy||synthInfo?.legacy==false)
+        .filter(([synthName, synthInfo])=>!synthInfo?.legacy)
         .forEach(([synthName, synthInfo]) => {
           // Loop through all synths in group, find cumulative data for display
           const { group } = synthInfo;

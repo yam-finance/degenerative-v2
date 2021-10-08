@@ -22,6 +22,7 @@ export interface ISynth {
   token: IToken;
   emp: IContract;
   pool: ILiquidityPool;
+  legacy?:boolean;
 }
 
 export interface ISynthGroup {
