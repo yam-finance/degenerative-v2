@@ -148,11 +148,11 @@ export const Explore = () => {
     const { description } = SynthGroups[group];
     const { apr, image } = synthGroupData[group];
 
-    const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block';
+    const style = 'padding-8 flex-column-centered radius-xl box-shadow-large text-align-center relative w-inline-block margin-right-5';
 
     if (isEmpty(synthMarketData)) return <div className={style}>Loading...</div>;
     return (
-      <Link to={`/explore/${group}`} className={style} onMouseEnter={() => setSidebarData(group)}>
+      <Link  style={{ width: '100%' }} to={`/explore/${group}`} className={style} onMouseEnter={() => setSidebarData(group)}>
         <img src={image} loading="lazy" alt="" className="width-16" />
         <h5 className="margin-top-4">{group}</h5>
         <p className="text-small opacity-60">{description}</p>
@@ -270,7 +270,7 @@ export const Explore = () => {
           <Loader className="flex-align-center flex-justify-center padding-top-48" />
         ) : (
           <>
-            <div className="grid-3-columns margin-x-8 margin-top-4">
+            <div className="flex-justify-center margin-x-8 margin-top-4">
               {Object.keys(synthGroupData).map((group, index) => {
                
                 return <SynthGroupBlock group={group} key={index} />;
