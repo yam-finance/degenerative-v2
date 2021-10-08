@@ -35,7 +35,8 @@
         "pool": {
           "address": "0xedf187890af846bd59f560827ebd2091c49b75df",
           "location": "uni"
-        }
+        },
+        "legacy": true
       },
       {
         "name": "June",
@@ -52,7 +53,8 @@
         "pool": {
           "address": "0x360acfeb5c1548bad3583c559a646d803077236d",
           "location": "uni"
-        }
+        },
+        "legacy": true
       },
       {
         "name": "September",
@@ -69,7 +71,8 @@
         "pool": {
           "address": "0xb9292b40cab08e5208b863ea9c4c4927a2308eee",
           "location": "sushi"
-        }
+        },
+        "legacy": true
       }
     ],
     "uGAS": [
