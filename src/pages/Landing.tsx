@@ -29,7 +29,8 @@ export const Landing: React.FC = () => {
     return (
       <Link
         to={url}
-        className="padding-8 blur flex-column-centered radius-xl box-shadow-large text-align-center relative background-color-1 padding-12 sheen w-inline-block"
+        style={{ width: '100%' }}
+        className="padding-8 blur flex-column-centered radius-xl box-shadow-large text-align-center relative background-color-1 padding-12 sheen w-inline-block margin-right-5"
       >
         <img src={`/images/${image}.png`} className="width-32" />
         <h4 className="margin-top-8">{name}</h4>
@@ -95,7 +96,7 @@ export const Landing: React.FC = () => {
               View all
             </Link>
           </div>
-          <div className="grid-3-columns">
+          <div className=" flex-justify-center">
             {/* TODO Finalize names, punctuation, links, etc */}
             <SynthBlock
               name="uPUNKS"
@@ -112,13 +113,7 @@ export const Landing: React.FC = () => {
               description={SynthGroups['uGAS'].description}
               apr={50}
             />
-            <SynthBlock
-              name="uSTONKS"
-              image="ustonks_zombie"
-              url="/explore/uSTONKS"
-              description={SynthGroups['uSTONKS'].description}
-              apr={50}
-            />
+           
           </div>
         </div>
       </div>
