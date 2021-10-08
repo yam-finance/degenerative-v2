@@ -17,6 +17,26 @@
           "address": "0x6e01db46b183593374a49c0025e42c4bb7ee3ffa",
           "location": "sushi"
         }
+      },
+      {
+        "name": "December",
+        "cycle": "12",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0x37a572b95d3fb5007a3519e73d4e9d6e0fc9de50",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0xf35a80e4705c56fd345e735387c3377baccd8189",
+          "new": true,
+          "type": "finlib"
+        },
+        "pool": {
+          "address": "0x9469313a1702dc275015775249883cfc35aa94d8",
+          "location": "sushiswap"
+        },
+        "expired": false
       }
     ],
     "uSTONKS": [
@@ -35,7 +55,8 @@
         "pool": {
           "address": "0xedf187890af846bd59f560827ebd2091c49b75df",
           "location": "uni"
-        }
+        },
+        "legacy": true
       },
       {
         "name": "June",
@@ -52,7 +73,8 @@
         "pool": {
           "address": "0x360acfeb5c1548bad3583c559a646d803077236d",
           "location": "uni"
-        }
+        },
+        "legacy": true
       },
       {
         "name": "September",
@@ -69,7 +91,8 @@
         "pool": {
           "address": "0xb9292b40cab08e5208b863ea9c4c4927a2308eee",
           "location": "sushi"
-        }
+        },
+        "legacy": true
       }
     ],
     "uGAS": [
@@ -157,6 +180,25 @@
           "address": "0x5ccd155ad26b74913ed6266a516a085a2343d426",
           "location": "sushi"
         }
+      },
+      {
+        "name": "December",
+        "cycle": "12",
+        "year": "21",
+        "collateral": "WETH",
+        "token": {
+          "address": "0xe3df5e08b72704c23229cb92fe847b23bfde9dbd",
+          "decimals": 18
+        },
+        "emp": {
+          "address": "0x7c62e5c39b7b296f4f2244e7eb51bea57ed26e4b",
+          "new": true
+        },
+        "pool": {
+          "address": "0xf6e15cdf292d36a589276c835cc576f0df0fe53a",
+          "location": "sushiswap"
+        },
+        "expired": false
       }
     ]
   },

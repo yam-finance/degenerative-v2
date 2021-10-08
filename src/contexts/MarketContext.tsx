@@ -45,6 +45,9 @@ export const MarketProvider: React.FC = ({ children }) => {
           const paired = collateralData[pairedToken];
           const collateral = collateralData[synth.collateral];
 
+
+          console.log("synth pool address", synth.pool);
+
           return Promise.all([
             name,
             synth,
@@ -81,24 +84,29 @@ export const MarketProvider: React.FC = ({ children }) => {
             const dateToday = new Date(currentTime.toNumber());
             const expiration = new Date(expirationTimestamp.toNumber());
             const daysTillExpiry = Math.round((expiration.getTime() - dateToday.getTime()) / (3600 * 24));
-            const isExpired = dateToday >= expiration;
-            const liquidity = pool.reserveUSD ?? 0;
+            const isExpired = currentTime.toNumber() >= expirationTimestamp.toNumber();
+            const liquidity = pool != null ? pool.reserveUSD : 0;
 
-            let priceUsd;
-            let pricePerPaired;
-            if (synth.collateral === pool.token0.symbol) {
-              priceUsd = pool.token0Price * collateralPriceUsd;
-              pricePerPaired = pool.token0Price;
-            } else {
-              priceUsd = pool.token1Price * collateralPriceUsd;
-              pricePerPaired = pool.token1Price;
+            let priceUsd = 0;
+            let pricePerPaired = 0;
+            if (pool != null) {
+              if (synth.collateral === pool.token0.symbol) {
+                priceUsd = pool.token0Price * collateralPriceUsd;
+                pricePerPaired = pool.token0Price;
+              } else {
+                priceUsd = pool.token1Price * collateralPriceUsd;
+                pricePerPaired = pool.token1Price;
+              }
             }
             const tvlUsd = collateralPriceUsd * Number(utils.formatUnits(tvl, paired.decimals));
             const marketCap = priceUsd * Number(utils.formatUnits(totalSupply, paired.decimals));
 
             // Grab APRs from API
             const pricedGlobalUtil = rawGlobalUtilization * pricePerPaired;
-            const apr = !isExpired ? await getApr(name) : 0;
+
+            const apr = isExpired ? 0 : await getApr(name);
+
+
 
             data[name] = {
               price: roundDecimals(Number(pricePerPaired), 4), // TODO price per paired
@@ -108,7 +116,7 @@ export const MarketProvider: React.FC = ({ children }) => {
               totalSupply: roundDecimals(Number(utils.formatUnits(totalSupply, paired.decimals)), 2),
               tvl: tvlUsd,
               marketCap: Math.trunc(marketCap),
-              volume24h: Math.trunc(pool.volumeUSD),
+              volume24h: (pool != null ? Math.trunc(pool.volumeUSD) : 0),
               globalUtilization: roundDecimals(rawGlobalUtilization, 4),
               minTokens: minTokens,
               liquidationPoint: liquidationPoint,
